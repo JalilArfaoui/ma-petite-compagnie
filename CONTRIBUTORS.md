@@ -10,5 +10,4 @@ Projet « Techno Web » de la Licence 3 Informatique - Université Jean-Françoi
 
 <!-- Ajoutez votre nom ci-dessous par ordre alphabétique -->
 
-
 Merci à tous les contributeurs de ce projet !
