@@ -10,4 +10,6 @@ Projet « Techno Web » de la Licence 3 Informatique - Université Jean-Françoi
 
 <!-- Ajoutez votre nom ci-dessous par ordre alphabétique -->
 
+- Mickaël Potignon - mickael.potignon@etud.univ-jfc.fr
+
 Merci à tous les contributeurs de ce projet !
