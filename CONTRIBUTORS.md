@@ -9,11 +9,10 @@ Projet « Techno Web » de la Licence 3 Informatique - Université Jean-Françoi
 ## Étudiants - Promotion 2025-2026
 
 <!-- Ajoutez votre nom ci-dessous par ordre alphabétique -->
-Shuldieshov Illia - shuldeshovwork013@gmail.com
-
 - [David Mougel](https://naflows.com) - mougel.david@naflows.com
 - [Dorian Labaste](https://github.com/D0lab) - dorian.labaste@etud.univ-jfc.fr
 - Matéo Faussurier - mateo.faussurier@iut-rodez.fr
 - [Matys Laurent](https://github.com/SyMat12) - matys.laurent@etud.univ-jfc.fr
+- [Shuldieshov Illia](https://github.com/edemit) - shuldeshovwork013@gmail.com
 
 Merci à tous les contributeurs de ce projet !
