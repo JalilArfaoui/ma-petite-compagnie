@@ -5,9 +5,10 @@ Projet « Techno Web » de la Licence 3 Informatique - Université Jean-Françoi
 ## Encadrement
 
 - [Jalil Arfaoui](https://jalil.arfaoui.net) - jalil@arfaoui.net
-- [Matéo Faussurier] - mateo.faussurier@iut-rodez.fr
 
 ## Étudiants - Promotion 2025-2026
+
+- [Matéo Faussurier] - mateo.faussurier@iut-rodez.fr
 
 <!-- Ajoutez votre nom ci-dessous par ordre alphabétique -->
 
