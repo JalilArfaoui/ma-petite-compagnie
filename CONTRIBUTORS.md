@@ -11,6 +11,8 @@ Projet « Techno Web » de la Licence 3 Informatique - Université Jean-Françoi
 <!-- Ajoutez votre nom ci-dessous par ordre alphabétique -->
 Shuldieshov Illia - shuldeshovwork013@gmail.com
 
+
+- [Bonduelle Simon](https://github.com/sbonduel) - simon.bonduelle@etud.univ-jfc.fr
 - [David Mougel](https://naflows.com) - mougel.david@naflows.com
 - [Dorian Labaste](https://github.com/D0lab) - dorian.labaste@etud.univ-jfc.fr
 - Matéo Faussurier - mateo.faussurier@iut-rodez.fr
