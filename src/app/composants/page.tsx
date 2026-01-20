@@ -11,7 +11,12 @@ import { Radio, RadioGroup } from '@/components/ui/Radio/Radio';
 import { Switch } from '@/components/ui/Switch/Switch';
 import { Table } from '@/components/ui/Table/Table';
 import { Textarea } from '@/components/ui/Textarea/Textarea';
-import { Heading, Stack, Text, Box, Container, SimpleGrid } from '@chakra-ui/react';
+import { Heading } from '@/components/ui/Heading/Heading';
+import { Box } from '@/components/ui/Box/Box';
+import { Container } from '@/components/ui/Container/Container';
+import { SimpleGrid } from '@/components/ui/SimpleGrid/SimpleGrid';
+import { Stack } from '@/components/ui/Stack/Stack';
+import { Text } from '@/components/ui/Text/Text';
 
 export default function Home() {
   return (
