@@ -5,3 +5,11 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model Contact {
+  id    Int     @id @default(autoincrement())
+  nom String 
+  prenom String
+  date_creation DateTime @default(now())
+}
+
