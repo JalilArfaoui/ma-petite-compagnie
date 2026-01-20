@@ -1,9 +1,5 @@
 "use client"
-import { Heading } from '@/components/ui/Heading/Heading';
-import { Box } from '@/components/ui/Box/Box';
-import { Container } from '@/components/ui/Container/Container';
-import { Stack } from '@/components/ui/Stack/Stack';
-import { Text } from '@/components/ui/Text/Text';
+import { Heading, Container, Stack, Text } from '@/components/ui';
 
 export default function Home() {
   return (

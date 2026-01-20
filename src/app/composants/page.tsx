@@ -1,22 +1,25 @@
 "use client"
-import { Alert } from '@/components/ui/Alert/Alert';
-import { Badge } from '@/components/ui/Badge/Badge';
-import { Button } from '@/components/ui/Button/Button';
-import { Card } from '@/components/ui/Card/Card';
-import { Checkbox } from '@/components/ui/Checkbox/Checkbox';
-import { Input } from '@/components/ui/Input/Input';
-import { Link } from '@/components/ui/Link/Link';
-import { List } from '@/components/ui/List/List';
-import { Radio, RadioGroup } from '@/components/ui/Radio/Radio';
-import { Switch } from '@/components/ui/Switch/Switch';
-import { Table } from '@/components/ui/Table/Table';
-import { Textarea } from '@/components/ui/Textarea/Textarea';
-import { Heading } from '@/components/ui/Heading/Heading';
-import { Box } from '@/components/ui/Box/Box';
-import { Container } from '@/components/ui/Container/Container';
-import { SimpleGrid } from '@/components/ui/SimpleGrid/SimpleGrid';
-import { Stack } from '@/components/ui/Stack/Stack';
-import { Text } from '@/components/ui/Text/Text';
+import { 
+  Alert, 
+  Badge, 
+  Button, 
+  Card, 
+  Checkbox, 
+  Input, 
+  Link, 
+  List, 
+  Radio, 
+  RadioGroup, 
+  Switch, 
+  Table, 
+  Textarea, 
+  Heading, 
+  Box, 
+  Container, 
+  SimpleGrid, 
+  Stack, 
+  Text 
+} from '@/components/ui';
 
 export default function Home() {
   return (
