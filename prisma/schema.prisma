@@ -4,4 +4,13 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Spectacle {
+  id Int @id
+  description String?
+  type String
+  statut String
+  troupe String
 }
