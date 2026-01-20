@@ -1,5 +1,10 @@
 import { Contact, PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import { PrismaPg } from "@prisma/adapter-pg";
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL,
+});
+const prisma = new PrismaClient({ adapter });
+
 export async function createContact(nom: string, prenom: string) {
   const newContact = await prisma.contact.create({
     data: {
