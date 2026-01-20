@@ -5,3 +5,27 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model Lieu {
+  id           Int         @id @default(autoincrement())
+  libelle      String
+  adresse      String
+  ville        String
+  numero_salle String?
+  evenements   Evenement[]
+}
+
+model Type {
+  id         Int         @id @default(autoincrement())
+  nom        String
+  evenements Evenement[]
+}
+
+model Evenement {
+  id     Int      @id @default(autoincrement())
+  nom    String
+  lieuId Int      @unique
+  lieu   Lieu     @relation(fields: [lieuId], references: [id])
+  typeId Int      @unique
+  type   Type     @relation(fields: [typeId], references: [id])
+}
