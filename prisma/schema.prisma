@@ -66,3 +66,10 @@ model UtilisateurBouchon {
   compagnie Compagnie? @relation(fields: [compagnieId], references: [id])
   droitModificationPlanification  Boolean @default(false)
 }
+model Contact {
+  id    Int     @id @default(autoincrement())
+  nom String 
+  prenom String
+  date_creation DateTime @default(now())
+}
+
