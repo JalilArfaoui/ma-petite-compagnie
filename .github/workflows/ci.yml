@@ -76,3 +76,23 @@ jobs:
           name: build
           path: .next/
           retention-days: 1
+
+  deploy:
+    name: Deploy to Clever Cloud
+    needs: [build]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Deploy to Clever Cloud
+        env:
+          CLEVER_CLOUD_SSH_KEY: ${{ secrets.CLEVER_CLOUD_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$CLEVER_CLOUD_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -t ed25519 push-n3-par-clevercloud-customers.services.clever-cloud.com >> ~/.ssh/known_hosts
+          git remote add clever git+ssh://git@push-n3-par-clevercloud-customers.services.clever-cloud.com/app_61e8105b-5d11-40be-bc97-c229c248bc7e.git
+          git push clever main:master --force
