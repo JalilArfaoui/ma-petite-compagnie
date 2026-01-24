@@ -28,6 +28,14 @@ model Evenement {
   lieu   Lieu     @relation(fields: [lieuId], references: [id])
   typeId Int      @unique
   type   Type     @relation(fields: [typeId], references: [id])
+  utilisateurBouchonId  Int @unique
+  utilisateurBouchon  UtilisateurBouchon  @relation(fields: [utilisateurBouchonId], references: [id])
   dateDebut DateTime
   dateFin DateTime
+}
+
+// TODO utiliser la vrai table des utilisateur
+model UtilisateurBouchon {
+  id    Int      @id @default(autoincrement())
+  evenements  Evenement[]
 }
