@@ -5,3 +5,28 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum Role {
+  contribu
+  useur
+  boos
+  Autre
+}
+
+model Contact {
+  id        Int      @id @default(autoincrement())
+  role      Role     @default(useur)
+
+  nom       String?
+  prenom    String?
+  age       Int?
+
+  email     String?
+  tel       String?
+  insta     String?
+  x         String?
+  facebook  String?
+  discord   String?
+
+  createdAt DateTime @default(now())
+}
