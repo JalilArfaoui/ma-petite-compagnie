@@ -21,15 +21,25 @@ model Type {
   evenements Evenement[]
 }
 
+model Compagnie {
+  id    Int      @id @default(autoincrement())
+  nom   String
+  membreId Int @unique
+  membres  UtilisateurBouchon  @relation(fields: [membreId], references: [id])
+  evenements Evenement[]
+}
+
 model Evenement {
   id     Int      @id @default(autoincrement())
   nom    String
+  compagnieId Int @unique
+  compagnie Compagnie @relation(fields: [compagnieId], references: [id])
   lieuId Int      @unique
   lieu   Lieu     @relation(fields: [lieuId], references: [id])
   typeId Int      @unique
   type   Type     @relation(fields: [typeId], references: [id])
-  utilisateurBouchonId  Int @unique
-  utilisateurBouchon  UtilisateurBouchon  @relation(fields: [utilisateurBouchonId], references: [id])
+  participantId  Int @unique
+  participants  UtilisateurBouchon  @relation(fields: [participantId], references: [id])
   dateDebut DateTime
   dateFin DateTime
 }
@@ -38,4 +48,6 @@ model Evenement {
 model UtilisateurBouchon {
   id    Int      @id @default(autoincrement())
   evenements  Evenement[]
+  compagnie Compagnie
+  droitModificationPlanification  Boolean @default(false)
 }
