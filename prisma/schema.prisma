@@ -13,6 +13,8 @@ model Lieu {
   ville        String
   numero_salle String?
   evenements   Evenement[]
+  idCompagnie Int
+  compagnie Compagnie @relation(fields: [idCompagnie], references: [id])
 }
 
 model Categorie {
@@ -30,6 +32,7 @@ model Compagnie {
   membres  UtilisateurBouchon  @relation(fields: [membreId], references: [id])
   evenements Evenement[]
   categoriesEvenement Categorie[]
+  lieuxEvenement Lieu[]
 }
 
 model Evenement {
