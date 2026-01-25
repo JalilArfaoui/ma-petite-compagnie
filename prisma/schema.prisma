@@ -62,7 +62,7 @@ model ParticipantsEvenement {
 model UtilisateurBouchon {
   id    Int      @id @default(autoincrement())
   evenements  ParticipantsEvenement[]
-  compagnieId Int
-  compagnie Compagnie @relation(fields: [compagnieId], references: [id])
+  compagnieId Int?
+  compagnie Compagnie? @relation(fields: [compagnieId], references: [id])
   droitModificationPlanification  Boolean @default(false)
 }
