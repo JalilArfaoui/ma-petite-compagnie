@@ -1,7 +1,6 @@
-import { createContact, getMany } from "./util/contact";
+import { createContact, getMany } from "./api/contact";
 
 export default async function Contact() {
-  createContact("Mec", "Prenom");
   await getMany();
   return (
     <main>
