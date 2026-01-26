@@ -66,10 +66,19 @@ model UtilisateurBouchon {
   compagnie Compagnie? @relation(fields: [compagnieId], references: [id])
   droitModificationPlanification  Boolean @default(false)
 }
+enum Role {
+  USER
+  PARTENAIRE
+  
+}
+
 model Contact {
   id    Int     @id @default(autoincrement())
   nom String 
   prenom String
+  role    Role?
+  email String? 
+  tel String? 
   date_creation DateTime @default(now())
 }
 
