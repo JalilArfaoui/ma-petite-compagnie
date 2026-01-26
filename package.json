@@ -24,6 +24,7 @@
   "dependencies": {
     "@chakra-ui/react": "^3.31.0",
     "@emotion/react": "^11.14.0",
+    "@next/env": "^16.1.4",
     "@prisma/adapter-pg": "^7.2.0",
     "@prisma/client": "^7.2.0",
     "next": "16.1.1",
