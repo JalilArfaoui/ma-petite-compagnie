@@ -1,7 +1,5 @@
 import { NextResponse, NextRequest } from "next/server"
 import { prisma } from "@/lib/prisma"
-import {Prisma} from "prisma-client-221002df42c1a268f961959fbadeb1e1b53e6e6aafe422c2883ff6e6c8354042";
-import UtilisateurBouchonScalarFieldEnum = Prisma.UtilisateurBouchonScalarFieldEnum;
 
 type CreateCompagnieBody = {
     nom: string,
