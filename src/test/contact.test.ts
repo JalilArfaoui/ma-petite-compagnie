@@ -4,6 +4,7 @@ import {
   trouverParNom,
   mettreAJour,
   ContactInformation,
+  supprimerParNom,
 } from "../app/communication/api/contact";
 import { describe, it, expect } from "vitest";
 
@@ -22,6 +23,7 @@ async function createAContactWithName(nom: string) {
 }
 describe("Contact", () => {
   it("Créer et lire", async () => {
+    await supprimerParNom("TestLire2");
     const created = await createAContactWithName("TestLire2");
 
     const found = (await trouverParNom("TestLire2")).contact;
@@ -30,12 +32,15 @@ describe("Contact", () => {
     supprimerParId(created.id);
   });
   it("Supprimer un contact", async () => {
+    await supprimerParNom("Test10");
     const created = await createAContactWithName("Test10");
     await supprimerParId(created.id);
     const contactTrouve = (await trouverParNom("Test10")).contact;
     expect(contactTrouve).toBeNull();
   });
   it("Mettre à jour un contact", async () => {
+    await supprimerParNom("Test3");
+    await supprimerParNom("Test3Updated");
     const created = await createAContactWithName("Test3");
     const updated = (await mettreAJour(created.id, creerObjetContactAvecNom("Test3Updated")))
       .contact;
