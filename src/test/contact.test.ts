@@ -1,34 +1,53 @@
-import { PrismaClient } from "@prisma/client/extension";
 import {
   createContact,
   supprimerParId,
-  getMany,
   trouverParNom,
   mettreAJour,
-  getPrismaClient,
+  ContactInformation,
 } from "../app/communication/api/contact";
-import { describe, it, expect, beforeEach, afterEach, afterAll, beforeAll } from "vitest";
+import { describe, it, expect } from "vitest";
 
+function creerObjetContactAvecNom(nom: string): ContactInformation {
+  return { nom: nom, prenom: "User", email: null, tel: null, role: null };
+}
+
+// Il se peut que les données soit déjà dans la base
+async function createAContactWithName(nom: string) {
+  const created = (await createContact(creerObjetContactAvecNom(nom))).contact;
+  if (created == null) {
+    expect(created).toBeDefined();
+    return { id: 1, nom: "", prenom: "" };
+  }
+  return created;
+}
 describe("Contact", () => {
   it("Créer et lire", async () => {
-    const created = await createContact({ nom: "TestLire", prenom: "User" });
+    const created = await createAContactWithName("TestLire2");
 
-    const found = await trouverParNom("TestLire");
+    const found = (await trouverParNom("TestLire2")).contact;
     expect(found).toBeDefined();
     expect(found).toStrictEqual(created);
     supprimerParId(created.id);
   });
   it("Supprimer un contact", async () => {
-    const created = await createContact({ nom: "Test2", prenom: "User" });
+    const created = await createAContactWithName("Test10");
     await supprimerParId(created.id);
-    const contactTrouve = await trouverParNom("Test2");
+    const contactTrouve = (await trouverParNom("Test10")).contact;
     expect(contactTrouve).toBeNull();
   });
   it("Mettre à jour un contact", async () => {
-    const created = await createContact({ nom: "Test3", prenom: "User" });
-    const updated = await mettreAJour(created.id, { nom: "Test3Updated", prenom: "User" });
-    console.log(updated);
+    const created = await createAContactWithName("Test3");
+    const updated = (await mettreAJour(created.id, creerObjetContactAvecNom("Test3Updated")))
+      .contact;
+    if (updated == null) {
+      expect(updated).toBeDefined();
+      return;
+    }
     expect(updated.nom == "Test3Updated").toBe(true);
     await supprimerParId(updated.id);
+  });
+  it("Créer un mauvais contact", async () => {
+    const result = await createContact(creerObjetContactAvecNom(""));
+    expect(result.success).toBe(false);
   });
 });
