@@ -35,6 +35,9 @@ export async function getMany() {
   return resultOf(true, "", await prisma.contact.findMany());
 }
 
+export async function supprimerParNom(nom: string) {
+  return resultOf(true, "", await prisma.contact.deleteMany({ where: { nom: nom } }));
+}
 export async function mettreAJour(contactId: number, newContact: ContactInformation) {
   if (newContact.nom.trim().length == 0 || newContact.prenom.trim().length == 0) {
     return resultOf(false, "Le nom ou le prénom est vide.", null);
