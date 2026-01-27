@@ -5,19 +5,22 @@
   font-family: sans-serif;
 }
 
-h1, h2 {
+.container h1,
+.container h2 {
   margin-bottom: 16px;
 }
 
-form {
+.container form {
   margin-bottom: 32px;
 }
 
-label {
+.container label {
   font-weight: 600;
 }
 
-input, select, button {
+.container input,
+.container select,
+.container button {
   width: 100%;
   padding: 8px;
   margin-top: 4px;
@@ -25,24 +28,6 @@ input, select, button {
   font-size: 14px;
 }
 
-button {
+.container button {
   cursor: pointer;
-}
-
-ul {
-  list-style: none;
-  padding: 0;
-}
-
-li {
-  padding: 8px 0;
-  border-bottom: 1px solid #ddd;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-li button {
-  width: auto;
-  padding: 4px 8px;
 }

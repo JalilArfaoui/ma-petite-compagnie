@@ -7,6 +7,7 @@ type Cachet = {
   id: number
   date: string
   nombre: number
+  categorie : string
   note?: string
 }
 
@@ -14,6 +15,7 @@ export default function PageCachets() {
   const [cachets, setCachets] = useState<Cachet[]>([])
   const [date, setDate] = useState('')
   const [nombre, setNombre] = useState(1)
+  const [categorie, setCategorie] = useState('')
   const [note, setNote] = useState('')
 
   function ajouterCachet(e: React.FormEvent) {
@@ -25,12 +27,14 @@ export default function PageCachets() {
       id: Date.now(),
       date,
       nombre,
+      categorie,
       note,
     }
 
     setCachets([...cachets, nouveauCachet])
     setDate('')
     setNombre(1)
+    setCategorie('')
     setNote('')
   }
 
@@ -41,22 +45,38 @@ export default function PageCachets() {
   const totalCachets = cachets.reduce((acc, c) => acc + c.nombre, 0)
 
   return (
-    <main className={styles.container} style={{ padding: 90, maxWidth: 600 }}>
+    <main className={styles.container}>
       <h1>Gestion des cachets</h1>
 
       <form onSubmit={ajouterCachet} style={{ marginBottom: 24 }}>
         <div>
-          <label>Date</label><br />
+          <label>Date</label><br/>
           <input type="date" value={date} onChange={e => setDate(e.target.value)} />
         </div>
 
         <div>
-            <label>Nombre de cachets</label><br />
+            <label>Nombre de cachets</label><br/>
             <input type="number" min={1} value={nombre} onChange={e => setNombre(Number(e.target.value))}/>
         </div>
 
         <div>
-          <label>Note</label><br />
+          <label htmlFor="categorie">Catégorie</label><br />
+          <select
+            id="categorie"
+            value={categorie}
+            onChange={e => setCategorie(e.target.value)}
+          >
+            <option value="">— Choisir une catégorie —</option>
+            <option value="cachet">Cachet</option>
+            <option value="consultation">Consultation</option>
+            <option value="repetition">Répétition</option>
+            <option value="formation">Formation</option>
+            <option value="autre">Autre</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Note</label><br/>
           <input value={note} onChange={e => setNote(e.target.value)} />
         </div>
 
@@ -67,12 +87,24 @@ export default function PageCachets() {
 
       <h2>Cachets enregistrés</h2>
 
-      <ul>
+      <ul className={styles.list}>
         {cachets.map(c => (
-          <li key={c.id}>
-            {c.date} — {c.nombre} cachet(s)
-            {c.note && ` (${c.note})`}
-            <button onClick={() => supprimerCachet(c.id)} style={{ marginLeft: 8 }}>
+          <li key={c.id} className={styles.item}>
+            <div className={styles.main}>
+              <span className={styles.date}>{c.date}</span>
+              <span className={styles.category}>{c.categorie || 'Sans catégorie'}</span>
+              <span className={styles.quantity}>{c.nombre} cachet(s)</span>
+            </div>
+
+            {c.note && (
+              <div className={styles.note}>{c.note}</div>
+            )}
+
+            <button
+              className={styles.delete}
+              onClick={() => supprimerCachet(c.id)}
+              aria-label="Supprimer"
+            >
               ✕
             </button>
           </li>
