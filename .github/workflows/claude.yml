@@ -24,9 +24,14 @@ jobs:
 
       - uses: anthropics/claude-code-action@v1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          track_progress: true
+          claude_args: |
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"
           prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
             Tu es un mentor bienveillant qui accompagne des étudiants en licence informatique dans leur projet web.
 
             ## Contexte du projet
@@ -99,3 +104,5 @@ jobs:
             Termine par un résumé avec :
             - 1-2 points forts de cette PR
             - 1-2 axes d'amélioration prioritaires
+
+            Utilise les commentaires inline pour les remarques spécifiques sur le code.
