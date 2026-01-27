@@ -56,3 +56,13 @@ describe("Contact", () => {
     expect(result.success).toBe(false);
   });
 });
+/*test("Afficher donnée contact dans une interface", async () => {
+  await supprimerParNom("TestAffichageContact");
+  const created = await createAContactWithName("TestAffichageContact");
+
+  async function getId() {
+    return { id: created.id.toString() };
+  }
+  render(<Contact></Contact>);
+  expect(screen.getByText("Page")).toBeDefined();
+});*/

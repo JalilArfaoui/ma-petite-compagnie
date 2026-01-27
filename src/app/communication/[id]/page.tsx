@@ -1,5 +1,5 @@
 "use client";
-import { use, useEffect, useState, useTransition } from "react";
+import { use, useEffect, useState } from "react";
 import { createContact } from "../action/contactFormAction";
 import ContactModification from "../components/ContactModification";
 import { trouverParId } from "../api/contact";
@@ -27,7 +27,7 @@ export function ContactDetails({ params }: { params: Promise<{ id: string }> }) 
 
     fetch();
     return;
-  }, []);
+  });
   if (dataLoading) {
     return <>...Loading</>;
   }
