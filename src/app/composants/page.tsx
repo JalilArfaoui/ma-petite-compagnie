@@ -19,11 +19,13 @@ import {
   SimpleGrid,
   Stack,
   Text,
+  Icon,
 } from "@/components/ui";
+import { FaHome } from "react-icons/fa";
 
 export default function Home() {
   return (
-    <Container maxW="container.xl" py={10}>
+    <Container maxW="container.xl" py={10} px={10}>
       <Stack gap={10}>
         <Box textAlign="center">
           <Heading as="h1" size="2xl" mb={4}>
@@ -36,14 +38,88 @@ export default function Home() {
         </Box>
 
         <Box>
-          <Heading as="h2" size="lg" mb={6} pb={2} borderBottom="1px solid" borderColor="gray.200">
+          <SimpleGrid columns={[1, null, 2]} gap={6}>
+            <div>
+              <Heading as="h2" size="lg" mb={6} pb={2}>
+                Icons
+              </Heading>
+              <Card title="Icons">
+                <Card.Body>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <Text>Icon size : sm</Text>
+                    <Icon size="sm">
+                      <FaHome />
+                    </Icon>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <Text>Icon size : md</Text>
+                    <Icon size="md">
+                      <FaHome />
+                    </Icon>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <Text>Icon size : lg</Text>
+                    <Icon size="lg">
+                      <FaHome />
+                    </Icon>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <Text>Icon size : xl</Text>
+                    <Icon size="xl">
+                      <FaHome />
+                    </Icon>
+                  </div>
+                </Card.Body>
+              </Card>
+            </div>
+          </SimpleGrid>
+        </Box>
+
+        <Box>
+          <Heading as="h2" size="lg" mb={6} pb={2}>
+            Cards
+          </Heading>
+          <SimpleGrid columns={[1, null, 6]} gap={6}>
+            <Card title="Simple Card" description="Card Description" />
+            <Card
+              title="Red Card"
+              description="Card Description"
+              icon={<FaHome />}
+              iconColor="red"
+            />
+            <Card
+              title="Green Card"
+              description="Card Description"
+              icon={<FaHome />}
+              iconColor="green"
+            />
+            <Card
+              title="Blue Card"
+              description="Card Description"
+              icon={<FaHome />}
+              iconColor="blue"
+            />
+            <Card
+              title="Orange Card"
+              description="Card Description"
+              icon={<FaHome />}
+              iconColor="orange"
+            />
+            <Card
+              title="Yellow Card"
+              description="Card Description"
+              icon={<FaHome />}
+              iconColor="yellow"
+            />
+          </SimpleGrid>
+        </Box>
+
+        <Box>
+          <Heading as="h2" size="lg" mb={6} pb={2}>
             Actions & Navigation
           </Heading>
           <SimpleGrid columns={[1, null, 2]} gap={6}>
-            <Card>
-              <Card.Header>
-                <Heading size="md">Buttons</Heading>
-              </Card.Header>
+            <Card title="Buttons">
               <Card.Body>
                 <Stack direction="row" gap={4}>
                   <Button variant="solid" colorPalette="blue">
@@ -53,10 +129,7 @@ export default function Home() {
                 </Stack>
               </Card.Body>
             </Card>
-            <Card>
-              <Card.Header>
-                <Heading size="md">Links</Heading>
-              </Card.Header>
+            <Card title="Links">
               <Card.Body>
                 <Stack gap={2}>
                   <Link href="#">Standard Link</Link>
@@ -70,11 +143,11 @@ export default function Home() {
         </Box>
 
         <Box>
-          <Heading as="h2" size="lg" mb={6} pb={2} borderBottom="1px solid" borderColor="gray.200">
+          <Heading as="h2" size="lg" mb={6} pb={2}>
             Forms & Inputs
           </Heading>
           <Stack gap={6}>
-            <Card>
+            <Card title="Inputs">
               <Card.Body>
                 <SimpleGrid columns={[1, null, 2]} gap={8}>
                   <Stack gap={4}>
@@ -123,15 +196,12 @@ export default function Home() {
         </Box>
 
         <Box>
-          <Heading as="h2" size="lg" mb={6} pb={2} borderBottom="1px solid" borderColor="gray.200">
+          <Heading as="h2" size="lg" mb={6} pb={2}>
             Data Display & Feedback
           </Heading>
           <Stack gap={6}>
             <SimpleGrid columns={[1, null, 2]} gap={6}>
-              <Card>
-                <Card.Header>
-                  <Heading size="md">Badges</Heading>
-                </Card.Header>
+              <Card title="Badges">
                 <Card.Body>
                   <Stack direction="row" gap={2}>
                     <Badge colorPalette="green">Success</Badge>
@@ -141,10 +211,7 @@ export default function Home() {
                   </Stack>
                 </Card.Body>
               </Card>
-              <Card>
-                <Card.Header>
-                  <Heading size="md">Alerts</Heading>
-                </Card.Header>
+              <Card title="Alerts">
                 <Card.Body>
                   <Stack gap={4}>
                     <Alert status="info">
@@ -157,10 +224,7 @@ export default function Home() {
               </Card>
             </SimpleGrid>
 
-            <Card>
-              <Card.Header>
-                <Heading size="md">Table</Heading>
-              </Card.Header>
+            <Card title="Table">
               <Card.Body>
                 <Table variant="line">
                   <Table.Head>
@@ -183,10 +247,7 @@ export default function Home() {
               </Card.Body>
             </Card>
 
-            <Card>
-              <Card.Header>
-                <Heading size="md">List</Heading>
-              </Card.Header>
+            <Card title="List">
               <Card.Body>
                 <List gap={3}>
                   <List.Item>
