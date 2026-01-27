@@ -23,7 +23,7 @@ import {
 
 export default function Home() {
   return (
-    <Container maxW="container.xl" py={10}>
+    <Container maxW="container.xl" py={10} px={10}>
       <Stack gap={10}>
         <Box textAlign="center">
           <Heading as="h1" size="2xl" mb={4}>
@@ -37,13 +37,19 @@ export default function Home() {
 
         <Box>
           <Heading as="h2" size="lg" mb={6} pb={2} borderBottom="1px solid" borderColor="gray.200">
+            Cards
+          </Heading>
+          <SimpleGrid columns={[1, null, 2]} gap={6}>
+            <Card title="Card Title" description="Card Description" />
+          </SimpleGrid>
+        </Box>
+
+        <Box>
+          <Heading as="h2" size="lg" mb={6} pb={2} borderBottom="1px solid" borderColor="gray.200">
             Actions & Navigation
           </Heading>
           <SimpleGrid columns={[1, null, 2]} gap={6}>
-            <Card>
-              <Card.Header>
-                <Heading size="md">Buttons</Heading>
-              </Card.Header>
+            <Card title="Buttons">
               <Card.Body>
                 <Stack direction="row" gap={4}>
                   <Button variant="solid" colorPalette="blue">
@@ -53,10 +59,7 @@ export default function Home() {
                 </Stack>
               </Card.Body>
             </Card>
-            <Card>
-              <Card.Header>
-                <Heading size="md">Links</Heading>
-              </Card.Header>
+            <Card title="Links">
               <Card.Body>
                 <Stack gap={2}>
                   <Link href="#">Standard Link</Link>
@@ -74,7 +77,7 @@ export default function Home() {
             Forms & Inputs
           </Heading>
           <Stack gap={6}>
-            <Card>
+            <Card title="Inputs">
               <Card.Body>
                 <SimpleGrid columns={[1, null, 2]} gap={8}>
                   <Stack gap={4}>
@@ -128,10 +131,7 @@ export default function Home() {
           </Heading>
           <Stack gap={6}>
             <SimpleGrid columns={[1, null, 2]} gap={6}>
-              <Card>
-                <Card.Header>
-                  <Heading size="md">Badges</Heading>
-                </Card.Header>
+              <Card title="Badges">
                 <Card.Body>
                   <Stack direction="row" gap={2}>
                     <Badge colorPalette="green">Success</Badge>
@@ -141,10 +141,7 @@ export default function Home() {
                   </Stack>
                 </Card.Body>
               </Card>
-              <Card>
-                <Card.Header>
-                  <Heading size="md">Alerts</Heading>
-                </Card.Header>
+              <Card title="Alerts">
                 <Card.Body>
                   <Stack gap={4}>
                     <Alert status="info">
@@ -157,10 +154,7 @@ export default function Home() {
               </Card>
             </SimpleGrid>
 
-            <Card>
-              <Card.Header>
-                <Heading size="md">Table</Heading>
-              </Card.Header>
+            <Card title="Table">
               <Card.Body>
                 <Table variant="line">
                   <Table.Head>
@@ -183,10 +177,7 @@ export default function Home() {
               </Card.Body>
             </Card>
 
-            <Card>
-              <Card.Header>
-                <Heading size="md">List</Heading>
-              </Card.Header>
+            <Card title="List">
               <Card.Body>
                 <List gap={3}>
                   <List.Item>
