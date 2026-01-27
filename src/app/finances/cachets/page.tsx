@@ -7,7 +7,7 @@ type Cachet = {
   id: number
   date: string
   nombre: number
-  categorie : string
+  categorie: string
   note?: string
 }
 
@@ -17,21 +17,34 @@ export default function PageCachets() {
   const [nombre, setNombre] = useState(1)
   const [categorie, setCategorie] = useState('')
   const [note, setNote] = useState('')
+  const [editId, setEditId] = useState<number | null>(null)
+  const [filtreCategorie, setFiltreCategorie] = useState('')
+  const [tri, setTri] = useState<'date' | 'nombre'>('date')
 
   function ajouterCachet(e: React.FormEvent) {
     e.preventDefault()
-
     if (!date) return
 
-    const nouveauCachet: Cachet = {
-      id: Date.now(),
-      date,
-      nombre,
-      categorie,
-      note,
+    if (editId !== null) {
+      //edition cachet
+      setCachets(cachets.map(c =>
+        c.id === editId ? { ...c, date, nombre, categorie, note } : c
+      ))
+      setEditId(null)
+
+    } 
+    else {
+      //ajout cachet
+      const nouveauCachet: Cachet = {
+        id: Date.now(),
+        date,
+        nombre,
+        categorie,
+        note,
+      }
+      setCachets([...cachets, nouveauCachet])
     }
 
-    setCachets([...cachets, nouveauCachet])
     setDate('')
     setNombre(1)
     setCategorie('')
@@ -40,23 +53,44 @@ export default function PageCachets() {
 
   function supprimerCachet(id: number) {
     setCachets(cachets.filter(c => c.id !== id))
+    if (editId === id) setEditId(null)
   }
 
-  const totalCachets = cachets.reduce((acc, c) => acc + c.nombre, 0)
+  function editerCachet(c: Cachet) {
+    setEditId(c.id)
+    setDate(c.date)
+    setNombre(c.nombre)
+    setCategorie(c.categorie)
+    setNote(c.note || '')
+  }
+
+  //filtrage par catégorie
+  const cachetsFiltres = filtreCategorie
+    ? cachets.filter(c => c.categorie === filtreCategorie)
+    : cachets
+
+  //tri par date de publication ou par nombre de cachets
+  const cachetsTries = [...cachetsFiltres].sort((a, b) => {
+    if (tri === 'date') return a.date.localeCompare(b.date)
+    if (tri === 'nombre') return b.nombre - a.nombre
+    return 0
+  })
+
+  const totalCachets = cachetsFiltres.reduce((acc, c) => acc + c.nombre, 0)
 
   return (
     <main className={styles.container}>
       <h1>Gestion des cachets</h1>
 
-      <form onSubmit={ajouterCachet} style={{ marginBottom: 24 }}>
+      <form onSubmit={ajouterCachet}>
         <div>
           <label>Date</label><br/>
           <input type="date" value={date} onChange={e => setDate(e.target.value)} />
         </div>
 
         <div>
-            <label>Nombre de cachets</label><br/>
-            <input type="number" min={1} value={nombre} onChange={e => setNombre(Number(e.target.value))}/>
+          <label>Nombre de cachets</label><br/>
+          <input type="number" min={1} value={nombre} onChange={e => setNombre(Number(e.target.value))}/>
         </div>
 
         <div>
@@ -80,15 +114,47 @@ export default function PageCachets() {
           <input value={note} onChange={e => setNote(e.target.value)} />
         </div>
 
-        <button type="submit" style={{ marginTop: 12 }}>
-          Ajouter
+        <button type="submit">
+          {editId !== null ? 'Mettre à jour' : 'Ajouter'}
         </button>
+        {editId !== null && (
+          <button
+            type="button"
+            onClick={() => {
+              setEditId(null)
+              setDate('')
+              setNombre(1)
+              setCategorie('')
+              setNote('')
+            }}
+          >
+            Annuler
+          </button>
+        )}
       </form>
+
+      <div>
+        <label>Filtrer par catégorie: </label>
+        <select value={filtreCategorie} onChange={e => setFiltreCategorie(e.target.value)}>
+          <option value="">Toutes</option>
+          <option value="cachet">Cachet</option>
+          <option value="consultation">Consultation</option>
+          <option value="repetition">Répétition</option>
+          <option value="formation">Formation</option>
+          <option value="autre">Autre</option>
+        </select>
+
+        <label>Trier par: </label>
+        <select value={tri} onChange={e => setTri(e.target.value as 'date' | 'nombre')}>
+          <option value="date">Date</option>
+          <option value="nombre">Nombre de cachets</option>
+        </select>
+      </div>
 
       <h2>Cachets enregistrés</h2>
 
       <ul className={styles.list}>
-        {cachets.map(c => (
+        {cachetsTries.map(c => (
           <li key={c.id} className={styles.item}>
             <div className={styles.main}>
               <span className={styles.date}>{c.date}</span>
@@ -100,13 +166,10 @@ export default function PageCachets() {
               <div className={styles.note}>{c.note}</div>
             )}
 
-            <button
-              className={styles.delete}
-              onClick={() => supprimerCachet(c.id)}
-              aria-label="Supprimer"
-            >
-              ✕
-            </button>
+            <div>
+              <button onClick={() => editerCachet(c)} aria-label="Éditer">✎</button>
+              <button className={styles.delete} onClick={() => supprimerCachet(c.id)} aria-label="Supprimer">✕</button>
+            </div>
           </li>
         ))}
       </ul>
