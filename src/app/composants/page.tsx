@@ -29,6 +29,9 @@ export default function Home() {
           <Heading as="h1" size="2xl" mb={4}>
             Composants
           </Heading>
+          <Heading as="h2" size="2xl" mb={4}>
+            Composants
+          </Heading>
         </Box>
 
         <Box>
