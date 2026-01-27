@@ -17,7 +17,8 @@ vi.mock("@/lib/prisma", () => ({
             findUnique:vi.fn(),
         }
     },
-}))
+}));
+
 /**
  * On crée une compagnie. On vérifie que l'utilisateur qui crée une compagnie
  * existe. On vérifie qu'il est ajouté à la compagnie et que ses droits de
