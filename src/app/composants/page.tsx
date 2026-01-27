@@ -28,10 +28,7 @@ export default function Home() {
     <Container maxW="container.xl" py={10} px={10}>
       <Stack gap={10}>
         <Box textAlign="center">
-          <Heading as="h1" size="2xl" mb={4}>
-            Composants
-          </Heading>
-          <Heading as="h2" size="2xl" mb={4}>
+          <Heading as="h3" size="2xl" mb={4}>
             Composants
           </Heading>
           <Text>Lorem ipsum dolor sit amet consectetur adipisicing elit.</Text>
@@ -40,7 +37,7 @@ export default function Home() {
         <Box>
           <SimpleGrid columns={[1, null, 2]} gap={6}>
             <div>
-              <Heading as="h2" size="lg" mb={6} pb={2}>
+              <Heading as="h3" size="lg" mb={6} pb={2}>
                 Icons
               </Heading>
               <Card title="Icons">
@@ -72,11 +69,34 @@ export default function Home() {
                 </Card.Body>
               </Card>
             </div>
+            <div>
+              <Heading as="h3" size="lg" mb={6} pb={2}>
+                Headings
+              </Heading>
+              <Card title="Headings">
+                <Card.Body>
+                  <Stack gap={2}>
+                    <Heading as="h1" size="lg" mb={6} pb={2}>
+                      Titre 1
+                    </Heading>
+                    <Heading as="h2" size="lg" mb={6} pb={2}>
+                      Titre 2
+                    </Heading>
+                    <Heading as="h3" size="lg" mb={6} pb={2}>
+                      Titre 3
+                    </Heading>
+                    <Heading as="h4" size="lg" mb={6} pb={2}>
+                      Titre 4
+                    </Heading>
+                  </Stack>
+                </Card.Body>
+              </Card>
+            </div>
           </SimpleGrid>
         </Box>
 
         <Box>
-          <Heading as="h2" size="lg" mb={6} pb={2}>
+          <Heading as="h3" size="lg" mb={6} pb={2}>
             Cards
           </Heading>
           <SimpleGrid columns={[1, null, 6]} gap={6}>
@@ -115,7 +135,7 @@ export default function Home() {
         </Box>
 
         <Box>
-          <Heading as="h2" size="lg" mb={6} pb={2}>
+          <Heading as="h3" size="lg" mb={6} pb={2}>
             Actions & Navigation
           </Heading>
           <SimpleGrid columns={[1, null, 2]} gap={6}>
@@ -140,7 +160,7 @@ export default function Home() {
         </Box>
 
         <Box>
-          <Heading as="h2" size="lg" mb={6} pb={2}>
+          <Heading as="h3" size="lg" mb={6} pb={2}>
             Forms & Inputs
           </Heading>
           <Stack gap={6}>
@@ -193,7 +213,7 @@ export default function Home() {
         </Box>
 
         <Box>
-          <Heading as="h2" size="lg" mb={6} pb={2}>
+          <Heading as="h3" size="lg" mb={6} pb={2}>
             Data Display & Feedback
           </Heading>
           <Stack gap={6}>
