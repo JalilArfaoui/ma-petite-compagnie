@@ -1,3 +1,4 @@
+"use server";
 import { Contact, PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import "../../../../envConfig.ts";
@@ -26,6 +27,12 @@ export async function createContact(contact: ContactInformation) {
     },
   });
   return resultOf(true, "", newContact);
+}
+export async function trouverParId(id: number) {
+  console.log(id);
+  const contact = await prisma.contact.findFirst({ where: { id: id } });
+  console.log(contact);
+  return resultOf(true, "", contact);
 }
 
 export async function trouverParNom(nom: string) {
