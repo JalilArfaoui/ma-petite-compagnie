@@ -19,7 +19,7 @@ export async function POST(req:NextRequest) {
             numero_salle,
             idCompagnie
         } = body;
-        if (!libelle || !adresse || ville || idCompagnie) {
+        if (!libelle || !adresse || !ville || !idCompagnie) {
             return NextResponse.json(
                 { message: "Des informations sont manquantes." },
                 { status: 400 }
@@ -35,7 +35,7 @@ export async function POST(req:NextRequest) {
             idCompagnie,
           },
         });
-        return {lieu};
+        return NextResponse.json(lieu, { status: 201 })
     } catch (error) {
         console.error(error)
         return NextResponse.json(
