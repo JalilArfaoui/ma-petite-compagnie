@@ -3,8 +3,7 @@
 import jsPDF from "jspdf";
 import styles from "./page.module.css";
 
-export default function ExportPage() 
-{
+export default function ExportPage() {
   return (
     //brouillin visuel minimal, pour tester le bon fonctionnement, le temps de recevoir les composants de l'équipe en charge
     <main className={styles.page}>
@@ -17,12 +16,11 @@ export default function ExportPage()
   );
 }
 
-function generatePDFFile()
-{
+function generatePDFFile() {
   //brouillon, j'attends qu'Alexandre m'envoie toutes les variables correspondantes, afin de mettre le tout en forme
-  const pdfFile = new jsPDF();       
+  const pdfFile = new jsPDF();
 
-  pdfFile.text("Hello, this is a PDF generated with jsPDF!", 100, 100);  
+  pdfFile.text("Hello, this is a PDF generated with jsPDF!", 100, 100);
   pdfFile.save("sample.pdf");
   console.log("Facture enregistrée en format .pdf");
 }
