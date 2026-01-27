@@ -8,7 +8,7 @@ GROUPE 3 - Administration & finances
 AJAS, BRUGEROLLE, PINTO
 
 GROUPE 4 - Communication & Relations
-YUKSEL, CLUZEL, BONDUELLE   
+YUKSEL, CLUZEL, BONDUELLE
 
 GROUPE 5 - Socle applicatif & UX
 SHULDIESHOV, SOLEIL, FIJALKOW
