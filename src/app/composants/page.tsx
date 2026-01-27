@@ -46,9 +46,6 @@ export default function Home() {
                     Primary
                   </Button>
                   <Button variant="outline">Secondary</Button>
-                  <Button variant="ghost" colorPalette="red">
-                    Ghost Red
-                  </Button>
                 </Stack>
               </Card.Body>
             </Card>
