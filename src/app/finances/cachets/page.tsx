@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import styles from './page.module.css'
 
 type Cachet = {
   id: number
@@ -40,7 +41,7 @@ export default function PageCachets() {
   const totalCachets = cachets.reduce((acc, c) => acc + c.nombre, 0)
 
   return (
-    <main style={{ padding: 90, maxWidth: 600 }}>
+    <main className={styles.container} style={{ padding: 90, maxWidth: 600 }}>
       <h1>Gestion des cachets</h1>
 
       <form onSubmit={ajouterCachet} style={{ marginBottom: 24 }}>

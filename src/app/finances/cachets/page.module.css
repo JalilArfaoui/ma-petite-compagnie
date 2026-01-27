@@ -1,0 +1,48 @@
+.container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 24px;
+  font-family: sans-serif;
+}
+
+h1, h2 {
+  margin-bottom: 16px;
+}
+
+form {
+  margin-bottom: 32px;
+}
+
+label {
+  font-weight: 600;
+}
+
+input, select, button {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+button {
+  cursor: pointer;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  padding: 8px 0;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+li button {
+  width: auto;
+  padding: 4px 8px;
+}
