@@ -1,17 +1,24 @@
-import { CardHeader, type CardRootProps } from "@chakra-ui/react";
-import { StyledCard, StyledCardTitle, StyledCardBody } from "./Card.style";
+import { type CardRootProps } from "@chakra-ui/react";
+import {
+  type IconColor,
+  StyledCard,
+  StyledCardTitle,
+  StyledCardBody,
+  StyledCardHeader,
+} from "./Card.style";
 import { Text } from "../Text/Text";
 
 type CardProps = CardRootProps & {
   title?: string;
   description?: string;
   icon?: React.ReactNode;
+  iconColor?: IconColor;
 };
 
-export const Card = ({ title, description, icon, children, ...props }: CardProps) => {
+export const Card = ({ title, description, icon, iconColor, children, ...props }: CardProps) => {
   return (
     <StyledCard {...props}>
-      {icon && <CardHeader>{icon}</CardHeader>}
+      {icon && <StyledCardHeader $iconColor={iconColor}>{icon}</StyledCardHeader>}
       <StyledCardBody>
         {title && <StyledCardTitle>{title}</StyledCardTitle>}
         {description && <Text>{description}</Text>}
@@ -21,6 +28,6 @@ export const Card = ({ title, description, icon, children, ...props }: CardProps
   );
 };
 
-Card.Header = CardHeader;
+Card.Header = StyledCardHeader;
 Card.Body = StyledCardBody;
 Card.Title = StyledCardTitle;
