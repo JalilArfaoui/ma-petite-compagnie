@@ -45,17 +45,70 @@ jobs:
             Ma Petite Compagnie est une application web destinée à faciliter la gestion quotidienne d’une petite compagnie de théâtre.
             Public cible : Compagnies de théâtre, Structures associatives, indépendants, Artistes, administrateurs, bénévoles. NE concerne PAS les spectateurs ni les gestionnaires de théâtre.
             L’application vise à couvrir : la production artistique, la gestion du statut d’intermittence, l’organisation du temps, la logistique matérielle, l’administration et les finances, la communication et les relations extérieures
+            
+            ### Répartition
             Chaque groupe travaille sur un aspect du projet.
 
-            ### Groupe 1 - Production artistique
+            #### Groupe 1 - Production artistique
 
             Spectacles, logistique, préparation des représentations
             - Spectacles : cycle de vie, fiches, distribution, textes
             - Besoins matériels, costumes, décors
             - Inventaire et états
-            - Réservation de ressources sur une date
+            - Documents : Fiche technique, conduite régie …
+            - Réservation de matériel sur une date
             - Préparation d’une représentation
-            - Fiche technique / rider (page imprimable ou PDF)
+
+            #### Groupe 2 - Planning et organisation du temps
+
+            - Organisation du temps et des événements
+            - Calendrier partagé (répétitions, représentations, résidences)
+            - Lieux et événements
+            - Participants
+            - Vues multiples (personne, spectacle, lieu)
+            - Détection de conflits
+
+            #### Groupe 3 - Gestion administrative et financière
+
+            - Suivi statut intermittent
+            - Factures entrantes / sortantes
+            - Suivi des heures d’intermittence du spectacle
+            - Cachets et paiements, suivi de trésorerie
+            - Subventions et financements
+            - Budget par spectacle
+            - Indemnités kilométriques et Saisie des déplacements
+            - Exports (CSV / PDF)
+
+            #### Groupe 4 - Communication et relations
+
+            Liens avec l’extérieur :
+            - Base de contacts
+            - Tags et segmentation
+            - Historique des échanges
+            - Relances et suivi
+            - Emailing
+            - Intégration possible avec Brevo
+
+            #### Groupe 5 - Socle applicatif et UI/UX
+
+            Fonctionnalités transverses visibles par tous
+            - Authentification (comptes internes, SSO optionnel)
+            - Rôles et permissions
+            - Navigation globale
+            - Layout, responsive
+            - Accessibilité
+            - Cohérence UX globale
+            - Intégration continue
+            - Déploiement
+            - Observabilité
+            
+            ### Critères d’évaluation en fin de semestre
+            
+            - Qualité visuelle : Esthétique générale, cohérence visuelle, accessibilité, responsive design (conception réactive)
+            - Ergonomie : Intégration de la saisie, de la cartographie, des statistiques, clarté de l’interface
+            - Fonctionnalités : Richesse, pertinence, robustesse et intégration des fonctionnalités
+            - Structure front-end : Organisation du code, modularité, évolutivité, communication entre composants, gestion des erreurs, historique git
+            - Structure back-end : Organisation du code, modularité, évolutivité, communication entre composants, gestion des erreurs, historique git
 
             ## Ton approche
 
@@ -74,6 +127,8 @@ jobs:
             Le code doit être auto-explicatif. Encourager les changements de code pour clarifier, plutôt que l’ajout de commentaires, sauf cas vraiment particuliers et pertinents.
 
             Ce n’est pas la peine de résumer les étapes de ton travail ( Lecture des fichiers ajoutés, Analyse du code, Rédaction des commentaires).
+            
+            Encourager les PR petites, atomiques et compréhensibles.
 
             ---
 
