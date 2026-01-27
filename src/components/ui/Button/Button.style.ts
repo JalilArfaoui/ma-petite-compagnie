@@ -12,14 +12,32 @@ export const StyledButton = styled(Button)<ButtonProps>`
   font-family: Georgia;
   font-style: italic;
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &:hover {
+    background-color: #c00039;
+  }
+
+  &:active {
+    background-color: #960030ff;
+  }
 
   ${(props) =>
     props.variant === "outline" &&
     css`
-      color: #000000;
+      color: #43566b;
       background-color: #ffffff;
       border: 1px solid #e1e8f1;
       font-style: normal;
       font-weight: normal;
+      font-family: Georgia;
+      &:hover {
+        background-color: #eef2f7ff;
+      }
+      &:active {
+        background-color: #e5e9eeff;
+      }
     `}
 `;

@@ -1,7 +1,8 @@
 import { Button, Container, Link, Stack } from "@/components/ui";
 import { LuTicket } from "react-icons/lu";
 import { Link as RouterLink } from "@chakra-ui/react";
-import { StyledHeader, LogoSection, TicketLogo, LogoText, NavLink } from "./Header.style";
+import { StyledHeader, LogoSection, TicketLogo, LogoText } from "./Header.style";
+import { LuLogIn } from "react-icons/lu";
 
 export const Header = () => {
   return (
@@ -32,7 +33,9 @@ export const Header = () => {
           </Stack>
 
           {/* CTA Section */}
-          <Button>Connexion</Button>
+          <Button icon={<LuLogIn />} iconSide="right">
+            Connexion
+          </Button>
         </Stack>
       </Container>
     </StyledHeader>

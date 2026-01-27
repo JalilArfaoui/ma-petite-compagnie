@@ -146,6 +146,12 @@ export default function Home() {
                     Primary
                   </Button>
                   <Button variant="outline">Secondary</Button>
+                  <Button variant="solid" icon={<FaHome />} iconSide="right">
+                    Icon Right
+                  </Button>
+                  <Button variant="outline" icon={<FaHome />} iconSide="left">
+                    Icon Left
+                  </Button>
                 </Stack>
               </Card.Body>
             </Card>
