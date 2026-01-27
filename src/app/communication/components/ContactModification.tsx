@@ -1,25 +1,20 @@
+"use client";
 import { Contact } from "@prisma/client";
 import { useState } from "react";
+import { getOrReplace } from "../util/typeUtility";
 
-function getOrReplace<T>(champ: T | null, replace: T) {
-  if (!champ) {
-    return replace;
-  } else {
-    return champ;
-  }
-}
-export function ContactModification({
+function ContactModification({
   onSubmitted,
   contactDonnee,
 }: {
   onSubmitted: (donneeFormulaire: FormData) => void;
-  contactDonnee: Contact;
+  contactDonnee: Contact | null;
 }) {
-  const [nom, setNom] = useState(getOrReplace(contactDonnee.nom, ""));
-  const [prenom, setPrenom] = useState(getOrReplace(contactDonnee.prenom, ""));
-  const [email, setEmail] = useState(getOrReplace(contactDonnee.email, ""));
-  const [tel, setTel] = useState(getOrReplace(contactDonnee.tel, ""));
-  const [role, setRole] = useState(getOrReplace(contactDonnee.role, "USER"));
+  const [nom, setNom] = useState(getOrReplace(contactDonnee?.nom, ""));
+  const [prenom, setPrenom] = useState(getOrReplace(contactDonnee?.prenom, ""));
+  const [email, setEmail] = useState(getOrReplace(contactDonnee?.email, ""));
+  const [tel, setTel] = useState(getOrReplace(contactDonnee?.tel, ""));
+  const [role, setRole] = useState(getOrReplace(contactDonnee?.role, "USER"));
   return (
     <>
       <div>
@@ -45,7 +40,7 @@ export function ContactModification({
                 type="radio"
                 name="role"
                 value="USER"
-                onChange={(e) => setRole("USER")}
+                onChange={() => setRole("USER")}
                 checked={role === "USER"}
               />
             </label>
@@ -55,7 +50,7 @@ export function ContactModification({
                 type="radio"
                 name="role"
                 value="PARTENAIRE"
-                onChange={(e) => setRole("PARTENAIRE")}
+                onChange={() => setRole("PARTENAIRE")}
                 checked={role === "PARTENAIRE"}
               />
             </label>
@@ -66,3 +61,5 @@ export function ContactModification({
     </>
   );
 }
+
+export default ContactModification;
