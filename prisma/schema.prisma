@@ -5,3 +5,62 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model Company {
+  id        String   @id @default(uuid())
+  name      String
+  address   String
+  location  String?
+  website   String?
+  rib       String
+
+  invoices  Invoice[]
+}
+
+model Invoice {
+  id              String   @id @default(uuid())
+
+  number          Int      @unique
+  issueDate       DateTime
+  dueDate         DateTime
+
+  billingLocation String?
+
+  companyName     String
+  companyAddress  String
+  companyWebsite  String?
+  rib             String
+
+  totalHT         Decimal  @db.Decimal(10,2)
+
+  createdAt       DateTime @default(now())
+
+  lines           InvoiceLine[]
+
+  companyId       String
+  company         Company  @relation(fields: [companyId], references: [id])
+}
+
+model InvoiceLine { 
+  id          String   @id @default(uuid())
+  label       String
+  quantity    Int      @default(1)
+  unitPrice   Decimal  @db.Decimal(10,2)
+  total       Decimal  @db.Decimal(10,2)
+
+  type        InvoiceLineType
+
+  invoiceId   String
+  invoice     Invoice @relation(fields: [invoiceId], references: [id])
+}
+
+enum InvoiceLineType {
+  SERVICE
+  EXTRA_FEE
+  DISCOUNT
+}
+
+model InvoiceCounter {
+  id      Int @id @default(1)
+  last    Int
+}
