@@ -1,13 +1,9 @@
 "use server";
-import { Contact, PrismaClient } from "@prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
+import { Contact } from "@prisma/client";
 import "../../../../envConfig.ts";
-console.log("env database is " + process.env.DATABASE_URL);
 export type ContactInformation = Omit<Contact, "id" | "date_creation">;
-const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL,
-});
-const prisma = new PrismaClient({ adapter });
+
+import { prisma } from "@/lib/prisma";
 export async function getPrismaClient() {
   return prisma;
 }
