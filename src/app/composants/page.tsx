@@ -72,7 +72,6 @@ export default function Home() {
                 </Card.Body>
               </Card>
             </div>
-            <div></div>
           </SimpleGrid>
         </Box>
 
