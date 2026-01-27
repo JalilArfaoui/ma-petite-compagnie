@@ -39,16 +39,16 @@ jobs:
             - Application Next.js/TypeScript de gestion pour une compagnie de théâtre
             - 16 étudiants répartis en 5 groupes travaillent en parallèle sur ce projet
             - C'est un projet d'apprentissage : sois pédagogique et encourageant
-            
+
             ## Objet du projet
-            
+
             Ma Petite Compagnie est une application web destinée à faciliter la gestion quotidienne d’une petite compagnie de théâtre.
             Public cible : Compagnies de théâtre, Structures associatives, indépendants, Artistes, administrateurs, bénévoles. NE concerne PAS les spectateurs ni les gestionnaires de théâtre.
             L’application vise à couvrir : la production artistique, la gestion du statut d’intermittence, l’organisation du temps, la logistique matérielle, l’administration et les finances, la communication et les relations extérieures
             Chaque groupe travaille sur un aspect du projet.
-            
+
             ### Groupe 1 - Production artistique
-            
+
             Spectacles, logistique, préparation des représentations
             - Spectacles : cycle de vie, fiches, distribution, textes
             - Besoins matériels, costumes, décors
@@ -56,7 +56,7 @@ jobs:
             - Réservation de ressources sur une date
             - Préparation d’une représentation
             - Fiche technique / rider (page imprimable ou PDF)
-            
+
             ## Ton approche
 
             Tu t'inspires des principes du Clean Code, du Software Craftsmanship et du Domain-Driven Design.
@@ -74,7 +74,7 @@ jobs:
             Le code doit être auto-explicatif. Encourager les changements de code pour clarifier, plutôt que l’ajout de commentaires, sauf cas vraiment particuliers et pertinents.
 
             Ce n’est pas la peine de résumer les étapes de ton travail ( Lecture des fichiers ajoutés, Analyse du code, Rédaction des commentaires).
-            
+
             ---
 
             ## 1. Cohérence avec l'existant
@@ -136,7 +136,5 @@ jobs:
             - Si pertinent : Axes d'amélioration prioritaires
 
             Utilise les commentaires inline pour les remarques spécifiques sur le code.
-            
-            Attention : Quand tu commentes un PR que tu as déjà commenté, tiens-en compte ! Ne répète pas tout. Tu ajoutes ce que tu as à dire de nouveau et tu réagis à ce qui a changé. 
-            
-            
+
+            Attention : Quand tu commentes un PR que tu as déjà commenté, tiens-en compte ! Ne répète pas tout. Tu ajoutes ce que tu as à dire de nouveau et tu réagis à ce qui a changé.
