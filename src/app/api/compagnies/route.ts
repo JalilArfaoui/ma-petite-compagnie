@@ -53,12 +53,10 @@ export async function POST(req:NextRequest) {
         })
         return NextResponse.json(result, { status: 201 })
     } catch (error) {
-        //console.error(error)
-        //return NextResponse.json(
-        //    { message: "Erreur serveur:" + error },
-        //    { status: 500 }
-        //)
-        console.error("ROUTE ERROR:", error)
-        throw error
+        console.error(error)
+        return NextResponse.json(
+            { message: "Erreur serveur:" + error },
+            { status: 500 }
+        )
     }
 }
