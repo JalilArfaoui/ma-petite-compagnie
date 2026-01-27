@@ -61,6 +61,7 @@ L'application est accessible sur [http://localhost:3000](http://localhost:3000).
 - **Base de données** : PostgreSQL
 - **ORM** : Prisma
 - **Tests** : Vitest + Testing Library
+- **Système de composants** : Chakra UI
 
 ## Licence
 
