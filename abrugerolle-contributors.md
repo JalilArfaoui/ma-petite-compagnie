@@ -1,0 +1,1 @@
+- [BRUGEROLLE Alexandre](https://github.com/AlexandreB-cmyk) - alexandre.brugerolle@etud.univ-jfc.fr

@@ -5,3 +5,64 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model Lieu {
+  id           Int         @id @default(autoincrement())
+  libelle      String
+  adresse      String
+  ville        String
+  numero_salle String?
+  evenements   Evenement[]
+  idCompagnie Int
+  compagnie Compagnie @relation(fields: [idCompagnie], references: [id])
+}
+
+model Categorie {
+  id         Int         @id @default(autoincrement())
+  nom        String
+  evenements Evenement[]
+  idCompagnie Int
+  compagnie Compagnie @relation(fields: [idCompagnie], references: [id])
+}
+
+model Compagnie {
+  id    Int      @id @default(autoincrement())
+  nom   String
+  membres UtilisateurBouchon[]
+  evenements Evenement[]
+  categoriesEvenement Categorie[]
+  lieuxEvenement Lieu[]
+}
+
+model Evenement {
+  id     Int      @id @default(autoincrement())
+  nom    String
+  compagnieId Int
+  compagnie Compagnie @relation(fields: [compagnieId], references: [id])
+  lieuId Int
+  lieu   Lieu     @relation(fields: [lieuId], references: [id])
+  categorieId Int
+  categorie   Categorie     @relation(fields: [categorieId], references: [id])
+  participants ParticipantsEvenement[]
+  dateDebut DateTime
+  dateFin DateTime
+}
+
+
+model ParticipantsEvenement {
+  id     Int      @id @default(autoincrement())
+  utilisateurId  Int
+  utilisateur  UtilisateurBouchon  @relation(fields: [utilisateurId], references: [id])
+  evenementId Int
+  evenement Evenement @relation(fields: [evenementId],references: [id])
+}
+
+
+// TODO utiliser la vrai table des utilisateur
+model UtilisateurBouchon {
+  id    Int      @id @default(autoincrement())
+  evenements  ParticipantsEvenement[]
+  compagnieId Int?
+  compagnie Compagnie? @relation(fields: [compagnieId], references: [id])
+  droitModificationPlanification  Boolean @default(false)
+}

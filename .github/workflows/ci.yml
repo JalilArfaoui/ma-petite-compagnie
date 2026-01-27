@@ -60,6 +60,22 @@ jobs:
     name: Build
     needs: [test]
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: ci
+          POSTGRES_PASSWORD: ci
+          POSTGRES_DB: ma_petite_compagnie
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/ma_petite_compagnie
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -68,11 +84,29 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run db:generate
-        env:
-          DATABASE_URL: postgresql://user:password@localhost:5432/db
       - run: npm run build
       - uses: actions/upload-artifact@v4
         with:
           name: build
           path: .next/
           retention-days: 1
+
+  deploy:
+    name: Deploy to Clever Cloud
+    needs: [build]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Deploy to Clever Cloud
+        env:
+          CLEVER_CLOUD_SSH_KEY: ${{ secrets.CLEVER_CLOUD_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$CLEVER_CLOUD_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -t ed25519 push-n3-par-clevercloud-customers.services.clever-cloud.com >> ~/.ssh/known_hosts
+          git remote add clever git+ssh://git@push-n3-par-clevercloud-customers.services.clever-cloud.com/app_61e8105b-5d11-40be-bc97-c229c248bc7e.git
+          git push clever main:master --force
