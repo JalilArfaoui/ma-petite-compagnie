@@ -1,4 +1,10 @@
-import { CardRoot as ChakraCard, CardHeader, CardBody, CardFooter, type CardRootProps } from '@chakra-ui/react';
+import {
+  CardRoot as ChakraCard,
+  CardHeader,
+  CardBody,
+  CardFooter,
+  type CardRootProps,
+} from "@chakra-ui/react";
 
 export type CardProps = CardRootProps;
 

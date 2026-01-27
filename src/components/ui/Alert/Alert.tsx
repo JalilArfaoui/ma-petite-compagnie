@@ -1,4 +1,10 @@
-import { AlertRoot as ChakraAlert, AlertTitle, AlertDescription, AlertIndicator, type AlertRootProps } from '@chakra-ui/react';
+import {
+  AlertRoot as ChakraAlert,
+  AlertTitle,
+  AlertDescription,
+  AlertIndicator,
+  type AlertRootProps,
+} from "@chakra-ui/react";
 
 export type AlertProps = AlertRootProps;
 

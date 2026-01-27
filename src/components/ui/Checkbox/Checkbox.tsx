@@ -1,8 +1,12 @@
-import { Checkbox as ChakraCheckbox, CheckboxGroup as ChakraCheckboxGroup, CheckboxRootProps } from '@chakra-ui/react';
+import {
+  Checkbox as ChakraCheckbox,
+  CheckboxGroup as ChakraCheckboxGroup,
+  CheckboxRootProps,
+} from "@chakra-ui/react";
 
 export interface CheckboxProps extends CheckboxRootProps {
-    inputProps?: React.InputHTMLAttributes<HTMLInputElement>
-    rootRef?: React.Ref<HTMLLabelElement>
+  inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
+  rootRef?: React.Ref<HTMLLabelElement>;
 }
 
 export const Checkbox = (props: CheckboxProps) => {

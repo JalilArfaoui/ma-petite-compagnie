@@ -1,4 +1,4 @@
-import { Select as ChakraSelect, SelectRootProps } from '@chakra-ui/react';
+import { Select as ChakraSelect, SelectRootProps } from "@chakra-ui/react";
 
 export const Select = (props: SelectRootProps) => {
   return <ChakraSelect.Root {...props} />;
