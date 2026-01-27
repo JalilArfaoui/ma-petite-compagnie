@@ -133,9 +133,6 @@ export default function Home() {
               <Card.Body>
                 <Stack gap={2}>
                   <Link href="#">Standard Link</Link>
-                  <Link href="#" variant="underline">
-                    Underline Link
-                  </Link>
                 </Stack>
               </Card.Body>
             </Card>

@@ -2,12 +2,13 @@ import { Button, ButtonProps } from "@chakra-ui/react";
 import styled, { css } from "styled-components";
 
 export const StyledButton = styled(Button)<ButtonProps>`
-  width: 200px;
-  height: 40px;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
   color: #ffffff;
   background-color: #d00039;
-  border-radius: 20px;
-  border: 1px solid #000000;
+  border-radius: 12px;
   font-family: Georgia;
   font-style: italic;
   font-weight: bold;
