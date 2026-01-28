@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
+import MonthlyTile from './tiles/monthly-tile';
 
 export type Evenement = {
     id: number;
@@ -11,13 +12,16 @@ export type Evenement = {
     dateFin: number;
 }
 
-type CalendarDay = {
+export type CalendarDay = {
     day: number;
     month: number;
     year: number;
-    isCurrentMonth: boolean;
+    isCurrentMonth?: boolean | undefined;
+    isCurrentWeek?: boolean | undefined;
     events: Evenement[];
 }
+
+
 
 interface EventCalendarProps {
     events: Evenement[];
@@ -27,15 +31,16 @@ interface EventCalendarProps {
 const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }) => {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [calendarDays, setCalendarDays] = useState<CalendarDay[]>([]);
+    const [viewType, setViewType] = useState<'monthly' | 'weekly'>('monthly');
 
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth() + 1; // 1-12
     const daysInMonth = new Date(year, month, 0).getDate();
 
-    const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const WEEKDAYS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi','Dimanche'];
     const MONTHS = [
-        'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'
+        'Janvier', 'Fevrier', 'Mars', 'Avril', 'Mai', 'Juin',
+        'Juillet', 'Aout', 'Septembre', 'Octobre', 'Novembre', 'Decembre'
     ];
 
     // Check if an event occurs on a specific day
@@ -53,23 +58,48 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }) => {
     };
 
     useEffect(() => {
+
         const arr: CalendarDay[] = [];
+
         
         const firstDayOfMonth = new Date(year, month - 1, 1).getDay();
-        
         // Get days in previous month
         const daysInPrevMonth = new Date(year, month - 1, 0).getDate();
         const prevMonth = month === 1 ? 12 : month - 1;
         const prevYear = month === 1 ? year - 1 : year;
+
+
+        if (viewType === 'weekly') {
+            // Find the start of the week (Monday) for the current date
+            const startOfWeek = new Date(currentDate);
+            startOfWeek.setDate(currentDate.getDate() - (currentDate.getDay() === 0 ? 6 : currentDate.getDay() - 1));
+            
+            for (let i = 0; i < 7; i++) {
+                const day = new Date(startOfWeek);
+                day.setDate(startOfWeek.getDate() + i);
+                
+                arr.push({
+                    day: day.getDate(),
+                    month: day.getMonth() + 1,
+                    year: day.getFullYear(),
+                    isCurrentWeek: true,
+                    events: getEventsForDay(day.getDate(), day.getMonth() + 1, day.getFullYear())
+                });
+            }
+            
+            setCalendarDays(arr);
+            return;
+        }
         
         // Previous month days
-        for (let i = firstDayOfMonth - 1; i >= 0; i--) {
+        for (let i = firstDayOfMonth - 2; i >= 0; i--) {
             const day = daysInPrevMonth - i;
             arr.push({
                 day,
                 month: prevMonth,
                 year: prevYear,
                 isCurrentMonth: false,
+                isCurrentWeek: false,   
                 events: getEventsForDay(day, prevMonth, prevYear)
             });
         }
@@ -81,6 +111,7 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }) => {
                 month: month,
                 year: year,
                 isCurrentMonth: true,
+                isCurrentWeek: true,
                 events: getEventsForDay(i, month, year)
             });
         }
@@ -96,12 +127,13 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }) => {
                 month: nextMonth,
                 year: nextYear,
                 isCurrentMonth: false,
+                isCurrentWeek: false,
                 events: getEventsForDay(i, nextMonth, nextYear)
             });
         }
         
         setCalendarDays(arr);
-    }, [currentDate, events, month, year, daysInMonth]);
+    }, [currentDate, events, month, year, daysInMonth, viewType]);
 
     const goToPreviousMonth = () => {
         setCurrentDate(new Date(year, month - 2, 1));
@@ -126,7 +158,7 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }) => {
         <div className="event-calendar">
             <div className="calendar-header">
                 <button onClick={goToPreviousMonth} className="nav-button">
-                    <span>‹</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z"/></svg>
                 </button>
                 
                 <div className="header-center">
@@ -135,45 +167,55 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }) => {
                         Today
                     </button>
                 </div>
-                
+
+
+                <button onClick={() => {
+                    setViewType(viewType === 'monthly' ? 'weekly' : 'monthly');
+                }}>
+                    {viewType === 'monthly' ? 'Weekly View' : 'Monthly View'}
+                </button>
                 <button onClick={goToNextMonth} className="nav-button">
-                    <span>›</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/></svg>
                 </button>
             </div>
 
-            <div className="calendar-grid">
-                {WEEKDAYS.map(day => (
-                    <div key={day} className="weekday-header">
-                        {day}
-                    </div>
-                ))}
-
-                {calendarDays.map((calDay, index) => (
-                    <div
-                        key={index}
-                        className={`calendar-day ${!calDay.isCurrentMonth ? 'other-month' : ''} ${isToday(calDay) ? 'today' : ''}`}
-                    >
-                        <div className="day-number">{calDay.day}</div>
-                        
-                        <div className="events-container">
-                            {calDay.events.slice(0, 3).map(event => (
-                                <div
-                                    key={event.id}
-                                    className="event-tile"
-                                    onClick={() => onEventClick?.(event)}
-                                    title={event.nom}
-                                >
-                                    <span className="event-name">{event.nom}</span>
+            <div className="calendar-content">
+                {
+                    viewType === 'weekly' && (
+                        <div className="time-slots">
+                            {Array.from({ length: 24 }, (_, i) => (
+                                <div key={i} className="time-slot">
+                                    {i}:00
                                 </div>
                             ))}
-                            {calDay.events.length > 3 && (
-                                <div className="more-events">
-                                    +{calDay.events.length - 3} more
-                                </div>
-                            )}
                         </div>
+                    )
+                }
+                <div className="calendar-grid">
+                    <div className="weekdays-container">
+                        {WEEKDAYS.map(day => (
+                            <div key={day} className="weekday-header">
+                                {day}
+                            </div>
+                        ))}
                     </div>
-                ))}
+
+                        <div className='days'>
+                            {calendarDays.map((calDay, index) => {
+                        
+                            return (
+                                <MonthlyTile 
+                                    key={index}
+                                    calDay={calDay}
+                                    index={index}
+                                    onEventClick={onEventClick}
+                                    isToday={isToday(calDay)}
+                                    viewType={viewType}
+                                />
+                            )
+                            })}
+                        </div>
+                </div>
             </div>
         </div>
     );
