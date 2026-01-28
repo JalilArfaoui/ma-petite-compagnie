@@ -136,10 +136,22 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }) => {
     }, [currentDate, events, month, year, daysInMonth, viewType]);
 
     const goToPreviousMonth = () => {
+        if (viewType === 'weekly') {
+            const prevWeekDate = new Date(currentDate);
+            prevWeekDate.setDate(currentDate.getDate() - 7);
+            setCurrentDate(prevWeekDate);
+            return;
+        }
         setCurrentDate(new Date(year, month - 2, 1));
     };
 
     const goToNextMonth = () => {
+        if (viewType === 'weekly') {
+            const nextWeekDate = new Date(currentDate);
+            nextWeekDate.setDate(currentDate.getDate() + 7);
+            setCurrentDate(nextWeekDate);
+            return;
+        }
         setCurrentDate(new Date(year, month, 1));
     };
 
@@ -153,6 +165,35 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }) => {
                day.month === today.getMonth() + 1 &&
                day.year === today.getFullYear();
     };
+
+    const ref = React.useRef<HTMLDivElement>(null);
+    const [globalSlotsHeight, setGlobalSlotsHeight] = useState(0);
+
+    useEffect(() => {
+        if (ref.current) {
+            // On divise la hauteur totale par 24 pour obtenir la hauteur d'une slot horaire et on prend en compte le fait qu'il y ai une 
+            // bordure de 1px entre chaque slot horaire
+            setGlobalSlotsHeight(
+                (ref.current.clientHeight) / 24 
+            );
+        }
+    }, [viewType]);
+
+    // Si on ajuste la taille de la fenêtre, on recalcule la hauteur des slots horaires
+    useEffect(() => {
+        const handleResize = () => {
+            if (ref.current) {
+                setGlobalSlotsHeight(
+                    (ref.current.clientHeight) / 24 
+                );
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
     return (
         <div className="event-calendar">
@@ -182,7 +223,7 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }) => {
             <div className="calendar-content">
                 {
                     viewType === 'weekly' && (
-                        <div className="time-slots">
+                        <div className="time-slots" ref={ref}>
                             {Array.from({ length: 24 }, (_, i) => (
                                 <div key={i} className="time-slot">
                                     {i}:00
@@ -201,6 +242,18 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }) => {
                     </div>
 
                         <div className='days'>
+                            {
+                                viewType === 'weekly' && 
+                                        Array.from({ length: 24 }, (_, i) => (
+                                            <div key={i} className="time-slot-overlay" style={{
+                                                top: `calc(50px + ${i*globalSlotsHeight}px)`,
+                                            }}>
+                                            </div>
+                                        ))
+                                
+                            }
+
+
                             {calendarDays.map((calDay, index) => {
                         
                             return (
@@ -211,6 +264,7 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }) => {
                                     onEventClick={onEventClick}
                                     isToday={isToday(calDay)}
                                     viewType={viewType}
+                                    slotHeight={globalSlotsHeight}
                                 />
                             )
                             })}
