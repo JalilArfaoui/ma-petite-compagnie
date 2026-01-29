@@ -56,7 +56,7 @@ export default function PageCachets() {
       setErreur("La catégorie est obligatoire");
       return;
     }
-
+    
     //pas forcement nécéssaire puisque déjà géré dans le code de l'input, mais mieux vaut être prévoyant
     if (note.length > 200) {
       setErreur("La note ne peut pas dépasser 200 caractères");
