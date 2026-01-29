@@ -6,7 +6,8 @@ import styles from "./page.module.css";
 const TYPE_CATEGORIE = [
   { value: "repetition", label: "Répétition" },
   { value: "formation", label: "Formation" },
-  { value: "autre", label: "Autre" },] as const;
+  { value: "autre", label: "Autre" },
+] as const;
 
 type Cachet = {
   id: number;
@@ -142,7 +143,12 @@ export default function PageCachets() {
           <br />
           <select id="categorie" value={categorie} onChange={(e) => setCategorie(e.target.value)}>
             <option value="">— Choisir une catégorie —</option>
-            {TYPE_CATEGORIE.map((categorie) => (<option key={categorie.value} value={categorie.value}> {categorie.label} </option>))}
+            {TYPE_CATEGORIE.map((categorie) => (
+              <option key={categorie.value} value={categorie.value}>
+                {" "}
+                {categorie.label}{" "}
+              </option>
+            ))}
           </select>
         </div>
 
@@ -174,7 +180,11 @@ export default function PageCachets() {
         <label>Filtrer par catégorie: </label>
         <select value={filtreCategorie} onChange={(e) => setFiltreCategorie(e.target.value)}>
           <option value="">Toutes</option>
-          {TYPE_CATEGORIE.map((categorie) => (<option key={categorie.value} value={categorie.value}>{categorie.label}</option>))}
+          {TYPE_CATEGORIE.map((categorie) => (
+            <option key={categorie.value} value={categorie.value}>
+              {categorie.label}
+            </option>
+          ))}
         </select>
 
         <label>Trier par: </label>
