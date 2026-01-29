@@ -28,7 +28,7 @@ export default function PageCachets() {
     setErreur(null);
 
     //validation obligatoire de la date
-    if (!date) {
+    if (!date.trim()) {
       setErreur("La date est obligatoire");
       return;
     }
@@ -46,7 +46,7 @@ export default function PageCachets() {
     }
 
     //validation obligatoire de la catégorie
-    if (!categorie) {
+    if (!categorie.trim()) {
       setErreur("La catégorie est obligatoire");
       return;
     }
@@ -137,7 +137,6 @@ export default function PageCachets() {
           <br />
           <select id="categorie" value={categorie} onChange={(e) => setCategorie(e.target.value)}>
             <option value="">— Choisir une catégorie —</option>
-            <option value="cachet">Cachet</option>
             <option value="consultation">Consultation</option>
             <option value="repetition">Répétition</option>
             <option value="formation">Formation</option>
@@ -173,7 +172,6 @@ export default function PageCachets() {
         <label>Filtrer par catégorie: </label>
         <select value={filtreCategorie} onChange={(e) => setFiltreCategorie(e.target.value)}>
           <option value="">Toutes</option>
-          <option value="cachet">Cachet</option>
           <option value="consultation">Consultation</option>
           <option value="repetition">Répétition</option>
           <option value="formation">Formation</option>
@@ -195,7 +193,7 @@ export default function PageCachets() {
             <div className={styles.main}>
               <span className={styles.date}>{c.date}</span>
               <span className={styles.category}>{c.categorie || "Sans catégorie"}</span>
-              <span className={styles.quantity}>{c.nombre} cachet(s)</span>
+              <span className={styles.quantity}>{c.nombre} cachet{c.nombre > 1 ? 's' : ''}</span>
             </div>
 
             {c.note && <div className={styles.note}>{c.note}</div>}
@@ -217,7 +215,7 @@ export default function PageCachets() {
       </ul>
 
       <p>
-        <strong>Total :</strong> {totalCachets} cachet(s)
+        <strong>Total :</strong> {totalCachets} cachet{totalCachets > 1 ? 's' : ''}
       </p>
     </main>
   );
