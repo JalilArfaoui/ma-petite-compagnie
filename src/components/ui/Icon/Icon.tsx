@@ -1,5 +1,6 @@
 import { Icon as ChakraIcon, IconProps } from "@chakra-ui/react";
+import { StyledIcon } from "./Icon.style";
 
 export const Icon = (props: IconProps) => {
-  return <ChakraIcon {...props} />;
+  return <StyledIcon {...props} />;
 };
