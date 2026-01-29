@@ -3,7 +3,7 @@
   margin: 0 auto;
   padding: 24px;
   font-family: Arial, sans-serif;
-  color: #fff;
+  color: #000;
 }
 
 .container h1 {
@@ -24,6 +24,11 @@
   font-size: 14px;
 }
 
+.container form {
+  color: "red"; 
+  margin-bottom : 8px;
+}
+
 .container form button {
   padding: 8px 16px;
   background-color: #1976d2;
@@ -37,7 +42,7 @@
   background-color: #135ba1;
 }
 
-/* Liste des cachets */
+/* liste des cachets */
 .container .list {
   list-style: none;
   padding: 0;

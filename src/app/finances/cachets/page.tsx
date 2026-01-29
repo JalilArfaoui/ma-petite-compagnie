@@ -20,10 +20,42 @@ export default function PageCachets() {
   const [editId, setEditId] = useState<number | null>(null);
   const [filtreCategorie, setFiltreCategorie] = useState("");
   const [tri, setTri] = useState<"date" | "nombre">("date");
+  const [erreur, setErreur] = useState<string | null>(null);
 
   function ajouterCachet(e: React.FormEvent) {
     e.preventDefault();
-    if (!date) return;
+
+    setErreur(null);
+
+    //validation obligatoire de la date
+    if (!date) {
+      setErreur("La date est obligatoire");
+      return;
+    }
+
+    const today = new Date().toISOString().split("T")[0];
+    if (date > today) {
+      setErreur("La date ne peut pas être dans le futur");
+      return;
+    }
+
+    //pas forcement nécéssaire puisque déjà géré dans le code de l'input, mais mieux vaut être prévoyant
+    if (nombre > 99) {
+      setErreur("Il ne doit pas y avoir plus de 99 cachets dans le même emplacement");
+      return;
+    }
+
+    //validation obligatoire de la catégorie
+    if (!categorie) {
+      setErreur("La catégorie est obligatoire");
+      return;
+    }
+
+    //pas forcement nécéssaire puisque déjà géré dans le code de l'input, mais mieux vaut être prévoyant
+    if (note.length > 200) {
+      setErreur("La note ne peut pas dépasser 200 caractères");
+      return;
+    }
 
     if (editId !== null) {
       //edition cachet
@@ -81,10 +113,16 @@ export default function PageCachets() {
       <h1>Gestion des cachets</h1>
 
       <form onSubmit={ajouterCachet}>
+        {erreur && <div>{erreur}</div>}
         <div>
           <label>Date</label>
           <br />
-          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+          <input
+            type="date"
+            value={date}
+            maxLength={200}
+            onChange={(e) => setDate(e.target.value)}
+          />
         </div>
 
         <div>
@@ -94,6 +132,7 @@ export default function PageCachets() {
             type="number"
             min={1}
             value={nombre}
+            max={99}
             onChange={(e) => setNombre(Number(e.target.value))}
           />
         </div>
@@ -127,6 +166,7 @@ export default function PageCachets() {
               setNombre(1);
               setCategorie("");
               setNote("");
+              setErreur(null);
             }}
           >
             Annuler
@@ -182,7 +222,7 @@ export default function PageCachets() {
       </ul>
 
       <p>
-        <strong>Total :</strong> {totalCachets} cachets
+        <strong>Total :</strong> {totalCachets} cachet(s)
       </p>
     </main>
   );
