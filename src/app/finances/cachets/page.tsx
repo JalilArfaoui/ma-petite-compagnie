@@ -117,11 +117,7 @@ export default function PageCachets() {
         <div>
           <label>Date</label>
           <br />
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-          />
+          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
         </div>
 
         <div>
