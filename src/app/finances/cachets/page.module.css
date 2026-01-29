@@ -25,7 +25,7 @@
 }
 
 .container form {
-  color: #b71c1c;
+  color: #000;
   margin-bottom: 8px;
 }
 
@@ -42,7 +42,6 @@
   background-color: #135ba1;
 }
 
-/* liste des cachets */
 .container .list {
   list-style: none;
   padding: 0;
