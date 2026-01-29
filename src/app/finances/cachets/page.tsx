@@ -12,7 +12,7 @@ const TYPE_CATEGORIE = [
 type Cachet = {
   id: number;
   date: string;
-  nombre: number;
+  montant: number;
   categorie: string;
   note?: string;
 };
@@ -20,12 +20,12 @@ type Cachet = {
 export default function PageCachets() {
   const [cachets, setCachets] = useState<Cachet[]>([]);
   const [date, setDate] = useState("");
-  const [nombre, setNombre] = useState(1);
+  const [montant, setMontant] = useState(1);
   const [categorie, setCategorie] = useState("");
   const [note, setNote] = useState("");
   const [editId, setEditId] = useState<number | null>(null);
   const [filtreCategorie, setFiltreCategorie] = useState("");
-  const [tri, setTri] = useState<"date" | "nombre">("date");
+  const [tri, setTri] = useState<"date" | "montant">("date");
   const [erreur, setErreur] = useState<string | null>(null);
 
   function ajouterCachet(e: React.FormEvent) {
@@ -46,8 +46,8 @@ export default function PageCachets() {
     }
 
     //pas forcement nécéssaire puisque déjà géré dans le code de l'input, mais mieux vaut être prévoyant
-    if (nombre > 999) {
-      setErreur("Il ne doit pas y avoir plus de 999 cachets dans le même emplacement");
+    if (montant < 0) {
+      setErreur("Le montant ne peux pas être négatif");
       return;
     }
 
@@ -56,7 +56,7 @@ export default function PageCachets() {
       setErreur("La catégorie est obligatoire");
       return;
     }
-    
+
     //pas forcement nécéssaire puisque déjà géré dans le code de l'input, mais mieux vaut être prévoyant
     if (note.length > 200) {
       setErreur("La note ne peut pas dépasser 200 caractères");
@@ -66,7 +66,7 @@ export default function PageCachets() {
     if (editId !== null) {
       //edition cachet
       setCachets(
-        cachets.map((c) => (c.id === editId ? { ...c, date, nombre, categorie, note } : c))
+        cachets.map((c) => (c.id === editId ? { ...c, date, montant, categorie, note } : c))
       );
       setEditId(null);
     } else {
@@ -74,7 +74,7 @@ export default function PageCachets() {
       const nouveauCachet: Cachet = {
         id: Date.now(),
         date,
-        nombre,
+        montant,
         categorie,
         note,
       };
@@ -82,7 +82,7 @@ export default function PageCachets() {
     }
 
     setDate("");
-    setNombre(1);
+    setMontant(1);
     setCategorie("");
     setNote("");
   }
@@ -95,7 +95,7 @@ export default function PageCachets() {
   function editerCachet(c: Cachet) {
     setEditId(c.id);
     setDate(c.date);
-    setNombre(c.nombre);
+    setMontant(c.montant);
     setCategorie(c.categorie);
     setNote(c.note || "");
   }
@@ -105,14 +105,14 @@ export default function PageCachets() {
     ? cachets.filter((c) => c.categorie === filtreCategorie)
     : cachets;
 
-  //tri par date de publication ou par nombre de cachets
+  //tri par date de publication ou par montant de cachets
   const cachetsTries = [...cachetsFiltres].sort((a, b) => {
-    if (tri === "date") return a.date.localeCompare(b.date);
-    if (tri === "nombre") return b.nombre - a.nombre;
+    if (tri === "date") return b.date.localeCompare(a.date); //de la date la plus récente à la moins récente
+    if (tri === "montant") return b.montant - a.montant;
     return 0;
   });
 
-  const totalCachets = cachetsFiltres.reduce((acc, c) => acc + c.nombre, 0);
+  const totalCachets = cachetsFiltres.reduce((acc, c) => acc, 0);
 
   return (
     <main className={styles.container}>
@@ -127,14 +127,13 @@ export default function PageCachets() {
         </div>
 
         <div>
-          <label>Nombre de cachets</label>
+          <label>montant du cachet</label>
           <br />
           <input
             type="number"
             min={1}
-            value={nombre}
-            max={999}
-            onChange={(e) => setNombre(Number(e.target.value))}
+            value={montant}
+            onChange={(e) => setMontant(Number(e.target.value))}
           />
         </div>
 
@@ -165,7 +164,7 @@ export default function PageCachets() {
             onClick={() => {
               setEditId(null);
               setDate("");
-              setNombre(1);
+              setMontant(1);
               setCategorie("");
               setNote("");
               setErreur(null);
@@ -188,9 +187,9 @@ export default function PageCachets() {
         </select>
 
         <label>Trier par: </label>
-        <select value={tri} onChange={(e) => setTri(e.target.value as "date" | "nombre")}>
+        <select value={tri} onChange={(e) => setTri(e.target.value as "date" | "montant")}>
           <option value="date">Date</option>
-          <option value="nombre">Nombre de cachets</option>
+          <option value="montant">Montant de cachets</option>
         </select>
       </div>
 
@@ -202,9 +201,7 @@ export default function PageCachets() {
             <div className={styles.main}>
               <span className={styles.date}>{c.date}</span>
               <span className={styles.category}>{c.categorie || "Sans catégorie"}</span>
-              <span className={styles.quantity}>
-                {c.nombre} cachet{c.nombre > 1 ? "s" : ""}
-              </span>
+              <span className={styles.montant}>{c.montant} euros</span>
             </div>
 
             {c.note && <div className={styles.note}>{c.note}</div>}
@@ -224,10 +221,6 @@ export default function PageCachets() {
           </li>
         ))}
       </ul>
-
-      <p>
-        <strong>Total :</strong> {totalCachets} cachet{totalCachets > 1 ? "s" : ""}
-      </p>
     </main>
   );
 }
