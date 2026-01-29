@@ -1,5 +1,6 @@
-import { Text as ChakraText, TextProps } from "@chakra-ui/react";
+import { TextProps } from "@chakra-ui/react";
+import { StyledText } from "./Text.style";
 
 export const Text = (props: TextProps) => {
-  return <ChakraText {...props} />;
+  return <StyledText {...props} />;
 };
