@@ -7,7 +7,6 @@ export const StyledButton = styled(Button)<ButtonProps>`
   color: #ffffff;
   background-color: #d00039;
   border-radius: 20px;
-  border: 1px solid #000000;
   font-family: Georgia;
   font-style: italic;
   font-weight: bold;
