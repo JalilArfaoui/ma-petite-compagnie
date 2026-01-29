@@ -40,8 +40,8 @@ export default function PageCachets() {
     }
 
     //pas forcement nécéssaire puisque déjà géré dans le code de l'input, mais mieux vaut être prévoyant
-    if (nombre > 99) {
-      setErreur("Il ne doit pas y avoir plus de 99 cachets dans le même emplacement");
+    if (nombre > 999) {
+      setErreur("Il ne doit pas y avoir plus de 999 cachets dans le même emplacement");
       return;
     }
 
@@ -120,7 +120,6 @@ export default function PageCachets() {
           <input
             type="date"
             value={date}
-            maxLength={200}
             onChange={(e) => setDate(e.target.value)}
           />
         </div>
@@ -132,7 +131,7 @@ export default function PageCachets() {
             type="number"
             min={1}
             value={nombre}
-            max={99}
+            max={999}
             onChange={(e) => setNombre(Number(e.target.value))}
           />
         </div>
@@ -153,7 +152,7 @@ export default function PageCachets() {
         <div>
           <label>Note</label>
           <br />
-          <input value={note} onChange={(e) => setNote(e.target.value)} />
+          <input value={note} maxLength={200} onChange={(e) => setNote(e.target.value)} />
         </div>
 
         <button type="submit">{editId !== null ? "Mettre à jour" : "Ajouter"}</button>
