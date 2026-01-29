@@ -193,7 +193,9 @@ export default function PageCachets() {
             <div className={styles.main}>
               <span className={styles.date}>{c.date}</span>
               <span className={styles.category}>{c.categorie || "Sans catégorie"}</span>
-              <span className={styles.quantity}>{c.nombre} cachet{c.nombre > 1 ? 's' : ''}</span>
+              <span className={styles.quantity}>
+                {c.nombre} cachet{c.nombre > 1 ? "s" : ""}
+              </span>
             </div>
 
             {c.note && <div className={styles.note}>{c.note}</div>}
@@ -215,7 +217,7 @@ export default function PageCachets() {
       </ul>
 
       <p>
-        <strong>Total :</strong> {totalCachets} cachet{totalCachets > 1 ? 's' : ''}
+        <strong>Total :</strong> {totalCachets} cachet{totalCachets > 1 ? "s" : ""}
       </p>
     </main>
   );
