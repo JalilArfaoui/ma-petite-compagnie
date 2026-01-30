@@ -2,21 +2,17 @@ import {
   creerUnContact,
   supprimerParId,
   trouverParNomContact,
-  mettreAJourContact as mettreAJourContact,
-  ContactInformation,
+  mettreAJourContact,
   supprimerParNomContact as supprimerParNomContact,
 } from "../app/communication/api/contact";
 import { describe, it, expect } from "vitest";
-
-function creerObjetContactAvecNom(nom: string): ContactInformation {
-  return { nom: nom, prenom: "User", email: null, tel: null, role: null };
-}
+import { creerObjetContactAvecNom } from "./testContactUtility";
 
 // Il se peut que les données soit déjà dans la base
 async function creerUnContactAvecNom(nom: string) {
   const created = (await creerUnContact(creerObjetContactAvecNom(nom))).contact;
   if (created == null) {
-    expect(created).toBeDefined();
+    expect.fail("Le contact n'a pas été créé correctement");
     return { id: 1, nom: "", prenom: "" };
   }
   return created;
@@ -51,9 +47,19 @@ describe("Contact", () => {
     expect(updated.nom == "Test3Updated").toBe(true);
     await supprimerParId(updated.id);
   });
-  it("Créer un mauvais contact", async () => {
+  it("Créer un contact sans nom", async () => {
     const result = await creerUnContact(creerObjetContactAvecNom(""));
     expect(result.succes).toBe(false);
+  });
+  it("Créer un contact avec mauvais email", async () => {
+    const result = await creerUnContact({
+      nom: "nom",
+      prenom: "User",
+      email: "prenom.nom",
+      tel: "0011223344",
+      role: "PARTENAIRE",
+    });
+    expect(result.succes, "Le contact a été créé avec un mauvais email").toBe(false);
   });
 });
 /*test("Afficher donnée contact dans une interface", async () => {
