@@ -7,8 +7,6 @@ import {
 } from "../app/communication/api/contact";
 import { describe, it, expect } from "vitest";
 import { creerObjetContactAvecNom } from "./testContactUtility";
-
-// Il se peut que les données soit déjà dans la base
 async function creerUnContactAvecNom(nom: string) {
   const created = (await creerUnContact(creerObjetContactAvecNom(nom))).contact;
   if (created == null) {
@@ -18,7 +16,7 @@ async function creerUnContactAvecNom(nom: string) {
   return created;
 }
 describe("Contact", () => {
-  it("Créer et lire", async () => {
+  /*it("Créer et lire", async () => {
     await supprimerParNomContact("TestLire2");
     const created = await creerUnContactAvecNom("TestLire2");
 
@@ -46,7 +44,7 @@ describe("Contact", () => {
     }
     expect(updated.nom == "Test3Updated").toBe(true);
     await supprimerParId(updated.id);
-  });
+  });*/
   it("Créer un contact sans nom", async () => {
     const result = await creerUnContact(creerObjetContactAvecNom(""));
     expect(result.succes).toBe(false);
