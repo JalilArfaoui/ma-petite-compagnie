@@ -8,7 +8,10 @@ Projet « Techno Web » de la Licence 3 Informatique - Université Jean-Françoi
 
 ## Étudiants - Promotion 2025-2026
 
+<!-- Ajoutez votre nom ci-dessous par ordre alphabétique -->
+
 - [Alexandre Brugerolle](https://github.com/AlexandreB-cmyk) - alexandre.brugerolle@etud.univ-jfc.fr
+- [Enzo Cluzel](https://github.com/enzo2900) - enzo.cluzel10@gmail.com
 - [David Mougel](https://naflows.com) - mougel.david@naflows.com
 - [Dorian Labaste](https://github.com/D0lab) - dorian.labaste@etud.univ-jfc.fr
 - Illia Shuldieshov - shuldeshovwork013@gmail.com
