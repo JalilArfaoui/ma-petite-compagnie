@@ -6,7 +6,7 @@ type CreateEvenementBody = {
     nom: string
     compagnieId: number
     lieuId: number
-    typeId: number
+    categorieId: number
     dateDebut: string
     dateFin: string
 }
@@ -27,12 +27,12 @@ export async function POST(req: NextRequest) {
             nom,
             compagnieId,
             lieuId,
-            typeId,
+            categorieId,
             dateDebut,
             dateFin
         } = body
 
-        if (!nom || !compagnieId || !lieuId || !typeId || !dateDebut || !dateFin) {
+        if (!nom || !compagnieId || !lieuId || !categorieId || !dateDebut || !dateFin) {
             return NextResponse.json(
                 { message: "Des informations sont manquantes, l'évènement ne peux pas être créé." },
                 { status: 400 }
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
                 dateFin: new Date(dateFin),
                 compagnie: { connect: { id: compagnieId } },
                 lieu: { connect: { id: lieuId } },
-                type: { connect: { id: typeId } }
+                categorie: { connect: { id: categorieId } }
             },
             include: { participants: true }
         })
