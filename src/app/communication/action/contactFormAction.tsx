@@ -1,7 +1,8 @@
 "use server";
 
 import { getOrReplace, getRoleFromString } from "../util/typeUtility";
-import { ContactInformation } from "../api/contact";
+import { ContactInformation, creerUnContact } from "../api/contact";
+import { redirect } from "next/navigation";
 /// formulaire communication/[id] page
 function transformFormDataContact(FormData: FormData): ContactInformation {
   return {
@@ -12,7 +13,9 @@ function transformFormDataContact(FormData: FormData): ContactInformation {
     role: getRoleFromString(getOrReplace(FormData.get("role")?.toString(), "")),
   };
 }
+export async function creerContact(FormData: FormData) {
+  const contactData = transformFormDataContact(FormData);
+  const result = await creerUnContact(contactData);
 
-export async function createContact(FormData: FormData) {
-  console.log(transformFormDataContact(FormData));
+  return result;
 }

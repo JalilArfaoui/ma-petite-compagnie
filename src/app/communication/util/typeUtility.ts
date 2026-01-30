@@ -4,7 +4,6 @@ export function getOrReplace<T>(champ: T | null | undefined, replace: T) {
   if (champ === null || champ === undefined) {
     return replace;
   } else {
-    console.log(champ);
     return champ;
   }
 }

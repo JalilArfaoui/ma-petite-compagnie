@@ -1,10 +1,10 @@
 import {
-  createContact,
+  creerUnContact,
   supprimerParId,
-  trouverParNom,
-  mettreAJour,
+  trouverParNomContact,
+  mettreAJourContact as mettreAJourContact,
   ContactInformation,
-  supprimerParNom,
+  supprimerParNomContact as supprimerParNomContact,
 } from "../app/communication/api/contact";
 import { describe, it, expect } from "vitest";
 
@@ -13,8 +13,8 @@ function creerObjetContactAvecNom(nom: string): ContactInformation {
 }
 
 // Il se peut que les données soit déjà dans la base
-async function createAContactWithName(nom: string) {
-  const created = (await createContact(creerObjetContactAvecNom(nom))).contact;
+async function creerUnContactAvecNom(nom: string) {
+  const created = (await creerUnContact(creerObjetContactAvecNom(nom))).contact;
   if (created == null) {
     expect(created).toBeDefined();
     return { id: 1, nom: "", prenom: "" };
@@ -23,26 +23,26 @@ async function createAContactWithName(nom: string) {
 }
 describe("Contact", () => {
   it("Créer et lire", async () => {
-    await supprimerParNom("TestLire2");
-    const created = await createAContactWithName("TestLire2");
+    await supprimerParNomContact("TestLire2");
+    const created = await creerUnContactAvecNom("TestLire2");
 
-    const found = (await trouverParNom("TestLire2")).contact;
+    const found = (await trouverParNomContact("TestLire2")).contact;
     expect(found).toBeDefined();
     expect(found).toStrictEqual(created);
     supprimerParId(created.id);
   });
   it("Supprimer un contact", async () => {
-    await supprimerParNom("Test10");
-    const created = await createAContactWithName("Test10");
+    await supprimerParNomContact("Test10");
+    const created = await creerUnContactAvecNom("Test10");
     await supprimerParId(created.id);
-    const contactTrouve = (await trouverParNom("Test10")).contact;
+    const contactTrouve = (await trouverParNomContact("Test10")).contact;
     expect(contactTrouve).toBeNull();
   });
   it("Mettre à jour un contact", async () => {
-    await supprimerParNom("Test3");
-    await supprimerParNom("Test3Updated");
-    const created = await createAContactWithName("Test3");
-    const updated = (await mettreAJour(created.id, creerObjetContactAvecNom("Test3Updated")))
+    await supprimerParNomContact("Test3");
+    await supprimerParNomContact("Test3Updated");
+    const created = await creerUnContactAvecNom("Test3");
+    const updated = (await mettreAJourContact(created.id, creerObjetContactAvecNom("Test3Updated")))
       .contact;
     if (updated == null) {
       expect(updated).toBeDefined();
@@ -52,8 +52,8 @@ describe("Contact", () => {
     await supprimerParId(updated.id);
   });
   it("Créer un mauvais contact", async () => {
-    const result = await createContact(creerObjetContactAvecNom(""));
-    expect(result.success).toBe(false);
+    const result = await creerUnContact(creerObjetContactAvecNom(""));
+    expect(result.succes).toBe(false);
   });
 });
 /*test("Afficher donnée contact dans une interface", async () => {
