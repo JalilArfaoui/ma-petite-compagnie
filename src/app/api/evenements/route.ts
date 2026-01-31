@@ -56,8 +56,7 @@ export async function POST(req: NextRequest) {
                 compagnie: { connect: { id: compagnieId } },
                 lieu: { connect: { id: lieuId } },
                 categorie: { connect: { id: categorieId } }
-            },
-            include: { participants: true }
+            }
         })
 
         return NextResponse.json(evenement, { status: 201 })
