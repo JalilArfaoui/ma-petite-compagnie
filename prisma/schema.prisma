@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Spectacle {
-  id Int @id
+  id Int @id @default(autoincrement())
   description String?
   type String
   statut String
