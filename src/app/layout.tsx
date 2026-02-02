@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Provider } from "@/components/ui/provider";
 import "./globals.css";
 import { Providers } from "./providers";
+import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: "Ma Petite Compagnie",
@@ -14,9 +15,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html suppressHydrationWarning lang="fr">
+    <html lang="fr">
       <body>
-        <Provider>{children}</Provider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

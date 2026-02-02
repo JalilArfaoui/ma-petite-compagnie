@@ -1,15 +1,15 @@
-"use client";
+"use client"
 
-import { toaster } from "@/components/ui/Toast/toaster";
+import { toaster } from "@/components/ui/Toast/toaster"
 
 // Define a compatible interface for the Toast options
 export interface UseToastOptions {
-  title?: React.ReactNode;
-  description?: React.ReactNode;
-  status?: "info" | "warning" | "success" | "error" | "loading";
-  duration?: number;
-  isClosable?: boolean;
-  id?: string;
+  title?: React.ReactNode
+  description?: React.ReactNode
+  status?: "info" | "warning" | "success" | "error" | "loading"
+  duration?: number
+  isClosable?: boolean
+  id?: string
 }
 
 /**
@@ -21,10 +21,10 @@ export const useToast = () => {
     return toaster.create({
       title: options.title,
       description: options.description,
-      type: options.status,
+      type: options.status, 
       duration: options.duration,
       closable: options.isClosable,
-      id: options.id,
-    });
-  };
-};
+      id: options.id
+    })
+  }
+}

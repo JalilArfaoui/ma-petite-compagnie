@@ -1,4 +1,7 @@
-import { Popover as ChakraPopover, PopoverRootProps } from "@chakra-ui/react";
+import {
+  Popover as ChakraPopover,
+  PopoverRootProps,
+} from '@chakra-ui/react';
 
 export const Popover = (props: PopoverRootProps) => {
   return <ChakraPopover.Root {...props} />;

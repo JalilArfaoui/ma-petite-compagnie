@@ -1,4 +1,4 @@
-import { List as ChakraList, ListRootProps } from "@chakra-ui/react";
+import { List as ChakraList, ListRootProps } from '@chakra-ui/react';
 
 export const List = (props: ListRootProps) => {
   return <ChakraList.Root {...props} />;

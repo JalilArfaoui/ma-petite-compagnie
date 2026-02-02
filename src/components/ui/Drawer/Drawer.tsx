@@ -7,7 +7,7 @@ import {
   DrawerContent,
   DrawerCloseTrigger,
   type DrawerRootProps,
-} from "@chakra-ui/react";
+} from '@chakra-ui/react';
 
 export const Drawer = (props: DrawerRootProps) => {
   return <ChakraDrawer {...props} />;
