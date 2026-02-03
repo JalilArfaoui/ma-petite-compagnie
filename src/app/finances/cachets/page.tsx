@@ -36,6 +36,7 @@ export default function PageCachets() {
   const [categorie, setCategorie] = useState("");
   const [note, setNote] = useState("");
   const [editId, setEditId] = useState<number | null>(null);
+  const [filtreMembre, setFiltreMembre] = useState("");
   const [filtreCategorie, setFiltreCategorie] = useState("");
   const [tri, setTri] = useState<"date" | "montant">("date");
   const [erreur, setErreur] = useState<string | null>(null);
@@ -116,22 +117,26 @@ export default function PageCachets() {
     setNote(c.note || "");
   }
 
-  //filtrage par catégorie
-  const cachetsFiltres = filtreCategorie
-    ? cachets.filter((c) => c.categorie === filtreCategorie)
+  const membresFiltres = MEMBRES_TROUPE.filter((m) => //pour champ de recherche uniquement
+    m.toLowerCase().includes(membreSearch.toLowerCase()));
+
+  //filtrage par membre (prioritaire)
+  const cachetsFiltresParMembre = filtreMembre
+    ? cachets.filter((c) => c.membre === filtreMembre)
     : cachets;
 
-  //filtrage par membre
-  const membresFiltres = MEMBRES_TROUPE.filter((m) =>
-    m.toLowerCase().includes(membreSearch.toLowerCase())
-  );
+  //filtrage par catégorie (agit uniquement sur cachets de membre x)
+  const cachetsFiltres = filtreCategorie
+    ? cachetsFiltresParMembre.filter((c) => c.categorie === filtreCategorie)
+    : cachetsFiltresParMembre;
 
-  //tri par date de publication ou par montant de cachets
+  //filtrage par date (décroissant) ou montant (décroissant), (agit uniquement sur cachets de membre x)
   const cachetsTries = [...cachetsFiltres].sort((a, b) => {
-    if (tri === "date") return b.date.localeCompare(a.date); //de la date la plus récente à la moins récente
+    if (tri === "date") return b.date.localeCompare(a.date);
     if (tri === "montant") return b.montant - a.montant;
     return 0;
   });
+
 
   return (
     <main className={styles.container}>
@@ -232,6 +237,17 @@ export default function PageCachets() {
       </form>
 
       <div>
+        <label>Filtrer par membre: </label>
+          <select value={filtreMembre} onChange={(e) => setFiltreMembre(e.target.value)}>
+            <option value="">Tous les membres</option>
+            {MEMBRES_TROUPE.map((nom) => (
+              <option key={nom} value={nom}>
+                {nom}
+              </option>
+            ))}
+          </select>
+
+
         <label>Filtrer par catégorie: </label>
         <select value={filtreCategorie} onChange={(e) => setFiltreCategorie(e.target.value)}>
           <option value="">Toutes</option>
