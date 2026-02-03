@@ -2,7 +2,7 @@
 import type { Lieu } from "@/types/lieu";
 import { useState } from "react";
 import { Field } from "@chakra-ui/react";
-import { Input } from "@/components/ui";
+import {Button, Input} from "@/components/ui";
 
 type Props = {
   onSuccess: (lieu: Lieu) => void;
@@ -86,13 +86,13 @@ export function CreateLieuForm({ onSuccess, onCancel }: Props) {
           <Input type="text" value={numeroSalle} onChange={(e) => setNumeroSalle(e.target.value)} />
         </Field.Root>
       </div>
-      <button type="submit" disabled={!libelle || !adresse || !ville}>
+      <Button type="submit" disabled={!libelle || !adresse || !ville}>
         Créer
-      </button>
+      </Button>
 
-      <button type="button" onClick={onCancel}>
+      <Button type="button" onClick={onCancel}>
         Annuler
-      </button>
+      </Button>
     </form>
   );
 }
