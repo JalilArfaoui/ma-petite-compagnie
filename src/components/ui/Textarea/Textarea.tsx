@@ -1,5 +1,7 @@
-import { Textarea as ChakraTextarea, TextareaProps } from "@chakra-ui/react";
+import { TextareaProps } from "@chakra-ui/react";
+
+import { StyledTextarea } from "./Textarea.style";
 
 export const Textarea = (props: TextareaProps) => {
-  return <ChakraTextarea {...props} />;
+  return <StyledTextarea {...props} />;
 };
