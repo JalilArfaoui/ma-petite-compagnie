@@ -20,14 +20,11 @@ import {
   Stack,
   Text,
   Icon,
-  Icon,
 } from "@/components/ui";
-import { FaHome } from "react-icons/fa";
 import { FaHome } from "react-icons/fa";
 
 export default function Home() {
   return (
-    <Container maxW="container.xl" py={10} px={10}>
     <Container maxW="container.xl" py={10} px={10}>
       <Stack gap={10}>
         <Box textAlign="center">
@@ -143,7 +140,6 @@ export default function Home() {
           </Heading>
           <SimpleGrid columns={[1, null, 2]} gap={6}>
             <Card title="Buttons">
-            <Card title="Buttons">
               <Card.Body>
                 <Stack direction="row" gap={4}>
                   <Button variant="solid" colorPalette="blue">
@@ -160,7 +156,6 @@ export default function Home() {
               </Card.Body>
             </Card>
             <Card title="Links">
-            <Card title="Links">
               <Card.Body>
                 <Stack gap={2}>
                   <Link href="#">Standard Link</Link>
@@ -175,7 +170,6 @@ export default function Home() {
             Forms & Inputs
           </Heading>
           <Stack gap={6}>
-            <Card title="Inputs">
             <Card title="Inputs">
               <Card.Body>
                 <SimpleGrid columns={[1, null, 2]} gap={8}>
@@ -231,7 +225,6 @@ export default function Home() {
           <Stack gap={6}>
             <SimpleGrid columns={[1, null, 2]} gap={6}>
               <Card title="Badges">
-              <Card title="Badges">
                 <Card.Body>
                   <Stack direction="row" gap={2}>
                     <Badge>Defaut</Badge>
@@ -246,7 +239,6 @@ export default function Home() {
                   </Stack>
                 </Card.Body>
               </Card>
-              <Card title="Alerts">
               <Card title="Alerts">
                 <Card.Body>
                   <Stack gap={4}>
@@ -276,7 +268,6 @@ export default function Home() {
             </SimpleGrid>
 
             <Card title="Table">
-            <Card title="Table">
               <Card.Body>
                 <Table variant="line">
                   <Table.Head>
@@ -299,7 +290,6 @@ export default function Home() {
               </Card.Body>
             </Card>
 
-            <Card title="List">
             <Card title="List">
               <Card.Body>
                 <List gap={3}>
