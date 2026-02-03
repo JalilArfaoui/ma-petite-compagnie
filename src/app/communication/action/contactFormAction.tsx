@@ -2,7 +2,6 @@
 
 import { getOrReplace, getRoleFromString } from "../util/typeUtility";
 import { ContactInformation, creerUnContact } from "../api/contact";
-import { redirect } from "next/navigation";
 /// formulaire communication/[id] page
 function transformFormDataContact(FormData: FormData): ContactInformation {
   return {

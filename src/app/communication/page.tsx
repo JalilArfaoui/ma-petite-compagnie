@@ -24,6 +24,7 @@ import {
   Text,
 } from "@/components/ui";
 import { Contact } from "@prisma/client";
+import { obtenirContacts, supprimerContact } from "./action/contactAction";
 
 export default function ContactPage() {
   const arrayContact: Contact[] = [];
@@ -31,13 +32,25 @@ export default function ContactPage() {
   const [selected, setSelected] = useState(arrayContact);
   useEffect(() => {
     async function loadContact() {
-      const request = await fetch("http://localhost:3000/communication/api/contact/");
-      const contacts = await request.json();
+      const contacts = (await obtenirContacts()).contact;
+      if (!contacts) {
+        setContacts([]);
+        return;
+      }
       setContacts(contacts);
     }
     loadContact();
   }, []);
 
+  function supprimerContacts() {
+    selected.forEach((c) => {
+      supprimerContact(c.id);
+    });
+    setContacts((prev) => {
+      return prev.filter((c) => !selected.includes(c));
+    });
+    deselectAll();
+  }
   function updateSelected(contact: Contact) {
     setSelected((prev) => {
       if (prev.includes(contact)) {
@@ -49,13 +62,13 @@ export default function ContactPage() {
   }
 
   function selectAll() {
-    setSelected((prev) => {
+    setSelected(() => {
       return contacts;
     });
   }
 
   function deselectAll() {
-    setSelected((prev) => {
+    setSelected(() => {
       return [];
     });
   }
@@ -65,7 +78,7 @@ export default function ContactPage() {
         Page de contact
       </Heading>
       <Stack direction="row" gap={4}>
-        <Button variant="solid" colorPalette="blue">
+        <Button variant="solid" colorPalette="blue" onClick={() => supprimerContacts()}>
           Supprimer
         </Button>
         <Button variant="solid" colorPalette="blue" onClick={() => selectAll()}>
