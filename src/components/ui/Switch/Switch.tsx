@@ -1,4 +1,13 @@
-import { Switch as ChakraSwitch, SwitchRootProps } from "@chakra-ui/react";
+"use client";
+
+import * as React from "react";
+import { Switch as ChakraSwitch, type SwitchRootProps } from "@chakra-ui/react";
+import {
+  StyledSwitchRoot,
+  StyledSwitchControl,
+  StyledSwitchThumb,
+  StyledSwitchLabel,
+} from "./Switch.style";
 
 export interface SwitchProps extends SwitchRootProps {
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
@@ -8,12 +17,12 @@ export interface SwitchProps extends SwitchRootProps {
 export const Switch = (props: SwitchProps) => {
   const { children, inputProps, rootRef, ...rest } = props;
   return (
-    <ChakraSwitch.Root ref={rootRef} {...rest}>
+    <StyledSwitchRoot ref={rootRef} {...rest}>
       <ChakraSwitch.HiddenInput {...inputProps} />
-      <ChakraSwitch.Control>
-        <ChakraSwitch.Thumb />
-      </ChakraSwitch.Control>
-      {children && <ChakraSwitch.Label>{children}</ChakraSwitch.Label>}
-    </ChakraSwitch.Root>
+      <StyledSwitchControl>
+        <StyledSwitchThumb />
+      </StyledSwitchControl>
+      {children && <StyledSwitchLabel>{children}</StyledSwitchLabel>}
+    </StyledSwitchRoot>
   );
 };

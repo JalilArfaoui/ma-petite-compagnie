@@ -1,14 +1,10 @@
 import { ComponentProps } from "react";
-import {
-  Input as ChakraInput,
-  InputGroup,
-  InputElement,
-  InputAddon,
-  InputProps,
-} from "@chakra-ui/react";
+import { InputGroup, InputElement, InputAddon, InputProps } from "@chakra-ui/react";
+
+import { StyledInput } from "./Input.style";
 
 export const Input = (props: InputProps) => {
-  return <ChakraInput {...props} />;
+  return <StyledInput {...props} />;
 };
 
 const LeftElement = (props: ComponentProps<typeof InputElement>) => (

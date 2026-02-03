@@ -1,5 +1,6 @@
-import { Badge as ChakraBadge, BadgeProps } from "@chakra-ui/react";
+import { BadgeProps } from "@chakra-ui/react";
+import { StyledBadge } from "./Badge.style";
 
 export const Badge = (props: BadgeProps) => {
-  return <ChakraBadge {...props} />;
+  return <StyledBadge {...props} />;
 };
