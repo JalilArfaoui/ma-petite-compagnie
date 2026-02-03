@@ -2,7 +2,7 @@
   description = "Ma Petite Compagnie - Application de gestion pour compagnie de théâtre";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
 
   outputs = { self, nixpkgs }:
@@ -21,9 +21,13 @@
               nodejs_22
               nodePackages.npm
               openssl
+              prisma-engines
             ];
 
             shellHook = ''
+              export PRISMA_SCHEMA_ENGINE_BINARY="${pkgs.prisma-engines}/bin/schema-engine"
+              export PRISMA_QUERY_ENGINE_BINARY="${pkgs.prisma-engines}/bin/query-engine"
+              export PRISMA_QUERY_ENGINE_LIBRARY="${pkgs.prisma-engines}/lib/libquery_engine.node"
               echo "Ma Petite Compagnie - Dev environment ready"
               echo "Node $(node --version) | npm $(npm --version)"
             '';
