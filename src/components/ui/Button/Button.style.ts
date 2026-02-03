@@ -1,3 +1,5 @@
+"use client";
+
 import { Button, ButtonProps } from "@chakra-ui/react";
 import styled, { css } from "styled-components";
 
