@@ -26,8 +26,6 @@ async function createSpectacle(formData: FormData) {
 }
 
 export default async function ProductionPage() {
-
-
   const spectacles = await prisma.spectacle.findMany({
     orderBy: { id: "desc" },
     take: 10,
@@ -35,7 +33,6 @@ export default async function ProductionPage() {
 
   return (
     <div>
-
       <h2>Ajouter un spectacle</h2>
       <form action={createSpectacle}>
         <input type="text" name="description" placeholder="Description" />
