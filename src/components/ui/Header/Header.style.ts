@@ -8,7 +8,8 @@ export const StyledHeader = styled(Box)`
   padding-top: 1rem;
   padding-bottom: 1rem;
   padding-left: 30px;
-  background-color: #fffcf5;
+  padding-right: 30px;
+  background-color: #fffbef;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 `;
 
@@ -26,6 +27,7 @@ export const TicketLogo = styled(Box)`
   align-items: center;
   justify-content: center;
   color: #c02626;
+  transform: rotate(-7grad);
 `;
 
 export const LogoText = styled(Heading)`
