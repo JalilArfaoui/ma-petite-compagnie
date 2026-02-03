@@ -1,6 +1,14 @@
 import { Table as ChakraTable } from "@chakra-ui/react";
+import {
+  StyledTableRoot,
+  StyledTableBody,
+  StyledTableRow,
+  StyledTableHeader,
+  StyledTableColumnHeader,
+  StyledTableCell,
+} from "./Table.style";
 
-export const Table = ChakraTable.Root as typeof ChakraTable.Root & {
+export const Table = StyledTableRoot as unknown as typeof ChakraTable.Root & {
   Container: typeof ChakraTable.ScrollArea;
   Head: typeof ChakraTable.Header;
   Body: typeof ChakraTable.Body;
@@ -12,10 +20,10 @@ export const Table = ChakraTable.Root as typeof ChakraTable.Root & {
 };
 
 Table.Container = ChakraTable.ScrollArea;
-Table.Head = ChakraTable.Header;
-Table.Body = ChakraTable.Body;
+Table.Head = StyledTableHeader;
+Table.Body = StyledTableBody;
 Table.Foot = ChakraTable.Footer;
-Table.Row = ChakraTable.Row;
-Table.Header = ChakraTable.ColumnHeader;
-Table.Cell = ChakraTable.Cell;
+Table.Row = StyledTableRow;
+Table.Header = StyledTableColumnHeader;
+Table.Cell = StyledTableCell;
 Table.Caption = ChakraTable.Caption;
