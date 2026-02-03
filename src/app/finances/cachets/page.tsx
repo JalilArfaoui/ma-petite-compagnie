@@ -111,7 +111,7 @@ export default function PageCachets() {
     if (tri === "montant") return b.montant - a.montant;
     return 0;
   });
-  
+
   return (
     <main className={styles.container}>
       <h1>Gestion des cachets</h1>
