@@ -38,6 +38,27 @@ export default function ContactPage() {
     loadContact();
   }, []);
 
+  function updateSelected(contact: Contact) {
+    setSelected((prev) => {
+      if (prev.includes(contact)) {
+        return prev.filter((c) => c !== contact);
+      } else {
+        return [...prev, contact];
+      }
+    });
+  }
+
+  function selectAll() {
+    setSelected((prev) => {
+      return contacts;
+    });
+  }
+
+  function deselectAll() {
+    setSelected((prev) => {
+      return [];
+    });
+  }
   return (
     <main>
       <Heading as="h1" size="2xl" mb={4}>
@@ -47,10 +68,10 @@ export default function ContactPage() {
         <Button variant="solid" colorPalette="blue">
           Supprimer
         </Button>
-        <Button variant="solid" colorPalette="blue">
+        <Button variant="solid" colorPalette="blue" onClick={() => selectAll()}>
           Tout sélectionner
         </Button>
-        <Button variant="solid" colorPalette="blue">
+        <Button variant="solid" onClick={() => deselectAll()} colorPalette="blue">
           Tout délésectionner
         </Button>
         <Button variant="solid" colorPalette="blue">
@@ -64,13 +85,7 @@ export default function ContactPage() {
             clicked={selected.find((a) => a == contact) != undefined}
             key={contact.id}
             onClick={() => {
-              setSelected((prev) => {
-                if (prev.includes(contact)) {
-                  return prev.filter((c) => c !== contact);
-                } else {
-                  return [...prev, contact];
-                }
-              });
+              updateSelected(contact);
             }}
             contact={contact}
           ></ContactCard>
