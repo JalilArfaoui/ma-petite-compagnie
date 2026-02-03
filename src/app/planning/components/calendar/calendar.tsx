@@ -2,30 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import MonthlyTile from './tiles/monthly-tile';
 import CreateEventAction from '../actions/create-event';
-import {
-  Alert,
-  Badge,
-  Button,
-  Card,
-  Checkbox,
-  Input,
-  Link,
-  List,
-  Radio,
-  RadioGroup,
-  Switch,
-  Table,
-  Textarea,
-  Heading,
-  Box,
-  Container,
-  Stack,
-  Text,
-  Icon,
-  SearchBar,
-} from "@/components/ui";
 
-export type EvenementBuiltInt = {
+export type Evenement = {
     id: number;
     nom: string;
     compagnieId: number;
@@ -46,15 +24,12 @@ export type CalendarDay = {
 
 
 
-
-
 interface EventCalendarProps {
     events: Evenement[];
     onEventClick?: (event: Evenement) => void;
 }
 
-
-const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick } : EventCalendarProps) => {
+const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }) => {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [calendarDays, setCalendarDays] = useState<CalendarDay[]>([]);
     const [viewType, setViewType] = useState<'monthly' | 'weekly'>('monthly');
@@ -63,7 +38,19 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick } : Event
     const month = currentDate.getMonth() + 1; // 1-12
     const daysInMonth = new Date(year, month, 0).getDate();
 
+    const WEEKDAYS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi','Dimanche'];
+    const MONTHS = [
+        'Janvier', 'Fevrier', 'Mars', 'Avril', 'Mai', 'Juin',
+        'Juillet', 'Aout', 'Septembre', 'Octobre', 'Novembre', 'Decembre'
+    ];
 
+    // Check if an event occurs on a specific day
+    const isEventOnDay = (event: Evenement, dayTimestamp: number): boolean => {
+        const dayStart = new Date(dayTimestamp).setHours(0, 0, 0, 0);
+        const dayEnd = new Date(dayTimestamp).setHours(23, 59, 59, 999);
+        
+        return (event.dateDebut <= dayEnd && event.dateFin >= dayStart);
+    };
 
     // Get events for a specific day
     const getEventsForDay = (day: number, month: number, year: number): Evenement[] => {
@@ -100,8 +87,7 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick } : Event
                     events: getEventsForDay(day.getDate(), day.getMonth() + 1, day.getFullYear())
                 });
             }
-        
-
+            
             setCalendarDays(arr);
             return;
         }
@@ -150,11 +136,36 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick } : Event
         setCalendarDays(arr);
     }, [currentDate, events, month, year, daysInMonth, viewType]);
 
+    const goToPreviousMonth = () => {
+        if (viewType === 'weekly') {
+            const prevWeekDate = new Date(currentDate);
+            prevWeekDate.setDate(currentDate.getDate() - 7);
+            setCurrentDate(prevWeekDate);
+            return;
+        }
+        setCurrentDate(new Date(year, month - 2, 1));
+    };
+
+    const goToNextMonth = () => {
+        if (viewType === 'weekly') {
+            const nextWeekDate = new Date(currentDate);
+            nextWeekDate.setDate(currentDate.getDate() + 7);
+            setCurrentDate(nextWeekDate);
+            return;
+        }
+        setCurrentDate(new Date(year, month, 1));
+    };
 
     const goToToday = () => {
         setCurrentDate(new Date());
     };
 
+    const isToday = (day: CalendarDay): boolean => {
+        const today = new Date();
+        return day.day === today.getDate() &&
+               day.month === today.getMonth() + 1 &&
+               day.year === today.getFullYear();
+    };
 
     const ref = React.useRef<HTMLDivElement>(null);
     const [globalSlotsHeight, setGlobalSlotsHeight] = useState(0);
@@ -169,45 +180,73 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick } : Event
         }
     }, [viewType]);
 
-    useHandleResize({ ref, setGlobalSlotsHeight });
+    // Si on ajuste la taille de la fenêtre, on recalcule la hauteur des slots horaires
+    useEffect(() => {
+        const handleResize = () => {
+            if (ref.current) {
+                setGlobalSlotsHeight(
+                    (ref.current.clientHeight) / 24 
+                );
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
 
 
     return (
-        <div className="event-calendar">
-            <div className="calendar-header">
-                <Button variant="solid" onClick={goToPreviousMonth}>
-                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
-                        <path d="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z"/>
-                    </svg>
-                </Button>
+            <div className="event-calendar">
+                <div className="calendar-header">
+                    <button onClick={goToPreviousMonth} className="nav-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z"/></svg>
+                    </button>
+                    
+                    <div className="header-center">
+                        <h2 className="month-year">{MONTHS[month - 1]} {year}</h2>
+                        <button onClick={goToToday} className="today-button">
+                            Today
+                        </button>
+                    </div>
 
-                <div className="header-center">
-                    <Heading as="h1" className="month-year">{MONTHS[month - 1]} {year}</Heading>
-                    <Button variant="outline" onClick={goToToday} >
-                        <Heading as="h5"> Aujourd'hui
-                        </Heading>
-                    </Button>
+                    <div>
+                        
+                    </div>
+                    <button onClick={() => {
+                        setViewType(viewType === 'monthly' ? 'weekly' : 'monthly');
+                    }}>
+                        {viewType === 'monthly' ? 'Weekly View' : 'Monthly View'}
+                        
+                    </button>
+                    <button>
+                        {viewType === 'monthly' ? 'Monthly View' : 'Weekly View'}
+                    </button>
+                    <button onClick={goToNextMonth} className="nav-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/></svg>
+                    </button>
                 </div>
-
-                <div className="buttons-container">
-                    <Button variant="outline" onClick={() => setViewType(viewType === 'monthly' ? 'weekly' : 'monthly')} >
-                        {viewType === 'monthly' ? 'Semaine' : 'Mois'}
-                    </Button>
-                    <Button variant="solid" onClick={goToNextMonth}>
-                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
-                            <path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/>
-                        </svg>
-                    </Button>
-                </div>
-            </div>
+                
 
                 <div className="calendar">
                     <CreateEventAction />
                     <div className="calendar-content">
-                        <WeeklyTimeSlots viewType ={viewType} />
+                        {
+                            viewType === 'weekly' && (
+                                <div className="time-slots" ref={ref}>
+                                    {Array.from({ length: 24 }, (_, i) => (
+                                        <div key={i} className="time-slot">
+                                            {i}:00
+                                        </div>
+                                    ))}
+                                </div>
+                            )
+                        }
                         <div className="calendar-grid">
                             <div className="weekdays-container">
-                                {weekdays.map(day => (
+                                {WEEKDAYS.map(day => (
                                     <div key={day} className="weekday-header">
                                         {day}
                                     </div>
@@ -215,20 +254,31 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick } : Event
                             </div>
 
                                 <div className='days'>
-                                    <TimeSlotsOverlay viewType={viewType} globalSlotsHeight={globalSlotsHeight} />
+                                    {
+                                        viewType === 'weekly' && 
+                                                Array.from({ length: 24 }, (_, i) => (
+                                                    <div key={i} className="time-slot-overlay" style={{
+                                                        top: `calc(50px + ${i*globalSlotsHeight}px)`,
+                                                    }}>
+                                                    </div>
+                                                ))
+                                        
+                                    }
 
 
                                     {calendarDays.map((calDay, index) => {
-                                        return (
-                                            <MonthlyTile 
-                                                key={index}
-                                                calDay={calDay}
-                                                index={index}
-                                                onEventClick={onEventClick}
-                                                viewType={viewType}
-                                                slotHeight={globalSlotsHeight}
-                                            />
-                                        )
+                                
+                                    return (
+                                        <MonthlyTile 
+                                            key={index}
+                                            calDay={calDay}
+                                            index={index}
+                                            onEventClick={onEventClick}
+                                            isToday={isToday(calDay)}
+                                            viewType={viewType}
+                                            slotHeight={globalSlotsHeight}
+                                        />
+                                    )
                                     })}
                                 </div>
                         </div>
