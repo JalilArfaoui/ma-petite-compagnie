@@ -10,6 +10,6 @@ describe("Home", () => {
         <Home />
       </Provider>
     );
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Ma Petite Compagnie");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Gérez votre troupe");
   });
 });
