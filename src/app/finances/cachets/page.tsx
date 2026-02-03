@@ -117,8 +117,11 @@ export default function PageCachets() {
     setNote(c.note || "");
   }
 
-  const membresFiltres = MEMBRES_TROUPE.filter((m) => //pour champ de recherche uniquement
-    m.toLowerCase().includes(membreSearch.toLowerCase()));
+  const membresFiltres = MEMBRES_TROUPE.filter(
+    (
+      m //pour champ de recherche uniquement
+    ) => m.toLowerCase().includes(membreSearch.toLowerCase())
+  );
 
   //filtrage par membre (prioritaire)
   const cachetsFiltresParMembre = filtreMembre
@@ -136,7 +139,6 @@ export default function PageCachets() {
     if (tri === "montant") return b.montant - a.montant;
     return 0;
   });
-
 
   return (
     <main className={styles.container}>
@@ -238,15 +240,14 @@ export default function PageCachets() {
 
       <div>
         <label>Filtrer par membre: </label>
-          <select value={filtreMembre} onChange={(e) => setFiltreMembre(e.target.value)}>
-            <option value="">Tous les membres</option>
-            {MEMBRES_TROUPE.map((nom) => (
-              <option key={nom} value={nom}>
-                {nom}
-              </option>
-            ))}
-          </select>
-
+        <select value={filtreMembre} onChange={(e) => setFiltreMembre(e.target.value)}>
+          <option value="">Tous les membres</option>
+          {MEMBRES_TROUPE.map((nom) => (
+            <option key={nom} value={nom}>
+              {nom}
+            </option>
+          ))}
+        </select>
 
         <label>Filtrer par catégorie: </label>
         <select value={filtreCategorie} onChange={(e) => setFiltreCategorie(e.target.value)}>
