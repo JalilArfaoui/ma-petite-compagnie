@@ -142,15 +142,27 @@ export default function Home() {
             <Card title="Buttons">
               <Card.Body>
                 <Stack direction="row" gap={4}>
-                  <Button variant="solid" colorPalette="blue">
-                    Primary
-                  </Button>
-                  <Button variant="outline">Secondary</Button>
+                  <Button variant="solid">Solid</Button>
+                  <Button variant="outline">Outline</Button>
                   <Button variant="solid" icon={<FaHome />} iconSide="right">
                     Icon Right
                   </Button>
                   <Button variant="outline" icon={<FaHome />} iconSide="left">
                     Icon Left
+                  </Button>
+                </Stack>
+                <Stack direction="row" gap={4}>
+                  <Button variant="solid" size="sm">
+                    Small
+                  </Button>
+                  <Button variant="outline" size="md">
+                    Medium
+                  </Button>
+                  <Button variant="solid" size="lg">
+                    Large
+                  </Button>
+                  <Button variant="outline" size="xl">
+                    Extra Large
                   </Button>
                 </Stack>
               </Card.Body>

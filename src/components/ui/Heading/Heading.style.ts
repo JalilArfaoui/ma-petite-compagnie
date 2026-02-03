@@ -1,6 +1,6 @@
 "use client";
 
-import { Heading as ChakraHeading, Heading, HeadingProps } from "@chakra-ui/react";
+import { Heading, HeadingProps } from "@chakra-ui/react";
 import styled, { css } from "styled-components";
 
 export const StyledHeading = styled(Heading)<HeadingProps>`
@@ -8,6 +8,8 @@ export const StyledHeading = styled(Heading)<HeadingProps>`
   font-family: Georgia;
   font-weight: bold;
   font-size: 110px;
+  line-height: 0.9;
+  margin: 0;
 
   ${(props) =>
     props.as === "h2" &&
@@ -16,6 +18,7 @@ export const StyledHeading = styled(Heading)<HeadingProps>`
       font-family: Georgia;
       font-weight: bold;
       font-style: italic;
+      font-size: 110px;
     `}
 
   ${(props) =>
