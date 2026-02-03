@@ -1,6 +1,6 @@
 "use client";
 
-import {Heading, HeadingProps } from "@chakra-ui/react";
+import { Heading, HeadingProps } from "@chakra-ui/react";
 import styled, { css } from "styled-components";
 
 export const StyledHeading = styled(Heading)<HeadingProps>`
