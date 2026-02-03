@@ -64,7 +64,7 @@ export async function trouverParIdContact(id: number) {
 export async function trouverParNomContact(nom: string) {
   return resultOf(true, "", await prisma.contact.findFirst({ where: { nom: nom } }));
 }
-export async function ObtenirBeaucoupContact() {
+export async function obtenirBeaucoupContact() {
   return resultOf(true, "", await prisma.contact.findMany());
 }
 
