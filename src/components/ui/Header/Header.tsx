@@ -1,3 +1,5 @@
+"use client";
+
 import { Button, Container, Link, Stack } from "@/components/ui";
 import { LuTicket } from "react-icons/lu";
 import { Link as RouterLink } from "@chakra-ui/react";
@@ -6,7 +8,7 @@ import { LuLogIn } from "react-icons/lu";
 
 export const Header = () => {
   return (
-    <StyledHeader as="header">
+    <StyledHeader>
       <Container maxW="container.xl">
         <Stack direction="row" align="center" justify="space-between">
           {/* Logo Section */}

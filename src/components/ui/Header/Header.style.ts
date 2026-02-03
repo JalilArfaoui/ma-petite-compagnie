@@ -1,7 +1,9 @@
+"use client";
+
 import { Box, Heading, Link, Button } from "@chakra-ui/react";
 import styled from "styled-components";
 
-export const StyledHeader = styled(Box)`
+export const StyledHeader = styled.header`
   position: sticky;
   top: 0;
   z-index: 100;
