@@ -1,5 +1,6 @@
-import { Button as ChakraButton, ButtonProps } from '@chakra-ui/react';
+import { Button as ChakraButton, ButtonProps } from "@chakra-ui/react";
+import { StyledButton } from "./Button.style";
 
 export const Button = (props: ButtonProps) => {
-  return <ChakraButton {...props} />;
+  return <StyledButton {...props} />;
 };

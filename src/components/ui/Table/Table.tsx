@@ -1,4 +1,4 @@
-import { Table as ChakraTable } from '@chakra-ui/react';
+import { Table as ChakraTable } from "@chakra-ui/react";
 
 export const Table = ChakraTable.Root as typeof ChakraTable.Root & {
   Container: typeof ChakraTable.ScrollArea;
@@ -19,5 +19,3 @@ Table.Row = ChakraTable.Row;
 Table.Header = ChakraTable.ColumnHeader;
 Table.Cell = ChakraTable.Cell;
 Table.Caption = ChakraTable.Caption;
-
-
