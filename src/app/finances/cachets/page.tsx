@@ -9,8 +9,17 @@ const TYPE_CATEGORIE = [
   { value: "autre", label: "Autre" },
 ] as const;
 
+const MEMBRES_TROUPE = [
+  "Alice Dupont",
+  "Bernard Martin",
+  "Claire Durand",
+  "David Lefevre",
+  "Emma Moreau",
+];
+
 type Cachet = {
   id: number;
+  membre: string;
   date: string;
   montant: number;
   categorie: string;
@@ -19,6 +28,9 @@ type Cachet = {
 
 export default function PageCachets() {
   const [cachets, setCachets] = useState<Cachet[]>([]);
+  const [membre, setMembre] = useState("");
+  const [membreSearch, setMembreSearch] = useState("");
+  const [membreOpen, setMembreOpen] = useState(false); //liste membres affichée ou pas
   const [date, setDate] = useState("");
   const [montant, setMontant] = useState(1);
   const [categorie, setCategorie] = useState("");
@@ -73,6 +85,7 @@ export default function PageCachets() {
       //ajout cachet
       const nouveauCachet: Cachet = {
         id: Date.now(),
+        membre,
         date,
         montant,
         categorie,
@@ -81,6 +94,7 @@ export default function PageCachets() {
       setCachets([...cachets, nouveauCachet]);
     }
 
+    setMembre("");
     setDate("");
     setMontant(1);
     setCategorie("");
@@ -94,6 +108,8 @@ export default function PageCachets() {
 
   function editerCachet(c: Cachet) {
     setEditId(c.id);
+    setMembre(c.membre);
+    setMembreSearch(c.membre);
     setDate(c.date);
     setMontant(c.montant);
     setCategorie(c.categorie);
@@ -104,6 +120,11 @@ export default function PageCachets() {
   const cachetsFiltres = filtreCategorie
     ? cachets.filter((c) => c.categorie === filtreCategorie)
     : cachets;
+
+  //filtrage par membre
+  const membresFiltres = MEMBRES_TROUPE.filter((m) =>
+    m.toLowerCase().includes(membreSearch.toLowerCase())
+  );
 
   //tri par date de publication ou par montant de cachets
   const cachetsTries = [...cachetsFiltres].sort((a, b) => {
@@ -118,6 +139,40 @@ export default function PageCachets() {
 
       <form onSubmit={ajouterCachet}>
         {erreur && <div>{erreur}</div>}
+        <div className={styles["ajout-membre"]}>
+          <label>Membre</label>
+          <br />
+          <input
+            type="text"
+            value={membreSearch}
+            placeholder="Rechercher un membre"
+            onFocus={() => setMembreOpen(true)}
+            onChange={(e) => {
+              setMembreSearch(e.target.value);
+              setMembreOpen(true);
+            }}
+          />
+
+          {membreOpen && (
+            <ul>
+              {membresFiltres.length === 0 && <li>Aucun membre trouvé</li>}
+
+              {membresFiltres.map((nom) => (
+                <li
+                  key={nom}
+                  onClick={() => {
+                    setMembre(nom);
+                    setMembreSearch(nom);
+                    setMembreOpen(false);
+                  }}
+                >
+                  {nom}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
         <div>
           <label>Date</label>
           <br />
@@ -161,6 +216,9 @@ export default function PageCachets() {
             type="button"
             onClick={() => {
               setEditId(null);
+              setMembre("");
+              setMembreSearch("");
+              setMembreOpen(false);
               setDate("");
               setMontant(1);
               setCategorie("");
