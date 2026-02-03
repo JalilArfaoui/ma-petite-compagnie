@@ -167,7 +167,8 @@
 }
 
 .calendar-day.today {
-    background: rgba(239, 246, 255,0.75);
+    // background: rgba(239, 246, 255,0.75);
+    background: rgba(202, 131, 235, 0.75);
 }
 
 .calendar-day.today .day-number {
@@ -219,7 +220,7 @@
 }
 
 .calendar-day.other-weekly {
-        max-width: calc(100% - 16px );
+    max-width: calc(100%);
 }
 
 .event-tile:hover {
@@ -262,6 +263,24 @@
     background: #e5e7eb;
 }
 
+.calendar {
+    display:flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 10px;
+}
+
+
+.create-event-box {
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    color: #6b7280;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    max-height: 90vh;
+}
 
 /* Responsive design */
 @media (max-width: 1024px) {
@@ -271,6 +290,10 @@
     
     .month-year {
         font-size: 20px;
+    }
+
+    .calendar {
+        flex-direction: column;
     }
 }
 

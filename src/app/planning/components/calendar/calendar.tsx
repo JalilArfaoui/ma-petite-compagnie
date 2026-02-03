@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import MonthlyTile from './tiles/monthly-tile';
+import CreateEventAction from '../actions/create-event';
 
 export type Evenement = {
     id: number;
@@ -195,83 +196,95 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }) => {
         };
     }, []);
 
+
+
     return (
-        <div className="event-calendar">
-            <div className="calendar-header">
-                <button onClick={goToPreviousMonth} className="nav-button">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z"/></svg>
-                </button>
-                
-                <div className="header-center">
-                    <h2 className="month-year">{MONTHS[month - 1]} {year}</h2>
-                    <button onClick={goToToday} className="today-button">
-                        Today
+            <div className="event-calendar">
+                <div className="calendar-header">
+                    <button onClick={goToPreviousMonth} className="nav-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z"/></svg>
                     </button>
-                </div>
-
-
-                <button onClick={() => {
-                    setViewType(viewType === 'monthly' ? 'weekly' : 'monthly');
-                }}>
-                    {viewType === 'monthly' ? 'Weekly View' : 'Monthly View'}
-                </button>
-                <button onClick={goToNextMonth} className="nav-button">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/></svg>
-                </button>
-            </div>
-
-            <div className="calendar-content">
-                {
-                    viewType === 'weekly' && (
-                        <div className="time-slots" ref={ref}>
-                            {Array.from({ length: 24 }, (_, i) => (
-                                <div key={i} className="time-slot">
-                                    {i}:00
-                                </div>
-                            ))}
-                        </div>
-                    )
-                }
-                <div className="calendar-grid">
-                    <div className="weekdays-container">
-                        {WEEKDAYS.map(day => (
-                            <div key={day} className="weekday-header">
-                                {day}
-                            </div>
-                        ))}
+                    
+                    <div className="header-center">
+                        <h2 className="month-year">{MONTHS[month - 1]} {year}</h2>
+                        <button onClick={goToToday} className="today-button">
+                            Today
+                        </button>
                     </div>
 
-                        <div className='days'>
-                            {
-                                viewType === 'weekly' && 
-                                        Array.from({ length: 24 }, (_, i) => (
-                                            <div key={i} className="time-slot-overlay" style={{
-                                                top: `calc(50px + ${i*globalSlotsHeight}px)`,
-                                            }}>
-                                            </div>
-                                        ))
-                                
-                            }
-
-
-                            {calendarDays.map((calDay, index) => {
+                    <div>
                         
-                            return (
-                                <MonthlyTile 
-                                    key={index}
-                                    calDay={calDay}
-                                    index={index}
-                                    onEventClick={onEventClick}
-                                    isToday={isToday(calDay)}
-                                    viewType={viewType}
-                                    slotHeight={globalSlotsHeight}
-                                />
+                    </div>
+                    <button onClick={() => {
+                        setViewType(viewType === 'monthly' ? 'weekly' : 'monthly');
+                    }}>
+                        {viewType === 'monthly' ? 'Weekly View' : 'Monthly View'}
+                        
+                    </button>
+                    <button>
+                        {viewType === 'monthly' ? 'Monthly View' : 'Weekly View'}
+                    </button>
+                    <button onClick={goToNextMonth} className="nav-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/></svg>
+                    </button>
+                </div>
+                
+
+                <div className="calendar">
+                    <CreateEventAction />
+                    <div className="calendar-content">
+                        {
+                            viewType === 'weekly' && (
+                                <div className="time-slots" ref={ref}>
+                                    {Array.from({ length: 24 }, (_, i) => (
+                                        <div key={i} className="time-slot">
+                                            {i}:00
+                                        </div>
+                                    ))}
+                                </div>
                             )
-                            })}
+                        }
+                        <div className="calendar-grid">
+                            <div className="weekdays-container">
+                                {WEEKDAYS.map(day => (
+                                    <div key={day} className="weekday-header">
+                                        {day}
+                                    </div>
+                                ))}
+                            </div>
+
+                                <div className='days'>
+                                    {
+                                        viewType === 'weekly' && 
+                                                Array.from({ length: 24 }, (_, i) => (
+                                                    <div key={i} className="time-slot-overlay" style={{
+                                                        top: `calc(50px + ${i*globalSlotsHeight}px)`,
+                                                    }}>
+                                                    </div>
+                                                ))
+                                        
+                                    }
+
+
+                                    {calendarDays.map((calDay, index) => {
+                                
+                                    return (
+                                        <MonthlyTile 
+                                            key={index}
+                                            calDay={calDay}
+                                            index={index}
+                                            onEventClick={onEventClick}
+                                            isToday={isToday(calDay)}
+                                            viewType={viewType}
+                                            slotHeight={globalSlotsHeight}
+                                        />
+                                    )
+                                    })}
+                                </div>
                         </div>
+                    </div>
                 </div>
             </div>
-        </div>
     );
 };
 

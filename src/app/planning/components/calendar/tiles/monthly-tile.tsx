@@ -35,7 +35,7 @@ export default function MonthlyTile({
             key={index}
             className={`calendar-day ${!calDay.isCurrentMonth ? `other-${viewType}` : ''} ${isToday(calDay) ? 'today' : ''}`}
             style={{
-                borderRight: (index + 1) % 7 === 0 ? 'none' : "1px solid #e0e0e0",
+                borderRight: (index + 1) % 7 === 0 ? 'none' : "2px solid #e0e0e0",
             }}
         >
             <div className="day-number">{calDay.day}</div>
