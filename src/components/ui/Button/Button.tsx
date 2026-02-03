@@ -1,6 +1,17 @@
-import { Button as ChakraButton, ButtonProps } from "@chakra-ui/react";
+import { ButtonProps } from "@chakra-ui/react";
 import { StyledButton } from "./Button.style";
 
-export const Button = (props: ButtonProps) => {
-  return <StyledButton {...props} />;
+interface CustomButtonProps extends ButtonProps {
+  icon?: React.ReactNode;
+  iconSide?: "left" | "right";
+}
+
+export const Button = ({ icon, iconSide = "left", children, ...props }: CustomButtonProps) => {
+  return (
+    <StyledButton {...props}>
+      {icon && iconSide === "left" && icon}
+      {children}
+      {icon && iconSide === "right" && icon}
+    </StyledButton>
+  );
 };
