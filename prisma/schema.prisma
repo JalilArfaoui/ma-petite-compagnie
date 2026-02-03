@@ -28,10 +28,17 @@ model Categorie {
 model Compagnie {
   id    Int      @id @default(autoincrement())
   nom   String
+  adresse String?
+  ville   String?
+  codePostal String?
+  siteWeb String?
+  rib     String?
+  
   membres UtilisateurBouchon[]
   evenements Evenement[]
   categoriesEvenement Categorie[]
   lieuxEvenement Lieu[]
+  factures Facture[]
 }
 
 model Evenement {
@@ -65,4 +72,50 @@ model UtilisateurBouchon {
   compagnieId Int?
   compagnie Compagnie? @relation(fields: [compagnieId], references: [id])
   droitModificationPlanification  Boolean @default(false)
+}
+
+model Facture {
+  id              Int      @id @default(autoincrement())
+  numero          String   @unique
+  dateEmission    DateTime @default(now())
+  dateEcheance    DateTime
+  lieuFacturation String?
+
+  clientNom       String
+  clientAdresse   String?
+
+  status          FactureStatus @default(BROUILLON)
+
+  lignes          LigneFacture[]
+
+  compagnieId     Int
+  compagnie       Compagnie @relation(fields: [compagnieId], references: [id])
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model LigneFacture {
+  id              Int      @id @default(autoincrement())
+  factureId       Int
+  facture         Facture  @relation(fields: [factureId], references: [id], onDelete: Cascade)
+  
+  designation     String
+  quantite        Float    @default(1)
+  prixUnitaireHT  Float
+  tva             Float    @default(20.0)
+  type            LigneType @default(PRESTATION)
+}
+
+enum FactureStatus {
+  BROUILLON
+  EMISE
+  PAYEE
+  ANNULEE
+}
+
+enum LigneType {
+  PRESTATION
+  FRAIS
+  REDUCTION
 }
