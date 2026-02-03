@@ -26,7 +26,7 @@ async function createSpectacle(formData: FormData) {
 }
 
 export default async function ProductionPage() {
-  
+
 
   const spectacles = await prisma.spectacle.findMany({
     orderBy: { id: "desc" },
