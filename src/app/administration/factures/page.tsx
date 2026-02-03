@@ -28,11 +28,9 @@ export default async function Page() {
       <Stack gap={6}>
         <Flex justify="space-between" align="center">
           <Heading size="2xl">Factures</Heading>
-          <NextLink href="/administration/factures/nouveau" passHref legacyBehavior>
-            <Button as="a" colorPalette="blue">
-              + Nouvelle Facture
-            </Button>
-          </NextLink>
+          <Button as={NextLink} href="/administration/factures/nouveau" colorPalette="blue">
+            + Nouvelle Facture
+          </Button>
         </Flex>
 
         <Table.Container border="1px solid" borderColor="gray.200" borderRadius="md">
@@ -77,11 +75,9 @@ export default async function Page() {
         </Table.Container>
 
         <Flex justify="center" mt={4}>
-          <NextLink href="/administration/entreprise" passHref legacyBehavior>
-            <Button as="a" variant="ghost">
-              Paramètres de l'entreprise
-            </Button>
-          </NextLink>
+          <Button as={NextLink} href="/administration/entreprise" variant="ghost">
+            Paramètres de l'entreprise
+          </Button>
         </Flex>
       </Stack>
     </Container>

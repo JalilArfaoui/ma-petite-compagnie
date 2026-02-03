@@ -4,6 +4,7 @@ import { StyledButton } from "./Button.style";
 interface CustomButtonProps extends ButtonProps {
   icon?: React.ReactNode;
   iconSide?: "left" | "right";
+  href?: string;
 }
 
 export const Button = ({ icon, iconSide = "left", children, ...props }: CustomButtonProps) => {
