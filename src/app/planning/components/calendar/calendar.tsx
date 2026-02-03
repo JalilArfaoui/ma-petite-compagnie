@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import MonthlyTile from './tiles/monthly-tile';
-import CreateEventAction from '../actions/create-event';
+// import CreateEventAction from '../actions/create-event';
 
 export type Evenement = {
     id: number;
@@ -211,19 +211,19 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }) => {
                             Today
                         </button>
                     </div>
-
                     <div>
-                        
+                        <button onClick={() => {
+                            setViewType(viewType === 'monthly' ? 'weekly' : 'monthly');
+                        }} className="nav-button"
+                        >
+                            {viewType === 'monthly' ? (
+                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M120-540v-180q0-17 11.5-28.5T160-760h133q17 0 28.5 11.5T333-720v180q0 17-11.5 28.5T293-500H160q-17 0-28.5-11.5T120-540Zm293 40q-17 0-28.5-11.5T373-540v-180q0-17 11.5-28.5T413-760h134q17 0 28.5 11.5T587-720v180q0 17-11.5 28.5T547-500H413Zm254 0q-17 0-28.5-11.5T627-540v-180q0-17 11.5-28.5T667-760h133q17 0 28.5 11.5T840-720v180q0 17-11.5 28.5T800-500H667ZM293-200H160q-17 0-28.5-11.5T120-240v-180q0-17 11.5-28.5T160-460h133q17 0 28.5 11.5T333-420v180q0 17-11.5 28.5T293-200Zm120 0q-17 0-28.5-11.5T373-240v-180q0-17 11.5-28.5T413-460h134q17 0 28.5 11.5T587-420v180q0 17-11.5 28.5T547-200H413Zm254 0q-17 0-28.5-11.5T627-240v-180q0-17 11.5-28.5T667-460h133q17 0 28.5 11.5T840-420v180q0 17-11.5 28.5T800-200H667Z"/></svg>
+                            ) : (
+                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M550-200q-17 0-28.5-11.5T510-240v-480q0-17 11.5-28.5T550-760h55q17 0 28.5 11.5T645-720v480q0 17-11.5 28.5T605-200h-55Zm-195 0q-17 0-28.5-11.5T315-240v-480q0-17 11.5-28.5T355-760h55q17 0 28.5 11.5T450-720v480q0 17-11.5 28.5T410-200h-55Zm-195 0q-17 0-28.5-11.5T120-240v-480q0-17 11.5-28.5T160-760h55q17 0 28.5 11.5T255-720v480q0 17-11.5 28.5T215-200h-55Zm585 0q-17 0-28.5-11.5T705-240v-480q0-17 11.5-28.5T745-760h55q17 0 28.5 11.5T840-720v480q0 17-11.5 28.5T800-200h-55Z"/></svg>
+                            )}
+                        </button>
                     </div>
-                    <button onClick={() => {
-                        setViewType(viewType === 'monthly' ? 'weekly' : 'monthly');
-                    }}>
-                        {viewType === 'monthly' ? 'Weekly View' : 'Monthly View'}
-                        
-                    </button>
-                    <button>
-                        {viewType === 'monthly' ? 'Monthly View' : 'Weekly View'}
-                    </button>
+
                     <button onClick={goToNextMonth} className="nav-button">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/></svg>
                     </button>
@@ -231,7 +231,6 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }) => {
                 
 
                 <div className="calendar">
-                    <CreateEventAction />
                     <div className="calendar-content">
                         {
                             viewType === 'weekly' && (
