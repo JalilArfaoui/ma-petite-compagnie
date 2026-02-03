@@ -57,7 +57,7 @@ L'application est accessible sur [http://localhost:3000](http://localhost:3000).
 
 ## Stack technique
 
-- **Framework** : Next.js 15 (App Router)
+- **Framework** : Next.js 16 (App Router)
 - **Base de données** : PostgreSQL
 - **ORM** : Prisma
 - **Tests** : Vitest + Testing Library
