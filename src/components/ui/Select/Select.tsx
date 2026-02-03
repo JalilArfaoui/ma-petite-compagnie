@@ -17,3 +17,4 @@ Select.ClearTrigger = ChakraSelect.ClearTrigger;
 Select.ItemGroup = ChakraSelect.ItemGroup;
 Select.ItemGroupLabel = ChakraSelect.ItemGroupLabel;
 Select.ItemIndicator = ChakraSelect.ItemIndicator;
+Select.IndicatorGroup = ChakraSelect.IndicatorGroup;
