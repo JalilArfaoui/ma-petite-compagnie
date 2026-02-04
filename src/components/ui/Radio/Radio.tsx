@@ -6,15 +6,22 @@ export interface RadioProps extends RadioGroupItemProps {
   rootRef?: React.Ref<HTMLDivElement>;
 }
 
+import {
+  StyledRadioRoot,
+  StyledRadioItem,
+  StyledRadioControl,
+  StyledRadioText,
+} from "./Radio.style";
+
 export const Radio = React.forwardRef<HTMLDivElement, RadioProps>(function Radio(props, ref) {
   const { children, inputProps, rootRef, ...rest } = props;
   return (
-    <ChakraRadioGroup.Item ref={ref || rootRef} {...rest}>
+    <StyledRadioItem ref={ref || rootRef} {...rest}>
       <ChakraRadioGroup.ItemHiddenInput {...inputProps} />
-      <ChakraRadioGroup.ItemControl />
-      {children && <ChakraRadioGroup.ItemText>{children}</ChakraRadioGroup.ItemText>}
-    </ChakraRadioGroup.Item>
+      <StyledRadioControl />
+      {children && <StyledRadioText>{children}</StyledRadioText>}
+    </StyledRadioItem>
   );
 });
 
-export const RadioGroup = ChakraRadioGroup.Root;
+export const RadioGroup = StyledRadioRoot;

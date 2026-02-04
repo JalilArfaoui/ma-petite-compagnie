@@ -1,8 +1,10 @@
-import { List as ChakraList, ListRootProps } from "@chakra-ui/react";
+import { ListRootProps } from "@chakra-ui/react";
+
+import { StyledListRoot, StyledListItem, StyledListIndicator } from "./List.style";
 
 export const List = (props: ListRootProps) => {
-  return <ChakraList.Root {...props} />;
+  return <StyledListRoot {...props} />;
 };
 
-List.Item = ChakraList.Item;
-List.Indicator = ChakraList.Indicator;
+List.Item = StyledListItem;
+List.Indicator = StyledListIndicator;
