@@ -2,18 +2,20 @@ import { Card, Stack, Heading } from "@/components/ui";
 import { Contact } from "@prisma/client";
 export function ContactCard({
   contact,
-  onClick,
-  clicked,
+  onSelected,
+  estSelectionne,
 }: {
   contact: Contact;
-  onClick: () => void;
-  clicked: boolean;
+  onSelected: () => void;
+  estSelectionne: boolean;
 }) {
   return (
-    <Card onClick={onClick}>
-      {clicked && <Heading as={"h1"}>Séléctionné</Heading>}
-      <Heading as={"h4"}></Heading>
-      {contact.nom} {contact.prenom}
+    <Card onClick={onSelected}>
+      {estSelectionne && <Heading as={"h1"}>Sélectionné</Heading>}
+      <Heading as={"h4"}>
+        {contact.nom} {contact.prenom}
+      </Heading>
+
       <Card.Body>
         <Stack gap={4}>
           <strong>Email :</strong> {contact.email || "Non renseigné"}

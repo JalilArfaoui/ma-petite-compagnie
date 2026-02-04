@@ -1,16 +1,16 @@
-import { creerUnContact, ContactInformation } from "../app/communication/api/contact/contact";
-import { describe, it, expect } from "vitest";
+import { creerContact, ContactInformation } from "../app/communication/api/contact/contact";
+import { it, expect } from "vitest";
 
 function creerObjetContactAvecNom(nom: string): ContactInformation {
   return { nom: nom, prenom: "User", email: "email@email.com", tel: "0011001100", role: null };
 }
 
 it("Créer un mauvais contact", async () => {
-  const result = await creerUnContact(creerObjetContactAvecNom(""));
+  const result = await creerContact(creerObjetContactAvecNom(""));
   expect(result.succes).toBe(false);
 });
 it("Créer un contact avec email incorrecte", async () => {
-  const result = await creerUnContact({
+  const result = await creerContact({
     nom: "User",
     prenom: "User",
     email: "email@com",
@@ -21,7 +21,7 @@ it("Créer un contact avec email incorrecte", async () => {
 });
 
 it("Créer un contact avec télephone incorrecte", async () => {
-  const result = await creerUnContact({
+  const result = await creerContact({
     nom: "User",
     prenom: "User",
     email: "email@gmail.com",
