@@ -1,7 +1,6 @@
 "use server";
 import { Contact, PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
-import "../../../../envConfig.ts";
 console.log("env database is " + process.env.DATABASE_URL);
 export type ContactInformation = Omit<Contact, "id" | "date_creation">;
 const adapter = new PrismaPg({
