@@ -25,7 +25,12 @@ function resultOf<T>(succes: boolean, message: string, contact: T | null): Resul
  * @returns Le résultat de la vérification. Peut donner des messages d'erreur si le contact est incorrecte.
  */
 function verificationDonnee(contact: ContactInformation) {
-  if (!contact.nom || contact.nom.trim().length == 0 || contact.prenom.trim().length == 0) {
+  if (
+    !contact.nom ||
+    !contact.prenom ||
+    contact.nom.trim().length == 0 ||
+    contact.prenom.trim().length == 0
+  ) {
     return resultOf(false, "Le nom ou le prénom est vide.", null);
   }
   if (contact.email) {
@@ -36,7 +41,7 @@ function verificationDonnee(contact: ContactInformation) {
   }
 
   if (contact.tel) {
-    const telRegex = /^[0-9\s\-\+\(\)]+$/; // Chiffres, espaces, +, -, ()
+    const telRegex = /^(([0-9][0-9][-]){3}[0-9][0-9])|([0-9]{8})$/;
     if (!telRegex.test(contact.tel)) {
       return resultOf(false, "Le numéro de téléphone n'est pas valide.", null);
     }
@@ -67,9 +72,6 @@ export async function obtenirBeaucoupContact() {
   return resultOf(true, "", await prisma.contact.findMany());
 }
 
-export async function supprimerParNomContact(nom: string) {
-  return resultOf(true, "", await prisma.contact.deleteMany({ where: { nom: nom } }));
-}
 export async function mettreAJourContact(contactId: number, newContact: ContactInformation) {
   const verificationResultat = verificationDonnee(newContact);
   if (!verificationResultat.succes) {

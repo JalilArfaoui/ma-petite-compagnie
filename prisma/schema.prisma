@@ -67,9 +67,9 @@ model UtilisateurBouchon {
   droitModificationPlanification  Boolean @default(false)
 }
 enum Role {
-  USER
+  Comedien
   PARTENAIRE
-  
+  TECHNICIEN
 }
 
 model Contact {
