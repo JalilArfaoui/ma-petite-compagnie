@@ -9,10 +9,12 @@ export function getOrReplace<T>(champ: T | null | undefined, replace: T) {
   }
 }
 export function getRoleFromString(string: string): Role {
-  if (string == "USER") {
-    return "USER";
+  if (string == "COMEDIEN") {
+    return "COMEDIEN";
   } else if (string == "PARTENAIRE") {
     return "PARTENAIRE";
+  } else if (string == "TECHNICIEN") {
+    return "TECHNICIEN";
   }
-  return "USER";
+  return "COMEDIEN";
 }
