@@ -1,10 +1,8 @@
 "use client";
-import { Heading, Link, Box, Text } from "@/components/ui";
-import {} from "@chakra-ui/react";
+import { Heading, Link, Box } from "@/components/ui";
 import ContactDetails from "../components/contactDetails";
 import { creerContactAction } from "../action/contactFormAction";
-import { useState } from "react";
-import { Toaster } from "@/components/ui/toaster";
+
 import { toaster } from "@/components/ui/Toast/toaster";
 
 export function ContactCreation() {
@@ -24,7 +22,6 @@ export function ContactCreation() {
   }
   return (
     <Box alignContent={"center"}>
-      <Toaster />
       <Box textAlign={"center"}>
         <Heading as={"h3"}>Création d&rsquo;un contact</Heading>
       </Box>
