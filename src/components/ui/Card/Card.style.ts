@@ -1,3 +1,5 @@
+"use client";
+
 import { CardRoot, CardTitle, CardBody, CardHeader } from "@chakra-ui/react";
 import styled from "styled-components";
 
