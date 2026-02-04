@@ -4,6 +4,64 @@ Ce guide accompagne le travail en équipe avec Git et GitHub. À 16 sur un même
 
 ---
 
+## Sommaire
+
+1. [Comprendre Git](#partie-1--comprendre-git)
+   - [Qu'est-ce qu'une branche ?](#quest-ce-quune-branche-)
+   - [Local vs Remote](#local-vs-remote--deux-copies-du-projet)
+   - [Comprendre `git status`](#comprendre-git-status)
+
+2. [Les branches en pratique](#partie-2--les-branches-en-pratique)
+   - [Créer une branche](#créer-une-branche)
+   - [Conventions de nommage](#conventions-de-nommage)
+   - [Naviguer entre les branches](#naviguer-entre-les-branches)
+   - [Supprimer une branche](#supprimer-une-branche)
+
+3. [Merge vs Rebase](#partie-3--merge-vs-rebase)
+   - [Le problème](#le-problème)
+   - [Option 1 : Merge](#option-1--merge-recommandé-pour-les-débutants)
+   - [Option 2 : Rebase](#option-2--rebase-pour-utilisateurs-avancés)
+   - [Quelle option choisir ?](#quelle-option-choisir-)
+
+4. [Se mettre à jour de `main`](#partie-4--se-mettre-à-jour-de-main)
+   - [Pourquoi c'est important](#pourquoi-cest-important)
+   - [Comment faire](#comment-faire-méthode-merge)
+   - [Quand se synchroniser ?](#quand-se-synchroniser-)
+
+5. [Les Pull Requests (PR)](#partie-5--les-pull-requests-pr)
+   - [C'est quoi une PR ?](#cest-quoi-une-pr-)
+   - [Cycle de vie d'une PR](#cycle-de-vie-dune-pr)
+   - [Créer une PR pas à pas](#créer-une-pr-pas-à-pas)
+   - [Mettre à jour une PR après des retours](#mettre-à-jour-une-pr-après-des-retours)
+   - [Merger une PR](#merger-une-pr)
+   - [Découper une grosse PR en slices fonctionnelles](#découper-une-grosse-pr-en-slices-fonctionnelles)
+   - [PRs empilées : travailler sans attendre les reviews](#prs-empilées--travailler-sans-attendre-les-reviews)
+
+6. [Les conflits](#partie-6--les-conflits)
+   - [Pourquoi ça arrive ?](#pourquoi-ça-arrive-)
+   - [Comment éviter les conflits](#comment-éviter-les-conflits)
+   - [Reconnaître un conflit](#reconnaître-un-conflit)
+   - [Résoudre un conflit pas à pas](#résoudre-un-conflit-pas-à-pas)
+   - [En cas de panique](#en-cas-de-panique)
+
+7. [Bonnes pratiques de travail en équipe](#partie-7--bonnes-pratiques-de-travail-en-équipe)
+   - [Communiquer avant de coder](#communiquer-avant-de-coder)
+   - [Une PR = une seule chose](#une-pr--une-seule-chose)
+   - [Finaliser ses PR rapidement](#finaliser-ses-pr-rapidement)
+   - [Relire les PR des autres](#relire-les-pr-des-autres)
+   - [Prendre en compte les retours](#prendre-en-compte-les-retours)
+
+8. [Aide-mémoire](#aide-mémoire)
+   - [Cheatsheet interactif](#cheatsheet-interactif)
+   - [Commandes quotidiennes](#commandes-quotidiennes)
+   - [Workflow type](#workflow-type)
+   - [Workflow PRs empilées](#workflow-prs-empilées)
+   - [En cas de problème](#en-cas-de-problème)
+
+9. [En résumé](#en-résumé)
+
+---
+
 ## Partie 1 : Comprendre Git
 
 ### Qu'est-ce qu'une branche ?
