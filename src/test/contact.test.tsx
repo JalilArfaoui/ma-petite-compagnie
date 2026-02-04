@@ -1,11 +1,4 @@
-import {
-  createContact,
-  supprimerParId,
-  trouverParNom,
-  mettreAJour,
-  ContactInformation,
-  supprimerParNom,
-} from "../app/communication/api/contact/contact";
+import { ContactInformation } from "../app/communication/api/contact/contact";
 import { describe, it, expect } from "vitest";
 
 function creerObjetContactAvecNom(nom: string): ContactInformation {
