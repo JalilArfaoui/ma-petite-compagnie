@@ -3,16 +3,6 @@ import { Contact, Role } from "@prisma/client";
 import { useState } from "react";
 import { Box, Card, Input, Radio, RadioGroup, Stack, Button } from "@/components/ui";
 
-function transformerStringEnRole(str: string | undefined | null): Role {
-  if (str == "COMEDIEN") {
-    return "COMEDIEN";
-  } else if (str == "TECHNICIEN") {
-    return "TECHNICIEN";
-  } else if (str == "PARTENAIRE") {
-    return "PARTENAIRE";
-  }
-  return "COMEDIEN";
-}
 export function ContactDetails({
   onSubmitted,
   contactDonnee,
@@ -70,11 +60,7 @@ export function ContactDetails({
           </Box>
           <Box>
             Rôles
-            <RadioGroup
-              name="role"
-              value={role}
-              onValueChange={(v) => setRole(transformerStringEnRole(v.value))}
-            >
+            <RadioGroup name="role" value={role} onValueChange={(v) => setRole(v.value as Role)}>
               <Radio value="COMEDIEN">Comedien</Radio>
               <Radio value="TECHNICIEN">Technicien</Radio>
               <Radio value="PARTENAIRE">Partenaire</Radio>
