@@ -82,6 +82,12 @@ export async function listerContacts(paginationTaille: number = 10, page: number
     paginationTaille = 10;
     page = 1;
   }
+
   const skip = paginationTaille * (page - 1);
-  return resultOf(true, "", await prisma.contact.findMany({ skip: skip, take: paginationTaille }));
+  try {
+    const contacts = await prisma.contact.findMany({ skip, take: paginationTaille });
+    return resultOf(true, "", contacts);
+  } catch (error) {
+    return resultOf(false, "Erreur lors de la récupération des contacts", null);
+  }
 }
