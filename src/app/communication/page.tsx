@@ -4,16 +4,17 @@ import { listerContacts } from "./api/contact/contact";
 import { useEffect, useState } from "react";
 import { Contact } from "@prisma/client";
 import { ContactCard } from "./components/ContactCard";
+import { toaster } from "@/components/ui/Toast/toaster";
 export default function ContactPage() {
   const [contacts, setContacts] = useState<Contact[]>([]);
   useEffect(() => {
     async function loadContact() {
-      const contacts = (await listerContacts(30, 1)).donnee;
-      if (!contacts) {
-        setContacts([]);
-        return;
+      const resultat = await listerContacts(30, 1);
+      if (resultat.succes) {
+        setContacts(resultat.donnee ?? []);
+      } else {
+        toaster.create({ description: resultat.message, type: "error" });
       }
-      setContacts(contacts);
     }
     loadContact();
   }, []);
