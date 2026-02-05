@@ -27,7 +27,7 @@ export default function ContactPage() {
         </Link>
       </Stack>
 
-      <SimpleGrid columns={3} gap={10}>
+      <SimpleGrid columns={[1, null, 3]} gap={10}>
         {contacts.map((contact) => (
           <ContactCard key={contact.id} contact={contact} />
         ))}
