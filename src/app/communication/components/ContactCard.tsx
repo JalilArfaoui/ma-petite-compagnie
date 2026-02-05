@@ -11,18 +11,18 @@ export function ContactCard({ contact }: { contact: Contact }) {
         <Card.Body padding={"3"}>
           <Stack gap={4}>
             <Box>
-              <Text strokeWidth={30}>Email : </Text>
+              <Text fontWeight="bold">Email : </Text>
               <Text>{contact.email || "Non renseigné"}</Text>
             </Box>
             <Box>
-              <Text>Téléphone :</Text>
+              <Text fontWeight="bold">Téléphone :</Text>
               <Text> {contact.tel || "Non renseigné"}</Text>
             </Box>
             <Box>
-              <Text>Rôle :</Text> <Text>{contact.role || "Non défini"}</Text>
+              <Text fontWeight="bold">Rôle :</Text> <Text>{contact.role || "Non défini"}</Text>
             </Box>
             <Box>
-              <Text>Créé le</Text>
+              <Text fontWeight="bold">Créé le</Text>
 
               <Text>
                 {(contact.date_creation instanceof Date &&
