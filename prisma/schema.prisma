@@ -66,3 +66,12 @@ model UtilisateurBouchon {
   compagnie Compagnie? @relation(fields: [compagnieId], references: [id])
   droitModificationPlanification  Boolean @default(false)
 }
+
+// partie groupe production
+model Spectacle {
+  id Int @id @default(autoincrement())
+  description String?
+  type String
+  statut String
+  troupe String
+}
