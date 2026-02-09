@@ -64,7 +64,6 @@ export function ContactDetails({
               name="role"
               value={role}
               onValueChange={(v) => {
-                console.log(v.value);
                 setRole(v.value as Role);
               }}
             >
