@@ -78,7 +78,7 @@ model Contact {
   nom String 
   prenom String
   role    Role?
-  email String? 
+  email String? @unique
   tel String? 
   date_creation DateTime @default(now())
 }

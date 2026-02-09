@@ -48,15 +48,31 @@ function validerContact(contact: ContactInformation) {
   }
   return resultOf(true, "", null);
 }
+export async function contactAvecMemeEmail(email: string) {
+  const contact = prisma.contact.findFirst({ where: { email: email } });
+  return contact ?? false;
+}
 export async function creerContact(contact: ContactInformation) {
   const verificationResultat = await validerContact(contact);
   if (!verificationResultat.succes) {
     return verificationResultat;
   }
-  const nouveauContact = await prisma.contact.create({
-    data: {
-      ...contact,
-    },
-  });
-  return resultOf(true, "", nouveauContact);
+  if (contact.email && (await contactAvecMemeEmail(contact.email))) {
+    return resultOf(
+      false,
+      "Cette email est déjà utilisé. Veuillez utiliser un email différent.",
+      null
+    );
+  }
+  try {
+    const nouveauContact = await prisma.contact.create({
+      data: {
+        ...contact,
+      },
+    });
+    return resultOf(true, "", nouveauContact);
+  } catch (error: unknown) {
+    console.log(error);
+    return resultOf(false, "Une erreur est survenue lors de la création du contact", null);
+  }
 }
