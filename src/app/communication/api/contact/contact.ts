@@ -137,5 +137,8 @@ export async function modifierContact(contactId: number, newContact: ContactInfo
 }
 export async function trouverParIdContact(id: number) {
   const contact = await prisma.contact.findUnique({ where: { id: id } });
+  if (!contact) {
+    return resultOf(false, "Le contact n'existe pas.", null);
+  }
   return resultOf(true, "", contact);
 }
