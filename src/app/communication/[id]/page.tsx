@@ -8,7 +8,6 @@ import ContactDetails from "../components/contactDetails";
 import { trouverParIdContact } from "../api/contact/contact";
 import { useRouter } from "next/navigation";
 import { Box, Heading, Link } from "@/components/ui";
-import { Spinner } from "@chakra-ui/react";
 
 export function ContactModification({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -44,16 +43,8 @@ export function ContactModification({ params }: { params: Promise<{ id: string }
   }, [id, router]);
   if (chargement) {
     return (
-      <Box
-        position="fixed"
-        width="100vw"
-        height="100vh"
-        bg="rgba(0, 0, 0, 0.5)"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-      >
-        <Spinner size="xl" color="white" />
+      <Box className=" fixed w-screen h-screen bg-[rgba(0, 0, 0, 0.5)] flex items-center content-center ">
+        Chargement
       </Box>
     );
   }
