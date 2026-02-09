@@ -26,7 +26,7 @@ export function ContactModification({ params }: { params: Promise<{ id: string }
     }
   }
   useEffect(() => {
-    async function fetch() {
+    async function chargerContact() {
       const resultat = await trouverParIdContact(parseInt(id));
       if (resultat.succes && resultat.donnee) {
         setContact(resultat.donnee);
@@ -40,8 +40,8 @@ export function ContactModification({ params }: { params: Promise<{ id: string }
       }
     }
 
-    fetch();
-  }, []);
+    chargerContact();
+  }, [id, router]);
   if (chargement) {
     return (
       <Box
