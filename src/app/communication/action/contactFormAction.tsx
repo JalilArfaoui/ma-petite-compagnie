@@ -2,7 +2,6 @@
 
 import { Role } from "@prisma/client";
 import { ContactInformation, creerContact, modifierContact } from "../api/contact/contact";
-import { redirect } from "next/navigation";
 
 function transformerFormDataContact(FormData: FormData): ContactInformation {
   return {

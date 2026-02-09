@@ -124,16 +124,20 @@ export async function listerContacts(paginationTaille: number = 10, page: number
   }
 }
 
-export async function modifierContact(contactId: number, newContact: ContactInformation) {
-  const verificationResultat = validerContact(newContact);
+export async function modifierContact(contactId: number, nouveauContact: ContactInformation) {
+  const verificationResultat = validerContact(nouveauContact);
   if (!verificationResultat.succes) {
     return verificationResultat;
   }
-  return resultOf(
-    true,
-    "",
-    await prisma.contact.update({ where: { id: contactId }, data: { ...newContact } })
-  );
+  try {
+    const contactModifie = await prisma.contact.update({
+      where: { id: contactId },
+      data: { ...nouveauContact },
+    });
+    return resultOf(true, "", contactModifie);
+  } catch (error) {
+    return resultOf(false, "Le contact n'existe pas ou n'a pas pu être modifié.", null);
+  }
 }
 export async function trouverParIdContact(id: number) {
   const contact = await prisma.contact.findUnique({ where: { id: id } });

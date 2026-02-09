@@ -8,6 +8,7 @@ import ContactDetails from "../components/contactDetails";
 import { trouverParIdContact } from "../api/contact/contact";
 import { useRouter } from "next/navigation";
 import { Box, Heading, Link } from "@/components/ui";
+import { Spinner } from "@chakra-ui/react";
 
 export function ContactModification({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -19,6 +20,7 @@ export function ContactModification({ params }: { params: Promise<{ id: string }
 
     if (resultat.succes && resultat.donnee) {
       toaster.create({ description: "Contact modifié avec succès !", type: "success" });
+      router.push("/communication");
     } else {
       toaster.create({ description: resultat.message, type: "error" });
     }
@@ -41,7 +43,19 @@ export function ContactModification({ params }: { params: Promise<{ id: string }
     fetch();
   }, []);
   if (chargement) {
-    return "Chargement";
+    return (
+      <Box
+        position="fixed"
+        width="100vw"
+        height="100vh"
+        bg="rgba(0, 0, 0, 0.5)"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Spinner size="xl" color="white" />
+      </Box>
+    );
   }
   return (
     <Box alignContent={"center"}>
@@ -49,7 +63,7 @@ export function ContactModification({ params }: { params: Promise<{ id: string }
         <Heading as={"h3"}>Modification d&rsquo;un contact</Heading>
       </Box>
       <Box>
-        <Link href={"./"}>Retour</Link>
+        <Link href={"/communication"}>Retour</Link>
       </Box>
       <ContactDetails onSubmitted={onSubmit} contactDonnee={contact ?? null}></ContactDetails>
     </Box>
