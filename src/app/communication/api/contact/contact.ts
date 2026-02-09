@@ -124,7 +124,18 @@ export async function listerContacts(paginationTaille: number = 10, page: number
   }
 }
 
-export async function listerContacts(paginationTaille: number = 10, page: number = 1) {
-  const skip = paginationTaille * (page - 1);
-  return resultOf(true, "", await prisma.contact.findMany({ skip: skip, take: paginationTaille }));
+export async function modifierContact(contactId: number, newContact: ContactInformation) {
+  const verificationResultat = validerContact(newContact);
+  if (!verificationResultat.succes) {
+    return verificationResultat;
+  }
+  return resultOf(
+    true,
+    "",
+    await prisma.contact.update({ where: { id: contactId }, data: { ...newContact } })
+  );
+}
+export async function trouverParIdContact(id: number) {
+  const contact = await prisma.contact.findUnique({ where: { id: id } });
+  return resultOf(true, "", contact);
 }
