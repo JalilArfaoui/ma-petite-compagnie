@@ -4,6 +4,64 @@ Ce guide accompagne le travail en équipe avec Git et GitHub. À 16 sur un même
 
 ---
 
+## Sommaire
+
+1. [Comprendre Git](#partie-1--comprendre-git)
+   - [Qu'est-ce qu'une branche ?](#quest-ce-quune-branche-)
+   - [Local vs Remote](#local-vs-remote--deux-copies-du-projet)
+   - [Comprendre `git status`](#comprendre-git-status)
+
+2. [Les branches en pratique](#partie-2--les-branches-en-pratique)
+   - [Créer une branche](#créer-une-branche)
+   - [Conventions de nommage](#conventions-de-nommage)
+   - [Naviguer entre les branches](#naviguer-entre-les-branches)
+   - [Supprimer une branche](#supprimer-une-branche)
+
+3. [Merge vs Rebase](#partie-3--merge-vs-rebase)
+   - [Le problème](#le-problème)
+   - [Option 1 : Merge](#option-1--merge-recommandé-pour-les-débutants)
+   - [Option 2 : Rebase](#option-2--rebase-pour-utilisateurs-avancés)
+   - [Quelle option choisir ?](#quelle-option-choisir-)
+
+4. [Se mettre à jour de `main`](#partie-4--se-mettre-à-jour-de-main)
+   - [Pourquoi c'est important](#pourquoi-cest-important)
+   - [Comment faire](#comment-faire-méthode-merge)
+   - [Quand se synchroniser ?](#quand-se-synchroniser-)
+
+5. [Les Pull Requests (PR)](#partie-5--les-pull-requests-pr)
+   - [C'est quoi une PR ?](#cest-quoi-une-pr-)
+   - [Cycle de vie d'une PR](#cycle-de-vie-dune-pr)
+   - [Créer une PR pas à pas](#créer-une-pr-pas-à-pas)
+   - [Mettre à jour une PR après des retours](#mettre-à-jour-une-pr-après-des-retours)
+   - [Merger une PR](#merger-une-pr)
+   - [Découper une grosse PR en slices fonctionnelles](#découper-une-grosse-pr-en-slices-fonctionnelles)
+   - [PRs empilées : travailler sans attendre les reviews](#prs-empilées--travailler-sans-attendre-les-reviews)
+
+6. [Les conflits](#partie-6--les-conflits)
+   - [Pourquoi ça arrive ?](#pourquoi-ça-arrive-)
+   - [Comment éviter les conflits](#comment-éviter-les-conflits)
+   - [Reconnaître un conflit](#reconnaître-un-conflit)
+   - [Résoudre un conflit pas à pas](#résoudre-un-conflit-pas-à-pas)
+   - [En cas de panique](#en-cas-de-panique)
+
+7. [Bonnes pratiques de travail en équipe](#partie-7--bonnes-pratiques-de-travail-en-équipe)
+   - [Communiquer avant de coder](#communiquer-avant-de-coder)
+   - [Une PR = une seule chose](#une-pr--une-seule-chose)
+   - [Finaliser ses PR rapidement](#finaliser-ses-pr-rapidement)
+   - [Relire les PR des autres](#relire-les-pr-des-autres)
+   - [Prendre en compte les retours](#prendre-en-compte-les-retours)
+
+8. [Aide-mémoire](#aide-mémoire)
+   - [Cheatsheet interactif](#cheatsheet-interactif)
+   - [Commandes quotidiennes](#commandes-quotidiennes)
+   - [Workflow type](#workflow-type)
+   - [Workflow PRs empilées](#workflow-prs-empilées)
+   - [En cas de problème](#en-cas-de-problème)
+
+9. [En résumé](#en-résumé)
+
+---
+
 ## Partie 1 : Comprendre Git
 
 ### Qu'est-ce qu'une branche ?
@@ -377,6 +435,234 @@ git pull origin main
 git branch -d production/formulaire-spectacle
 ```
 
+### Découper une grosse PR en slices fonctionnelles
+
+Une PR de 40 commits ou 1000 lignes est difficile à relire. Il faut la découper, mais **pas n'importe comment**.
+
+**Le principe général : privilégier les slices verticales**
+
+Plutôt que de découper par "couche technique" (d'abord le modèle, puis l'API, puis l'UI...), on découpe souvent mieux en **slices verticales** : chaque PR traverse toutes les couches mais pour **une seule fonctionnalité**.
+
+```
+Découpage horizontal (par couche technique)
+┌─────────────────────────────────────────────┐
+│  PR 1: Modèle Prisma                        │  ← Inutilisable seule
+├─────────────────────────────────────────────┤
+│  PR 2: API CRUD                             │  ← Inutilisable seule
+├─────────────────────────────────────────────┤
+│  PR 3: Interface utilisateur                │  ← Enfin utilisable !
+└─────────────────────────────────────────────┘
+
+Découpage vertical (par fonctionnalité)
+┌───────────┬───────────┬───────────┬─────────┐
+│  PR 1     │  PR 2     │  PR 3     │  PR 4   │
+│  Créer    │  Lister   │  Modifier │ Suppr.  │
+│  ───────  │  ───────  │  ───────  │ ─────── │
+│  modèle   │  API list │  API upd  │ API del │
+│  API new  │  page     │  page [id]│ UI      │
+│  form     │  card     │  form     │ select  │
+│  ───────  │  ───────  │  ───────  │ ─────── │
+│ Utilisable│ Utilisable│ Utilisable│Utilisable
+└───────────┴───────────┴───────────┴─────────┘
+```
+
+**Pourquoi le découpage vertical est souvent préférable :**
+
+| Découpage technique | Découpage fonctionnel |
+|---------------------|----------------------|
+| PR 1 : "j'ai un modèle mais je ne peux rien en faire" | PR 1 : "je peux créer un contact" |
+| Difficile à tester/valider | On peut tester la fonctionnalité complète |
+| Feedback abstrait | Feedback concret de l'utilisateur |
+
+**Une question utile à se poser :**
+
+> **"Un utilisateur peut-il faire quelque chose de nouveau avec cette PR ?"**
+
+- "Il peut créer un contact" → Slice fonctionnelle
+- "Il peut voir la liste des spectacles" → Slice fonctionnelle
+- "J'ai ajouté le modèle Prisma" → Couche technique
+
+**Mais attention : ce n'est pas une règle absolue !**
+
+Il y a des cas où une PR purement technique a du sens :
+
+- **Refactoring** : réorganiser du code sans changer le comportement
+- **Migration de base de données** complexe qui prépare plusieurs fonctionnalités
+- **Mise en place d'une infrastructure** (système d'authentification, configuration de tests...)
+- **Correction de dette technique** qui touche beaucoup de fichiers
+
+L'important est de **réfléchir au cas par cas** : qu'est-ce qui sera le plus facile à relire et à valider pour mes collègues ? Parfois c'est une slice fonctionnelle, parfois c'est une PR technique bien délimitée.
+
+**Le vrai critère : la PR est-elle facile à comprendre et à reviewer ?**
+
+### PRs empilées : travailler sans attendre les reviews
+
+**Le problème classique :**
+
+```
+PR 1 créée → Attente review (3 jours) → PR 2 créée → Attente review (3 jours) → ...
+                   😴 bloqué                              😴 bloqué
+```
+
+Ce blocage décourage le découpage en petites PRs. La solution : **les PRs empilées (stacked PRs)**.
+
+**Le principe : des branches en cascade**
+
+Au lieu de tout baser sur `main`, on crée une chaîne de branches :
+
+```
+main
+ └── contact/1-creer
+      └── contact/2-lister
+           └── contact/3-modifier
+                └── contact/4-supprimer
+```
+
+Chaque branche part de la précédente, pas de `main`. On peut tout créer d'un coup !
+
+**Étape 1 : Créer les branches en cascade**
+
+```bash
+# Partir de main
+git checkout main
+git pull origin main
+
+# Branche 1 : créer un contact
+git checkout -b contact/1-creer
+# ... faire les modifications pour "créer un contact"
+git add .
+git commit -m "feat(contact): permet de créer un contact"
+
+# Branche 2 : PARTIR DE LA BRANCHE 1 (pas de main !)
+git checkout -b contact/2-lister
+# ... ajouter le code pour lister
+git add .
+git commit -m "feat(contact): affiche la liste des contacts"
+
+# Branche 3 : partir de la branche 2
+git checkout -b contact/3-modifier
+# ... ajouter le code pour modifier
+git add .
+git commit -m "feat(contact): permet de modifier un contact"
+
+# Et ainsi de suite...
+```
+
+**Étape 2 : Pousser toutes les branches**
+
+```bash
+git push -u origin contact/1-creer
+git push -u origin contact/2-lister
+git push -u origin contact/3-modifier
+git push -u origin contact/4-supprimer
+```
+
+**Étape 3 : Créer les PRs avec la bonne base**
+
+C'est la clé : **chaque PR cible la branche précédente, pas `main`**.
+
+| PR | Branche | Base (cible) |
+|----|---------|--------------|
+| PR 1 | `contact/1-creer` | `main` |
+| PR 2 | `contact/2-lister` | `contact/1-creer` |
+| PR 3 | `contact/3-modifier` | `contact/2-lister` |
+| PR 4 | `contact/4-supprimer` | `contact/3-modifier` |
+
+Sur GitHub, lors de la création de la PR, cliquer sur **"base: main"** et changer pour la branche cible :
+
+```
+base: contact/1-creer  ←  compare: contact/2-lister
+```
+
+**Ce que ça donne :**
+
+```
+PR 1 (→ main)        : +150 lignes  ← Reviewers voient SEULEMENT la création
+PR 2 (→ PR 1)        : +100 lignes  ← Reviewers voient SEULEMENT la liste
+PR 3 (→ PR 2)        : +120 lignes  ← Reviewers voient SEULEMENT la modification
+PR 4 (→ PR 3)        : +80 lignes   ← Reviewers voient SEULEMENT la suppression
+```
+
+Chaque PR ne montre que le diff de SA fonctionnalité, pas tout le code accumulé.
+
+**Le workflow de review :**
+
+```
+Jour 1 : Création des 4 PRs
+         Les reviewers peuvent commencer à review PR 1, 2, 3, 4 EN PARALLÈLE
+
+Jour 3 : PR 1 est approuvée et mergée dans main
+         → Changer la base de PR 2 pour pointer vers main
+           (GitHub le propose automatiquement)
+
+Jour 4 : PR 2 est approuvée et mergée
+         → Changer la base de PR 3 pour pointer vers main
+
+...
+```
+
+**Gérer les retours de review :**
+
+Si un reviewer demande des modifications sur PR 1 :
+
+```bash
+# Aller sur la branche 1
+git checkout contact/1-creer
+
+# Faire les corrections
+git add .
+git commit -m "fix: corrige la validation email"
+git push
+
+# IMPORTANT : propager aux branches suivantes
+git checkout contact/2-lister
+git rebase contact/1-creer
+git push --force-with-lease
+
+git checkout contact/3-modifier
+git rebase contact/2-lister
+git push --force-with-lease
+
+# Et ainsi de suite...
+```
+
+Oui, il faut rebaser en cascade. C'est le prix à payer, mais c'est mécanique.
+
+**Conseil :** Dans la description de chaque PR, indiquer la chaîne :
+
+```markdown
+## Contexte
+
+Cette PR fait partie d'une série :
+1. **Créer un contact** (#65) ← vous êtes ici
+2. Lister les contacts (#66)
+3. Modifier un contact (#67)
+4. Supprimer des contacts (#68)
+```
+
+**Schéma récapitulatif :**
+
+```
+AVANT (bloquant)                    APRÈS (stacked PRs)
+─────────────────                   ───────────────────
+
+main ←── PR1                        main ←── PR1
+          ↑                                   ↑
+       (attendre)                          PR2 (base: PR1)
+          ↑                                   ↑
+main ←── PR2                               PR3 (base: PR2)
+          ↑                                   ↑
+       (attendre)                          PR4 (base: PR3)
+          ↑
+main ←── PR3                        → Tout créé le jour 1
+          ↑                         → Reviews en parallèle
+       (attendre)                   → Merge dans l'ordre
+          ↑
+main ←── PR4
+
+⏱️ 12+ jours                        ⏱️ ~4 jours
+```
+
 ---
 
 ## Partie 6 : Les conflits
@@ -599,6 +885,39 @@ git pull origin main
 git branch -d communication/newsletter
 ```
 
+### Workflow PRs empilées
+
+```bash
+# 1. Créer les branches en cascade
+git checkout main && git pull origin main
+git checkout -b feature/1-creer
+# ... coder, commiter ...
+git checkout -b feature/2-lister    # part de feature/1-creer
+# ... coder, commiter ...
+git checkout -b feature/3-modifier  # part de feature/2-lister
+# ... coder, commiter ...
+
+# 2. Pousser toutes les branches
+git push -u origin feature/1-creer
+git push -u origin feature/2-lister
+git push -u origin feature/3-modifier
+
+# 3. Sur GitHub : créer les PRs avec les bonnes bases
+#    PR 1 : feature/1-creer → main
+#    PR 2 : feature/2-lister → feature/1-creer
+#    PR 3 : feature/3-modifier → feature/2-lister
+
+# 4. Propager une correction de PR 1 aux branches suivantes
+git checkout feature/1-creer
+# ... corriger, commiter, pousser ...
+git checkout feature/2-lister
+git rebase feature/1-creer
+git push --force-with-lease
+git checkout feature/3-modifier
+git rebase feature/2-lister
+git push --force-with-lease
+```
+
 ### En cas de problème
 
 | Situation                                              | Solution                                                     |
@@ -614,11 +933,15 @@ git branch -d communication/newsletter
 
 ## En résumé
 
+Ces pratiques sont des **recommandations**, pas des règles absolues. L'important est de comprendre *pourquoi* elles existent pour savoir quand les appliquer... et quand s'en écarter.
+
 1. **Communiquer** avant de commencer à travailler
 2. **Petites branches, petites PR** = moins de conflits, reviews plus rapides
-3. **Se synchroniser** régulièrement avec `main`
-4. **Finaliser** les PR en moins d'une semaine
-5. **Relire** les PR des autres
-6. **Demander de l'aide** en cas de blocage
+3. **Privilégier les slices fonctionnelles** quand c'est pertinent, mais ne pas hésiter à faire des PRs techniques quand ça a du sens
+4. **Connaître les PRs empilées** pour ne pas être bloqué pendant les reviews (utile dans certains contextes)
+5. **Se synchroniser** régulièrement avec `main`
+6. **Finaliser** les PR rapidement (idéalement moins d'une semaine)
+7. **Relire** les PR des autres
+8. **Demander de l'aide** en cas de blocage
 
 **Ne jamais hésiter à poser des questions. Mieux vaut demander que de tout casser.**
