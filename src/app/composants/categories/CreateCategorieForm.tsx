@@ -35,17 +35,19 @@ export function CreateCategorieForm({ onSuccess, onCancel, idCompagnie }: Props)
 
     return (
         <form onSubmit={handleSubmitCategorie}>
-            <Field.Label>
-                Nom <Field.RequiredIndicator />
-            </Field.Label>
+            <Field.Root>
+                <Field.Label>
+                    Nom <Field.RequiredIndicator />
+                </Field.Label>
 
-            <Input
-                type="text"
-                placeholder={"Répétition"}
-                value={nom}
-                onChange={(e) => setNom(e.target.value)}
-                required
-            />
+                <Input
+                    type="text"
+                    placeholder={"Répétition"}
+                    value={nom}
+                    onChange={(e) => setNom(e.target.value)}
+                    required
+                />
+            </Field.Root>
             <SimpleGrid columns={{ base: 4, md: 5 }} gap={{ base: "0px", md: "0px" }}>
                 <GridItem colSpan={{ base: 1, md: 1 }}></GridItem>
                 <GridItem colSpan={{ base: 1, md: 1 }}>
