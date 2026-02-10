@@ -12,6 +12,12 @@
     align-items: center;
     margin-bottom: 24px;
     padding: 0 8px;
+
+    .buttons-container {
+        display:flex;
+        flex-direction: row;
+        gap: 8px;
+    }
 }
 
 .header-center {
@@ -39,7 +45,10 @@
     cursor: pointer;
     transition: all 0.2s ease;
     font-size: 24px;
-    color: #4a4a4a;
+    svg {
+            fill: #000000;
+
+    }
 }
 
 .nav-button:hover {
