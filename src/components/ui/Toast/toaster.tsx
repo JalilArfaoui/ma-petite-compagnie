@@ -20,21 +20,33 @@ export const Toaster = () => {
 
 interface ToastOptions {
   type?: "success" | "error" | "loading" | "info" | "warning";
-  title: string;
-  description?: string;
+  title?: React.ReactNode;
+  description?: React.ReactNode;
+  duration?: number;
+  closable?: boolean;
+  id?: string;
 }
 
 export const toaster = {
   create: (options: ToastOptions) => {
     const type = options.type;
+    const title = options.title || "";
     if (type && type !== "loading" && type in toast) {
       const fn = toast[type as keyof typeof toast] as (
         message: string | React.ReactNode,
         data?: ExternalToast
       ) => string | number;
-      fn(options.title, { description: options.description });
+      fn(title, {
+        description: options.description,
+        duration: options.duration,
+        id: options.id,
+      });
     } else {
-      toast(options.title, { description: options.description });
+      toast(title, {
+        description: options.description,
+        duration: options.duration,
+        id: options.id,
+      });
     }
   },
   success: (options: ToastOptions) =>
