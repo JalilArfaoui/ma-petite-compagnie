@@ -468,11 +468,11 @@ Découpage vertical (par fonctionnalité)
 
 **Pourquoi le découpage vertical est souvent préférable :**
 
-| Découpage technique | Découpage fonctionnel |
-|---------------------|----------------------|
-| PR 1 : "j'ai un modèle mais je ne peux rien en faire" | PR 1 : "je peux créer un contact" |
-| Difficile à tester/valider | On peut tester la fonctionnalité complète |
-| Feedback abstrait | Feedback concret de l'utilisateur |
+| Découpage technique                                   | Découpage fonctionnel                     |
+| ----------------------------------------------------- | ----------------------------------------- |
+| PR 1 : "j'ai un modèle mais je ne peux rien en faire" | PR 1 : "je peux créer un contact"         |
+| Difficile à tester/valider                            | On peut tester la fonctionnalité complète |
+| Feedback abstrait                                     | Feedback concret de l'utilisateur         |
 
 **Une question utile à se poser :**
 
@@ -561,11 +561,11 @@ git push -u origin contact/4-supprimer
 
 C'est la clé : **chaque PR cible la branche précédente, pas `main`**.
 
-| PR | Branche | Base (cible) |
-|----|---------|--------------|
-| PR 1 | `contact/1-creer` | `main` |
-| PR 2 | `contact/2-lister` | `contact/1-creer` |
-| PR 3 | `contact/3-modifier` | `contact/2-lister` |
+| PR   | Branche               | Base (cible)         |
+| ---- | --------------------- | -------------------- |
+| PR 1 | `contact/1-creer`     | `main`               |
+| PR 2 | `contact/2-lister`    | `contact/1-creer`    |
+| PR 3 | `contact/3-modifier`  | `contact/2-lister`   |
 | PR 4 | `contact/4-supprimer` | `contact/3-modifier` |
 
 Sur GitHub, lors de la création de la PR, cliquer sur **"base: main"** et changer pour la branche cible :
@@ -634,6 +634,7 @@ Oui, il faut rebaser en cascade. C'est le prix à payer, mais c'est mécanique.
 ## Contexte
 
 Cette PR fait partie d'une série :
+
 1. **Créer un contact** (#65) ← vous êtes ici
 2. Lister les contacts (#66)
 3. Modifier un contact (#67)
@@ -933,7 +934,7 @@ git push --force-with-lease
 
 ## En résumé
 
-Ces pratiques sont des **recommandations**, pas des règles absolues. L'important est de comprendre *pourquoi* elles existent pour savoir quand les appliquer... et quand s'en écarter.
+Ces pratiques sont des **recommandations**, pas des règles absolues. L'important est de comprendre _pourquoi_ elles existent pour savoir quand les appliquer... et quand s'en écarter.
 
 1. **Communiquer** avant de commencer à travailler
 2. **Petites branches, petites PR** = moins de conflits, reviews plus rapides
