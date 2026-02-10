@@ -66,6 +66,7 @@ model UtilisateurBouchon {
   compagnie Compagnie? @relation(fields: [compagnieId], references: [id])
   droitModificationPlanification  Boolean @default(false)
 }
+// Partie groupe Communication
 enum Role {
   COMEDIEN
   TECHNICIEN
@@ -80,7 +81,7 @@ model Contact {
   email String? @unique
   tel String? 
   date_creation DateTime @default(now())
-
+}
 // partie groupe production
 
 enum StatutSpectacle {
