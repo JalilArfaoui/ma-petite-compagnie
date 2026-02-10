@@ -5,6 +5,7 @@ import {Box, Button, Input, Select, SimpleGrid} from "@/components/ui";
 import {Modal} from "@/components/ui/Modal/Modal";
 import {createListCollection, Field, GridItem} from "@chakra-ui/react";
 import {CreateLieuForm} from "@/app/composants/lieux/CreateLieuForm";
+import {CreateCategorieForm} from "@/app/composants/categories/CreateCategorieForm";
 
 type Props = {
   onSuccess?: (evenement: Evenement) => void;
@@ -26,7 +27,8 @@ export function CreateEvenementForm({
   const [dateFin, setDateFin] = useState("");
   const [lieuId, setLieuId] = useState<number | null>(null);
   const [categorieId, setCategorieId] = useState<number | null>(null);
-  const [showCreateLieu, setShowCreateLieu] = useState(false)
+  const [showCreateLieu, setShowCreateLieu] = useState(false);
+  const [showCreateCategorie, setShowCreateCategorie] = useState(false);
 
   async function handleSubmitEvenement(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -146,11 +148,18 @@ export function CreateEvenementForm({
         collection={categoriesCollection}
         onValueChange={(e) => setCategorieId(Number(e.value[0]))}
       >
+        <SimpleGrid columns={{ base: 2, md: 4 }} gap={{ base: "10px", md: "0px" }}>
+          <GridItem colSpan={{ base: 1, md: 4 }}>
+            <Box>
         <Field.Root required>
           <Field.Label>
             Catégorie <Field.RequiredIndicator />
           </Field.Label>
         </Field.Root>
+          </Box>
+        </GridItem>
+        <GridItem colSpan={{ base: 1, md: 3 }}>
+          <Box>
         <Select.Control>
           <Select.Trigger>
             <Select.ValueText placeholder={"Sélectionner une catégorie"} />
@@ -170,9 +179,18 @@ export function CreateEvenementForm({
             ))}
           </Select.Content>
         </Select.Positioner>
+          </Box>
+        </GridItem>
+          {!showCreateCategorie && (
+              <GridItem colSpan={{ base: 1, md: 1 }}>
+                <Box>
+                  <Button onClick={() => setShowCreateCategorie(true)}>+</Button>
+                </Box>
+              </GridItem>
+          )}
+        </SimpleGrid>
       </Select>
       {/* TODO Afficher les catégories existantes associées à la compagnie */}
-      {/* TODO Possibilité d'ajouter une catégorie directement depuis ici (comme lieu) */}
       {/* TODO pouvoir sélectionner des participants */}
       <SimpleGrid columns={{ base: 3, md: 3 }}>
           <GridItem colSpan={{ base: 1, md: 1 }}>
@@ -196,6 +214,19 @@ export function CreateEvenementForm({
             />
           </Modal>
       )}
+        {showCreateCategorie && (
+            <Modal
+                open={showCreateCategorie}
+                onClose={() => setShowCreateCategorie(false)}>
+              <CreateCategorieForm
+                  idCompagnie={compagnieId}
+                  onSuccess={() => {
+                    setShowCreateCategorie(false)
+                  }}
+                  onCancel={() => setShowCreateCategorie(false)}
+              />
+            </Modal>
+        )}
     </div>
   );
 }
