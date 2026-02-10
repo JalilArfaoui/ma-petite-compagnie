@@ -18,6 +18,38 @@ function resultOf<T>(succes: boolean, message: string, contact: T | null): Resul
   return { succes: succes, message: message, contact: contact };
 }
 
+function validerTelephone(tel: string) {
+  let valide = true;
+  if (tel && tel?.at(0) === "+") {
+    if (
+      tel.length === 18 &&
+      tel.at(3) === " " &&
+      tel.charCodeAt(1) >= 38 &&
+      tel.charCodeAt(1) <= 57 &&
+      tel.charCodeAt(2) >= 38 &&
+      tel.charCodeAt(2) <= 57
+    ) {
+      valide = true;
+    } else if (
+      tel.length === 13 &&
+      tel.charCodeAt(1) >= 38 &&
+      tel.charCodeAt(1) <= 57 &&
+      tel.charCodeAt(2) >= 38 &&
+      tel.charCodeAt(2) <= 57
+    ) {
+      valide = true;
+    } else {
+      valide = false;
+    }
+    if (!valide) {
+      return resultOf(false, "L'indicatif est mal écrit", null);
+    }
+    const telRegex = /^(\+[0-9][0-9] )?(([0-9][0-9][-]){4}[0-9][0-9])|([0-9]{10})$/;
+    if (!telRegex.test(tel)) {
+      return resultOf(false, "Le numéro de téléphone n'est pas valide.", null);
+    }
+  }
+}
 /**
  * Méthode pour vérifier les données d'un contact;
  * @param contact Le contact à vérifier.
@@ -41,9 +73,9 @@ function validerContact(contact: ContactInformation) {
   }
 
   if (contact.tel) {
-    const telRegex = /^(([0-9][0-9][-]){4}[0-9][0-9])|([0-9]{10})$/;
-    if (!telRegex.test(contact.tel)) {
-      return resultOf(false, "Le numéro de téléphone n'est pas valide.", null);
+    const resultat = validerTelephone(contact.tel);
+    if (resultat && !resultat?.succes) {
+      return resultat;
     }
   }
   return resultOf(true, "", null);
