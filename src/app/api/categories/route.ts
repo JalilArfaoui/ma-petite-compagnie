@@ -19,7 +19,7 @@ export async function POST(req: NextRequest){
             }
         });
         return NextResponse.json(categorie, {status:201})
-    } catch (error) {   
+    } catch (error) {
         console.error(error);
         return NextResponse.json({message:"Erreur serveur:" + error}, {status:500});
     }
