@@ -1,5 +1,5 @@
 "use server";
-import { Contact, Prisma } from "@prisma/client";
+import { Contact } from "@prisma/client";
 export type ContactInformation = Omit<Contact, "id" | "date_creation">;
 import { prisma } from "@/lib/prisma";
 /**
