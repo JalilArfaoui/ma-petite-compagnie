@@ -20,6 +20,7 @@ model Lieu {
 model Categorie {
   id         Int         @id @default(autoincrement())
   nom        String
+  couleur    String     @default("#000000")
   evenements Evenement[]
   idCompagnie Int
   compagnie Compagnie @relation(fields: [idCompagnie], references: [id])

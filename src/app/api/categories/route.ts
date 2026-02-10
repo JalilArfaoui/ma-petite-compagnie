@@ -3,18 +3,20 @@ import {prisma} from "@/lib/prisma";
 
 type CreateCategorieBody = {
     nom: string;
+    couleur:string;
     idCompagnie: number;
 }
 export async function POST(req: NextRequest){
     try{
         const body: CreateCategorieBody = await req.json();
-        const { nom, idCompagnie } = body;
-        if (!nom || !idCompagnie) {
+        const { nom,couleur, idCompagnie } = body;
+        if (!nom || !idCompagnie || !couleur) {
             return NextResponse.json({message: "Des informations sont manquantes"}, {status: 400});
         }
         const categorie = await prisma.categorie.create({
             data:{
                 nom,
+                couleur,
                 idCompagnie
             }
         });

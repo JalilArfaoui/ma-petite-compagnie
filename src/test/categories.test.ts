@@ -14,15 +14,18 @@ describe("POST /api/categories", () => {
     it("crée une catégorie et retourne 201", async () => {
         const mockedCreate = vi.mocked(prisma.categorie.create);
         const nom = "Répétition";
+        const couleur = "#F7A400";
         mockedCreate.mockResolvedValue({
             id:1,
             nom:nom,
+            couleur:couleur,
             idCompagnie:1
         });
         const req = new NextRequest("http://localhost/api/categories", {
             method: "POST",
             body:JSON.stringify({
                 nom:nom,
+                couleur:couleur,
                 idCompagnie:1
             })
         });
