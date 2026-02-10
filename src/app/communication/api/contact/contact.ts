@@ -1,5 +1,5 @@
 "use server";
-import { Contact } from "@prisma/client";
+import { Contact, Prisma } from "@prisma/client";
 export type ContactInformation = Omit<Contact, "id" | "date_creation">;
 import { prisma } from "@/lib/prisma";
 /**
@@ -129,12 +129,20 @@ export async function modifierContact(contactId: number, nouveauContact: Contact
   if (!verificationResultat.succes) {
     return verificationResultat;
   }
-  if (nouveauContact.email && (await contactAvecMemeEmail(nouveauContact.email))) {
-    return resultOf(
-      false,
-      "Cette email est déjà utilisé. Veuillez utiliser un email différent.",
-      null
-    );
+  if (nouveauContact.email) {
+    const contactExistant = await prisma.contact.findFirst({
+      where: {
+        email: nouveauContact.email,
+        NOT: { id: contactId },
+      },
+    });
+    if (contactExistant) {
+      return resultOf(
+        false,
+        "Cette email est déjà utilisé. Veuillez utiliser un email différent.",
+        null
+      );
+    }
   }
   try {
     const contactModifie = await prisma.contact.update({
