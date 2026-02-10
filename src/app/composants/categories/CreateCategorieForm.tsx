@@ -13,6 +13,7 @@ type Props = {
 
 export function CreateCategorieForm({ onSuccess, onCancel, idCompagnie }: Props) {
     const [nom, setNom] = useState("");
+    const [couleur, setCouleur] = useState("#000000");
 
     async function handleSubmitCategorie(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -35,11 +36,10 @@ export function CreateCategorieForm({ onSuccess, onCancel, idCompagnie }: Props)
 
     return (
         <form onSubmit={handleSubmitCategorie}>
-            <Field.Root>
+            <Field.Root required>
                 <Field.Label>
                     Nom <Field.RequiredIndicator />
                 </Field.Label>
-
                 <Input
                     type="text"
                     placeholder={"Répétition"}
@@ -47,6 +47,16 @@ export function CreateCategorieForm({ onSuccess, onCancel, idCompagnie }: Props)
                     onChange={(e) => setNom(e.target.value)}
                     required
                 />
+            </Field.Root>
+            <Field.Root>
+                <Field.Label>
+                        Couleur
+                </Field.Label>
+                {/* TODO montrer une card représentative d'un évènement pour montrer la couleur */}
+                <Input
+                    type="color"
+                    value={couleur}
+                    onChange={(e) => setCouleur(e.target.value)}/>
             </Field.Root>
             <SimpleGrid columns={{ base: 4, md: 5 }} gap={{ base: "0px", md: "0px" }}>
                 <GridItem colSpan={{ base: 1, md: 1 }}></GridItem>
