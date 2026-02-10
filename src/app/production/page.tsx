@@ -18,6 +18,8 @@ import {
 
 export const dynamic = "force-dynamic";
 
+const redish = "#D00039";
+
 /* =========================
    CREATE
 ========================= */
@@ -135,13 +137,13 @@ export default async function ProductionPage() {
       <Container maxW="container.xl">
         <VStack gap={8} align="stretch">
           {/* Header */}
-          <Heading size="2xl" color="#D00039" textAlign="center" fontWeight="bold">
+          <Heading size="2xl" color={redish} textAlign="center" fontWeight="bold">
             🎭 Gestion des Spectacles
           </Heading>
 
           {/* Create Form */}
-          <Card.Root p={6} boxShadow="lg" borderTopWidth="4px" borderTopColor="#D00039" bg="white">
-            <Heading size="md" mb={6} color="#D00039">
+          <Card.Root p={6} boxShadow="lg" borderTopWidth="4px" borderTopColor={redish} bg="white">
+            <Heading size="md" mb={6} color={redish}>
               ➕ Ajouter un spectacle
             </Heading>
 
@@ -155,7 +157,7 @@ export default async function ProductionPage() {
                     name="titre"
                     placeholder="Titre du spectacle"
                     required
-                    focusbordercolor="#D00039"
+                    _focus={{ borderColor: redish, boxShadow: `0 0 0 1px ${redish}` }}
                   />
                 </Box>
 
@@ -167,7 +169,7 @@ export default async function ProductionPage() {
                     name="type"
                     placeholder="Type de spectacle"
                     required
-                    focusbordercolor="#D00039"
+                    _focus={{ borderColor: redish, boxShadow: `0 0 0 1px ${redish}` }}
                   />
                 </Box>
 
@@ -179,7 +181,7 @@ export default async function ProductionPage() {
                     name="troupe"
                     placeholder="Nom de la troupe"
                     required
-                    focusbordercolor="#D00039"
+                    _focus={{ borderColor: redish, boxShadow: `0 0 0 1px ${redish}` }}
                   />
                 </Box>
 
@@ -196,7 +198,7 @@ export default async function ProductionPage() {
                     borderColor="gray.300"
                     borderRadius="md"
                     w="100%"
-                    _focus={{ borderColor: "#D00039", boxShadow: "0 0 0 1px #D00039" }}
+                    _focus={{ borderColor: redish, boxShadow: `0 0 0 1px ${redish}` }}
                   >
                     <option value="EN_CREATION">En Création</option>
                     <option value="EN_REPETITION">En Répétition</option>
@@ -212,7 +214,7 @@ export default async function ProductionPage() {
                   <Input
                     name="description"
                     placeholder="Description du spectacle"
-                    focusbordercolor="#D00039"
+                    _focus={{ borderColor: redish, boxShadow: `0 0 0 1px ${redish}` }}
                   />
                 </Box>
 
@@ -225,14 +227,14 @@ export default async function ProductionPage() {
                     type="number"
                     step="0.01"
                     placeholder="0.00"
-                    focusbordercolor="#D00039"
+                    _focus={{ borderColor: redish, boxShadow: `0 0 0 1px ${redish}` }}
                   />
                 </Box>
               </Grid>
 
               <Button
                 type="submit"
-                bg="#D00039"
+                bg={redish}
                 color="white"
                 mt={6}
                 size="lg"
@@ -246,11 +248,11 @@ export default async function ProductionPage() {
           </Card.Root>
 
           {/* Separator */}
-          <Box h="2px" bg="#D00039" />
+          <Box h="2px" bg={redish} />
 
           {/* Spectacles List */}
           <Box>
-            <Heading size="lg" mb={6} color="#D00039">
+            <Heading size="lg" mb={6} color={redish}>
               📋 Liste des spectacles ({spectacles.length})
             </Heading>
 
@@ -261,7 +263,7 @@ export default async function ProductionPage() {
                   p={6}
                   boxShadow="md"
                   borderLeftWidth="4px"
-                  borderLeftColor="#D00039"
+                  borderLeftColor={redish}
                   bg="white"
                   transition="all 0.2s"
                   _hover={{ boxShadow: "xl", transform: "translateY(-2px)" }}
@@ -273,7 +275,7 @@ export default async function ProductionPage() {
                         <Text fontSize="xs" color="gray.500" mb={1}>
                           #{s.id}
                         </Text>
-                        <Heading size="md" color="#D00039" mb={2}>
+                        <Heading size="md" color={redish} mb={2}>
                           {s.titre}
                         </Heading>
                         <Badge colorPalette={getStatusColor(s.statut)} mb={2}>
@@ -316,19 +318,19 @@ export default async function ProductionPage() {
                             name="titre"
                             defaultValue={s.titre}
                             size="sm"
-                            focusbordercolor="#D00039"
+                            _focus={{ borderColor: redish, boxShadow: `0 0 0 1px ${redish}` }}
                           />
                           <Input
                             name="type"
                             defaultValue={s.type}
                             size="sm"
-                            focusbordercolor="#D00039"
+                            _focus={{ borderColor: redish, boxShadow: `0 0 0 1px ${redish}` }}
                           />
                           <Input
                             name="troupe"
                             defaultValue={s.troupe}
                             size="sm"
-                            focusbordercolor="#D00039"
+                            _focus={{ borderColor: redish, boxShadow: `0 0 0 1px ${redish}` }}
                           />
                           <Box
                             as="select"
@@ -339,7 +341,7 @@ export default async function ProductionPage() {
                             borderWidth="1px"
                             borderColor="gray.300"
                             borderRadius="md"
-                            _focus={{ borderColor: "#D00039", boxShadow: "0 0 0 1px #D00039" }}
+                            _focus={{ borderColor: redish, boxShadow: `0 0 0 1px ${redish}` }}
                           >
                             <option value="EN_CREATION">En Création</option>
                             <option value="EN_REPETITION">En Répétition</option>
@@ -352,7 +354,7 @@ export default async function ProductionPage() {
                           defaultValue={s.description ?? ""}
                           size="sm"
                           placeholder="Description"
-                          focusbordercolor="#D00039"
+                          _focus={{ borderColor: redish, boxShadow: `0 0 0 1px ${redish}` }}
                         />
                         <Input
                           name="budget_initial"
@@ -360,13 +362,13 @@ export default async function ProductionPage() {
                           step="0.01"
                           defaultValue={s.budget_initial}
                           size="sm"
-                          focusbordercolor="#D00039"
+                          _focus={{ borderColor: redish, boxShadow: `0 0 0 1px ${redish}` }}
                         />
 
                         <HStack gap={2}>
                           <Button
                             type="submit"
-                            bg="#D00039"
+                            bg={redish}
                             color="white"
                             size="sm"
                             _hover={{ bg: "#a00030" }}
