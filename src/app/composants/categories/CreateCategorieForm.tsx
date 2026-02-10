@@ -1,6 +1,5 @@
 "use client";
 
-import type {Lieu} from "@/types/lieu";
 import {useState} from "react";
 import {Categorie} from "@prisma/client";
 import {Field, GridItem} from "@chakra-ui/react";
@@ -42,7 +41,7 @@ export function CreateCategorieForm({ onSuccess, onCancel, idCompagnie }: Props)
 
             <Input
                 type="text"
-                placeholder={"Opéra National du Capitole"}
+                placeholder={"Répétition"}
                 value={nom}
                 onChange={(e) => setNom(e.target.value)}
                 required
