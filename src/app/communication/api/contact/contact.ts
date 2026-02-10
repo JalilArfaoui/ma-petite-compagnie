@@ -24,17 +24,17 @@ function validerTelephone(tel: string) {
     if (
       tel.length === 18 &&
       tel.at(3) === " " &&
-      tel.charCodeAt(1) >= 38 &&
+      tel.charCodeAt(1) >= 48 &&
       tel.charCodeAt(1) <= 57 &&
-      tel.charCodeAt(2) >= 38 &&
+      tel.charCodeAt(2) >= 48 &&
       tel.charCodeAt(2) <= 57
     ) {
       valide = true;
     } else if (
       tel.length === 13 &&
-      tel.charCodeAt(1) >= 38 &&
+      tel.charCodeAt(1) >= 48 &&
       tel.charCodeAt(1) <= 57 &&
-      tel.charCodeAt(2) >= 38 &&
+      tel.charCodeAt(2) >= 48 &&
       tel.charCodeAt(2) <= 57
     ) {
       valide = true;
