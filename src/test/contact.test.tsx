@@ -1,4 +1,8 @@
-import { creerContact, listerContacts } from "../app/communication/api/contact/contact";
+import {
+  creerContact,
+  listerContacts,
+  modifierContact,
+} from "../app/communication/api/contact/contact";
 import { describe, it, expect } from "vitest";
 import { creerObjetContactAvecNom } from "./testContactUtility";
 
@@ -31,6 +35,14 @@ describe("Contact", () => {
     if (contactsListe.donnee?.length == 1) {
       expect(contactsListe.donnee[0]).toStrictEqual(created);
     }
+  });
+  it.skip("Modifier un contact", async () => {
+    const created = await creerUnContactAvecNom("TestModifier");
+    const modifier = await modifierContact(
+      created.id,
+      creerObjetContactAvecNom("TestModification")
+    );
+    expect(modifier.donnee?.nom).toBe("TestModification");
   });
   it("Créer un contact sans nom", async () => {
     const result = await creerContact(creerObjetContactAvecNom(""));

@@ -60,7 +60,13 @@ export function ContactDetails({
           </Box>
           <Box>
             Rôles
-            <RadioGroup name="role" value={role} onValueChange={(v) => setRole(v.value as Role)}>
+            <RadioGroup
+              name="role"
+              value={role}
+              onValueChange={(v) => {
+                setRole(v.value as Role);
+              }}
+            >
               <Radio value="COMEDIEN">Comedien</Radio>
               <Radio value="TECHNICIEN">Technicien</Radio>
               <Radio value="PARTENAIRE">Partenaire</Radio>
