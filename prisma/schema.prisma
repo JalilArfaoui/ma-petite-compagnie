@@ -66,3 +66,23 @@ model UtilisateurBouchon {
   compagnie Compagnie? @relation(fields: [compagnieId], references: [id])
   droitModificationPlanification  Boolean @default(false)
 }
+
+// partie groupe production
+
+enum StatutSpectacle {
+  EN_CREATION
+  EN_REPETITION
+  EN_TOURNEE
+  ARCHIVE
+}
+
+model Spectacle {
+  id Int @id @default(autoincrement())
+  titre String
+  description String?
+  type String
+  statut StatutSpectacle
+  troupe String
+  budget_initial Float @default(0)
+}
+
