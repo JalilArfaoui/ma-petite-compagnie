@@ -110,13 +110,11 @@ export function CreateEvenementForm({
               </Select.Positioner>
             </Box>
           </GridItem>
-          {!showCreateLieu && (
-              <GridItem colSpan={{ base: 1, md: 1 }}>
-                <Box>
-                  <Button onClick={() => setShowCreateLieu(true)}>+</Button>
-                </Box>
-              </GridItem>
-          )}
+            <GridItem colSpan={{ base: 1, md: 1 }}>
+              <Box>
+                <Button onClick={() => setShowCreateLieu(true)}>+</Button>
+              </Box>
+            </GridItem>
         </SimpleGrid>
       </Select>
       {/* Format des datetime-local YYYY-MM-DDTHH:mm*/}
@@ -181,13 +179,11 @@ export function CreateEvenementForm({
         </Select.Positioner>
           </Box>
         </GridItem>
-          {!showCreateCategorie && (
-              <GridItem colSpan={{ base: 1, md: 1 }}>
-                <Box>
-                  <Button onClick={() => setShowCreateCategorie(true)}>+</Button>
-                </Box>
-              </GridItem>
-          )}
+          <GridItem colSpan={{ base: 1, md: 1 }}>
+            <Box>
+              <Button onClick={() => setShowCreateCategorie(true)}>+</Button>
+            </Box>
+          </GridItem>
         </SimpleGrid>
       </Select>
       {/* TODO Afficher les catégories existantes associées à la compagnie */}
