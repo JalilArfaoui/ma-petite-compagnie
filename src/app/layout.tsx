@@ -1,8 +1,7 @@
 import { Metadata } from "next";
 import "./globals.css";
-import { Providers } from "./providers";
+import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/ui";
-import StyledComponentsRegistry from "@/lib/registry";
 
 export const metadata: Metadata = {
   title: "Ma Petite Compagnie",
@@ -17,12 +16,15 @@ export default function RootLayout({
   return (
     <html lang="fr" suppressHydrationWarning>
       <body suppressHydrationWarning>
-        <Providers>
-          <StyledComponentsRegistry>
-            <Header />
-            <main>{children}</main>
-          </StyledComponentsRegistry>
-        </Providers>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Header />
+          <main>{children}</main>
+        </ThemeProvider>
       </body>
     </html>
   );

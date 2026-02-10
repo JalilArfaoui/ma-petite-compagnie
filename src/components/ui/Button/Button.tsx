@@ -1,17 +1,53 @@
-import { ButtonProps } from "@chakra-ui/react";
-import { StyledButton } from "./Button.style";
+import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "@/lib/utils";
 
-interface CustomButtonProps extends ButtonProps {
+const buttonVariants = cva(
+  "cursor-pointer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  {
+    variants: {
+      variant: {
+        solid:
+          "bg-[#d00039] text-white hover:bg-[#c00039] active:bg-[#960030] rounded-[12px] font-serif italic font-bold",
+        destructive: "bg-red-500 text-white hover:bg-red-500/90 rounded-[12px]",
+        outline:
+          "bg-white border text-[#43566b] border-[#e1e8f1] hover:bg-[#eef2f7] active:bg-[#e5e9ee] font-serif rounded-[12px]",
+        secondary: "bg-slate-100 text-slate-900 hover:bg-slate-100/80 rounded-[12px]",
+        ghost: "hover:bg-slate-100 hover:text-slate-900 rounded-[12px]",
+        link: "text-slate-900 underline-offset-4 hover:underline",
+      },
+      size: {
+        default: "px-8 py-4 gap-2 text-base",
+        sm: "px-4 py-3 text-sm",
+        lg: "px-8 py-6 text-lg",
+        icon: "h-10 w-10",
+      },
+    },
+    defaultVariants: {
+      variant: "solid",
+      size: "default",
+    },
+  }
+);
+
+interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
+  asChild?: boolean;
   icon?: React.ReactNode;
   iconSide?: "left" | "right";
 }
 
-export const Button = ({ icon, iconSide = "left", children, ...props }: CustomButtonProps) => {
-  return (
-    <StyledButton {...props}>
-      {icon && iconSide === "left" && icon}
-      {children}
-      {icon && iconSide === "right" && icon}
-    </StyledButton>
-  );
-};
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant, size, icon, iconSide = "left", children, ...props }, ref) => {
+    return (
+      <button className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props}>
+        {icon && iconSide === "left" && <span className="mr-2">{icon}</span>}
+        {children}
+        {icon && iconSide === "right" && <span className="ml-2">{icon}</span>}
+      </button>
+    );
+  }
+);
+Button.displayName = "Button";
+
+export { Button, buttonVariants };

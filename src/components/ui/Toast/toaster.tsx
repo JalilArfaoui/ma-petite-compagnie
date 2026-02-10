@@ -1,39 +1,33 @@
 "use client";
-
-import {
-  Toaster as ChakraToaster,
-  Portal,
-  Spinner,
-  Stack,
-  Toast,
-  createToaster,
-} from "@chakra-ui/react";
-
-export const toaster = createToaster({
-  placement: "bottom-end",
-  pauseOnPageIdle: true,
-});
+import { Toaster as Sonner } from "sonner";
+import { toast } from "sonner";
 
 export const Toaster = () => {
   return (
-    <Portal>
-      <ChakraToaster toaster={toaster} insetInline={{ mdDown: "4" }}>
-        {(toast) => (
-          <Toast.Root width={{ md: "sm" }}>
-            {toast.type === "loading" ? (
-              <Spinner size="sm" color="blue.solid" />
-            ) : (
-              <Toast.Indicator />
-            )}
-            <Stack gap="1" flex="1" maxWidth="100%">
-              {toast.title && <Toast.Title>{toast.title}</Toast.Title>}
-              {toast.description && <Toast.Description>{toast.description}</Toast.Description>}
-            </Stack>
-            {toast.action && <Toast.ActionTrigger>{toast.action.label}</Toast.ActionTrigger>}
-            {toast.closable && <Toast.CloseTrigger />}
-          </Toast.Root>
-        )}
-      </ChakraToaster>
-    </Portal>
+    <Sonner
+      className="toaster group"
+      toastOptions={{
+        classNames: {
+          toast:
+            "group toast group-[.toaster]:bg-white group-[.toaster]:text-slate-950 group-[.toaster]:border-slate-200 group-[.toaster]:shadow-lg",
+          description: "group-[.toast]:text-slate-500",
+          actionButton: "group-[.toast]:bg-slate-900 group-[.toast]:text-slate-50",
+          cancelButton: "group-[.toast]:bg-slate-100 group-[.toast]:text-slate-500",
+        },
+      }}
+    />
   );
+};
+
+export const toaster = {
+  create: (options: any) => {
+    const fn =
+      options.type && options.type !== "loading" && toast[options.type]
+        ? toast[options.type]
+        : toast;
+    fn(options.title, { description: options.description });
+  },
+  success: (options: any) => toast.success(options.title, { description: options.description }),
+  error: (options: any) => toast.error(options.title, { description: options.description }),
+  // ...
 };
