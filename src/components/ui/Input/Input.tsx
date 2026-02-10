@@ -1,7 +1,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+export type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, ...props }, ref) => {
@@ -53,13 +53,13 @@ const InputWithExtensions = Object.assign(Input, {
   Group: InputGroup,
   LeftElement: InputLeftElement,
   RightElement: InputRightElement,
-  LeftAddon: ({ className, ...props }: any) => (
+  LeftAddon: ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
     <div
       className={cn("px-3 py-2 border border-r-0 rounded-l-md bg-slate-50", className)}
       {...props}
     />
   ),
-  RightAddon: ({ className, ...props }: any) => (
+  RightAddon: ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
     <div
       className={cn("px-3 py-2 border border-l-0 rounded-r-md bg-slate-50", className)}
       {...props}

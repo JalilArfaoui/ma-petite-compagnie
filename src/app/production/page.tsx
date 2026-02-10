@@ -19,8 +19,6 @@ import { StatutSpectacle } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
-const redish = "#D00039";
-
 /* =========================
    CREATE
 ========================= */
@@ -247,7 +245,7 @@ export default async function ProductionPage() {
                         <Heading as="h4" className="text-[#D00039] mb-2">
                           {s.titre}
                         </Heading>
-                        <Badge variant={getStatusColor(s.statut) as any} className="mb-2">
+                        <Badge variant={getStatusColor(s.statut)} className="mb-2">
                           {getStatusLabel(s.statut)}
                         </Badge>
                       </Box>

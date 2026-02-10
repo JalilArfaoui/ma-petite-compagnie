@@ -1,6 +1,5 @@
 "use client";
-import { Toaster as Sonner } from "sonner";
-import { toast } from "sonner";
+import { Toaster as Sonner, toast, type ExternalToast } from "sonner";
 
 export const Toaster = () => {
   return (
@@ -19,15 +18,28 @@ export const Toaster = () => {
   );
 };
 
+interface ToastOptions {
+  type?: "success" | "error" | "loading" | "info" | "warning";
+  title: string;
+  description?: string;
+}
+
 export const toaster = {
-  create: (options: any) => {
-    const fn =
-      options.type && options.type !== "loading" && toast[options.type]
-        ? toast[options.type]
-        : toast;
-    fn(options.title, { description: options.description });
+  create: (options: ToastOptions) => {
+    const type = options.type;
+    if (type && type !== "loading" && type in toast) {
+      const fn = toast[type as keyof typeof toast] as (
+        message: string | React.ReactNode,
+        data?: ExternalToast
+      ) => string | number;
+      fn(options.title, { description: options.description });
+    } else {
+      toast(options.title, { description: options.description });
+    }
   },
-  success: (options: any) => toast.success(options.title, { description: options.description }),
-  error: (options: any) => toast.error(options.title, { description: options.description }),
+  success: (options: ToastOptions) =>
+    toast.success(options.title, { description: options.description }),
+  error: (options: ToastOptions) =>
+    toast.error(options.title, { description: options.description }),
   // ...
 };

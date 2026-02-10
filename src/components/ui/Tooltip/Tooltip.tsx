@@ -26,7 +26,20 @@ TooltipContent.displayName = TooltipPrimitive.Content.displayName;
 
 const TooltipArrow = TooltipPrimitive.Arrow;
 
-const TooltipWrapper = ({ label, children, showArrow, contentProps, ...props }: any) => {
+interface TooltipWrapperProps extends React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Root> {
+  label: React.ReactNode;
+  children: React.ReactNode;
+  showArrow?: boolean;
+  contentProps?: React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>;
+}
+
+const TooltipWrapper = ({
+  label,
+  children,
+  showArrow,
+  contentProps,
+  ...props
+}: TooltipWrapperProps) => {
   return (
     <TooltipProvider>
       <TooltipRoot {...props}>

@@ -90,8 +90,12 @@ const TableExport = Object.assign(Table, {
   Row: TableRow,
   Cell: TableCell,
   Caption: TableCaption,
-  Footer: ({ children, ...props }: any) => <tfoot {...props}>{children}</tfoot>,
-  Container: ({ children }: any) => <div className="overflow-x-auto">{children}</div>,
+  Footer: ({ children, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) => (
+    <tfoot {...props}>{children}</tfoot>
+  ),
+  Container: ({ children }: { children: React.ReactNode }) => (
+    <div className="overflow-x-auto">{children}</div>
+  ),
 });
 
 export { TableExport as Table };

@@ -11,7 +11,7 @@ export const RadioGroup = React.forwardRef<
     value?: string;
     name?: string;
   }
->(({ className, children, onValueChange, value, name, ...props }, ref) => {
+>(({ className, children, ...props }, ref) => {
   // Basic Context provider could be here but for simplicity we assume children are Radios
   // To support `value` prop propagation we'd need context.
   // For now, let's just render children in a div.

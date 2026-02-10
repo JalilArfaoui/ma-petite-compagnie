@@ -1,5 +1,5 @@
 "use client";
-import { Heading, Container, Stack, Text, Box, Button, Card } from "@/components/ui";
+import { Heading, Container, Stack, Text, Card } from "@/components/ui";
 import { FaHome } from "react-icons/fa";
 
 export default function Home() {

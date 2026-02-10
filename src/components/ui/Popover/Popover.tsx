@@ -29,11 +29,13 @@ const PopoverExport = Object.assign(PopoverRoot, {
   Root: PopoverRoot,
   Trigger: PopoverTrigger,
   Content: PopoverContent,
-  Body: ({ className, ...props }: any) => <div className={cn("p-4", className)} {...props} />,
-  Header: ({ className, ...props }: any) => (
+  Body: ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+    <div className={cn("p-4", className)} {...props} />
+  ),
+  Header: ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
     <div className={cn("px-4 py-2 font-semibold border-b", className)} {...props} />
   ),
-  Footer: ({ className, ...props }: any) => (
+  Footer: ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
     <div className={cn("px-4 py-2 border-t", className)} {...props} />
   ),
   Arrow: PopoverPrimitive.Arrow,
