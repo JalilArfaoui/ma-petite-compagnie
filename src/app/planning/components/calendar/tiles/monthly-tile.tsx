@@ -1,5 +1,6 @@
-import { Evenement } from "../calendar";
+import { Evenement } from "@prisma/client";
 import isToday from "../methods/isToday";
+import { CalendarDay } from "../calendar";
 
 
 export default function MonthlyTile({
@@ -9,24 +10,12 @@ export default function MonthlyTile({
     onEventClick,
     slotHeight,
 } : {
-    calDay: { day: number; month: number; year: number; isCurrentMonth: boolean; events: Evenement[] },
+    calDay: CalendarDay,
     index: number,
     onEventClick?: (event: Evenement) => void,
     viewType: 'monthly' | 'weekly',
     slotHeight?: number
 }) {
-
-    /*
-
-        La hauteur d'un jour correspond à 100%.
-        L'idée est de placer les évènements, lorsqu'ils la viewType='weekly', de façon absolue en fonction de leur heure de début et de fin.
-        Par exemple, un évènement qui commence à 9h00 et finit à 11h00 occupera une hauteur de (2/24)*100% = 8.33%,
-        et sera positionné à partir de (9/24)*100% = 37.5% du haut du conteneur du jour.
-        Pour référénce, on tiendra compte des données suivantes:
-        - La hauteur du header du jour (numéro du jour) : 50px
-        - La hauteur d'une tile de créneau horaire : 35.6px
-
-    */
 
     
 
