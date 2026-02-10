@@ -15,6 +15,7 @@ import {
   VStack,
   HStack,
 } from "@chakra-ui/react";
+import { StatutSpectacle } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
@@ -29,7 +30,7 @@ async function createSpectacle(formData: FormData) {
   const titre = formData.get("titre") as string;
   const description = formData.get("description") as string;
   const type = formData.get("type") as string;
-  const statut = formData.get("statut") as any;
+  const statut = formData.get("statut") as StatutSpectacle;
   const troupe = formData.get("troupe") as string;
   const budget_initial = Number(formData.get("budget_initial")) || 0;
 
@@ -57,7 +58,7 @@ async function updateSpectacle(formData: FormData) {
   const titre = formData.get("titre") as string;
   const description = formData.get("description") as string;
   const type = formData.get("type") as string;
-  const statut = formData.get("statut") as any;
+  const statut = formData.get("statut") as StatutSpectacle;
   const troupe = formData.get("troupe") as string;
   const budget_initial = Number(formData.get("budget_initial")) || 0;
 
@@ -189,22 +190,22 @@ export default async function ProductionPage() {
                   <Text fontWeight="semibold" mb={2}>
                     Statut *
                   </Text>
-                  <Box
-                    as="select"
+                  <select
                     name="statut"
                     required
-                    p={2}
-                    borderWidth="1px"
-                    borderColor="gray.300"
-                    borderRadius="md"
-                    w="100%"
-                    _focus={{ borderColor: redish, boxShadow: `0 0 0 1px ${redish}` }}
+                    style={{
+                      padding: "0.5rem",
+                      borderWidth: "1px",
+                      borderColor: "rgb(203, 213, 225)",
+                      borderRadius: "0.375rem",
+                      width: "100%",
+                    }}
                   >
                     <option value="EN_CREATION">En Création</option>
                     <option value="EN_REPETITION">En Répétition</option>
                     <option value="EN_TOURNEE">En Tournée</option>
                     <option value="ARCHIVE">Archivé</option>
-                  </Box>
+                  </select>
                 </Box>
 
                 <Box gridColumn={{ base: "1", md: "1 / -1" }}>
@@ -332,22 +333,22 @@ export default async function ProductionPage() {
                             size="sm"
                             _focus={{ borderColor: redish, boxShadow: `0 0 0 1px ${redish}` }}
                           />
-                          <Box
-                            as="select"
+                          <select
                             name="statut"
                             defaultValue={s.statut}
-                            fontSize="sm"
-                            p={1}
-                            borderWidth="1px"
-                            borderColor="gray.300"
-                            borderRadius="md"
-                            _focus={{ borderColor: redish, boxShadow: `0 0 0 1px ${redish}` }}
+                            style={{
+                              fontSize: "0.875rem",
+                              padding: "0.25rem",
+                              borderWidth: "1px",
+                              borderColor: "rgb(203, 213, 225)",
+                              borderRadius: "0.375rem",
+                            }}
                           >
                             <option value="EN_CREATION">En Création</option>
                             <option value="EN_REPETITION">En Répétition</option>
                             <option value="EN_TOURNEE">En Tournée</option>
                             <option value="ARCHIVE">Archivé</option>
-                          </Box>
+                          </select>
                         </Grid>
                         <Input
                           name="description"
