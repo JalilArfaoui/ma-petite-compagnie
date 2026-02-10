@@ -19,8 +19,27 @@ export async function POST(req: NextRequest){
             }
         });
         return NextResponse.json(categorie, {status:201})
-    } catch (error) {
+    } catch (error) {   
         console.error(error);
         return NextResponse.json({message:"Erreur serveur:" + error}, {status:500});
+    }
+}
+
+export async function GET(req:NextRequest){
+    try{
+        const { searchParams } = new URL(req.url);
+        const idCompagnie = Number(searchParams.get("idCompagnie"));
+        if (!idCompagnie) {
+            return NextResponse.json({ message: "L'id de la compagnie n'est pas récupéré" }, { status: 400 });
+        }
+        const lieux = await  prisma.categorie.findMany({
+            where:{
+                idCompagnie:idCompagnie
+            }
+        })
+        return NextResponse.json(lieux, { status: 200 });
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({ message: "Erreur serveur:" + error }, { status: 500 });
     }
 }
