@@ -38,7 +38,7 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }) => {
     const month = currentDate.getMonth() + 1; // 1-12
     const daysInMonth = new Date(year, month, 0).getDate();
 
-    const WEEKDAYS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi','Dimanche'];
+    const WEEKDAYS = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
     const MONTHS = [
         'Janvier', 'Fevrier', 'Mars', 'Avril', 'Mai', 'Juin',
         'Juillet', 'Aout', 'Septembre', 'Octobre', 'Novembre', 'Decembre'
