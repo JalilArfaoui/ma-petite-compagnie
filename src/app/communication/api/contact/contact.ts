@@ -129,6 +129,13 @@ export async function modifierContact(contactId: number, nouveauContact: Contact
   if (!verificationResultat.succes) {
     return verificationResultat;
   }
+  if (nouveauContact.email && (await contactAvecMemeEmail(nouveauContact.email))) {
+    return resultOf(
+      false,
+      "Cette email est déjà utilisé. Veuillez utiliser un email différent.",
+      null
+    );
+  }
   try {
     const contactModifie = await prisma.contact.update({
       where: { id: contactId },
