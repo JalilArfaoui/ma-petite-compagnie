@@ -81,7 +81,7 @@ function validerContact(contact: ContactInformation) {
   return resultOf(true, "", null);
 }
 export async function contactAvecMemeEmail(email: string) {
-  const contact = prisma.contact.findFirst({ where: { email: email } });
+  const contact = await prisma.contact.findFirst({ where: { email: email } });
   return contact ?? false;
 }
 export async function creerContact(contact: ContactInformation) {
