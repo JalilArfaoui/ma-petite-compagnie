@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import {Box, Button, Input, Select, SimpleGrid, Text} from "@/components/ui";
+import {Box, Button, Input, Select, SimpleGrid} from "@/components/ui";
+import {Modal} from "@/components/ui/Modal/Modal";
 import {createListCollection, Field, GridItem} from "@chakra-ui/react";
+import {CreateLieuForm} from "@/app/composants/lieux/CreateLieuForm";
 
 type Props = {
   onSuccess?: (evenement: Evenement) => void;
@@ -24,8 +26,9 @@ export function CreateEvenementForm({
   const [dateFin, setDateFin] = useState("");
   const [lieuId, setLieuId] = useState<number | null>(null);
   const [categorieId, setCategorieId] = useState<number | null>(null);
+  const [showCreateLieu, setShowCreateLieu] = useState(false)
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmitEvenement(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
       const res = await fetch("/api/evenements", {
@@ -49,37 +52,21 @@ export function CreateEvenementForm({
       }
       // Vérification console de la création (provisoire)
       const evenement = await res.json();
-     if (onSuccess) onSuccess(evenement);
+      if (onSuccess) onSuccess(evenement);
   }
 
   const lieuxCollection = createListCollection({
-    //items: [
-    //    lieux.map(lieu => ({ value: lieu.id, label: lieu.libelle }))
-    //],
-    // TODO retirer la liste bouchon
-    items: [
-      { label: "Théâtre", value: 1 },
-      { label: "Vue.js", value: 2 },
-      { label: "Angular", value: 3 },
-      { label: "Svelte", value: 4 },
-    ],
+    items: lieux.map(lieu => ({ value: lieu.id, label: lieu.libelle }))
   });
 
     const categoriesCollection = createListCollection({
-        //items: [
-        //    categories.map(categorie => ({ value: categorie.id, label: categorie.nom }))
-        //],
-        // TODO retirer la liste bouchon
-        items: [
-            { label: "Théâtre", value: 1 },
-            { label: "Vue.js", value: 2 },
-            { label: "Angular", value: 3 },
-            { label: "Svelte", value: 4 },
-        ],
+        items: categories.map(categorie => ({ value: categorie.id, label: categorie.nom }))
+
     });
 
   return (
-    <form onSubmit={handleSubmit}>
+      <div>
+    <form onSubmit={handleSubmitEvenement}>
       <Field.Root required>
         <Field.Label>
           Nom <Field.RequiredIndicator />
@@ -121,14 +108,15 @@ export function CreateEvenementForm({
               </Select.Positioner>
             </Box>
           </GridItem>
-          <GridItem colSpan={{ base: 1, md: 1 }}>
-            <Box>
-              <Button size={"xs"}>+</Button>
-            </Box>
-          </GridItem>
+          {!showCreateLieu && (
+              <GridItem colSpan={{ base: 1, md: 1 }}>
+                <Box>
+                  <Button onClick={() => setShowCreateLieu(true)}>+</Button>
+                </Box>
+              </GridItem>
+          )}
         </SimpleGrid>
       </Select>
-
       {/* Format des datetime-local YYYY-MM-DDTHH:mm*/}
       <Field.Root required>
         <Field.Label>
@@ -187,11 +175,27 @@ export function CreateEvenementForm({
       {/* TODO Possibilité d'ajouter une catégorie directement depuis ici (comme lieu) */}
       {/* TODO pouvoir sélectionner des participants */}
       <SimpleGrid columns={{ base: 3, md: 3 }}>
-          <GridItem colSpan={{ base: 1, md: 1 }}></GridItem>
+          <GridItem colSpan={{ base: 1, md: 1 }}>
+            <Button>Annuler</Button>
+          </GridItem>
           <GridItem colSpan={{ base: 1, md: 1 }}>
               <Button type={"submit"}>Créer</Button>
           </GridItem>
       </SimpleGrid>
     </form>
+      {showCreateLieu && (
+          <Modal
+              open={showCreateLieu}
+              onClose={() => setShowCreateLieu(false)}>
+            <CreateLieuForm
+                idCompagnie={compagnieId}
+                onSuccess={() => {
+                  setShowCreateLieu(false)
+                }}
+                onCancel={() => setShowCreateLieu(false)}
+            />
+          </Modal>
+      )}
+    </div>
   );
 }
