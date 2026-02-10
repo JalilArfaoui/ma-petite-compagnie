@@ -151,21 +151,36 @@ export default async function ProductionPage() {
                   <Text fontWeight="semibold" mb={2}>
                     Titre *
                   </Text>
-                  <Input name="titre" placeholder="Titre du spectacle" required focusbordercolor="#D00039" />
+                  <Input
+                    name="titre"
+                    placeholder="Titre du spectacle"
+                    required
+                    focusbordercolor="#D00039"
+                  />
                 </Box>
 
                 <Box>
                   <Text fontWeight="semibold" mb={2}>
                     Type *
                   </Text>
-                  <Input name="type" placeholder="Type de spectacle" required focusbordercolor="#D00039" />
+                  <Input
+                    name="type"
+                    placeholder="Type de spectacle"
+                    required
+                    focusbordercolor="#D00039"
+                  />
                 </Box>
 
                 <Box>
                   <Text fontWeight="semibold" mb={2}>
                     Troupe *
                   </Text>
-                  <Input name="troupe" placeholder="Nom de la troupe" required focusbordercolor="#D00039" />
+                  <Input
+                    name="troupe"
+                    placeholder="Nom de la troupe"
+                    required
+                    focusbordercolor="#D00039"
+                  />
                 </Box>
 
                 <Box>
@@ -194,7 +209,11 @@ export default async function ProductionPage() {
                   <Text fontWeight="semibold" mb={2}>
                     Description
                   </Text>
-                  <Input name="description" placeholder="Description du spectacle" focusbordercolor="#D00039" />
+                  <Input
+                    name="description"
+                    placeholder="Description du spectacle"
+                    focusbordercolor="#D00039"
+                  />
                 </Box>
 
                 <Box>
@@ -293,9 +312,24 @@ export default async function ProductionPage() {
                       <input type="hidden" name="id" value={s.id} />
                       <VStack gap={3} align="stretch">
                         <Grid templateColumns="repeat(2, 1fr)" gap={2}>
-                          <Input name="titre" defaultValue={s.titre} size="sm" focusbordercolor="#D00039" />
-                          <Input name="type" defaultValue={s.type} size="sm" focusbordercolor="#D00039" />
-                          <Input name="troupe" defaultValue={s.troupe} size="sm" focusbordercolor="#D00039" />
+                          <Input
+                            name="titre"
+                            defaultValue={s.titre}
+                            size="sm"
+                            focusbordercolor="#D00039"
+                          />
+                          <Input
+                            name="type"
+                            defaultValue={s.type}
+                            size="sm"
+                            focusbordercolor="#D00039"
+                          />
+                          <Input
+                            name="troupe"
+                            defaultValue={s.troupe}
+                            size="sm"
+                            focusbordercolor="#D00039"
+                          />
                           <Box
                             as="select"
                             name="statut"
