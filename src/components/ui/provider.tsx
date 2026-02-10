@@ -1,12 +1,13 @@
 "use client";
 
-import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
-import { ColorModeProvider, type ColorModeProviderProps } from "./color-mode";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "./Toast/toaster";
 
-export function Provider(props: ColorModeProviderProps) {
+export function Provider({ children }: { children: React.ReactNode }) {
   return (
-    <ColorModeProvider {...props}>
-      <ChakraProvider value={defaultSystem}>{props.children}</ChakraProvider>
-    </ColorModeProvider>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+      {children}
+      <Toaster />
+    </ThemeProvider>
   );
 }

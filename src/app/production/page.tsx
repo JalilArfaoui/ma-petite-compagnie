@@ -1,25 +1,23 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import {
+  Badge,
   Box,
   Button,
   Card,
   Container,
   Flex,
-  Grid,
   Heading,
+  HStack,
   Input,
+  SimpleGrid,
   Stack,
   Text,
-  Badge,
   VStack,
-  HStack,
-} from "@chakra-ui/react";
+} from "@/components/ui";
 import { StatutSpectacle } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
-
-const redish = "#D00039";
 
 /* =========================
    CREATE
@@ -134,72 +132,58 @@ export default async function ProductionPage() {
   });
 
   return (
-    <Box minH="100vh" bg="gray.50" py={8}>
-      <Container maxW="container.xl">
+    <Box className="min-h-screen bg-slate-50 py-8">
+      <Container className="max-w-7xl">
         <VStack gap={8} align="stretch">
           {/* Header */}
-          <Heading size="2xl" color={redish} textAlign="center" fontWeight="bold">
+          <Heading as="h1" className="text-4xl text-[#D00039] text-center font-bold">
             🎭 Gestion des Spectacles
           </Heading>
 
           {/* Create Form */}
-          <Card.Root p={6} boxShadow="lg" borderTopWidth="4px" borderTopColor={redish} bg="white">
-            <Heading size="md" mb={6} color={redish}>
+          <Card className="p-6 shadow-lg border-t-4 border-t-[#D00039] bg-white">
+            <Heading as="h3" className="mb-6 text-[#D00039]">
               ➕ Ajouter un spectacle
             </Heading>
 
             <form action={createSpectacle}>
-              <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={4}>
+              <SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
                 <Box>
-                  <Text fontWeight="semibold" mb={2}>
-                    Titre *
-                  </Text>
+                  <Text className="font-semibold mb-2">Titre *</Text>
                   <Input
                     name="titre"
                     placeholder="Titre du spectacle"
                     required
-                    _focus={{ borderColor: redish, boxShadow: `0 0 0 1px ${redish}` }}
+                    className="focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039]"
                   />
                 </Box>
 
                 <Box>
-                  <Text fontWeight="semibold" mb={2}>
-                    Type *
-                  </Text>
+                  <Text className="font-semibold mb-2">Type *</Text>
                   <Input
                     name="type"
                     placeholder="Type de spectacle"
                     required
-                    _focus={{ borderColor: redish, boxShadow: `0 0 0 1px ${redish}` }}
+                    className="focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039]"
                   />
                 </Box>
 
                 <Box>
-                  <Text fontWeight="semibold" mb={2}>
-                    Troupe *
-                  </Text>
+                  <Text className="font-semibold mb-2">Troupe *</Text>
                   <Input
                     name="troupe"
                     placeholder="Nom de la troupe"
                     required
-                    _focus={{ borderColor: redish, boxShadow: `0 0 0 1px ${redish}` }}
+                    className="focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039]"
                   />
                 </Box>
 
                 <Box>
-                  <Text fontWeight="semibold" mb={2}>
-                    Statut *
-                  </Text>
+                  <Text className="font-semibold mb-2">Statut *</Text>
                   <select
                     name="statut"
                     required
-                    style={{
-                      padding: "0.5rem",
-                      borderWidth: "1px",
-                      borderColor: "rgb(203, 213, 225)",
-                      borderRadius: "0.375rem",
-                      width: "100%",
-                    }}
+                    className="p-2 border border-slate-300 rounded-md w-full"
                   >
                     <option value="EN_CREATION">En Création</option>
                     <option value="EN_REPETITION">En Répétition</option>
@@ -208,87 +192,69 @@ export default async function ProductionPage() {
                   </select>
                 </Box>
 
-                <Box gridColumn={{ base: "1", md: "1 / -1" }}>
-                  <Text fontWeight="semibold" mb={2}>
-                    Description
-                  </Text>
+                <Box className="md:col-span-2">
+                  <Text className="font-semibold mb-2">Description</Text>
                   <Input
                     name="description"
                     placeholder="Description du spectacle"
-                    _focus={{ borderColor: redish, boxShadow: `0 0 0 1px ${redish}` }}
+                    className="focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039]"
                   />
                 </Box>
 
                 <Box>
-                  <Text fontWeight="semibold" mb={2}>
-                    Budget Initial (€)
-                  </Text>
+                  <Text className="font-semibold mb-2">Budget Initial (€)</Text>
                   <Input
                     name="budget_initial"
                     type="number"
                     step="0.01"
                     placeholder="0.00"
-                    _focus={{ borderColor: redish, boxShadow: `0 0 0 1px ${redish}` }}
+                    className="focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039]"
                   />
                 </Box>
-              </Grid>
+              </SimpleGrid>
 
               <Button
                 type="submit"
-                bg={redish}
-                color="white"
-                mt={6}
-                size="lg"
-                _hover={{ bg: "#a00030" }}
-                _active={{ bg: "#800020" }}
-                width={{ base: "full", md: "auto" }}
+                className="bg-[#D00039] text-white mt-6 h-12 px-6 hover:bg-[#a00030] active:bg-[#800020] w-full md:w-auto"
               >
                 ➕ Ajouter le spectacle
               </Button>
             </form>
-          </Card.Root>
+          </Card>
 
           {/* Separator */}
-          <Box h="2px" bg={redish} />
+          <Box className="h-0.5 bg-[#D00039]" />
 
           {/* Spectacles List */}
           <Box>
-            <Heading size="lg" mb={6} color={redish}>
+            <Heading as="h3" className="mb-6 text-[#D00039]">
               📋 Liste des spectacles ({spectacles.length})
             </Heading>
 
-            <Grid templateColumns={{ base: "1fr", lg: "repeat(2, 1fr)" }} gap={6}>
+            <SimpleGrid columns={{ base: 1, lg: 2 }} gap={6}>
               {spectacles.map((s) => (
-                <Card.Root
+                <Card
                   key={s.id}
-                  p={6}
-                  boxShadow="md"
-                  borderLeftWidth="4px"
-                  borderLeftColor={redish}
-                  bg="white"
-                  transition="all 0.2s"
-                  _hover={{ boxShadow: "xl", transform: "translateY(-2px)" }}
+                  className="p-6 shadow-md border-l-4 border-l-[#D00039] bg-white transition-all hover:shadow-xl hover:-translate-y-0.5"
                 >
                   <VStack align="stretch" gap={4}>
                     {/* Header */}
-                    <Flex justify="space-between" align="start">
-                      <Box flex={1}>
-                        <Text fontSize="xs" color="gray.500" mb={1}>
-                          #{s.id}
-                        </Text>
-                        <Heading size="md" color={redish} mb={2}>
+                    <Flex justify="between" align="start">
+                      <Box className="flex-1">
+                        <Text className="text-xs text-slate-500 mb-1">#{s.id}</Text>
+                        <Heading as="h4" className="text-[#D00039] mb-2">
                           {s.titre}
                         </Heading>
-                        <Badge colorPalette={getStatusColor(s.statut)} mb={2}>
+                        <Badge variant={getStatusColor(s.statut)} className="mb-2">
                           {getStatusLabel(s.statut)}
                         </Badge>
                       </Box>
                     </Flex>
 
                     {/* Info */}
-                    <Stack gap={2} fontSize="sm">
+                    <Stack gap={2} className="text-sm">
                       {s.description && (
-                        <Text color="gray.600">
+                        <Text className="text-slate-600">
                           <strong>Description:</strong> {s.description}
                         </Text>
                       )}
@@ -308,73 +274,57 @@ export default async function ProductionPage() {
                     </Stack>
 
                     {/* Separator */}
-                    <Box h="1px" bg="gray.200" />
+                    <Box className="h-px bg-slate-200" />
 
                     {/* Update Form */}
                     <form action={updateSpectacle}>
                       <input type="hidden" name="id" value={s.id} />
                       <VStack gap={3} align="stretch">
-                        <Grid templateColumns="repeat(2, 1fr)" gap={2}>
+                        <SimpleGrid columns={2} gap={2}>
                           <Input
                             name="titre"
                             defaultValue={s.titre}
-                            size="sm"
-                            _focus={{ borderColor: redish, boxShadow: `0 0 0 1px ${redish}` }}
+                            className="text-sm h-8 focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039]"
                           />
                           <Input
                             name="type"
                             defaultValue={s.type}
-                            size="sm"
-                            _focus={{ borderColor: redish, boxShadow: `0 0 0 1px ${redish}` }}
+                            className="text-sm h-8 focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039]"
                           />
                           <Input
                             name="troupe"
                             defaultValue={s.troupe}
-                            size="sm"
-                            _focus={{ borderColor: redish, boxShadow: `0 0 0 1px ${redish}` }}
+                            className="text-sm h-8 focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039]"
                           />
                           <select
                             name="statut"
                             defaultValue={s.statut}
-                            style={{
-                              fontSize: "0.875rem",
-                              padding: "0.25rem",
-                              borderWidth: "1px",
-                              borderColor: "rgb(203, 213, 225)",
-                              borderRadius: "0.375rem",
-                            }}
+                            className="text-sm p-1 border border-slate-300 rounded-md"
                           >
                             <option value="EN_CREATION">En Création</option>
                             <option value="EN_REPETITION">En Répétition</option>
                             <option value="EN_TOURNEE">En Tournée</option>
                             <option value="ARCHIVE">Archivé</option>
                           </select>
-                        </Grid>
+                        </SimpleGrid>
                         <Input
                           name="description"
                           defaultValue={s.description ?? ""}
-                          size="sm"
+                          className="text-sm h-8 focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039]"
                           placeholder="Description"
-                          _focus={{ borderColor: redish, boxShadow: `0 0 0 1px ${redish}` }}
                         />
                         <Input
                           name="budget_initial"
                           type="number"
                           step="0.01"
                           defaultValue={s.budget_initial}
-                          size="sm"
-                          _focus={{ borderColor: redish, boxShadow: `0 0 0 1px ${redish}` }}
+                          className="text-sm h-8 focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039]"
                         />
 
                         <HStack gap={2}>
                           <Button
                             type="submit"
-                            bg={redish}
-                            color="white"
-                            size="sm"
-                            _hover={{ bg: "#a00030" }}
-                            _active={{ bg: "#800020" }}
-                            flex={1}
+                            className="bg-[#D00039] text-white text-sm h-8 hover:bg-[#a00030] active:bg-[#800020] flex-1"
                           >
                             ✏️ Modifier
                           </Button>
@@ -387,25 +337,22 @@ export default async function ProductionPage() {
                       <input type="hidden" name="id" value={s.id} />
                       <Button
                         type="submit"
-                        variant="outline"
-                        colorPalette="red"
-                        size="sm"
-                        width="full"
+                        className="border border-red-200 text-red-600 bg-white hover:bg-red-50 text-sm h-8 w-full"
                       >
                         🗑️ Supprimer
                       </Button>
                     </form>
                   </VStack>
-                </Card.Root>
+                </Card>
               ))}
-            </Grid>
+            </SimpleGrid>
 
             {spectacles.length === 0 && (
-              <Card.Root p={12} textAlign="center" bg="white">
-                <Text color="gray.500" fontSize="lg">
+              <Card className="p-12 text-center bg-white">
+                <Text className="text-slate-500 text-lg">
                   Aucun spectacle pour le moment. Ajoutez-en un ci-dessus !
                 </Text>
-              </Card.Root>
+              </Card>
             )}
           </Box>
         </VStack>

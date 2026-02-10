@@ -2,12 +2,10 @@ import { Container, Heading, Text, Button, Stack, Link } from "@/components/ui";
 
 export default function NotFound() {
   return (
-    <Container maxW="container.md" py={20}>
-      <Stack align="center" gap={6} textAlign="center">
-        <Heading size="4xl" color="#d00039" py={30}>
-          404
-        </Heading>
-        <Text fontSize="xl" color="#43566b" fontFamily="Georgia, serif">
+    <Container className="max-w-container.md py-20">
+      <Stack className="items-center gap-6 text-center">
+        <Heading className="text-4xl text-[#d00039] py-30">404</Heading>
+        <Text className="text-xl text-[#43566b] font-serif">
           {"Oups ! La page que vous cherchez n'existe pas."}
         </Text>
         <Link href="/">

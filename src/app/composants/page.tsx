@@ -16,7 +16,6 @@ import {
   Heading,
   Box,
   Container,
-  SimpleGrid,
   Stack,
   Text,
   Icon,
@@ -25,44 +24,44 @@ import { FaHome } from "react-icons/fa";
 
 export default function Home() {
   return (
-    <Container maxW="container.xl" py={10} px={10}>
-      <Stack gap={10}>
-        <Box textAlign="center">
-          <Heading as="h3" size="2xl" mb={4}>
+    <Container className="py-10 px-4 max-w-7xl mx-auto">
+      <Stack className="gap-10">
+        <Box className="text-center">
+          <Heading as="h3" className="mb-4">
             Composants
           </Heading>
           <Text>Lorem ipsum dolor sit amet consectetur adipisicing elit.</Text>
         </Box>
 
         <Box>
-          <SimpleGrid columns={[1, null, 2]} gap={6}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <Heading as="h3" size="lg" mb={6} pb={2}>
+              <Heading as="h3" className="mb-6 pb-2 border-b">
                 Icons
               </Heading>
               <Card title="Icons">
                 <Card.Body>
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <div className="flex items-center gap-2 mb-2">
                     <Text>Icon size : sm</Text>
-                    <Icon size="sm">
+                    <Icon className="w-4 h-4">
                       <FaHome />
                     </Icon>
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <div className="flex items-center gap-2 mb-2">
                     <Text>Icon size : md</Text>
-                    <Icon size="md">
+                    <Icon className="w-6 h-6">
                       <FaHome />
                     </Icon>
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <div className="flex items-center gap-2 mb-2">
                     <Text>Icon size : lg</Text>
-                    <Icon size="lg">
+                    <Icon className="w-8 h-8">
                       <FaHome />
                     </Icon>
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <div className="flex items-center gap-2">
                     <Text>Icon size : xl</Text>
-                    <Icon size="xl">
+                    <Icon className="w-10 h-10">
                       <FaHome />
                     </Icon>
                   </div>
@@ -70,36 +69,36 @@ export default function Home() {
               </Card>
             </div>
             <div>
-              <Heading as="h3" size="lg" mb={6} pb={2}>
+              <Heading as="h3" className="mb-6 pb-2 border-b">
                 Headings
               </Heading>
               <Card title="Headings">
                 <Card.Body>
-                  <Stack gap={2}>
-                    <Heading as="h1" size="lg" mb={6} pb={2}>
+                  <Stack className="gap-2">
+                    <Heading as="h1" className="font-extrabold mb-6 pb-2">
                       Titre 1
                     </Heading>
-                    <Heading as="h2" size="lg" mb={6} pb={2}>
+                    <Heading as="h2" className="font-bold mb-6 pb-2">
                       Titre 2
                     </Heading>
-                    <Heading as="h3" size="lg" mb={6} pb={2}>
+                    <Heading as="h3" className="font-semibold mb-6 pb-2">
                       Titre 3
                     </Heading>
-                    <Heading as="h4" size="lg" mb={6} pb={2}>
+                    <Heading as="h4" className="font-medium mb-6 pb-2">
                       Titre 4
                     </Heading>
                   </Stack>
                 </Card.Body>
               </Card>
             </div>
-          </SimpleGrid>
+          </div>
         </Box>
 
         <Box>
-          <Heading as="h3" size="lg" mb={6} pb={2}>
+          <Heading as="h3" className="text-xl font-bold mb-6 pb-2 border-b">
             Cards
           </Heading>
-          <SimpleGrid columns={[1, null, 6]} gap={6}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
             <Card title="Simple Card" description="Card Description" />
             <Card
               title="Red Card"
@@ -131,129 +130,122 @@ export default function Home() {
               icon={<FaHome />}
               iconColor="yellow"
             />
-          </SimpleGrid>
+          </div>
         </Box>
 
         <Box>
-          <Heading as="h3" size="lg" mb={6} pb={2}>
+          <Heading as="h3" className="text-xl font-bold mb-6 pb-2 border-b">
             Actions & Navigation
           </Heading>
-          <SimpleGrid columns={[1, null, 2]} gap={6}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card title="Buttons">
               <Card.Body>
-                <Stack direction="row" gap={4}>
+                <div className="flex flex-wrap gap-4 mb-4">
                   <Button variant="solid">Solid</Button>
                   <Button variant="outline">Outline</Button>
+                </div>
+                <div className="flex flex-wrap gap-4 mb-4">
                   <Button variant="solid" icon={<FaHome />} iconSide="right">
                     Icon Right
                   </Button>
                   <Button variant="outline" icon={<FaHome />} iconSide="left">
                     Icon Left
                   </Button>
-                </Stack>
-                <Stack direction="row" gap={4}>
+                </div>
+                <div className="flex flex-wrap gap-4 items-center">
                   <Button variant="solid" size="sm">
                     Small
                   </Button>
-                  <Button variant="outline" size="md">
+                  <Button variant="outline" size="default">
                     Medium
                   </Button>
                   <Button variant="solid" size="lg">
                     Large
                   </Button>
-                  <Button variant="outline" size="xl">
-                    Extra Large
-                  </Button>
-                </Stack>
+                </div>
               </Card.Body>
             </Card>
             <Card title="Links">
               <Card.Body>
-                <Stack gap={2}>
+                <Stack className="gap-2">
                   <Link href="#">Standard Link</Link>
                 </Stack>
               </Card.Body>
             </Card>
-          </SimpleGrid>
+          </div>
         </Box>
 
         <Box>
-          <Heading as="h3" size="lg" mb={6} pb={2}>
+          <Heading as="h3" className="text-xl font-bold mb-6 pb-2 border-b">
             Forms & Inputs
           </Heading>
-          <Stack gap={6}>
+          <Stack className="gap-6">
             <Card title="Inputs">
               <Card.Body>
-                <SimpleGrid columns={[1, null, 2]} gap={8}>
-                  <Stack gap={4}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <Stack className="gap-4">
                     <Box>
-                      <Text fontWeight="bold" mb={2}>
-                        Input
-                      </Text>
+                      <Text className="font-bold mb-2">Input</Text>
                       <Input placeholder="Type something..." />
                     </Box>
                     <Box>
-                      <Text fontWeight="bold" mb={2}>
-                        Textarea
-                      </Text>
+                      <Text className="font-bold mb-2">Textarea</Text>
                       <Textarea placeholder="Type longer text..." />
                     </Box>
                   </Stack>
-                  <Stack gap={4}>
+                  <Stack className="gap-4">
                     <Box>
-                      <Text fontWeight="bold" mb={2}>
-                        Checkbox
-                      </Text>
+                      <Text className="font-bold mb-2">Checkbox</Text>
                       <Checkbox>Accept terms and conditions</Checkbox>
                     </Box>
                     <Box>
-                      <Text fontWeight="bold" mb={2}>
-                        Switch
-                      </Text>
+                      <Text className="font-bold mb-2">Switch</Text>
                       <Switch>Enable notifications</Switch>
                     </Box>
                     <Box>
-                      <Text fontWeight="bold" mb={2}>
-                        Radio Group
-                      </Text>
-                      <RadioGroup defaultValue="1">
-                        <Stack direction="row" gap={4}>
-                          <Radio value="1">Option 1</Radio>
-                          <Radio value="2">Option 2</Radio>
-                        </Stack>
+                      <Text className="font-bold mb-2">Radio Group</Text>
+                      <RadioGroup className="gap-4">
+                        <div className="flex flex-row gap-4">
+                          <Radio value="1" name="r1">
+                            Option 1
+                          </Radio>
+                          <Radio value="2" name="r1">
+                            Option 2
+                          </Radio>
+                        </div>
                       </RadioGroup>
                     </Box>
                   </Stack>
-                </SimpleGrid>
+                </div>
               </Card.Body>
             </Card>
           </Stack>
         </Box>
 
         <Box>
-          <Heading as="h3" size="lg" mb={6} pb={2}>
+          <Heading as="h3" className="text-xl font-bold mb-6 pb-2 border-b">
             Data Display & Feedback
           </Heading>
-          <Stack gap={6}>
-            <SimpleGrid columns={[1, null, 2]} gap={6}>
+          <Stack className="gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card title="Badges">
                 <Card.Body>
-                  <Stack direction="row" gap={2}>
-                    <Badge>Defaut</Badge>
-                    <Badge colorPalette="green">Vert</Badge>
-                    <Badge colorPalette="orange">Orange</Badge>
-                    <Badge colorPalette="red">Rouge</Badge>
-                    <Badge colorPalette="blue">Bleu</Badge>
-                    <Badge colorPalette="purple">Violet</Badge>
-                    <Badge colorPalette="yellow">Jaune</Badge>
-                    <Badge colorPalette="cyan">Cyan</Badge>
-                    <Badge colorPalette="pink">Rose</Badge>
-                  </Stack>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge variant="gray">gray</Badge>
+                    <Badge variant="green">green</Badge>
+                    <Badge variant="orange">orange</Badge>
+                    <Badge variant="red">red</Badge>
+                    <Badge variant="blue">blue</Badge>
+                    <Badge variant="purple">purple</Badge>
+                    <Badge variant="yellow">yellow</Badge>
+                    <Badge variant="cyan">cyan</Badge>
+                    <Badge variant="pink">pink</Badge>
+                  </div>
                 </Card.Body>
               </Card>
               <Card title="Alerts">
                 <Card.Body>
-                  <Stack gap={4}>
+                  <Stack className="gap-4">
                     <Alert status="info">
                       <Alert.Icon />
                       <Alert.Title>Note:</Alert.Title>
@@ -277,11 +269,11 @@ export default function Home() {
                   </Stack>
                 </Card.Body>
               </Card>
-            </SimpleGrid>
+            </div>
 
             <Card title="Table">
               <Card.Body>
-                <Table variant="line">
+                <Table>
                   <Table.Head>
                     <Table.Row>
                       <Table.Header>Name</Table.Header>
@@ -304,13 +296,13 @@ export default function Home() {
 
             <Card title="List">
               <Card.Body>
-                <List gap={3}>
+                <List className="gap-3 flex flex-col">
                   <List.Item>
-                    <List.Indicator />
+                    <List.Indicator>•</List.Indicator>
                     First item
                   </List.Item>
                   <List.Item>
-                    <List.Indicator />
+                    <List.Indicator>•</List.Indicator>
                     Second item
                   </List.Item>
                 </List>

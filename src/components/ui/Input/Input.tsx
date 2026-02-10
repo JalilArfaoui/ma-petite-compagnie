@@ -1,24 +1,70 @@
-import { ComponentProps } from "react";
-import { InputGroup, InputElement, InputAddon, InputProps } from "@chakra-ui/react";
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
-import { StyledInput } from "./Input.style";
+export type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
 
-export const Input = (props: InputProps) => {
-  return <StyledInput {...props} />;
-};
-
-const LeftElement = (props: ComponentProps<typeof InputElement>) => (
-  <InputElement placement="start" {...props} />
+const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  ({ className, type, ...props }, ref) => {
+    return (
+      <input
+        type={type}
+        className={cn(
+          "flex w-full rounded-[12px] border border-[#e1e8f1] bg-white px-4 py-3 text-[1rem] text-[#43566b] font-serif placeholder:text-[#94a3b8] transition-all hover:border-[#cbd5e1] hover:bg-[#f8fafc] focus-visible:outline-none focus-visible:border-[#d00039] focus-visible:ring-1 focus-visible:ring-[#d00039] disabled:cursor-not-allowed disabled:opacity-60 disabled:bg-[#f1f5f9]",
+          className
+        )}
+        ref={ref}
+        {...props}
+      />
+    );
+  }
 );
-LeftElement.displayName = "InputLeftElement";
+Input.displayName = "Input";
 
-const RightElement = (props: ComponentProps<typeof InputElement>) => (
-  <InputElement placement="end" {...props} />
+const InputGroup = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div ref={ref} className={cn("relative flex items-center", className)} {...props} />
+  )
 );
-RightElement.displayName = "InputRightElement";
+InputGroup.displayName = "InputGroup";
 
-Input.Group = InputGroup;
-Input.LeftElement = LeftElement;
-Input.RightElement = RightElement;
-Input.LeftAddon = InputAddon;
-Input.RightAddon = InputAddon;
+const InputLeftElement = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn("absolute left-3 flex items-center justify-center text-slate-500", className)}
+      {...props}
+    />
+  )
+);
+InputLeftElement.displayName = "InputLeftElement";
+
+const InputRightElement = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn("absolute right-3 flex items-center justify-center text-slate-500", className)}
+      {...props}
+    />
+  )
+);
+InputRightElement.displayName = "InputRightElement";
+
+const InputWithExtensions = Object.assign(Input, {
+  Group: InputGroup,
+  LeftElement: InputLeftElement,
+  RightElement: InputRightElement,
+  LeftAddon: ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+    <div
+      className={cn("px-3 py-2 border border-r-0 rounded-l-md bg-slate-50", className)}
+      {...props}
+    />
+  ),
+  RightAddon: ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+    <div
+      className={cn("px-3 py-2 border border-l-0 rounded-r-md bg-slate-50", className)}
+      {...props}
+    />
+  ),
+});
+
+export { InputWithExtensions as Input };
