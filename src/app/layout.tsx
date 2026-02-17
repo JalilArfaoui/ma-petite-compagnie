@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Header } from "@/components/ui";
+import { Header, Footer } from "@/components/ui";
 
 export const metadata: Metadata = {
   title: "Ma Petite Compagnie",
@@ -24,6 +24,7 @@ export default function RootLayout({
         >
           <Header />
           <main>{children}</main>
+          <Footer />
         </ThemeProvider>
       </body>
     </html>

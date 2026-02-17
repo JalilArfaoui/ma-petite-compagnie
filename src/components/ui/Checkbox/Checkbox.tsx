@@ -8,13 +8,13 @@ const Checkbox = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HT
         type="checkbox"
         ref={ref}
         className={cn(
-          "h-5 w-5 rounded-[6px] border border-[#e1e8f1] bg-white cursor-pointer transition-all hover:bg-[#f8fafc] hover:border-[#cbd5e1] focus:ring-2 focus:ring-[#d00039]/40 checked:bg-[#d00039] checked:border-[#d00039] accent-[#d00039]",
+          "h-5 w-5 rounded-[6px] border border-border bg-white cursor-pointer transition-all hover:bg-bg-hover hover:border-border-hover focus:ring-2 focus:ring-primary/40 checked:bg-primary checked:border-primary accent-primary",
           className
         )}
         {...props}
       />
       {children && (
-        <span className="text-[1rem] text-[#43566b] font-serif leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+        <span className="text-[1rem] text-text-primary font-serif leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
           {children}
         </span>
       )}
