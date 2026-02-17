@@ -1,9 +1,6 @@
-"use client";
-
 import Link from "next/link";
-import { LuTicket } from "react-icons/lu";
 import { FaGithub } from "react-icons/fa6";
-import { Container, Text } from "@/components/ui";
+import { Container, Logo, Text } from "@/components/ui";
 
 export const Footer = () => {
   return (
@@ -11,9 +8,7 @@ export const Footer = () => {
       <Container className="flex flex-col items-center gap-6">
         {/* Logo Section */}
         <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-          <div className="flex items-center justify-center p-2 rounded-lg bg-primary-light text-primary -rotate-6 transform shadow-sm">
-            <LuTicket size={24} />
-          </div>
+          <Logo size={24} />
           <h2 className="text-xl font-bold text-black font-serif">Ma petite Compagnie</h2>
         </Link>
 

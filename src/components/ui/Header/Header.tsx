@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Button, Container } from "@/components/ui";
-import { LuTicket, LuLogIn } from "react-icons/lu";
+import { Button, Container, Logo } from "@/components/ui";
+import { LuLogIn } from "react-icons/lu";
 
 export const Header = () => {
   return (
@@ -11,9 +11,7 @@ export const Header = () => {
         <div className="flex h-16 items-center justify-between">
           {/* Logo Section */}
           <Link href="/" className="flex items-center gap-4 hover:opacity-80 transition-opacity">
-            <div className="flex items-center justify-center p-3 rounded-xl bg-primary-light text-primary -rotate-6 transform shadow-sm">
-              <LuTicket size={28} />
-            </div>
+            <Logo size={28} />
             <h1 className="text-[22px] font-black leading-[1.1] tracking-tight text-black font-serif">
               Ma petite
               <br />

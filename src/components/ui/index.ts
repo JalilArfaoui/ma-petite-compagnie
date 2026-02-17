@@ -12,6 +12,7 @@ export * from "./Icon/Icon";
 export * from "./Input/Input";
 export * from "./Link/Link";
 export * from "./List/List";
+export * from "./Logo/Logo";
 export * from "./Radio/Radio";
 export * from "./Select/Select";
 export * from "./SimpleGrid/SimpleGrid";
