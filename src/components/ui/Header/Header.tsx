@@ -6,12 +6,12 @@ import { LuTicket, LuLogIn } from "react-icons/lu";
 
 export const Header = () => {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-black/5 bg-[#fffbef] py-4">
+    <header className="sticky top-0 z-50 w-full border-b border-black/5 bg-cream-50 py-4">
       <Container className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo Section */}
           <Link href="/" className="flex items-center gap-4 hover:opacity-80 transition-opacity">
-            <div className="flex items-center justify-center p-3 rounded-xl bg-[#ffe3e7] text-[#D00039] -rotate-6 transform shadow-sm">
+            <div className="flex items-center justify-center p-3 rounded-xl bg-primary-light text-primary -rotate-6 transform shadow-sm">
               <LuTicket size={28} />
             </div>
             <h1 className="text-[22px] font-black leading-[1.1] tracking-tight text-black font-serif">
@@ -27,7 +27,7 @@ export const Header = () => {
               <Link
                 key={item}
                 href={`/${item.toLowerCase()}`}
-                className="text-[18px] text-slate-600 hover:text-primary-red transition-colors font-serif"
+                className="text-[18px] text-slate-600 hover:text-primary transition-colors font-serif"
               >
                 {item}
               </Link>

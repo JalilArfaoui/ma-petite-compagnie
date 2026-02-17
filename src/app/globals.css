@@ -1,10 +1,32 @@
 @import "tailwindcss";
 
-:root {
-  --background: var(--color-cream-50);
-  --foreground: #171717;
+@theme {
+  /* Brand Colors */
+  --color-primary: #d00039;
+  --color-primary-hover: #b00030;
+  --color-primary-active: #90002b;
+  --color-primary-light: #ffe3e7;
+
+  /* Neutral Colors */
+  --color-text-primary: #43566b;
+  --color-text-secondary: #526379;
+  --color-text-muted: #94a3b8;
+  --color-border: #e1e8f1;
+  --color-border-hover: #cbd5e1;
+  --color-bg-hover: #f8fafc;
+  --color-bg-disabled: #f1f5f9;
+  --color-icon: #475569;
+
+  /* Backgrounds */
+  --color-background: var(--color-cream-50);
+  --color-foreground: #171717;
+
+  /* Cream scale (re-adding from config) */
+  --color-cream-50: #fffbef;
+  --color-cream-100: #f3eee3;
 }
 
+/* Dark mode overrides would need specific strategy in v4 or use data-theme */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;

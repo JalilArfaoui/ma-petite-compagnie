@@ -7,11 +7,11 @@ import { Container, Text } from "@/components/ui";
 
 export const Footer = () => {
   return (
-    <footer className="w-full bg-[#F9FAFC] py-12">
+    <footer className="w-full bg-bg-hover py-12">
       <Container className="flex flex-col items-center gap-6">
         {/* Logo Section */}
         <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-          <div className="flex items-center justify-center p-2 rounded-lg bg-[#ffe3e7] text-[#D00039] -rotate-6 transform shadow-sm">
+          <div className="flex items-center justify-center p-2 rounded-lg bg-primary-light text-primary -rotate-6 transform shadow-sm">
             <LuTicket size={24} />
           </div>
           <h2 className="text-xl font-bold text-black font-serif">Ma petite Compagnie</h2>
@@ -19,10 +19,10 @@ export const Footer = () => {
 
         {/* Copyright & Made with Love */}
         <div className="flex flex-col items-center gap-2 text-center">
-          <Text className="text-xs text-[#526379] font-sans">
+          <Text className="text-xs text-text-secondary font-sans">
             © 2026 Ma petite Compagnie. Tous droits réservés
           </Text>
-          <Text className="text-sm font-bold text-[#526379] flex items-center gap-1 font-serif">
+          <Text className="text-sm font-bold text-text-secondary flex items-center gap-1 font-serif">
             Fait avec <span className="text-red-500">❤️</span> à Albi
           </Text>
         </div>
@@ -32,7 +32,7 @@ export const Footer = () => {
           href="https://github.com/JalilArfaoui/ma-petite-compagnie"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[#43566b] hover:text-[#D00039] transition-colors"
+          className="text-text-primary hover:text-primary transition-colors"
         >
           <FaGithub size={24} />
         </Link>
@@ -43,7 +43,7 @@ export const Footer = () => {
             <Link
               key={item}
               href="#"
-              className="text-sm font-bold text-[#526379] hover:text-[#D00039] transition-colors font-serif"
+              className="text-sm font-bold text-text-secondary hover:text-primary transition-colors font-serif"
             >
               {item}
             </Link>
