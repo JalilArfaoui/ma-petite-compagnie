@@ -18,7 +18,7 @@ export const Footer = () => {
             © 2026 Ma petite Compagnie. Tous droits réservés
           </Text>
           <Text className="text-sm font-bold text-text-secondary flex items-center gap-1 font-serif">
-            Fait avec <span className="text-red-500">❤️</span> à Albi
+            Fait avec <span className="text-primary">❤️</span> à Albi
           </Text>
         </div>
 
