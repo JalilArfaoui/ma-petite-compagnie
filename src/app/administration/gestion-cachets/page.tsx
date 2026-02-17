@@ -282,10 +282,7 @@ export default function PageCachets() {
               <button onClick={() => editerCachet(c)} aria-label="Éditer">
                 ✎
               </button>
-              <button
-                onClick={() => supprimerCachet(c.id)}
-                aria-label="Supprimer"
-              >
+              <button onClick={() => supprimerCachet(c.id)} aria-label="Supprimer">
                 ✕
               </button>
             </div>
