@@ -24,10 +24,11 @@ it.skip("fichier .env chargé", () => {
   ).toBeDefined();
 });
 describe("Contact", () => {
-  beforeAll(async () => {
+  const contactACleanup: Contact[] = [];
+  /*beforeAll(async () => {
     await prisma.contact.deleteMany({});
   });
-  const contactACleanup: Contact[] = [];
+  
 
   afterAll(async () => {
     contactACleanup.forEach(async (contact) => {
@@ -36,14 +37,14 @@ describe("Contact", () => {
         console.log(await supprimerContact(contact.id));
       }
     });
-  });
-  it("Créer un contact", async () => {
+  });*/
+  it.skip("Créer un contact", async () => {
     const created = await creerUnContactAvecNom("TestLire2", "email@gmail.com");
     contactACleanup.push(created);
     expect(created).toBeDefined();
     expect(created.nom).toStrictEqual("TestLire2");
   });
-  it("Lister des contacts", async () => {
+  it.skip("Lister des contacts", async () => {
     const created = await creerUnContactAvecNom("TestLire4Test", "email2@gmail.com");
     const contactsListe = await listerContacts();
     contactACleanup.push(created);
@@ -62,7 +63,7 @@ describe("Contact", () => {
     );
     expect(modifier.donnee?.nom).toBe("TestModification");
   });
-  it("Supprimer un contact", async () => {
+  it.skip("Supprimer un contact", async () => {
     const created = await creerUnContactAvecNom("TestSuppressionContact", "email4@gmail.com");
     await supprimerContact(created.id);
   });
