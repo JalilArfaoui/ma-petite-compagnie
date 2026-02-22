@@ -1,21 +1,19 @@
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+@import "tailwindcss";
+
+:root {
+  --background: var(--color-cream-50);
+  --foreground: #171717;
 }
 
-html,
-body {
-  max-width: 100vw;
-  min-height: 100vh;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
 }
 
 body {
-  font-family:
-    system-ui,
-    -apple-system,
-    sans-serif;
-  line-height: 1.5;
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Georgia;
 }

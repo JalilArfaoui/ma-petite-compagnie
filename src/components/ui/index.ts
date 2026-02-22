@@ -1,6 +1,7 @@
 export * from "./Alert/Alert";
 export * from "./Badge/Badge";
 export * from "./Box/Box";
+export * from "./Flex/Flex";
 export * from "./Button/Button";
 export * from "./Card/Card";
 export * from "./Checkbox/Checkbox";
@@ -14,6 +15,8 @@ export * from "./Radio/Radio";
 export * from "./Select/Select";
 export * from "./SimpleGrid/SimpleGrid";
 export * from "./Stack/Stack";
+export * from "./Stack/HStack";
+export * from "./Stack/VStack";
 export * from "./Switch/Switch";
 export * from "./Table/Table";
 export * from "./Text/Text";

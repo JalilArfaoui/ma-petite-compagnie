@@ -1,5 +1,22 @@
-import { Container as ChakraContainer, ContainerProps } from "@chakra-ui/react";
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
-export const Container = (props: ContainerProps) => {
-  return <ChakraContainer {...props} />;
-};
+interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {
+  maxW?: string;
+}
+
+const Container = React.forwardRef<HTMLDivElement, ContainerProps>(
+  ({ className, maxW, style, ...props }, ref) => {
+    return (
+      <div
+        ref={ref}
+        className={cn("container mx-auto px-4", className)}
+        style={{ maxWidth: maxW, ...style }}
+        {...props}
+      />
+    );
+  }
+);
+Container.displayName = "Container";
+
+export { Container };

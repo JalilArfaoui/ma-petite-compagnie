@@ -1,39 +1,57 @@
 "use client";
-
-import {
-  Toaster as ChakraToaster,
-  Portal,
-  Spinner,
-  Stack,
-  Toast,
-  createToaster,
-} from "@chakra-ui/react";
-
-export const toaster = createToaster({
-  placement: "bottom-end",
-  pauseOnPageIdle: true,
-});
+import { Toaster as Sonner, toast, type ExternalToast } from "sonner";
 
 export const Toaster = () => {
   return (
-    <Portal>
-      <ChakraToaster toaster={toaster} insetInline={{ mdDown: "4" }}>
-        {(toast) => (
-          <Toast.Root width={{ md: "sm" }}>
-            {toast.type === "loading" ? (
-              <Spinner size="sm" color="blue.solid" />
-            ) : (
-              <Toast.Indicator />
-            )}
-            <Stack gap="1" flex="1" maxWidth="100%">
-              {toast.title && <Toast.Title>{toast.title}</Toast.Title>}
-              {toast.description && <Toast.Description>{toast.description}</Toast.Description>}
-            </Stack>
-            {toast.action && <Toast.ActionTrigger>{toast.action.label}</Toast.ActionTrigger>}
-            {toast.closable && <Toast.CloseTrigger />}
-          </Toast.Root>
-        )}
-      </ChakraToaster>
-    </Portal>
+    <Sonner
+      className="toaster group"
+      toastOptions={{
+        classNames: {
+          toast:
+            "group toast group-[.toaster]:bg-white group-[.toaster]:text-slate-950 group-[.toaster]:border-slate-200 group-[.toaster]:shadow-lg",
+          description: "group-[.toast]:text-slate-500",
+          actionButton: "group-[.toast]:bg-slate-900 group-[.toast]:text-slate-50",
+          cancelButton: "group-[.toast]:bg-slate-100 group-[.toast]:text-slate-500",
+        },
+      }}
+    />
   );
+};
+
+interface ToastOptions {
+  type?: "success" | "error" | "loading" | "info" | "warning";
+  title?: React.ReactNode;
+  description?: React.ReactNode;
+  duration?: number;
+  closable?: boolean;
+  id?: string;
+}
+
+export const toaster = {
+  create: (options: ToastOptions) => {
+    const type = options.type;
+    const title = options.title || "";
+    if (type && type !== "loading" && type in toast) {
+      const fn = toast[type as keyof typeof toast] as (
+        message: string | React.ReactNode,
+        data?: ExternalToast
+      ) => string | number;
+      fn(title, {
+        description: options.description,
+        duration: options.duration,
+        id: options.id,
+      });
+    } else {
+      toast(title, {
+        description: options.description,
+        duration: options.duration,
+        id: options.id,
+      });
+    }
+  },
+  success: (options: ToastOptions) =>
+    toast.success(options.title, { description: options.description }),
+  error: (options: ToastOptions) =>
+    toast.error(options.title, { description: options.description }),
+  // ...
 };
