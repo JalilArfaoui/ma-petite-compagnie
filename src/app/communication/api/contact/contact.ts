@@ -162,6 +162,22 @@ export async function supprimerContact(id: number) {
     return resultOf(false, "Le contact n'a pas pu être supprimé", null);
   }
 }
+
+export async function supprimerContactAvecNom(nom: string) {
+  try {
+    return await resultOf(true, "", prisma.contact.deleteMany({ where: { nom: nom } }));
+  } catch (error) {
+    return resultOf(false, "Le contact n'a pas pu être supprimé", null);
+  }
+}
+export async function supprimerContactsAvecEmail(email: string) {
+  try {
+    return await resultOf(true, "", prisma.contact.deleteMany({ where: { email: email } }));
+  } catch (error) {
+    return resultOf(false, "Le contact n'a pas pu être supprimé", null);
+  }
+}
+
 export async function trouverParIdContact(id: number) {
   const contact = await prisma.contact.findUnique({ where: { id: id } });
   if (!contact) {

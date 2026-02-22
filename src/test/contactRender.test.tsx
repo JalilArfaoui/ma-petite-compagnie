@@ -8,7 +8,7 @@ import { defaultSystem } from "@chakra-ui/react";
 
 describe("Test des pages pour le contact", () => {
   it("La page détails d'un contact doit afficher les informations du contact", async () => {
-    const contact = creerObjetContactAvecNom("TestRender");
+    const contact = creerObjetContactAvecNom("TestRender", "prenom.nom@mail.fr");
     const contactFinal: Contact = creerUnContactAPartirInformation(contact);
     render(
       <ChakraProvider value={defaultSystem}>
