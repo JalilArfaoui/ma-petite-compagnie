@@ -2,17 +2,20 @@ import {
   creerContact,
   listerContacts,
   modifierContact,
+  supprimerContact,
 } from "../app/communication/api/contact/contact";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, afterAll, beforeAll } from "vitest";
 import { creerObjetContactAvecNom } from "./testContactUtility";
+import { Contact } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 
-async function creerUnContactAvecNom(nom: string) {
-  const created = (await creerContact(creerObjetContactAvecNom(nom))).donnee;
-  if (created == null) {
-    expect.fail("Le contact n'a pas été créé correctement");
-    return { id: 1, nom: "", prenom: "", tel: null, email: null };
+async function creerUnContactAvecNom(nom: string, email: string): Promise<Contact> {
+  const contact = await creerObjetContactAvecNom(nom, email);
+  const created = await creerContact(contact);
+  if (created.donnee == null) {
+    expect.fail("Le contact n'a pas été créé correctement. Message : " + created.message);
   }
-  return created;
+  return created.donnee;
 }
 it.skip("fichier .env chargé", () => {
   expect(
@@ -21,15 +24,29 @@ it.skip("fichier .env chargé", () => {
   ).toBeDefined();
 });
 describe("Contact", () => {
-  it.skip("Créer un contact", async () => {
-    const created = await creerUnContactAvecNom("TestLire2");
+  beforeAll(async () => {
+    await prisma.contact.deleteMany({});
+  });
+  const contactACleanup: Contact[] = [];
 
+  afterAll(async () => {
+    contactACleanup.forEach(async (contact) => {
+      console.log(contact);
+      if (contact) {
+        console.log(await supprimerContact(contact.id));
+      }
+    });
+  });
+  it("Créer un contact", async () => {
+    const created = await creerUnContactAvecNom("TestLire2", "email@gmail.com");
+    contactACleanup.push(created);
     expect(created).toBeDefined();
     expect(created.nom).toStrictEqual("TestLire2");
   });
-  it.skip("Lister des contacts", async () => {
-    const created = await creerUnContactAvecNom("TestLire4Test");
+  it("Lister des contacts", async () => {
+    const created = await creerUnContactAvecNom("TestLire4Test", "email2@gmail.com");
     const contactsListe = await listerContacts();
+    contactACleanup.push(created);
     expect(contactsListe.succes).toBe(true);
     expect(contactsListe.donnee?.length).toBeGreaterThanOrEqual(1);
     if (contactsListe.donnee?.length == 1) {
@@ -37,15 +54,20 @@ describe("Contact", () => {
     }
   });
   it.skip("Modifier un contact", async () => {
-    const created = await creerUnContactAvecNom("TestModifier");
+    const created = await creerUnContactAvecNom("TestModifier", "email3@gmail.com");
+    contactACleanup.push(created);
     const modifier = await modifierContact(
       created.id,
-      creerObjetContactAvecNom("TestModification")
+      creerObjetContactAvecNom("TestModification", "email3Modi@gmail.com")
     );
     expect(modifier.donnee?.nom).toBe("TestModification");
   });
+  it("Supprimer un contact", async () => {
+    const created = await creerUnContactAvecNom("TestSuppressionContact", "email4@gmail.com");
+    await supprimerContact(created.id);
+  });
   it("Créer un contact sans nom", async () => {
-    const result = await creerContact(creerObjetContactAvecNom(""));
+    const result = await creerContact(creerObjetContactAvecNom("", ""));
     expect(result.succes).toBe(false);
   });
   it("Créer un contact avec mauvais email", async () => {
