@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 
 type Categorie =
   | "représentation"
-  | "repetition"
+  | "répétition"
   | "formation"
   | "création"
   | "production"
@@ -12,13 +12,13 @@ type Categorie =
   | "intervention"
   | "autre";
 
-export default function Page() {
+export default function VisionCachetsPage() {
   //dictionnaire temporaire le temps que la bdd soit opérationnelle
   const cachetsData: Record<number, [Categorie, number]> = {
-    1: ["repetition", 150],
+    1: ["répétition", 150],
     2: ["représentation", 300],
     3: ["enregistrement", 200],
-    4: ["repetition", 180],
+    4: ["répétition", 180],
     5: ["intervention", 250],
     6: ["autre", 120],
   };
@@ -48,7 +48,7 @@ export default function Page() {
     }
 
     return result;
-  }, [categorieFilter, montantSort, cachetsArray]);
+  }, [categorieFilter, montantSort]);
 
   return (
     <div>
@@ -57,7 +57,7 @@ export default function Page() {
       <h3>Filtrer par catégorie</h3>
       <select onChange={(e) => setCategorieFilter(e.target.value as "tous" | Categorie)}>
         <option value="tous">Tous</option>
-        <option value="représentation">Formation</option>
+        <option value="représentation">Représentation</option>
         <option value="repetition">Répétition</option>
         <option value="formation">Formation</option>
         <option value="création">Création</option>
@@ -78,9 +78,9 @@ export default function Page() {
 
       <h2>Résultats</h2>
       <ul>
-        {filteredAndSorted.map((item) => (
-          <li key={item.id}>
-            Cachet #{item.id} — {item.categorie} — {item.montant} €
+        {filteredAndSorted.map((cachet) => (
+          <li key={cachet.id}>
+            Cachet #{cachet.id} — {cachet.categorie} — {cachet.montant} €
           </li>
         ))}
       </ul>
