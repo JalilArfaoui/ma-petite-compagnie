@@ -31,7 +31,6 @@ export interface SpectacleEquilibre {
   nom: string;
   statut: "positif" | "negatif" | "alerte";
   budget: number;
-  realise: number;
   montant: string;
   alerte?: boolean;
 }
@@ -167,24 +166,18 @@ export function FacturesAvenir({
 
 // Composant pour une barre de progression de budget
 export function BarreBudget({
-  pourcentageTotal,
-  pourcentageRealise,
+  pourcentage,
   couleur,
 }: {
-  pourcentageTotal: number;
-  pourcentageRealise: number;
+  pourcentage: number;
   couleur: "green" | "red";
 }) {
   const bgColorPrincipal = couleur === "green" ? "bg-[#53826A]" : "bg-[#CC4F4F]";
   const bgColorSecondaire = couleur === "green" ? "bg-[#A3CDA8]" : "bg-[#F0A8A8]";
 
   return (
-    <div className={`h-3 w-48 rounded-sm overflow-hidden flex ${bgColorSecondaire} relative`}>
-      <div className={`h-full ${bgColorPrincipal}`} style={{ width: `${pourcentageTotal}%` }}></div>
-      <div
-        className={`h-full bg-white opacity-40 absolute top-0 bottom-0 right-0`}
-        style={{ width: `${100 - pourcentageRealise}%` }}
-      ></div>
+    <div className={`h-3 w-48 rounded-sm overflow-hidden ${bgColorSecondaire} relative`}>
+      <div className={`h-full ${bgColorPrincipal}`} style={{ width: `${pourcentage}%` }}></div>
     </div>
   );
 }
@@ -208,8 +201,7 @@ export function EquilibreFinancier({ spectacles }: { spectacles: SpectacleEquili
 
             <div className="flex-1 flex justify-center">
               <BarreBudget
-                pourcentageTotal={spec.budget}
-                pourcentageRealise={spec.realise}
+                pourcentage={spec.budget}
                 couleur={spec.statut === "positif" ? "green" : "red"}
               />
             </div>

@@ -47,21 +47,19 @@ const PAIEMENTS_DATA: ItemFinancier[] = [
 ];
 
 const SPECTACLES_DATA: SpectacleEquilibre[] = [
-  { nom: "Le Misanthrope", statut: "positif", budget: 80, realise: 100, montant: "+2 300 €" },
-  { nom: "Le Nuit des Rois", statut: "positif", budget: 60, realise: 100, montant: "+1 150 €" },
+  { nom: "Le Misanthrope", statut: "positif", budget: 80, montant: "+2 300 €" },
+  { nom: "Le Nuit des Rois", statut: "positif", budget: 60, montant: "+1 150 €" },
   {
     nom: "Les Fourberies de Scapin",
     statut: "positif",
     budget: 50,
-    realise: 100,
     montant: "+250 €",
   },
-  { nom: "Le malade imaginaire", statut: "negatif", budget: 40, realise: 100, montant: "-760 €" },
+  { nom: "Le malade imaginaire", statut: "negatif", budget: 40, montant: "-760 €" },
   {
     nom: "Antigone",
     statut: "alerte",
     budget: 22,
-    realise: 100,
     montant: "-1 200 €",
     alerte: true,
   },
@@ -117,7 +115,7 @@ export default function PageAdministration() {
         {/* Ligne des cartes indicateurs clés */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 flex-nowrap mb-12">
           <IndicateurCle titre="Trésorerie actuelle" valeur="12 540 €" sousTexte="" />
-          <IndicateurCle titre="Factures" valeur={<span>320 €</span>} sousTexte="attendus" />
+          <IndicateurCle titre="Factures" valeur="320 €" sousTexte="attendus" />
           <IndicateurCle titre="Spectacles en cours" valeur="5" sousTexte="spectacles actifs" />
           <IndicateurCle titre="Financements" valeur="4" sousTexte="dossiers en attente" />
         </div>
