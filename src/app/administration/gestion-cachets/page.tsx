@@ -6,8 +6,8 @@ const TYPE_CATEGORIE = [
   { value: "representation", label: "Représentation" },
   { value: "repetition", label: "Répétition" },
   { value: "formation", label: "Formation" },
-  { value: "creation", label: "Creation" },
-  { value: "production", label: "Prodution" },
+  { value: "creation", label: "Création" },
+  { value: "production", label: "Production" },
   { value: "enregistrement", label: "Enregistrement" },
   { value: "intervention", label: "Intervention" },
   { value: "autre", label: "Autre" },
@@ -45,7 +45,7 @@ export default function PageCachets() {
   const [tri, setTri] = useState<"date" | "montant">("date");
   const [erreur, setErreur] = useState<string | null>(null);
 
-  function ajouterCachet(e: React.FormEvent) {
+  function ajouterCachet(e: React.SubmitEvent) { //utilisation de SubmitEvent car FormEvent est déprécié
     e.preventDefault();
 
     setErreur(null);
