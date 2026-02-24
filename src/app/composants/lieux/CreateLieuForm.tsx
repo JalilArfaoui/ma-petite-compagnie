@@ -1,7 +1,6 @@
 "use client";
 import type { Lieu } from "@/types/lieu";
 import { useState } from "react";
-import {Field, GridItem} from "@chakra-ui/react";
 import {Button, Input, SimpleGrid} from "@/components/ui";
 
 type Props = {
@@ -87,7 +86,7 @@ export function CreateLieuForm({ onSuccess, onCancel, idCompagnie }: Props) {
           <Input type="text" value={numeroSalle} onChange={(e) => setNumeroSalle(e.target.value)} />
         </Field.Root>
       </div>
-      <SimpleGrid columns={{ base: 4, md: 5 }} gap={{ base: "0px", md: "0px" }}>
+      <SimpleGrid columns={{ base: 4, md: 5 }} gap={0}>
         <GridItem colSpan={{ base: 1, md: 1 }}></GridItem>
         <GridItem colSpan={{ base: 1, md: 1 }}>
           <Button type="button" onClick={onCancel}>
