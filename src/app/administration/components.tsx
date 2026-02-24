@@ -17,6 +17,7 @@ const STYLES = {
   linkButton: "text-sm text-gray-500 underline hover:text-gray-800",
 };
 
+
 // Carte pour les indicateurs clés en haut de page
 export function IndicateurCle({ titre, valeur, sousTexte }: { titre: string; valeur: React.ReactNode; sousTexte: string }) {
   return (
@@ -26,6 +27,21 @@ export function IndicateurCle({ titre, valeur, sousTexte }: { titre: string; val
         <Text className="text-4xl text-gray-900">{valeur}</Text>
         <Text className="text-gray-500">{sousTexte}</Text>
       </div>
+    </div>
+  );
+}
+
+
+// Composant pour l'en-tête répété des sous-sections
+export function SectionEntete({ titre, montant, type, className = "" }: { titre: string; montant: string; type: 'factures' | 'paiements'; className?: string; }) {
+  const isFacture = type === "factures";
+  const bgColor = isFacture ? "bg-[#D4E8CD]" : "bg-[#FCE5B5]";
+  const textColor = isFacture ? "text-green-800" : "text-orange-900";
+
+  return (
+    <div className={`flex justify-between items-center ${bgColor} p-2 -mx-5 px-5 mb-3 text-sm font-semibold ${textColor} ${className}`}>
+      <span>{titre}</span>
+      <span>{montant}</span>
     </div>
   );
 }
@@ -47,10 +63,7 @@ export function FacturesAvenir() {
       <Heading as="h5" className="mb-4 text-gray-800">Factures & paiements à venir</Heading>
       
       {/* En-tête Factures */}
-      <div className="flex justify-between items-center bg-[#D4E8CD] p-2 rounded-t-lg -mx-5 px-5 mb-3 text-sm font-semibold text-green-800">
-        <span>Factures</span>
-        <span>+1 050 €</span>
-      </div>
+      <SectionEntete titre="Factures" montant="+1 050 €" type="factures" />
       
       <div className="flex flex-col gap-3 mb-5">
         {factures.map((item, idx) => (
@@ -68,10 +81,7 @@ export function FacturesAvenir() {
       </div>
 
       {/* En-tête Paiements */}
-      <div className="flex justify-between items-center bg-[#FCE5B5] p-2 rounded-t-lg -mx-5 px-5 mb-3 mt-4 text-sm font-semibold text-orange-900">
-        <span>Paiements</span>
-        <span>-528 €</span>
-      </div>
+      <SectionEntete titre="Paiements" montant="-528 €" type="paiements" className="mt-4" />
 
       <div className="flex flex-col gap-3 mb-4">
         {paiements.map((item, idx) => (
