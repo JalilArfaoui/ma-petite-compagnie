@@ -294,7 +294,7 @@ export function FinancementsSubventions() {
                 {fin.statut}
               </span>
               {fin.type === "attente" && (
-                <Tooltip label="J'ai reçu ce financement">
+                <Tooltip label="Vous avez reçu ce financement">
                   <button
                     className="ml-auto text-green-600 hover:bg-green-50 p-1 rounded-full bg-white border border-gray-100 shadow-sm cursor-pointer"
                     title="Valider"
