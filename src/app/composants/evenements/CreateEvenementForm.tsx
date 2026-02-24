@@ -190,7 +190,7 @@ export function CreateEvenementForm({
       {/* TODO pouvoir sélectionner des participants */}
       <SimpleGrid columns={{ base: 3, md: 3 }}>
           <GridItem colSpan={{ base: 1, md: 1 }}>
-            <Button>Annuler</Button>
+            <Button onClick={onCancel}>Annuler</Button>
           </GridItem>
           <GridItem colSpan={{ base: 1, md: 1 }}>
               <Button type={"submit"}>Créer</Button>
