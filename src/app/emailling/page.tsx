@@ -2,101 +2,182 @@
 
 import { useState, ChangeEvent, FormEvent, JSX } from "react";
 
+// Types
+interface Contact {
+  id: number;
+  nom: string;
+  email: string;
+  tags: string[];
+}
+
 interface EmailForm {
   destinataire: string;
   sujet: string;
   message: string;
 }
 
+interface HistoriqueEmail {
+  destinataire: string;
+  sujet: string;
+  date: string;
+  statut: "succès" | "erreur";
+}
+
 export default function PageEmailing(): JSX.Element {
-  const [form, setForm] = useState<EmailForm>({
+  //  Base de contacts simulée 
+  const contacts: Contact[] = [
+    { id: 1, nom: "Alice", email: "alice@example.com", tags: ["acteur"] },
+    { id: 2, nom: "Bob", email: "bob@example.com", tags: ["bénévole"] },
+    { id: 3, nom: "Charlie", email: "charlie@example.com", tags: ["administrateur"] },
+    { id: 4, nom: "Diane", email: "diane@example.com", tags: ["acteur", "administrateur"] },
+  ];
+
+  //  États 
+  const [filtreTag, setFiltreTag] = useState<string>("");
+  const [formulaire, setFormulaire] = useState<EmailForm>({
     destinataire: "",
     sujet: "",
     message: "",
   });
+  const [chargement, setChargement] = useState<boolean>(false);
+  const [messageStatut, setMessageStatut] = useState<string | null>(null);
+  const [historique, setHistorique] = useState<HistoriqueEmail[]>([]);
 
-  const [loading, setLoading] = useState<boolean>(false);
-  const [feedback, setFeedback] = useState<string | null>(null);
-
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ): void => {
+  //  Gestion du formulaire 
+  const gererChangement = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setFormulaire(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (
-    e: FormEvent<HTMLFormElement>
-  ): Promise<void> => {
+  //  Envoi email 
+  const gererEnvoi = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-    setFeedback(null);
+    setChargement(true);
+    setMessageStatut(null);
 
     try {
       const res = await fetch("/api/email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(formulaire),
       });
 
-      const data: { succes?: boolean; erreur?: string } = await res.json();
+      const data = await res.json();
+
+      const nouvelHistorique: HistoriqueEmail = {
+        destinataire: formulaire.destinataire,
+        sujet: formulaire.sujet,
+        date: new Date().toLocaleString(),
+        statut: res.ok ? "succès" : "erreur",
+      };
+
+      setHistorique(prev => [nouvelHistorique, ...prev]);
 
       if (!res.ok) throw new Error(data.erreur);
 
-      setFeedback(" Email envoyé avec succès");
-      setForm({ destinataire: "", sujet: "", message: "" });
+      setMessageStatut(" Email envoyé avec succès !");
+      setFormulaire({ destinataire: "", sujet: "", message: "" });
     } catch {
-      setFeedback("Erreur lors de l’envoi de l’email");
+      setMessageStatut("Erreur lors de l’envoi de l’email");
     } finally {
-      setLoading(false);
+      setChargement(false);
     }
+  };
+
+  //  Relancer dernier email 
+  const relancerDernierEmail = () => {
+    if (!historique[0]) return;
+    setFormulaire({
+      destinataire: historique[0].destinataire,
+      sujet: "Relance : " + historique[0].sujet,
+      message: formulaire.message,
+    });
   };
 
   return (
     <main style={{ maxWidth: 600, margin: "50px auto" }}>
-      <h1> Page d’emailing</h1>
+      <h1>Emailing – Ma Petite Compagnie</h1>
 
-      <form onSubmit={handleSubmit}>
+      {/* Filtre par tag */}
+      <label>
+        Filtrer par tag :
+        <select value={filtreTag} onChange={e => setFiltreTag(e.target.value)}>
+          <option value="">Tous</option>
+          <option value="acteur">Acteurs</option>
+          <option value="bénévole">Bénévoles</option>
+          <option value="administrateur">Administrateurs</option>
+        </select>
+      </label>
+
+      {/* Formulaire d’envoi */}
+      <form onSubmit={gererEnvoi} style={{ marginTop: 20 }}>
         <label>
-          Destinataire
-          <input
-            type="email"
+          Destinataire :
+          <select
             name="destinataire"
-            value={form.destinataire}
-            onChange={handleChange}
+            value={formulaire.destinataire}
+            onChange={gererChangement}
             required
-          />
+          >
+            <option value="">Sélectionner un contact</option>
+            {contacts
+              .filter(c => !filtreTag || c.tags.includes(filtreTag))
+              .map(c => (
+                <option key={c.id} value={c.email}>
+                  {c.nom} ({c.tags.join(", ")})
+                </option>
+              ))}
+          </select>
         </label>
 
         <label>
-          Sujet
+          Sujet :
           <input
             type="text"
             name="sujet"
-            value={form.sujet}
-            onChange={handleChange}
+            value={formulaire.sujet}
+            onChange={gererChangement}
             required
           />
         </label>
 
         <label>
-          Message
+          Message :
           <textarea
             name="message"
-            value={form.message}
-            onChange={handleChange}
+            value={formulaire.message}
+            onChange={gererChangement}
             rows={6}
             required
           />
         </label>
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Envoi en cours..." : "Envoyer l’email"}
+        <button type="submit" disabled={chargement}>
+          {chargement ? "Envoi en cours..." : "Envoyer l’email"}
         </button>
       </form>
 
-      {feedback && <p>{feedback}</p>}
+      {/* Relance */}
+      {historique.length > 0 && (
+        <button onClick={relancerDernierEmail} style={{ marginTop: 10 }}>
+          Relancer dernier email
+        </button>
+      )}
+
+      {/* Message de statut */}
+      {messageStatut && <p style={{ marginTop: 10 }}>{messageStatut}</p>}
+
+      {/* Historique */}
+      <h2 style={{ marginTop: 30 }}>Historique des emails</h2>
+      <ul>
+        {historique.map((h, idx) => (
+          <li key={idx}>
+            [{h.date}] {h.destinataire} — {h.sujet} — {h.statut}
+          </li>
+        ))}
+      </ul>
     </main>
   );
 }
-

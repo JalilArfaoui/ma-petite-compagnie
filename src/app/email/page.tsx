@@ -61,7 +61,7 @@ export default function EnvoyerEmail(): JSX.Element {
   };
 
   return (
-    <main style={{ maxWidth: 500, margin: "40px auto" }}>
+    <main style={{ maxWidth: 500, margin: "100px auto" }}>
       <h1>Envoyer un email</h1>
 
       <form onSubmit={gererEnvoi}>
