@@ -12,33 +12,40 @@ type Categorie =
   | "intervention"
   | "autre";
 
+type Cachet = {
+  id: number;
+  categorie: Categorie;
+  montant: number;
+  date: Date;
+};
+
 export default function VisionCachetsPage() {
   //dictionnaire temporaire le temps que la bdd soit opérationnelle
-  const cachetsData: Record<number, [Categorie, number]> = {
-    1: ["repetition", 150],
-    2: ["representation", 300],
-    3: ["enregistrement", 200],
-    4: ["repetition", 180],
-    5: ["intervention", 250],
-    6: ["autre", 120],
-  };
+  const cachetsData: Cachet[] = [
+    { id: 1, categorie: "repetition", montant: 150, date: new Date("2024-01-18") },
+    { id: 2, categorie: "representation", montant: 300, date: new Date("2024-03-21") },
+    { id: 3, categorie: "enregistrement", montant: 200, date: new Date("2024-06-04") },
+    { id: 4, categorie: "repetition", montant: 180, date: new Date("2024-07-15") },
+    { id: 5, categorie: "intervention", montant: 250, date: new Date("2024-08-07") },
+    { id: 6, categorie: "autre", montant: 120, date: new Date("2024-09-24") },
+  ];
 
   const [categorieFilter, setCategorieFilter] = useState<"tous" | Categorie>("tous");
   const [montantSort, setMontantSort] = useState<"none" | "croissant" | "decroissant">("none");
-
-  //transformation du dictionnaire en tableau exploitable
-  const cachetsArray = Object.entries(cachetsData).map(([id, value]) => ({
-    id,
-    categorie: value[0],
-    montant: value[1],
-  }));
+  const [dateFilter, setDateFilter] = useState<"none" | "croissant" | "decroissant">("none");
 
   //filtrage + tri
   const filteredAndSorted = useMemo(() => {
-    let result = [...cachetsArray];
+    let result = [...cachetsData];
 
     if (categorieFilter !== "tous") {
       result = result.filter((item) => item.categorie === categorieFilter);
+    }
+
+    if (dateFilter === "croissant") {
+      result.sort((a, b) => b.date.getTime() - a.date.getTime());
+    } else if (dateFilter === "decroissant") {
+      result.sort((a, b) => a.date.getTime() - b.date.getTime());
     }
 
     if (montantSort === "croissant") {
@@ -67,6 +74,15 @@ export default function VisionCachetsPage() {
         <option value="autre">Autre</option>
       </select>
 
+      <h3>Trier par date</h3>
+      <select
+        onChange={(e) => setDateFilter(e.target.value as "none" | "croissant" | "decroissant")}
+      >
+        <option value="none">Aucun tri</option>
+        <option value="croissant">Date croissante</option>
+        <option value="decroissant">Date décroissante</option>
+      </select>
+
       <h3>Trier par montant</h3>
       <select
         onChange={(e) => setMontantSort(e.target.value as "none" | "croissant" | "decroissant")}
@@ -80,7 +96,8 @@ export default function VisionCachetsPage() {
       <ul>
         {filteredAndSorted.map((cachet) => (
           <li key={cachet.id}>
-            Cachet #{cachet.id} — {cachet.categorie} — {cachet.montant} €
+            Cachet #{cachet.id} — {cachet.categorie} — {cachet.montant} € —{" "}
+            {cachet.date.toLocaleDateString("fr-FR")}
           </li>
         ))}
       </ul>
