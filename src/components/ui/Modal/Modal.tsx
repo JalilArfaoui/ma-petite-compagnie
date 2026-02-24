@@ -1,21 +1,21 @@
-"use client";
+import React, { ReactNode } from "react";
 
-import { ReactNode } from "react";
-
-type ModalProps = {
+interface ModalProps extends React.HTMLAttributes<HTMLDivElement>  {
   open: boolean;
   onClose: () => void;
   children: ReactNode;
-};
+}
 
-export function Modal({ open, onClose, children }: ModalProps) {
+const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
+    ({ open, onClose, children}, ref)=> {
   if (!open) return null;
-
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div ref={ref} className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         {children}
       </div>
     </div>
   );
-}
+});
+Modal.displayName = "Modal";
+export {Modal};

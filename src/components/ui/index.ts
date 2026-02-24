@@ -28,5 +28,10 @@ export * from "./Tooltip/Tooltip";
 export * from "./Popover/Popover";
 export * from "./Drawer/Drawer";
 export * from "./Header/Header";
+<<<<<<< HEAD
 export * from "./SearchBar/SearchBar";
 export * from "./Modal/Modal";
+=======
+export * from "./Modal/Modal";
+export * from "./Field/Field";
+>>>>>>> a1edaf0 (chore:Field et Modal)
