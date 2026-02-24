@@ -36,7 +36,7 @@ export async function inscrireUtilisateur(formData: FormData): Promise<ResultatA
     return { succes: false, message: "Cette adresse email est déjà utilisée." };
   }
 
-  const motDePasseHache = await bcryptjs.hash(motDePasse, 12);
+  const motDePasseHache = await bcryptjs.hash(motDePasse, 12); // coût de 12 : bon équilibre sécurité/performance
 
   await prisma.utilisateur.create({
     data: { nom, prenom, email, motDePasse: motDePasseHache },
