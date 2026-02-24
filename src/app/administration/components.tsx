@@ -29,7 +29,7 @@ export interface ItemFinancier {
 
 export interface SpectacleEquilibre {
   nom: string;
-  statut: "positif" | "negatif" | "alerte";
+  statut: "positif" | "negatif";
   budget: number;
   montant: string;
   alerte?: boolean;

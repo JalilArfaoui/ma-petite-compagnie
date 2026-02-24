@@ -58,7 +58,7 @@ const SPECTACLES_DATA: SpectacleEquilibre[] = [
   { nom: "Le malade imaginaire", statut: "negatif", budget: 40, montant: "-760 €" },
   {
     nom: "Antigone",
-    statut: "alerte",
+    statut: "negatif",
     budget: 22,
     montant: "-1 200 €",
     alerte: true,
