@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Heading, Text, Badge } from "@/components/ui";
+import { Heading, Text, Badge, Tooltip } from "@/components/ui";
 import { FaExclamationTriangle, FaCheck } from "react-icons/fa";
 
 // ===== Variables CSS partagées =====
@@ -180,9 +180,11 @@ export function FinancementsSubventions() {
               <span className="font-bold text-gray-900">{fin.montant}</span>
               <span className={fin.type === 'recu' ? 'text-[#53826A]' : 'text-[#F2C94C]'}>{fin.statut}</span>
               {fin.type === 'attente' && (
-                <button className="ml-auto text-green-600 hover:bg-green-50 p-1 rounded-full bg-white border border-gray-100 shadow-sm" title="Valider">
-                  <FaCheck size={10} />
-                </button>
+                <Tooltip label="J'ai reçu ce financement">
+                  <button className="ml-auto text-green-600 hover:bg-green-50 p-1 rounded-full bg-white border border-gray-100 shadow-sm cursor-pointer" title="Valider">
+                    <FaCheck size={10} />
+                  </button>
+                </Tooltip>
               )}
             </div>
           </div>
