@@ -6,8 +6,8 @@ const headingVariants = cva("font-serif font-bold m-0 leading-[0.9]", {
   variants: {
     as: {
       h1: "text-black text-[110px]",
-      h2: "text-[#d00039] italic text-[110px]",
-      h3: "text-[#d00039] italic text-[36px]",
+      h2: "text-primary italic text-[110px]",
+      h3: "text-primary italic text-[36px]",
       h4: "text-black text-[24px]",
       h5: "text-black",
       h6: "text-black",
