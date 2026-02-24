@@ -3,8 +3,13 @@
 import { useState } from "react";
 
 const TYPE_CATEGORIE = [
+  { value: "representation", label: "Représentation" },
   { value: "repetition", label: "Répétition" },
   { value: "formation", label: "Formation" },
+  { value: "creation", label: "Creation" },
+  { value: "production", label: "Prodution" },
+  { value: "enregistrement", label: "Enregistrement" },
+  { value: "intervention", label: "Intervention" },
   { value: "autre", label: "Autre" },
 ] as const;
 
