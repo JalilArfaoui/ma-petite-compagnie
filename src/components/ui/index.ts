@@ -28,3 +28,4 @@ export * from "./Tooltip/Tooltip";
 export * from "./Popover/Popover";
 export * from "./Drawer/Drawer";
 export * from "./Header/Header";
+export * from "./SearchBar/SearchBar";
