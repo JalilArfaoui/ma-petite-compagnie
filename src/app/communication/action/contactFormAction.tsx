@@ -1,7 +1,7 @@
 "use server";
 
 import { Role } from "@prisma/client";
-import { ContactInformation, creerContact } from "../api/contact/contact";
+import { ContactInformation, creerContact, modifierContact } from "../api/contact/contact";
 
 function transformerFormDataContact(FormData: FormData): ContactInformation {
   return {
@@ -16,6 +16,13 @@ function transformerFormDataContact(FormData: FormData): ContactInformation {
 export async function creerContactAction(FormData: FormData) {
   const contactData = transformerFormDataContact(FormData);
   const result = await creerContact(contactData);
+
+  return result;
+}
+
+export async function modifierContactAction(id: number, FormData: FormData) {
+  const contactData = transformerFormDataContact(FormData);
+  const result = await modifierContact(id, contactData);
 
   return result;
 }

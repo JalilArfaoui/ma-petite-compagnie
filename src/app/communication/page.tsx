@@ -8,6 +8,7 @@ import "../globals.css";
 import { toaster } from "@/components/ui/Toast/toaster";
 export default function ContactPage() {
   const [contacts, setContacts] = useState<Contact[]>([]);
+  const [dernierContactSelect, setDernierContactSelect] = useState<Contact>();
   useEffect(() => {
     async function loadContact() {
       const resultat = await listerContacts(30, 1);
@@ -19,6 +20,9 @@ export default function ContactPage() {
     }
     loadContact();
   }, []);
+  function updateSelected(contact: Contact) {
+    setDernierContactSelect(contact);
+  }
   return (
     <Box className=" py-5 flex-col items-center gap-4">
       <Stack className="gap-5 items-center">
@@ -29,9 +33,20 @@ export default function ContactPage() {
       </Stack>
 
       <SimpleGrid className="columns-1 lg:columns-3" gap={10}>
-        {contacts.map((contact) => (
-          <ContactCard key={contact.id} contact={contact} />
-        ))}
+        {contacts.map((contact) => {
+          return (
+            <Box className="flex flex-col items-center" key={contact.id}>
+              <Box className={dernierContactSelect === contact ? "orange" : "transparent"}>
+                <ContactCard contact={contact} onSelect={updateSelected} />
+              </Box>
+              {dernierContactSelect === contact && (
+                <Link href={"/communication/" + contact.id}>
+                  <Button>Modifier</Button>
+                </Link>
+              )}
+            </Box>
+          );
+        })}
       </SimpleGrid>
     </Box>
   );
