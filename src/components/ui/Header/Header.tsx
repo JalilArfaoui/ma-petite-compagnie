@@ -1,10 +1,11 @@
-"use client";
-
 import Link from "next/link";
 import { Button, Container, Logo } from "@/components/ui";
-import { LuLogIn } from "react-icons/lu";
+import { LuLogIn, LuLogOut, LuUser } from "react-icons/lu";
+import { auth, signOut } from "@/lib/auth";
 
-export const Header = () => {
+export const Header = async () => {
+  const session = await auth();
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-black/5 bg-cream-50 py-4">
       <Container className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -34,9 +35,30 @@ export const Header = () => {
 
           {/* CTA Section */}
           <div className="flex items-center gap-4">
-            <Button variant="solid" icon={<LuLogIn />}>
-              Connexion
-            </Button>
+            {session?.user ? (
+              <>
+                <span className="hidden md:flex items-center gap-2 text-sm font-serif text-slate-600">
+                  <LuUser size={16} />
+                  {session.user.name}
+                </span>
+                <form
+                  action={async () => {
+                    "use server";
+                    await signOut({ redirectTo: "/" });
+                  }}
+                >
+                  <Button type="submit" variant="outline" icon={<LuLogOut />}>
+                    Déconnexion
+                  </Button>
+                </form>
+              </>
+            ) : (
+              <Link href="/connexion">
+                <Button variant="solid" icon={<LuLogIn />}>
+                  Connexion
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </Container>

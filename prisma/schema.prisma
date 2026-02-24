@@ -28,7 +28,7 @@ model Categorie {
 model Compagnie {
   id    Int      @id @default(autoincrement())
   nom   String
-  membres UtilisateurBouchon[]
+  membres Utilisateur[]
   evenements Evenement[]
   categoriesEvenement Categorie[]
   lieuxEvenement Lieu[]
@@ -52,19 +52,23 @@ model Evenement {
 model ParticipantsEvenement {
   id     Int      @id @default(autoincrement())
   utilisateurId  Int
-  utilisateur  UtilisateurBouchon  @relation(fields: [utilisateurId], references: [id])
+  utilisateur  Utilisateur  @relation(fields: [utilisateurId], references: [id])
   evenementId Int
   evenement Evenement @relation(fields: [evenementId],references: [id])
 }
 
 
-// TODO utiliser la vrai table des utilisateur
-model UtilisateurBouchon {
+model Utilisateur {
   id    Int      @id @default(autoincrement())
+  email String   @unique
+  motDePasse String
+  nom   String
+  prenom String
   evenements  ParticipantsEvenement[]
   compagnieId Int?
   compagnie Compagnie? @relation(fields: [compagnieId], references: [id])
   droitModificationPlanification  Boolean @default(false)
+  date_creation DateTime @default(now())
 }
 // Partie groupe Communication
 enum Role {
