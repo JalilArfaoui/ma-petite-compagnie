@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { Heading, Text, Badge, Tooltip } from "@/components/ui";
 import { FaExclamationTriangle, FaCheck } from "react-icons/fa";
 
