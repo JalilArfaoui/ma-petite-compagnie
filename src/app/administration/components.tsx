@@ -90,6 +90,34 @@ export function SectionEntete({
   );
 }
 
+// Composant pour afficher une liste d'éléments financiers (factures ou paiements)
+export function ListeItemsFinanciers({
+  items,
+  className = "",
+}: {
+  items: ItemFinancier[];
+  className?: string;
+}) {
+  return (
+    <div className={`flex flex-col gap-3 ${className}`}>
+      {items.map((item, idx) => (
+        <div key={idx} className={STYLES.itemCardFlex}>
+          <div>
+            <Text className={STYLES.textTitle}>{item.destinataire}</Text>
+            <Text className={STYLES.textSubtitle}>{item.date}</Text>
+          </div>
+          <div className="flex flex-col items-end gap-1">
+            <Text className={STYLES.textTitle}>{item.montant}</Text>
+            <Badge variant={item.couleurStatut} className="text-[10px] px-2 py-0 text-center">
+              {item.statut}
+            </Badge>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // Section Factures & Paiements à venir
 export function FacturesAvenir({
   factures,
@@ -111,42 +139,12 @@ export function FacturesAvenir({
       {/* En-tête Factures */}
       <SectionEntete titre="Factures" montant={totalFactures} type="factures" />
 
-      <div className="flex flex-col gap-3 mb-5">
-        {factures.map((item, idx) => (
-          <div key={idx} className={STYLES.itemCardFlex}>
-            <div>
-              <Text className={STYLES.textTitle}>{item.destinataire}</Text>
-              <Text className={STYLES.textSubtitle}>{item.date}</Text>
-            </div>
-            <div className="flex flex-col items-end gap-1">
-              <Text className={STYLES.textTitle}>{item.montant}</Text>
-              <Badge variant={item.couleurStatut} className="text-[10px] px-2 py-0 text-center">
-                {item.statut}
-              </Badge>
-            </div>
-          </div>
-        ))}
-      </div>
+      <ListeItemsFinanciers items={factures} className="mb-5" />
 
       {/* En-tête Paiements */}
       <SectionEntete titre="Paiements" montant={totalPaiements} type="paiements" className="mt-4" />
 
-      <div className="flex flex-col gap-3 mb-4">
-        {paiements.map((item, idx) => (
-          <div key={idx} className={STYLES.itemCardFlex}>
-            <div>
-              <Text className={STYLES.textTitle}>{item.destinataire}</Text>
-              <Text className={STYLES.textSubtitle}>{item.date}</Text>
-            </div>
-            <div className="flex flex-col items-end gap-1">
-              <Text className={STYLES.textTitle}>{item.montant}</Text>
-              <Badge variant={item.couleurStatut} className="text-[10px] px-2 py-0 text-center">
-                {item.statut}
-              </Badge>
-            </div>
-          </div>
-        ))}
-      </div>
+      <ListeItemsFinanciers items={paiements} className="mb-4" />
 
       <div className="text-right">
         <a href="#" className={STYLES.linkButton}>
