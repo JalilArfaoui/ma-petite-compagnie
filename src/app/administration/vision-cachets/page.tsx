@@ -2,17 +2,19 @@
 
 import { useState, useMemo } from "react";
 
-type Categorie = "représentation" | "repetition" | "formation" | "création" | "production" | "enregistrement" | "intervention" | "autre";
-
-type Cachet = {
-  id: string;
-  categorie: Categorie;
-  montant: number;
-};
+type Categorie =
+  | "représentation"
+  | "repetition"
+  | "formation"
+  | "création"
+  | "production"
+  | "enregistrement"
+  | "intervention"
+  | "autre";
 
 export default function Page() {
   //dictionnaire temporaire le temps que la bdd soit opérationnelle
-  const cachetsData : Record<number, [Categorie, number]> = {
+  const cachetsData: Record<number, [Categorie, number]> = {
     1: ["repetition", 150],
     2: ["représentation", 300],
     3: ["enregistrement", 200],
@@ -36,9 +38,7 @@ export default function Page() {
     let result = [...cachetsArray];
 
     if (categorieFilter !== "tous") {
-      result = result.filter(
-        (item) => item.categorie === categorieFilter
-      );
+      result = result.filter((item) => item.categorie === categorieFilter);
     }
 
     if (montantSort === "croissant") {
@@ -48,14 +48,14 @@ export default function Page() {
     }
 
     return result;
-  }, [categorieFilter, montantSort]);
+  }, [categorieFilter, montantSort, cachetsArray]);
 
   return (
     <div>
       <h1>Liste des cachets</h1>
 
       <h3>Filtrer par catégorie</h3>
-      <select onChange={(e) => setCategorieFilter(e.target.value as any)}>
+      <select onChange={(e) => setCategorieFilter(e.target.value as "tous" | Categorie)}>
         <option value="tous">Tous</option>
         <option value="représentation">Formation</option>
         <option value="repetition">Répétition</option>
@@ -68,7 +68,9 @@ export default function Page() {
       </select>
 
       <h3>Trier par montant</h3>
-      <select onChange={(e) => setMontantSort(e.target.value as any)}>
+      <select
+        onChange={(e) => setMontantSort(e.target.value as "none" | "croissant" | "decroissant")}
+      >
         <option value="none">Aucun tri</option>
         <option value="croissant">Montant croissant</option>
         <option value="decroissant">Montant décroissant</option>
