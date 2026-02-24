@@ -97,7 +97,7 @@ export default function PageAdministration() {
   return (
     <div className="min-h-screen bg-[#fffbef] font-sans pb-20 relative">
       {/* Bouton de menu déroulant en haut à gauche */}
-      {/* Simule un bouton (code mort) avant d'implémenter le reste */}
+      {/* Simule un bouton (code mort) avant que le groupe SOCLE implémente la sidebar dépliable */}
       <div className="absolute top-6 left-6 flex items-center gap-2 cursor-pointer text-gray-600 hover:text-primary transition-colors">
         <FaBars className="text-xl" />
       </div>
