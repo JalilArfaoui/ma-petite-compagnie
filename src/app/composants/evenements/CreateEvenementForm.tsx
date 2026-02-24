@@ -1,9 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {Box, Button, Input, Select, SimpleGrid} from "@/components/ui";
-import {Modal} from "@/components/ui/Modal/Modal";
-import {createListCollection, Field, GridItem} from "@chakra-ui/react";
+import {Box, Button, Input, Select, SimpleGrid, Modal, Field} from "@/components/ui";
 import {CreateLieuForm} from "@/app/composants/lieux/CreateLieuForm";
 import {CreateCategorieForm} from "@/app/composants/categories/CreateCategorieForm";
 
@@ -57,57 +55,40 @@ export function CreateEvenementForm({
       if (onSuccess) onSuccess(evenement);
   }
 
-  const lieuxCollection = createListCollection({
-    items: lieux.map(lieu => ({ value: lieu.id, label: lieu.libelle }))
-  });
-
-    const categoriesCollection = createListCollection({
-        items: categories.map(categorie => ({ value: categorie.id, label: categorie.nom }))
-
-    });
-
   return (
       <div>
     <form onSubmit={handleSubmitEvenement}>
       <Field.Root required>
         <Field.Label>
-          Nom <Field.RequiredIndicator />
+          Nom {/*<Field.RequiredIndicator />*/}
         </Field.Label>
         <Input type={"text"} value={nom} onChange={(e) => setNom(e.target.value)} required />
       </Field.Root>
-      <Select collection={lieuxCollection} onValueChange={(e) => setLieuId(Number(e.value[0]))}>
-        <SimpleGrid columns={{ base: 2, md: 4 }} gap={{ base: "10px", md: "0px" }}>
+      <Select value={lieuId?.toString()} onValueChange={(e) => setLieuId(Number(e))}>
+        <SimpleGrid columns={{ base: 2, md: 4 }} gap={0}>
           <GridItem colSpan={{ base: 1, md: 4 }}>
             <Box>
               <Field.Root required>
                 <Field.Label>
-                  Lieu <Field.RequiredIndicator />
+                  Lieu {/*<Field.RequiredIndicator />*/}
                 </Field.Label>
               </Field.Root>
             </Box>
           </GridItem>
           <GridItem colSpan={{ base: 1, md: 3 }}>
             <Box>
-              <Select.Control>
                 <Select.Trigger>
-                  <Select.ValueText placeholder={"Sélectionner un lieu"} />
+                  <Select.Value placeholder={"Sélectionner un lieu"} />
                 </Select.Trigger>
-                <Select.IndicatorGroup>
-                  <Select.Indicator />
-                  <Select.ClearTrigger />
-                </Select.IndicatorGroup>
-              </Select.Control>
 
-              <Select.Positioner>
                 <Select.Content>
-                  {lieuxCollection.items.map((lieu) => (
-                    <Select.Item item={lieu} key={lieu.value}>
-                      {lieu.label}
+                  {lieux.map((lieu) => (
+                    <Select.Item key={lieu.id} value={lieu.libelle}>
+                      {lieu.libelle}
                       <Select.ItemIndicator />
                     </Select.Item>
                   ))}
                 </Select.Content>
-              </Select.Positioner>
             </Box>
           </GridItem>
             <GridItem colSpan={{ base: 1, md: 1 }}>
@@ -121,7 +102,7 @@ export function CreateEvenementForm({
       <Field.Root required>
         <Field.Label>
           Début
-          <Field.RequiredIndicator />
+          {/*<Field.RequiredIndicator />*/}
         </Field.Label>
         <Input
           type={"datetime-local"}
@@ -132,7 +113,7 @@ export function CreateEvenementForm({
       </Field.Root>
       <Field.Root required>
         <Field.Label>
-          Fin <Field.RequiredIndicator />
+          Fin {/*<Field.RequiredIndicator />*/}
         </Field.Label>
         <Input
           type={"datetime-local"}
@@ -143,40 +124,32 @@ export function CreateEvenementForm({
       </Field.Root>
 
       <Select
-        collection={categoriesCollection}
-        onValueChange={(e) => setCategorieId(Number(e.value[0]))}
+          value={categorieId?.toString()}
+        onValueChange={(e) => setCategorieId(Number(e))}
       >
         <SimpleGrid columns={{ base: 2, md: 4 }} gap={{ base: "10px", md: "0px" }}>
           <GridItem colSpan={{ base: 1, md: 4 }}>
             <Box>
         <Field.Root required>
           <Field.Label>
-            Catégorie <Field.RequiredIndicator />
+            Catégorie {/*<Field.RequiredIndicator />*/}
           </Field.Label>
         </Field.Root>
           </Box>
         </GridItem>
         <GridItem colSpan={{ base: 1, md: 3 }}>
           <Box>
-        <Select.Control>
           <Select.Trigger>
-            <Select.ValueText placeholder={"Sélectionner une catégorie"} />
+            <Select.Value placeholder={"Sélectionner une catégorie"} />
           </Select.Trigger>
-          <Select.IndicatorGroup>
-            <Select.Indicator />
-            <Select.ClearTrigger />
-          </Select.IndicatorGroup>
-        </Select.Control>
-        <Select.Positioner>
           <Select.Content>
-            {categoriesCollection.items.map((categorie) => (
-              <Select.Item item={categorie} key={categorie.value}>
-                {categorie.label}
+            {categories.map((categorie) => (
+              <Select.Item key={categorie.id} value={categorie.nom}>
+                {categorie.nom}
                 <Select.ItemIndicator />
               </Select.Item>
             ))}
           </Select.Content>
-        </Select.Positioner>
           </Box>
         </GridItem>
           <GridItem colSpan={{ base: 1, md: 1 }}>
