@@ -17,6 +17,33 @@ const STYLES = {
   linkButton: "text-sm text-gray-500 underline hover:text-gray-800",
 };
 
+// --- Types pour les données ---
+
+export interface ItemFinancier {
+  destinataire: string;
+  date: string;
+  montant: string;
+  statut: string;
+  couleurStatut: "green" | "red" | "orange" | "blue" | "gray" | "yellow" | "purple" | "cyan" | "pink";
+}
+
+export interface SpectacleEquilibre {
+  nom: string;
+  statut: "positif" | "negatif" | "alerte";
+  budget: number;
+  realise: number;
+  montant: string;
+  alerte?: boolean;
+}
+
+export interface FinancementSubvention {
+  organisme: string;
+  spectacle: string;
+  montant: string;
+  statut: string;
+  type: "attente" | "recu";
+}
+
 // Carte pour les indicateurs clés en haut de page
 export function IndicateurCle({
   titre,
@@ -65,40 +92,17 @@ export function SectionEntete({
 }
 
 // Section Factures & Paiements à venir
-export function FacturesAvenir() {
-  const factures = [
-    {
-      destinataire: "Théâtre municipal des Lices",
-      date: "le 27 janvier 2026",
-      montant: "750 €",
-      statut: "reçue",
-      couleurStatut: "green",
-    },
-    {
-      destinataire: "Mairie Gaillac",
-      date: "le 17 janvier 2026",
-      montant: "300 €",
-      statut: "reçue",
-      couleurStatut: "green",
-    },
-  ];
-
-  const paiements = [
-    {
-      destinataire: "Décorations scène",
-      date: "le 22 janvier 2026",
-      montant: "400 €",
-      statut: "payé",
-      couleurStatut: "green",
-    },
-    {
-      destinataire: "Loyer local de répét",
-      date: "le 22 janvier 2026",
-      montant: "128 €",
-      statut: "non payé",
-      couleurStatut: "red",
-    },
-  ];
+export function FacturesAvenir({
+  factures,
+  paiements,
+  totalFactures = "+0 €",
+  totalPaiements = "-0 €",
+}: {
+  factures: ItemFinancier[];
+  paiements: ItemFinancier[];
+  totalFactures?: string;
+  totalPaiements?: string;
+}) {
 
   return (
     <div className={STYLES.sectionContainer}>
@@ -107,7 +111,7 @@ export function FacturesAvenir() {
       </Heading>
 
       {/* En-tête Factures */}
-      <SectionEntete titre="Factures" montant="+1 050 €" type="factures" />
+      <SectionEntete titre="Factures" montant={totalFactures} type="factures" />
 
       <div className="flex flex-col gap-3 mb-5">
         {factures.map((item, idx) => (
@@ -130,7 +134,7 @@ export function FacturesAvenir() {
       </div>
 
       {/* En-tête Paiements */}
-      <SectionEntete titre="Paiements" montant="-528 €" type="paiements" className="mt-4" />
+      <SectionEntete titre="Paiements" montant={totalPaiements} type="paiements" className="mt-4" />
 
       <div className="flex flex-col gap-3 mb-4">
         {paiements.map((item, idx) => (
@@ -186,27 +190,7 @@ export function BarreBudget({
 }
 
 // Section Équilibre Financier des Spectacles
-export function EquilibreFinancier() {
-  const spectacles = [
-    { nom: "Le Misanthrope", statut: "positif", budget: 80, realise: 100, montant: "+2 300 €" },
-    { nom: "Le Nuit des Rois", statut: "positif", budget: 60, realise: 100, montant: "+1 150 €" },
-    {
-      nom: "Les Fourberies de Scapin",
-      statut: "positif",
-      budget: 50,
-      realise: 100,
-      montant: "+250 €",
-    },
-    { nom: "Le malade imaginaire", statut: "negatif", budget: 40, realise: 100, montant: "-760 €" },
-    {
-      nom: "Antigone",
-      statut: "alerte",
-      budget: 22,
-      realise: 100,
-      montant: "-1 200 €",
-      alerte: true,
-    },
-  ];
+export function EquilibreFinancier({ spectacles }: { spectacles: SpectacleEquilibre[] }) {
 
   return (
     <div className={STYLES.sectionContainer}>
@@ -248,30 +232,11 @@ export function EquilibreFinancier() {
 }
 
 // Section Financements & Subventions
-export function FinancementsSubventions() {
-  const financements = [
-    {
-      organisme: "DRAC Occitanie",
-      spectacle: "Le Misanthrope",
-      montant: "5 000 €",
-      statut: "en attente",
-      type: "attente",
-    },
-    {
-      organisme: "Ville d'Albi",
-      spectacle: "Le Nuit des Rois",
-      montant: "1 150 €",
-      statut: "reçu",
-      type: "recu",
-    },
-    {
-      organisme: "Conseil départemental",
-      spectacle: "Le malade imaginaire",
-      montant: "750 €",
-      statut: "en attente",
-      type: "attente",
-    },
-  ];
+export function FinancementsSubventions({
+  financements,
+}: {
+  financements: FinancementSubvention[];
+}) {
 
   return (
     <div className={STYLES.sectionContainer}>
