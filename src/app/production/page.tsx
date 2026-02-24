@@ -1,21 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import {
-  Badge,
-  Box,
-  Button,
-  Card,
-  Container,
-  Flex,
-  Heading,
-  HStack,
-  Input,
-  SimpleGrid,
-  Stack,
-  Text,
-  VStack,
-} from "@/components/ui";
-import { StatutSpectacle } from "@prisma/client";
+import { StatutSpectacle, TypeSpectacle } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
@@ -27,9 +12,9 @@ async function createSpectacle(formData: FormData) {
 
   const titre = formData.get("titre") as string;
   const description = formData.get("description") as string;
-  const type = formData.get("type") as string;
+  const type = formData.get("type") as TypeSpectacle;
   const statut = formData.get("statut") as StatutSpectacle;
-  const troupe = formData.get("troupe") as string;
+  const compagnieId = Number(formData.get("compagnieId"));
   const budget_initial = Number(formData.get("budget_initial")) || 0;
 
   await prisma.spectacle.create({
@@ -38,7 +23,7 @@ async function createSpectacle(formData: FormData) {
       description,
       type,
       statut,
-      troupe,
+      compagnieId,
       budget_initial,
     },
   });
@@ -55,9 +40,9 @@ async function updateSpectacle(formData: FormData) {
   const id = Number(formData.get("id"));
   const titre = formData.get("titre") as string;
   const description = formData.get("description") as string;
-  const type = formData.get("type") as string;
+  const type = formData.get("type") as TypeSpectacle;
   const statut = formData.get("statut") as StatutSpectacle;
-  const troupe = formData.get("troupe") as string;
+  const compagnieId = Number(formData.get("compagnieId"));
   const budget_initial = Number(formData.get("budget_initial")) || 0;
 
   await prisma.spectacle.update({
@@ -67,7 +52,7 @@ async function updateSpectacle(formData: FormData) {
       description,
       type,
       statut,
-      troupe,
+      compagnieId,
       budget_initial,
     },
   });
@@ -96,15 +81,15 @@ async function deleteSpectacle(formData: FormData) {
 const getStatusColor = (statut: string) => {
   switch (statut) {
     case "EN_CREATION":
-      return "blue";
+      return "bg-blue-100 text-blue-800";
     case "EN_REPETITION":
-      return "orange";
+      return "bg-orange-100 text-orange-800";
     case "EN_TOURNEE":
-      return "green";
+      return "bg-green-100 text-green-800";
     case "ARCHIVE":
-      return "gray";
+      return "bg-gray-100 text-gray-800";
     default:
-      return "gray";
+      return "bg-gray-100 text-gray-800";
   }
 };
 
@@ -123,240 +108,276 @@ const getStatusLabel = (statut: string) => {
   }
 };
 
+const getTypeLabel = (type: TypeSpectacle) => {
+  switch (type) {
+    case "THEATRE":
+      return "🎭 Théâtre";
+    case "DANSE":
+      return "💃 Danse";
+    case "MUSIQUE":
+      return "🎵 Musique";
+    case "CIRQUE":
+      return "🎪 Cirque";
+    case "AUTRE":
+      return "📦 Autre";
+    default:
+      return type;
+  }
+};
+
 /* =========================
    PAGE
 ========================= */
-export default async function ProductionPage() {
-  const spectacles = await prisma.spectacle.findMany({
-    orderBy: { id: "desc" },
-  });
+export default async function SpectaclesPage() {
+  const [spectacles, compagnies] = await Promise.all([
+    prisma.spectacle.findMany({
+      orderBy: { id: "desc" },
+      include: { compagnie: true },
+    }),
+    prisma.compagnie.findMany({ orderBy: { nom: "asc" } }),
+  ]);
 
   return (
-    <Box className="min-h-screen bg-slate-50 py-8">
-      <Container className="max-w-7xl">
-        <VStack gap={8} align="stretch">
-          {/* Header */}
-          <Heading as="h1" className="text-4xl text-[#D00039] text-center font-bold">
-            🎭 Gestion des Spectacles
-          </Heading>
+    <div className="max-w-7xl mx-auto px-4">
+      <div className="flex flex-col gap-8">
+        {/* Header */}
+        <h1 className="text-4xl text-[#D00039] text-center font-bold">🎭 Gestion des Spectacles</h1>
 
-          {/* Create Form */}
-          <Card className="p-6 shadow-lg border-t-4 border-t-[#D00039] bg-white">
-            <Heading as="h3" className="mb-6 text-[#D00039]">
-              ➕ Ajouter un spectacle
-            </Heading>
+        {/* Create Form */}
+        <div className="p-6 shadow-lg border-t-4 border-t-[#D00039] bg-white rounded-xl">
+          <h3 className="mb-6 text-xl font-bold text-[#D00039]">➕ Ajouter un spectacle</h3>
 
-            <form action={createSpectacle}>
-              <SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-                <Box>
-                  <Text className="font-semibold mb-2">Titre *</Text>
-                  <Input
-                    name="titre"
-                    placeholder="Titre du spectacle"
-                    required
-                    className="focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039]"
-                  />
-                </Box>
+          <form action={createSpectacle}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block font-semibold mb-2">Titre *</label>
+                <input
+                  name="titre"
+                  placeholder="Titre du spectacle"
+                  required
+                  className="w-full p-2 border border-slate-300 rounded-md focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039] outline-none"
+                />
+              </div>
 
-                <Box>
-                  <Text className="font-semibold mb-2">Type *</Text>
-                  <Input
-                    name="type"
-                    placeholder="Type de spectacle"
-                    required
-                    className="focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039]"
-                  />
-                </Box>
-
-                <Box>
-                  <Text className="font-semibold mb-2">Troupe *</Text>
-                  <Input
-                    name="troupe"
-                    placeholder="Nom de la troupe"
-                    required
-                    className="focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039]"
-                  />
-                </Box>
-
-                <Box>
-                  <Text className="font-semibold mb-2">Statut *</Text>
-                  <select
-                    name="statut"
-                    required
-                    className="p-2 border border-slate-300 rounded-md w-full"
-                  >
-                    <option value="EN_CREATION">En Création</option>
-                    <option value="EN_REPETITION">En Répétition</option>
-                    <option value="EN_TOURNEE">En Tournée</option>
-                    <option value="ARCHIVE">Archivé</option>
-                  </select>
-                </Box>
-
-                <Box className="md:col-span-2">
-                  <Text className="font-semibold mb-2">Description</Text>
-                  <Input
-                    name="description"
-                    placeholder="Description du spectacle"
-                    className="focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039]"
-                  />
-                </Box>
-
-                <Box>
-                  <Text className="font-semibold mb-2">Budget Initial (€)</Text>
-                  <Input
-                    name="budget_initial"
-                    type="number"
-                    step="0.01"
-                    placeholder="0.00"
-                    className="focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039]"
-                  />
-                </Box>
-              </SimpleGrid>
-
-              <Button
-                type="submit"
-                className="bg-[#D00039] text-white mt-6 h-12 px-6 hover:bg-[#a00030] active:bg-[#800020] w-full md:w-auto"
-              >
-                ➕ Ajouter le spectacle
-              </Button>
-            </form>
-          </Card>
-
-          {/* Separator */}
-          <Box className="h-0.5 bg-[#D00039]" />
-
-          {/* Spectacles List */}
-          <Box>
-            <Heading as="h3" className="mb-6 text-[#D00039]">
-              📋 Liste des spectacles ({spectacles.length})
-            </Heading>
-
-            <SimpleGrid columns={{ base: 1, lg: 2 }} gap={6}>
-              {spectacles.map((s) => (
-                <Card
-                  key={s.id}
-                  className="p-6 shadow-md border-l-4 border-l-[#D00039] bg-white transition-all hover:shadow-xl hover:-translate-y-0.5"
+              <div>
+                <label className="block font-semibold mb-2">Type *</label>
+                <select
+                  name="type"
+                  required
+                  className="w-full p-2 border border-slate-300 rounded-md focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039] outline-none"
                 >
-                  <VStack align="stretch" gap={4}>
-                    {/* Header */}
-                    <Flex justify="between" align="start">
-                      <Box className="flex-1">
-                        <Text className="text-xs text-slate-500 mb-1">#{s.id}</Text>
-                        <Heading as="h4" className="text-[#D00039] mb-2">
-                          {s.titre}
-                        </Heading>
-                        <Badge variant={getStatusColor(s.statut)} className="mb-2">
-                          {getStatusLabel(s.statut)}
-                        </Badge>
-                      </Box>
-                    </Flex>
+                  <option value="THEATRE">🎭 Théâtre</option>
+                  <option value="DANSE">💃 Danse</option>
+                  <option value="MUSIQUE">🎵 Musique</option>
+                  <option value="CIRQUE">🎪 Cirque</option>
+                  <option value="AUTRE">📦 Autre</option>
+                </select>
+              </div>
 
-                    {/* Info */}
-                    <Stack gap={2} className="text-sm">
-                      {s.description && (
-                        <Text className="text-slate-600">
-                          <strong>Description:</strong> {s.description}
-                        </Text>
-                      )}
-                      <Text>
-                        <strong>Type:</strong> {s.type}
-                      </Text>
-                      <Text>
-                        <strong>Troupe:</strong> {s.troupe}
-                      </Text>
-                      <Text>
-                        <strong>Budget:</strong>{" "}
-                        {new Intl.NumberFormat("fr-FR", {
-                          style: "currency",
-                          currency: "EUR",
-                        }).format(s.budget_initial)}
-                      </Text>
-                    </Stack>
+              <div>
+                <label className="block font-semibold mb-2">Compagnie *</label>
+                <select
+                  name="compagnieId"
+                  required
+                  className="w-full p-2 border border-slate-300 rounded-md focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039] outline-none"
+                >
+                  <option value="">Sélectionner une compagnie</option>
+                  {compagnies.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.nom}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-                    {/* Separator */}
-                    <Box className="h-px bg-slate-200" />
+              <div>
+                <label className="block font-semibold mb-2">Statut *</label>
+                <select
+                  name="statut"
+                  required
+                  className="w-full p-2 border border-slate-300 rounded-md focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039] outline-none"
+                >
+                  <option value="EN_CREATION">En Création</option>
+                  <option value="EN_REPETITION">En Répétition</option>
+                  <option value="EN_TOURNEE">En Tournée</option>
+                  <option value="ARCHIVE">Archivé</option>
+                </select>
+              </div>
 
-                    {/* Update Form */}
-                    <form action={updateSpectacle}>
-                      <input type="hidden" name="id" value={s.id} />
-                      <VStack gap={3} align="stretch">
-                        <SimpleGrid columns={2} gap={2}>
-                          <Input
-                            name="titre"
-                            defaultValue={s.titre}
-                            className="text-sm h-8 focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039]"
-                          />
-                          <Input
-                            name="type"
-                            defaultValue={s.type}
-                            className="text-sm h-8 focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039]"
-                          />
-                          <Input
-                            name="troupe"
-                            defaultValue={s.troupe}
-                            className="text-sm h-8 focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039]"
-                          />
-                          <select
-                            name="statut"
-                            defaultValue={s.statut}
-                            className="text-sm p-1 border border-slate-300 rounded-md"
-                          >
-                            <option value="EN_CREATION">En Création</option>
-                            <option value="EN_REPETITION">En Répétition</option>
-                            <option value="EN_TOURNEE">En Tournée</option>
-                            <option value="ARCHIVE">Archivé</option>
-                          </select>
-                        </SimpleGrid>
-                        <Input
-                          name="description"
-                          defaultValue={s.description ?? ""}
-                          className="text-sm h-8 focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039]"
-                          placeholder="Description"
-                        />
-                        <Input
-                          name="budget_initial"
-                          type="number"
-                          step="0.01"
-                          defaultValue={s.budget_initial}
-                          className="text-sm h-8 focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039]"
-                        />
+              <div className="md:col-span-2">
+                <label className="block font-semibold mb-2">Description</label>
+                <input
+                  name="description"
+                  placeholder="Description du spectacle"
+                  className="w-full p-2 border border-slate-300 rounded-md focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039] outline-none"
+                />
+              </div>
 
-                        <HStack gap={2}>
-                          <Button
-                            type="submit"
-                            className="bg-[#D00039] text-white text-sm h-8 hover:bg-[#a00030] active:bg-[#800020] flex-1"
-                          >
-                            ✏️ Modifier
-                          </Button>
-                        </HStack>
-                      </VStack>
-                    </form>
+              <div>
+                <label className="block font-semibold mb-2">Budget Initial (€)</label>
+                <input
+                  name="budget_initial"
+                  type="number"
+                  step="0.01"
+                  placeholder="0.00"
+                  className="w-full p-2 border border-slate-300 rounded-md focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039] outline-none"
+                />
+              </div>
+            </div>
 
-                    {/* Delete Form */}
-                    <form action={deleteSpectacle}>
-                      <input type="hidden" name="id" value={s.id} />
-                      <Button
-                        type="submit"
-                        className="border border-red-200 text-red-600 bg-white hover:bg-red-50 text-sm h-8 w-full"
+            <button
+              type="submit"
+              className="mt-6 px-6 py-3 bg-[#D00039] text-white font-semibold rounded-md hover:bg-[#a00030] active:bg-[#800020] transition-colors"
+            >
+              ➕ Ajouter le spectacle
+            </button>
+          </form>
+        </div>
+
+        {/* Separator */}
+        <div className="h-0.5 bg-[#D00039]" />
+
+        {/* Spectacles List */}
+        <div>
+          <h3 className="mb-6 text-xl font-bold text-[#D00039]">
+            📋 Liste des spectacles ({spectacles.length})
+          </h3>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {spectacles.map((s) => (
+              <div
+                key={s.id}
+                className="p-6 shadow-md border-l-4 border-l-[#D00039] bg-white rounded-xl transition-all hover:shadow-xl hover:-translate-y-0.5"
+              >
+                <div className="flex flex-col gap-4">
+                  {/* Header */}
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <p className="text-xs text-slate-500 mb-1">#{s.id}</p>
+                      <h4 className="text-lg font-bold text-[#D00039] mb-2">{s.titre}</h4>
+                      <span
+                        className={`inline-block px-2.5 py-1 text-xs font-semibold rounded-full ${getStatusColor(s.statut)}`}
                       >
-                        🗑️ Supprimer
-                      </Button>
-                    </form>
-                  </VStack>
-                </Card>
-              ))}
-            </SimpleGrid>
+                        {getStatusLabel(s.statut)}
+                      </span>
+                    </div>
+                  </div>
 
-            {spectacles.length === 0 && (
-              <Card className="p-12 text-center bg-white">
-                <Text className="text-slate-500 text-lg">
-                  Aucun spectacle pour le moment. Ajoutez-en un ci-dessus !
-                </Text>
-              </Card>
-            )}
-          </Box>
-        </VStack>
-      </Container>
-    </Box>
+                  {/* Info */}
+                  <div className="flex flex-col gap-2 text-sm">
+                    {s.description && (
+                      <p className="text-slate-600">
+                        <strong>Description:</strong> {s.description}
+                      </p>
+                    )}
+                    <p>
+                      <strong>Type:</strong> {getTypeLabel(s.type)}
+                    </p>
+                    <p>
+                      <strong>Compagnie:</strong> {s.compagnie.nom}
+                    </p>
+                    <p>
+                      <strong>Budget:</strong>{" "}
+                      {new Intl.NumberFormat("fr-FR", {
+                        style: "currency",
+                        currency: "EUR",
+                      }).format(s.budget_initial)}
+                    </p>
+                  </div>
+
+                  {/* Separator */}
+                  <div className="h-px bg-slate-200" />
+
+                  {/* Update Form */}
+                  <form action={updateSpectacle}>
+                    <input type="hidden" name="id" value={s.id} />
+                    <div className="flex flex-col gap-3">
+                      <div className="grid grid-cols-2 gap-2">
+                        <input
+                          name="titre"
+                          defaultValue={s.titre}
+                          className="text-sm h-8 px-2 border border-slate-300 rounded-md focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039] outline-none"
+                        />
+                        <select
+                          name="type"
+                          defaultValue={s.type}
+                          className="text-sm h-8 px-2 border border-slate-300 rounded-md focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039] outline-none"
+                        >
+                          <option value="THEATRE">Théâtre</option>
+                          <option value="DANSE">Danse</option>
+                          <option value="MUSIQUE">Musique</option>
+                          <option value="CIRQUE">Cirque</option>
+                          <option value="AUTRE">Autre</option>
+                        </select>
+                        <select
+                          name="compagnieId"
+                          defaultValue={s.compagnieId}
+                          className="text-sm h-8 px-2 border border-slate-300 rounded-md focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039] outline-none"
+                        >
+                          {compagnies.map((c) => (
+                            <option key={c.id} value={c.id}>
+                              {c.nom}
+                            </option>
+                          ))}
+                        </select>
+                        <select
+                          name="statut"
+                          defaultValue={s.statut}
+                          className="text-sm h-8 px-2 border border-slate-300 rounded-md focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039] outline-none"
+                        >
+                          <option value="EN_CREATION">En Création</option>
+                          <option value="EN_REPETITION">En Répétition</option>
+                          <option value="EN_TOURNEE">En Tournée</option>
+                          <option value="ARCHIVE">Archivé</option>
+                        </select>
+                      </div>
+                      <input
+                        name="description"
+                        defaultValue={s.description ?? ""}
+                        className="text-sm h-8 px-2 border border-slate-300 rounded-md focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039] outline-none"
+                        placeholder="Description"
+                      />
+                      <input
+                        name="budget_initial"
+                        type="number"
+                        step="0.01"
+                        defaultValue={s.budget_initial}
+                        className="text-sm h-8 px-2 border border-slate-300 rounded-md focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039] outline-none"
+                      />
+
+                      <button
+                        type="submit"
+                        className="w-full h-8 text-sm bg-[#D00039] text-white font-semibold rounded-md hover:bg-[#a00030] active:bg-[#800020] transition-colors"
+                      >
+                        ✏️ Modifier
+                      </button>
+                    </div>
+                  </form>
+
+                  {/* Delete Form */}
+                  <form action={deleteSpectacle}>
+                    <input type="hidden" name="id" value={s.id} />
+                    <button
+                      type="submit"
+                      className="w-full h-8 text-sm border border-red-200 text-red-600 bg-white hover:bg-red-50 rounded-md transition-colors"
+                    >
+                      🗑️ Supprimer
+                    </button>
+                  </form>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {spectacles.length === 0 && (
+            <div className="p-12 text-center bg-white rounded-xl shadow-md">
+              <p className="text-slate-500 text-lg">
+                Aucun spectacle pour le moment. Ajoutez-en un ci-dessus !
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

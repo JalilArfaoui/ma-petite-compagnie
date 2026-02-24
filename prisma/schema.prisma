@@ -13,6 +13,7 @@ model Lieu {
   ville        String
   numero_salle String?
   evenements   Evenement[]
+  representations Representation[]
   idCompagnie Int
   compagnie Compagnie @relation(fields: [idCompagnie], references: [id])
 }
@@ -32,6 +33,8 @@ model Compagnie {
   evenements Evenement[]
   categoriesEvenement Categorie[]
   lieuxEvenement Lieu[]
+  spectacles Spectacle[] @relation("SpectaclesCompagnie")
+  objets Objet[] @relation("ObjetsCompagnie")
 }
 
 model Evenement {
@@ -91,13 +94,67 @@ enum StatutSpectacle {
   ARCHIVE
 }
 
+enum TypeSpectacle {
+  THEATRE
+  DANSE
+  MUSIQUE
+  CIRQUE
+  AUTRE
+}
+
+enum TypeObjet {
+  COSTUME
+  DECOR
+  MATERIEL_TECHNIQUE
+  ACCESSOIRE
+}
+
 model Spectacle {
-  id Int @id @default(autoincrement())
-  titre String
-  description String?
-  type String
-  statut StatutSpectacle
-  troupe String
-  budget_initial Float @default(0)
+  id              Int              @id @default(autoincrement())
+  titre           String
+  description     String?
+  type            TypeSpectacle
+  statut          StatutSpectacle
+  budget_initial  Float            @default(0)
+  compagnieId     Int
+  compagnie       Compagnie        @relation("SpectaclesCompagnie", fields: [compagnieId], references: [id])
+  ficheTechnique  FicheTechnique?
+  representations Representation[]
+}
+
+model FicheTechnique {
+  id          Int       @id @default(autoincrement())
+  texte       String
+  spectacleId Int       @unique
+  spectacle   Spectacle @relation(fields: [spectacleId], references: [id], onDelete: Cascade)
+}
+
+model Representation {
+  id          Int               @id @default(autoincrement())
+  date        DateTime
+  spectacleId Int
+  spectacle   Spectacle         @relation(fields: [spectacleId], references: [id], onDelete: Cascade)
+  lieuId      Int
+  lieu        Lieu              @relation(fields: [lieuId], references: [id])
+  reservations ReservationObjet[]
+}
+
+model Objet {
+  id            Int               @id @default(autoincrement())
+  nom           String
+  type          TypeObjet
+  estDisponible Boolean           @default(true)
+  compagnieId   Int
+  compagnie     Compagnie         @relation("ObjetsCompagnie", fields: [compagnieId], references: [id])
+  reservations  ReservationObjet[]
+}
+
+model ReservationObjet {
+  id               Int            @id @default(autoincrement())
+  quantite         Int
+  objetId          Int
+  objet            Objet          @relation(fields: [objetId], references: [id], onDelete: Cascade)
+  representationId Int
+  representation   Representation @relation(fields: [representationId], references: [id], onDelete: Cascade)
 }
 
