@@ -45,7 +45,7 @@ export default function PageCachets() {
   const [tri, setTri] = useState<"date" | "montant">("date");
   const [erreur, setErreur] = useState<string | null>(null);
 
-  function ajouterCachet(e: React.SubmitEvent) { //utilisation de SubmitEvent car FormEvent est déprécié
+  function ajouterCachet(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     setErreur(null);
