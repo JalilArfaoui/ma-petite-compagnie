@@ -102,7 +102,6 @@ export function FacturesAvenir({
   totalFactures?: string;
   totalPaiements?: string;
 }) {
-
   return (
     <div className={STYLES.sectionContainer}>
       <Heading as="h5" className="mb-4 text-gray-800">
@@ -121,10 +120,7 @@ export function FacturesAvenir({
             </div>
             <div className="flex flex-col items-end gap-1">
               <Text className={STYLES.textTitle}>{item.montant}</Text>
-              <Badge
-                variant={item.couleurStatut}
-                className="text-[10px] px-2 py-0 text-center"
-              >
+              <Badge variant={item.couleurStatut} className="text-[10px] px-2 py-0 text-center">
                 {item.statut}
               </Badge>
             </div>
@@ -144,10 +140,7 @@ export function FacturesAvenir({
             </div>
             <div className="flex flex-col items-end gap-1">
               <Text className={STYLES.textTitle}>{item.montant}</Text>
-              <Badge
-                variant={item.couleurStatut}
-                className="text-[10px] px-2 py-0 text-center"
-              >
+              <Badge variant={item.couleurStatut} className="text-[10px] px-2 py-0 text-center">
                 {item.statut}
               </Badge>
             </div>
@@ -184,7 +177,6 @@ export function BarreBudget({
 
 // Section Équilibre Financier des Spectacles
 export function EquilibreFinancier({ spectacles }: { spectacles: SpectacleEquilibre[] }) {
-
   return (
     <div className={STYLES.sectionContainer}>
       <Heading as="h5" className="mb-6 text-gray-800">
@@ -229,7 +221,6 @@ export function FinancementsSubventions({
 }: {
   financements: FinancementSubvention[];
 }) {
-
   return (
     <div className={STYLES.sectionContainer}>
       <Heading as="h5" className="mb-4 text-gray-800">

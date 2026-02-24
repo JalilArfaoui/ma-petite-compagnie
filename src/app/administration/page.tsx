@@ -122,9 +122,9 @@ export default function PageAdministration() {
 
         {/* Section principale avec les 3 colonnes */}
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr_1fr] gap-6 items-start">
-          <FacturesAvenir 
-            factures={FACTURES_DATA} 
-            paiements={PAIEMENTS_DATA} 
+          <FacturesAvenir
+            factures={FACTURES_DATA}
+            paiements={PAIEMENTS_DATA}
             totalFactures="+1 050 €"
             totalPaiements="-528 €"
           />
