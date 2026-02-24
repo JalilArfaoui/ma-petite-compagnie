@@ -5,7 +5,7 @@ const List = React.forwardRef<HTMLUListElement, React.HTMLAttributes<HTMLUListEl
   ({ className, ...props }, ref) => (
     <ul
       ref={ref}
-      className={cn("list-none flex flex-col font-serif text-[#43566b]", className)}
+      className={cn("list-none flex flex-col font-serif text-text-primary", className)}
       {...props}
     />
   )
@@ -28,7 +28,7 @@ const ListIndicator = React.forwardRef<HTMLSpanElement, React.HTMLAttributes<HTM
     <span
       ref={ref}
       className={cn(
-        "mr-2 flex items-center justify-center shrink-0 text-[#d00039] text-[1.5rem]",
+        "mr-2 flex items-center justify-center shrink-0 text-primary text-[1.5rem]",
         className
       )}
       {...props}

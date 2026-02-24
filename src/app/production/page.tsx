@@ -136,13 +136,13 @@ export default async function ProductionPage() {
       <Container className="max-w-7xl">
         <VStack gap={8} align="stretch">
           {/* Header */}
-          <Heading as="h1" className="text-4xl text-[#D00039] text-center font-bold">
+          <Heading as="h1" className="text-4xl text-primary text-center font-bold">
             🎭 Gestion des Spectacles
           </Heading>
 
           {/* Create Form */}
-          <Card className="p-6 shadow-lg border-t-4 border-t-[#D00039] bg-white">
-            <Heading as="h3" className="mb-6 text-[#D00039]">
+          <Card className="p-6 shadow-lg border-t-4 border-t-primary bg-white">
+            <Heading as="h3" className="mb-6 text-primary">
               ➕ Ajouter un spectacle
             </Heading>
 
@@ -154,7 +154,7 @@ export default async function ProductionPage() {
                     name="titre"
                     placeholder="Titre du spectacle"
                     required
-                    className="focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039]"
+                    className="focus:border-primary focus:ring-1 focus:ring-primary"
                   />
                 </Box>
 
@@ -164,7 +164,7 @@ export default async function ProductionPage() {
                     name="type"
                     placeholder="Type de spectacle"
                     required
-                    className="focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039]"
+                    className="focus:border-primary focus:ring-1 focus:ring-primary"
                   />
                 </Box>
 
@@ -174,7 +174,7 @@ export default async function ProductionPage() {
                     name="troupe"
                     placeholder="Nom de la troupe"
                     required
-                    className="focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039]"
+                    className="focus:border-primary focus:ring-1 focus:ring-primary"
                   />
                 </Box>
 
@@ -197,7 +197,7 @@ export default async function ProductionPage() {
                   <Input
                     name="description"
                     placeholder="Description du spectacle"
-                    className="focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039]"
+                    className="focus:border-primary focus:ring-1 focus:ring-primary"
                   />
                 </Box>
 
@@ -208,14 +208,14 @@ export default async function ProductionPage() {
                     type="number"
                     step="0.01"
                     placeholder="0.00"
-                    className="focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039]"
+                    className="focus:border-primary focus:ring-1 focus:ring-primary"
                   />
                 </Box>
               </SimpleGrid>
 
               <Button
                 type="submit"
-                className="bg-[#D00039] text-white mt-6 h-12 px-6 hover:bg-[#a00030] active:bg-[#800020] w-full md:w-auto"
+                className="bg-primary text-white mt-6 h-12 px-6 hover:bg-primary-hover active:bg-primary-active w-full md:w-auto"
               >
                 ➕ Ajouter le spectacle
               </Button>
@@ -223,11 +223,11 @@ export default async function ProductionPage() {
           </Card>
 
           {/* Separator */}
-          <Box className="h-0.5 bg-[#D00039]" />
+          <Box className="h-0.5 bg-primary" />
 
           {/* Spectacles List */}
           <Box>
-            <Heading as="h3" className="mb-6 text-[#D00039]">
+            <Heading as="h3" className="mb-6 text-primary">
               📋 Liste des spectacles ({spectacles.length})
             </Heading>
 
@@ -235,14 +235,14 @@ export default async function ProductionPage() {
               {spectacles.map((s) => (
                 <Card
                   key={s.id}
-                  className="p-6 shadow-md border-l-4 border-l-[#D00039] bg-white transition-all hover:shadow-xl hover:-translate-y-0.5"
+                  className="p-6 shadow-md border-l-4 border-l-primary bg-white transition-all hover:shadow-xl hover:-translate-y-0.5"
                 >
                   <VStack align="stretch" gap={4}>
                     {/* Header */}
                     <Flex justify="between" align="start">
                       <Box className="flex-1">
                         <Text className="text-xs text-slate-500 mb-1">#{s.id}</Text>
-                        <Heading as="h4" className="text-[#D00039] mb-2">
+                        <Heading as="h4" className="text-primary mb-2">
                           {s.titre}
                         </Heading>
                         <Badge variant={getStatusColor(s.statut)} className="mb-2">
@@ -284,17 +284,17 @@ export default async function ProductionPage() {
                           <Input
                             name="titre"
                             defaultValue={s.titre}
-                            className="text-sm h-8 focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039]"
+                            className="text-sm h-8 focus:border-primary focus:ring-1 focus:ring-primary"
                           />
                           <Input
                             name="type"
                             defaultValue={s.type}
-                            className="text-sm h-8 focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039]"
+                            className="text-sm h-8 focus:border-primary focus:ring-1 focus:ring-primary"
                           />
                           <Input
                             name="troupe"
                             defaultValue={s.troupe}
-                            className="text-sm h-8 focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039]"
+                            className="text-sm h-8 focus:border-primary focus:ring-1 focus:ring-primary"
                           />
                           <select
                             name="statut"
@@ -310,7 +310,7 @@ export default async function ProductionPage() {
                         <Input
                           name="description"
                           defaultValue={s.description ?? ""}
-                          className="text-sm h-8 focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039]"
+                          className="text-sm h-8 focus:border-primary focus:ring-1 focus:ring-primary"
                           placeholder="Description"
                         />
                         <Input
@@ -318,13 +318,13 @@ export default async function ProductionPage() {
                           type="number"
                           step="0.01"
                           defaultValue={s.budget_initial}
-                          className="text-sm h-8 focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039]"
+                          className="text-sm h-8 focus:border-primary focus:ring-1 focus:ring-primary"
                         />
 
                         <HStack gap={2}>
                           <Button
                             type="submit"
-                            className="bg-[#D00039] text-white text-sm h-8 hover:bg-[#a00030] active:bg-[#800020] flex-1"
+                            className="bg-primary text-white text-sm h-8 hover:bg-primary-hover active:bg-primary-active flex-1"
                           >
                             ✏️ Modifier
                           </Button>
