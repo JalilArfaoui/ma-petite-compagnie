@@ -27,6 +27,7 @@
     "@floating-ui/dom": "^1.7.5",
     "@floating-ui/react-dom": "^2.1.7",
     "@floating-ui/utils": "^0.2.10",
+    "@getbrevo/brevo": "^4.0.1",
     "@prisma/adapter-pg": "^7.2.0",
     "@prisma/client": "^7.2.0",
     "@radix-ui/react-dialog": "^1.1.15",
