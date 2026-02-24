@@ -2,12 +2,26 @@
 
 import React from "react";
 import { Heading, Text, Badge } from "@/components/ui";
+import { FaExclamationTriangle, FaCheck } from "react-icons/fa";
+
+// ===== Variables CSS partagées =====
+const STYLES = {
+  // Conteneur principal des sections
+  sectionContainer: "bg-white rounded-xl p-5 border border-[#EBE5D9]",
+  
+  // Petites cartes listant les éléments (factures, financements...)
+  itemCard: "bg-white p-3 rounded-lg border border-gray-100 shadow-sm",
+  itemCardFlex: "bg-white p-3 rounded-lg border border-gray-100 shadow-sm flex justify-between items-center",
+  textTitle: "font-bold text-sm text-gray-900",
+  textSubtitle: "text-xs text-gray-500",
+  linkButton: "text-sm text-gray-500 underline hover:text-gray-800",
+};
 
 // Carte pour les indicateurs clés en haut de page
 export function IndicateurCle({ titre, valeur, sousTexte }: { titre: string; valeur: React.ReactNode; sousTexte: string }) {
   return (
     <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 flex flex-col justify-center h-full">
-      <Text className="text-gray-600 mb-2">{titre}</Text>
+      <Text className="font-semibold mb-2">{titre}</Text>
       <div className="flex items-baseline gap-2">
         <Text className="text-4xl text-gray-900">{valeur}</Text>
         <Text className="text-gray-500">{sousTexte}</Text>
@@ -29,7 +43,7 @@ export function FacturesAvenir() {
   ];
 
   return (
-    <div className="bg-[#F8F5EE] rounded-xl p-5 border border-[#EBE5D9]">
+    <div className={STYLES.sectionContainer}>
       <Heading as="h5" className="mb-4 text-gray-800">Factures & paiements à venir</Heading>
       
       {/* En-tête Factures */}
@@ -40,14 +54,14 @@ export function FacturesAvenir() {
       
       <div className="flex flex-col gap-3 mb-5">
         {factures.map((item, idx) => (
-          <div key={idx} className="bg-white p-3 rounded-lg border border-gray-100 flex justify-between items-center shadow-sm">
+          <div key={idx} className={STYLES.itemCardFlex}>
             <div>
-              <Text className="font-bold text-sm text-gray-900">{item.destinataire}</Text>
-              <Text className="text-xs text-gray-500">{item.date}</Text>
+              <Text className={STYLES.textTitle}>{item.destinataire}</Text>
+              <Text className={STYLES.textSubtitle}>{item.date}</Text>
             </div>
             <div className="flex flex-col items-end gap-1">
-              <Text className="font-bold text-sm text-gray-900">{item.montant}</Text>
-              <Badge variant={item.couleurStatut as any} className="text-[10px] px-2 py-0">{item.statut}</Badge>
+              <Text className={STYLES.textTitle}>{item.montant}</Text>
+              <Badge variant={item.couleurStatut as any} className="text-[10px] px-2 py-0 text-center">{item.statut}</Badge>
             </div>
           </div>
         ))}
@@ -61,21 +75,21 @@ export function FacturesAvenir() {
 
       <div className="flex flex-col gap-3 mb-4">
         {paiements.map((item, idx) => (
-          <div key={idx} className="bg-white p-3 rounded-lg border border-gray-100 flex justify-between items-center shadow-sm">
+          <div key={idx} className={STYLES.itemCardFlex}>
             <div>
-              <Text className="font-bold text-sm text-gray-900">{item.destinataire}</Text>
-              <Text className="text-xs text-gray-500">{item.date}</Text>
+              <Text className={STYLES.textTitle}>{item.destinataire}</Text>
+              <Text className={STYLES.textSubtitle}>{item.date}</Text>
             </div>
             <div className="flex flex-col items-end gap-1">
-              <Text className="font-bold text-sm text-gray-900">{item.montant}</Text>
-              <Badge variant={item.couleurStatut as any} className="text-[10px] px-2 py-0">{item.statut}</Badge>
+              <Text className={STYLES.textTitle}>{item.montant}</Text>
+              <Badge variant={item.couleurStatut as any} className="text-[10px] px-2 py-0 text-center">{item.statut}</Badge>
             </div>
           </div>
         ))}
       </div>
 
       <div className="text-right">
-        <a href="#" className="text-sm text-gray-500 underline hover:text-gray-800">Voir tout</a>
+        <a href="#" className={STYLES.linkButton}>Voir tout</a>
       </div>
     </div>
   );
@@ -105,7 +119,7 @@ export function EquilibreFinancier() {
   ];
 
   return (
-    <div className="bg-[#F8F5EE] rounded-xl p-5 border border-[#EBE5D9]">
+    <div className={STYLES.sectionContainer}>
       <Heading as="h5" className="mb-6 text-gray-800">Spectacles : équilibre financier (budget / réalisé)</Heading>
       
       <div className="flex flex-col gap-0 border-t border-gray-200">
@@ -123,7 +137,7 @@ export function EquilibreFinancier() {
             
             <div className="w-1/3 text-right flex justify-end items-center gap-2">
               {spec.alerte && (
-                <span className="text-yellow-500 text-lg" title="Attention budget dépassé">⚠️</span>
+                <span className="text-yellow-500 text-lg" title="Attention budget dépassé"><FaExclamationTriangle /></span>
               )}
               <Text className="text-sm font-semibold text-gray-900 whitespace-nowrap">{spec.montant}</Text>
             </div>
@@ -143,26 +157,32 @@ export function FinancementsSubventions() {
   ];
 
   return (
-    <div className="bg-[#F8F5EE] rounded-xl p-5 border border-[#EBE5D9]">
+    <div className={STYLES.sectionContainer}>
       <Heading as="h5" className="mb-4 text-gray-800">Financements & Subventions</Heading>
       
       <div className="flex flex-col gap-3 mb-4">
         {financements.map((fin, idx) => (
-          <div key={idx} className="bg-white p-3 rounded-lg border border-gray-100 shadow-sm">
-            <Text className="font-bold text-sm text-gray-900">{fin.organisme}</Text>
-            <Text className="text-xs text-gray-500 mb-2">{fin.spectacle}</Text>
+          <div key={idx} className={STYLES.itemCard}>
+            <Text className={STYLES.textTitle}>{fin.organisme}</Text>
+            <Text className={`${STYLES.textSubtitle} mb-2`}>{fin.spectacle}</Text>
             <div className="flex items-center gap-2 text-xs">
               <span className={`w-2 h-2 rounded-full ${fin.type === 'recu' ? 'bg-[#53826A]' : 'bg-[#F2C94C]'}`}></span>
               <span className="font-bold text-gray-900">{fin.montant}</span>
               <span className={fin.type === 'recu' ? 'text-[#53826A]' : 'text-[#F2C94C]'}>{fin.statut}</span>
+              {fin.type === 'attente' && (
+                <button className="ml-auto text-green-600 hover:bg-green-50 p-1 rounded-full bg-white border border-gray-100 shadow-sm" title="Valider">
+                  <FaCheck size={10} />
+                </button>
+              )}
             </div>
           </div>
         ))}
       </div>
 
       <div className="text-right">
-        <a href="#" className="text-sm text-gray-500 underline hover:text-gray-800">Voir tout</a>
+        <a href="#" className={STYLES.linkButton}>Voir tout</a>
       </div>
     </div>
   );
 }
+
