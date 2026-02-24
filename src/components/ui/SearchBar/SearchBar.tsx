@@ -1,5 +1,5 @@
 import * as React from "react";
-import { HiOutlineSearch } from "react-icons/hi";
+import { FaSearch } from "react-icons/fa";
 import { cn } from "@/lib/utils";
 import { Input, InputProps } from "../Input/Input";
 
@@ -18,7 +18,7 @@ const SearchBar = React.forwardRef<HTMLInputElement, SearchBarProps>(
     return (
       <Input.Group className={cn("w-full", containerClassName)}>
         <Input.LeftElement>
-          <HiOutlineSearch className="h-5 w-5 text-text-muted" />
+          <FaSearch className="h-5 w-5 text-text-muted" />
         </Input.LeftElement>
         <Input
           type="search"
