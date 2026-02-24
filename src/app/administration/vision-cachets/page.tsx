@@ -3,10 +3,10 @@
 import { useState, useMemo } from "react";
 
 type Categorie =
-  | "représentation"
-  | "répétition"
+  | "representation"
+  | "repetition"
   | "formation"
-  | "création"
+  | "creation"
   | "production"
   | "enregistrement"
   | "intervention"
@@ -15,10 +15,10 @@ type Categorie =
 export default function VisionCachetsPage() {
   //dictionnaire temporaire le temps que la bdd soit opérationnelle
   const cachetsData: Record<number, [Categorie, number]> = {
-    1: ["répétition", 150],
-    2: ["représentation", 300],
+    1: ["repetition", 150],
+    2: ["representation", 300],
     3: ["enregistrement", 200],
-    4: ["répétition", 180],
+    4: ["repetition", 180],
     5: ["intervention", 250],
     6: ["autre", 120],
   };
@@ -57,10 +57,10 @@ export default function VisionCachetsPage() {
       <h3>Filtrer par catégorie</h3>
       <select onChange={(e) => setCategorieFilter(e.target.value as "tous" | Categorie)}>
         <option value="tous">Tous</option>
-        <option value="représentation">Représentation</option>
+        <option value="representation">Représentation</option>
         <option value="repetition">Répétition</option>
         <option value="formation">Formation</option>
-        <option value="création">Création</option>
+        <option value="creation">Création</option>
         <option value="production">Production</option>
         <option value="enregistrement">Enregistrement</option>
         <option value="intervention">Intervention</option>
