@@ -1,6 +1,6 @@
 "use client";
 
-import { Heading, Text, Badge, Tooltip } from "@/components/ui";
+import { Heading, Text, Badge, Tooltip, type BadgeProps } from "@/components/ui";
 import { FaExclamationTriangle, FaCheck } from "react-icons/fa";
 
 // ===== Variables CSS partagées =====
@@ -24,7 +24,7 @@ export interface ItemFinancier {
   date: string;
   montant: string;
   statut: string;
-  couleurStatut: "green" | "red" | "orange" | "blue" | "gray" | "yellow" | "purple" | "cyan" | "pink";
+  couleurStatut: BadgeProps["variant"];
 }
 
 export interface SpectacleEquilibre {
@@ -123,7 +123,7 @@ export function FacturesAvenir({
             <div className="flex flex-col items-end gap-1">
               <Text className={STYLES.textTitle}>{item.montant}</Text>
               <Badge
-                variant={item.couleurStatut as any}
+                variant={item.couleurStatut}
                 className="text-[10px] px-2 py-0 text-center"
               >
                 {item.statut}
@@ -146,7 +146,7 @@ export function FacturesAvenir({
             <div className="flex flex-col items-end gap-1">
               <Text className={STYLES.textTitle}>{item.montant}</Text>
               <Badge
-                variant={item.couleurStatut as any}
+                variant={item.couleurStatut}
                 className="text-[10px] px-2 py-0 text-center"
               >
                 {item.statut}
