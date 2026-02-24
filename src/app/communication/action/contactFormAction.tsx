@@ -2,6 +2,7 @@
 
 import { Role } from "@prisma/client";
 import { ContactInformation, creerContact } from "../api/contact/contact";
+import { reli_contact_to_Brevo } from "./syncContactToBrevo";
 
 function transformerFormDataContact(FormData: FormData): ContactInformation {
   return {
@@ -16,6 +17,10 @@ function transformerFormDataContact(FormData: FormData): ContactInformation {
 export async function creerContactAction(FormData: FormData) {
   const contactData = transformerFormDataContact(FormData);
   const result = await creerContact(contactData);
+  if (result.email) {
+    await reli_contact_to_Brevo(result);
+  }
 
   return result;
 }
+
