@@ -13,7 +13,7 @@ export const EnvoieEmail = async (email: string, subject: string, content: strin
       htmlContent: content,
     });
     return { success: true, response };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error avec Brevo:", error);
     return { success: false, error };
     throw error;
