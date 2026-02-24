@@ -13,7 +13,7 @@ const CardRoot = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "rounded-[20px] bg-hover p-[20px] border-none shadow-sm hover:shadow-md transition-shadow flex flex-col gap-[20px]",
+      "rounded-[20px] bg-hover p-[20px] border-none shadow-sm transition-shadow flex flex-col gap-[20px]",
       className
     )}
     {...props}
