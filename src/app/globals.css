@@ -18,20 +18,12 @@
   --color-icon: #475569;
 
   /* Backgrounds */
-  --color-background: var(--color-cream-50);
+  --color-background: #fffff
   --color-foreground: #171717;
 
   /* Cream scale (re-adding from config) */
   --color-cream-50: #fffbef;
   --color-cream-100: #f3eee3;
-}
-
-/* Dark mode overrides */
-@media (prefers-color-scheme: dark) {
-  @theme {
-    --color-background: #0a0a0a;
-    --color-foreground: #ededed;
-  }
 }
 
 body {
