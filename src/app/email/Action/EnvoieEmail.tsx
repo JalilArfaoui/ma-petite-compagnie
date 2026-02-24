@@ -5,7 +5,7 @@ export const EnvoieEmail = async ( email: string , subject: string , content: st
     try {
         const response = await client.transactionalEmails.sendTransacEmail ( {
             sender : {
-                name : "Your Company" ,
+                name : "Ma Petite Compagnie" ,
                 email : "contact@yourcompany.com"
             } ,
             to : [{email}] ,
