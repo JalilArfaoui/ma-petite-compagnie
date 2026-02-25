@@ -5,83 +5,14 @@ import {
   FacturesAvenir,
   EquilibreFinancier,
   FinancementsSubventions,
-  ItemFinancier,
-  SpectacleEquilibre,
-  FinancementSubvention,
 } from "./components";
 import { formatMontant } from "./utils";
-
-// --- Données fictives ---
-
-const FACTURES_DATA: ItemFinancier[] = [
-  {
-    destinataire: "Théâtre municipal des Lices",
-    date: "2026-01-27",
-    montant: 750,
-    statut: "recue",
-  },
-  {
-    destinataire: "Mairie Gaillac",
-    date: "2026-01-17",
-    montant: 300,
-    statut: "recue",
-  },
-];
-
-const PAIEMENTS_DATA: ItemFinancier[] = [
-  {
-    destinataire: "Décorations scène",
-    date: "2026-01-22",
-    montant: 400,
-    statut: "paye",
-  },
-  {
-    destinataire: "Loyer local de répét",
-    date: "2026-01-22",
-    montant: 128,
-    statut: "non_paye",
-  },
-];
-
-const SPECTACLES_DATA: SpectacleEquilibre[] = [
-  { nom: "Le Misanthrope", budget: 80, montant: 2300 },
-  { nom: "Le Nuit des Rois", budget: 60, montant: 1150 },
-  {
-    nom: "Les Fourberies de Scapin",
-    budget: 50,
-    montant: 250,
-  },
-  { nom: "Le malade imaginaire", budget: 40, montant: -760 },
-  {
-    nom: "Antigone",
-    budget: 22,
-    montant: -1200,
-  },
-];
-
-const FINANCEMENTS_DATA: FinancementSubvention[] = [
-  {
-    organisme: "DRAC Occitanie",
-    spectacle: "Le Misanthrope",
-    montant: 5000,
-    statut: "en_attente",
-    type: "attente",
-  },
-  {
-    organisme: "Ville d'Albi",
-    spectacle: "Le Nuit des Rois",
-    montant: 1150,
-    statut: "recu",
-    type: "recu",
-  },
-  {
-    organisme: "Conseil départemental",
-    spectacle: "Le malade imaginaire",
-    montant: 750,
-    statut: "en_attente",
-    type: "attente",
-  },
-];
+import {
+  FACTURES_DATA,
+  PAIEMENTS_DATA,
+  SPECTACLES_DATA,
+  FINANCEMENTS_DATA,
+} from "./test_data";
 
 // --- Page Principale ---
 
