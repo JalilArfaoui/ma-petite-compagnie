@@ -31,17 +31,17 @@ export const PAIEMENTS_DATA: ItemFinancier[] = [
 ];
 
 export const SPECTACLES_DATA: SpectacleEquilibre[] = [
-  { nom: "Le Misanthrope", budget: 80, montant: 2300 },
-  { nom: "Le Nuit des Rois", budget: 60, montant: 1150 },
+  { nom: "Le Misanthrope", pourcentageConsomme: 80, montant: 2300 },
+  { nom: "Le Nuit des Rois", pourcentageConsomme: 60, montant: 1150 },
   {
     nom: "Les Fourberies de Scapin",
-    budget: 50,
+    pourcentageConsomme: 50,
     montant: 250,
   },
-  { nom: "Le malade imaginaire", budget: 40, montant: -760 },
+  { nom: "Le malade imaginaire", pourcentageConsomme: 40, montant: -760 },
   {
     nom: "Antigone",
-    budget: 22,
+    pourcentageConsomme: 22,
     montant: -1200,
   },
 ];

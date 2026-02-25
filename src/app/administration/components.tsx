@@ -29,7 +29,7 @@ export interface ItemFinancier {
 
 export interface SpectacleEquilibre {
   nom: string;
-  budget: number;
+  pourcentageConsomme: number;
   montant: number;
 }
 
@@ -191,7 +191,7 @@ export function EquilibreFinancier({ spectacles }: { spectacles: SpectacleEquili
 
             <div className="flex-1 flex justify-center">
               <BarreBudget
-                pourcentage={spec.budget}
+                pourcentage={spec.pourcentageConsomme}
                 couleur={spec.montant >= 0 ? "green" : "red"}
               />
             </div>
