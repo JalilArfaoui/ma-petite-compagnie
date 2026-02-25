@@ -37,8 +37,7 @@ export interface FinancementSubvention {
   organisme: string;
   spectacle: string;
   montant: number;
-  statut: string;
-  type: "attente" | "recu";
+  statut: "en_attente" | "recu";
 }
 
 // Carte pour les indicateurs clés en haut de page
@@ -232,13 +231,13 @@ export function FinancementsSubventions({
             <Text className={`${STYLES.textSubtitle} mb-2`}>{fin.spectacle}</Text>
             <div className="flex items-center gap-2 text-xs">
               <span
-                className={`w-2 h-2 rounded-full ${fin.type === "recu" ? "bg-[#53826A]" : "bg-[#F2C94C]"}`}
+                className={`w-2 h-2 rounded-full ${fin.statut === "recu" ? "bg-[#53826A]" : "bg-[#F2C94C]"}`}
               ></span>
               <span className="font-bold text-gray-900">{formatMontant(fin.montant)}</span>
-              <span className={fin.type === "recu" ? "text-[#53826A]" : "text-[#F2C94C]"}>
+              <span className={fin.statut === "recu" ? "text-[#53826A]" : "text-[#F2C94C]"}>
                 {formatStatut(fin.statut)}
               </span>
-              {fin.type === "attente" && (
+              {fin.statut === "en_attente" && (
                 <Tooltip label="Marquer comme reçu">
                   <button
                     className="ml-auto text-green-600 hover:bg-green-50 p-1 rounded-full bg-white border border-gray-100 shadow-sm cursor-pointer"

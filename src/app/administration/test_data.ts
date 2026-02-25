@@ -52,20 +52,17 @@ export const FINANCEMENTS_DATA: FinancementSubvention[] = [
     spectacle: "Le Misanthrope",
     montant: 5000,
     statut: "en_attente",
-    type: "attente",
   },
   {
     organisme: "Ville d'Albi",
     spectacle: "Le Nuit des Rois",
     montant: 1150,
     statut: "recu",
-    type: "recu",
   },
   {
     organisme: "Conseil départemental",
     spectacle: "Le malade imaginaire",
     montant: 750,
     statut: "en_attente",
-    type: "attente",
   },
 ];
