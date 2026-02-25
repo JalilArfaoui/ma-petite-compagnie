@@ -16,15 +16,15 @@ const FACTURES_DATA: ItemFinancier[] = [
   {
     destinataire: "Théâtre municipal des Lices",
     date: "2026-01-27",
-    montant: "750 €",
-    statut: "reçue",
+    montant: 750,
+    statut: "recue",
     couleurStatut: "green",
   },
   {
     destinataire: "Mairie Gaillac",
     date: "2026-01-17",
-    montant: "300 €",
-    statut: "reçue",
+    montant: 300,
+    statut: "recue",
     couleurStatut: "green",
   },
 ];
@@ -33,34 +33,32 @@ const PAIEMENTS_DATA: ItemFinancier[] = [
   {
     destinataire: "Décorations scène",
     date: "2026-01-22",
-    montant: "400 €",
-    statut: "payé",
+    montant: 400,
+    statut: "paye",
     couleurStatut: "green",
   },
   {
     destinataire: "Loyer local de répét",
     date: "2026-01-22",
-    montant: "128 €",
-    statut: "non payé",
+    montant: 128,
+    statut: "non_paye",
     couleurStatut: "red",
   },
 ];
 
 const SPECTACLES_DATA: SpectacleEquilibre[] = [
-  { nom: "Le Misanthrope", statut: "positif", budget: 80, montant: "+2 300 €" },
-  { nom: "Le Nuit des Rois", statut: "positif", budget: 60, montant: "+1 150 €" },
+  { nom: "Le Misanthrope", budget: 80, montant: 2300 },
+  { nom: "Le Nuit des Rois", budget: 60, montant: 1150 },
   {
     nom: "Les Fourberies de Scapin",
-    statut: "positif",
     budget: 50,
-    montant: "+250 €",
+    montant: 250,
   },
-  { nom: "Le malade imaginaire", statut: "negatif", budget: 40, montant: "-760 €" },
+  { nom: "Le malade imaginaire", budget: 40, montant: -760 },
   {
     nom: "Antigone",
-    statut: "negatif",
     budget: 22,
-    montant: "-1 200 €",
+    montant: -1200,
     alerte: true,
   },
 ];
@@ -69,22 +67,22 @@ const FINANCEMENTS_DATA: FinancementSubvention[] = [
   {
     organisme: "DRAC Occitanie",
     spectacle: "Le Misanthrope",
-    montant: "5 000 €",
-    statut: "en attente",
+    montant: 5000,
+    statut: "en_attente",
     type: "attente",
   },
   {
     organisme: "Ville d'Albi",
     spectacle: "Le Nuit des Rois",
-    montant: "1 150 €",
-    statut: "reçu",
+    montant: 1150,
+    statut: "recu",
     type: "recu",
   },
   {
     organisme: "Conseil départemental",
     spectacle: "Le malade imaginaire",
-    montant: "750 €",
-    statut: "en attente",
+    montant: 750,
+    statut: "en_attente",
     type: "attente",
   },
 ];
@@ -125,8 +123,8 @@ export default function PageAdministration() {
           <FacturesAvenir
             factures={FACTURES_DATA}
             paiements={PAIEMENTS_DATA}
-            totalFactures="+1 050 €"
-            totalPaiements="-528 €"
+            totalFactures={1050}
+            totalPaiements={-528}
           />
           <EquilibreFinancier spectacles={SPECTACLES_DATA} />
           <FinancementsSubventions financements={FINANCEMENTS_DATA} />

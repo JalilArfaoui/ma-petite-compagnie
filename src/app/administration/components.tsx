@@ -22,23 +22,22 @@ const STYLES = {
 export interface ItemFinancier {
   destinataire: string;
   date: string;
-  montant: string;
+  montant: number;
   statut: string;
   couleurStatut: BadgeProps["variant"];
 }
 
 export interface SpectacleEquilibre {
   nom: string;
-  statut: "positif" | "negatif";
   budget: number;
-  montant: string;
+  montant: number;
   alerte?: boolean;
 }
 
 export interface FinancementSubvention {
   organisme: string;
   spectacle: string;
-  montant: string;
+  montant: number;
   statut: string;
   type: "attente" | "recu";
 }
@@ -72,7 +71,7 @@ export function SectionEntete({
   className = "",
 }: {
   titre: string;
-  montant: string;
+  montant: number;
   type: "factures" | "paiements";
   className?: string;
 }) {
@@ -85,7 +84,7 @@ export function SectionEntete({
       className={`flex justify-between items-center ${bgColor} p-2 -mx-5 px-5 mb-3 text-sm font-semibold ${textColor} ${className}`}
     >
       <span>{titre}</span>
-      <span>{montant}</span>
+      <span>{formatMontant(montant, true)}</span>
     </div>
   );
 }
@@ -95,6 +94,30 @@ const formatDateFr = (dateStr: string) => {
   const [year, month, day] = dateStr.split('-');
   const date = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day)));
   return `le ${date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })}`;
+};
+
+export const formatMontant = (montant: number, showSign: boolean = false) => {
+  const formatted = new Intl.NumberFormat('fr-FR', {
+    style: 'currency',
+    currency: 'EUR',
+    maximumFractionDigits: 0,
+  }).format(Math.abs(montant));
+
+  if (showSign) {
+    return montant >= 0 ? `+${formatted}` : `-${formatted}`;
+  }
+  return montant < 0 ? `-${formatted}` : formatted;
+};
+
+export const formatStatut = (statut: string) => {
+  switch (statut) {
+    case 'recue': return 'Reçue';
+    case 'recu': return 'Reçu';
+    case 'paye': return 'Payé';
+    case 'non_paye': return 'Non payé';
+    case 'en_attente': return 'En attente';
+    default: return statut;
+  }
 };
 
 // Composant pour afficher une liste d'éléments financiers (factures ou paiements)
@@ -114,9 +137,9 @@ export function ListeItemsFinanciers({
             <Text className={STYLES.textSubtitle}>{formatDateFr(item.date)}</Text>
           </div>
           <div className="flex flex-col items-end gap-1">
-            <Text className={STYLES.textTitle}>{item.montant}</Text>
+            <Text className={STYLES.textTitle}>{formatMontant(item.montant)}</Text>
             <Badge variant={item.couleurStatut} className="text-[10px] px-2 py-0 text-center">
-              {item.statut}
+              {formatStatut(item.statut)}
             </Badge>
           </div>
         </div>
@@ -129,13 +152,13 @@ export function ListeItemsFinanciers({
 export function FacturesAvenir({
   factures,
   paiements,
-  totalFactures = "+0 €",
-  totalPaiements = "-0 €",
+  totalFactures = 0,
+  totalPaiements = 0,
 }: {
   factures: ItemFinancier[];
   paiements: ItemFinancier[];
-  totalFactures?: string;
-  totalPaiements?: string;
+  totalFactures?: number;
+  totalPaiements?: number;
 }) {
   return (
     <div className={STYLES.sectionContainer}>
@@ -199,7 +222,7 @@ export function EquilibreFinancier({ spectacles }: { spectacles: SpectacleEquili
             <div className="flex-1 flex justify-center">
               <BarreBudget
                 pourcentage={spec.budget}
-                couleur={spec.statut === "positif" ? "green" : "red"}
+                couleur={spec.montant >= 0 ? "green" : "red"}
               />
             </div>
 
@@ -210,7 +233,7 @@ export function EquilibreFinancier({ spectacles }: { spectacles: SpectacleEquili
                 </span>
               )}
               <Text className="text-sm font-semibold text-gray-900 whitespace-nowrap">
-                {spec.montant}
+                {formatMontant(spec.montant, true)}
               </Text>
             </div>
           </div>
@@ -241,9 +264,9 @@ export function FinancementsSubventions({
               <span
                 className={`w-2 h-2 rounded-full ${fin.type === "recu" ? "bg-[#53826A]" : "bg-[#F2C94C]"}`}
               ></span>
-              <span className="font-bold text-gray-900">{fin.montant}</span>
+              <span className="font-bold text-gray-900">{formatMontant(fin.montant)}</span>
               <span className={fin.type === "recu" ? "text-[#53826A]" : "text-[#F2C94C]"}>
-                {fin.statut}
+                {formatStatut(fin.statut)}
               </span>
               {fin.type === "attente" && (
                 <Tooltip label="Marquer comme reçu">
