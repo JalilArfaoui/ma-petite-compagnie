@@ -2,6 +2,7 @@
 
 import { Heading, Text, Badge, Tooltip, type BadgeProps } from "@/components/ui";
 import { FaExclamationTriangle, FaCheck } from "react-icons/fa";
+import { formatDateFr, formatMontant, formatStatut, getCouleurStatut } from "./utils";
 
 // ===== Variables CSS partagées =====
 const STYLES = {
@@ -24,14 +25,12 @@ export interface ItemFinancier {
   date: string;
   montant: number;
   statut: string;
-  couleurStatut: BadgeProps["variant"];
 }
 
 export interface SpectacleEquilibre {
   nom: string;
   budget: number;
   montant: number;
-  alerte?: boolean;
 }
 
 export interface FinancementSubvention {
@@ -78,7 +77,6 @@ export function SectionEntete({
   const isFacture = type === "factures";
   const bgColor = isFacture ? "bg-[#D4E8CD]" : "bg-[#FCE5B5]";
   const textColor = isFacture ? "text-green-800" : "text-orange-900";
-
   return (
     <div
       className={`flex justify-between items-center ${bgColor} p-2 -mx-5 px-5 mb-3 text-sm font-semibold ${textColor} ${className}`}
@@ -88,37 +86,6 @@ export function SectionEntete({
     </div>
   );
 }
-
-const formatDateFr = (dateStr: string) => {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
-  const [year, month, day] = dateStr.split('-');
-  const date = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day)));
-  return `le ${date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })}`;
-};
-
-export const formatMontant = (montant: number, showSign: boolean = false) => {
-  const formatted = new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'EUR',
-    maximumFractionDigits: 0,
-  }).format(Math.abs(montant));
-
-  if (showSign) {
-    return montant >= 0 ? `+${formatted}` : `-${formatted}`;
-  }
-  return montant < 0 ? `-${formatted}` : formatted;
-};
-
-export const formatStatut = (statut: string) => {
-  switch (statut) {
-    case 'recue': return 'Reçue';
-    case 'recu': return 'Reçu';
-    case 'paye': return 'Payé';
-    case 'non_paye': return 'Non payé';
-    case 'en_attente': return 'En attente';
-    default: return statut;
-  }
-};
 
 // Composant pour afficher une liste d'éléments financiers (factures ou paiements)
 export function ListeItemsFinanciers({
@@ -138,7 +105,7 @@ export function ListeItemsFinanciers({
           </div>
           <div className="flex flex-col items-end gap-1">
             <Text className={STYLES.textTitle}>{formatMontant(item.montant)}</Text>
-            <Badge variant={item.couleurStatut} className="text-[10px] px-2 py-0 text-center">
+            <Badge variant={getCouleurStatut(item.statut)} className="text-[10px] px-2 py-0 text-center">
               {formatStatut(item.statut)}
             </Badge>
           </div>
@@ -227,7 +194,7 @@ export function EquilibreFinancier({ spectacles }: { spectacles: SpectacleEquili
             </div>
 
             <div className="w-1/3 text-right flex justify-end items-center gap-2">
-              {spec.alerte && (
+              {spec.montant < 0 && (
                 <span className="text-yellow-500 text-lg" title="Attention budget dépassé">
                   <FaExclamationTriangle />
                 </span>

@@ -9,6 +9,7 @@ import {
   SpectacleEquilibre,
   FinancementSubvention,
 } from "./components";
+import { formatMontant } from "./utils";
 
 // --- Données fictives ---
 
@@ -18,14 +19,12 @@ const FACTURES_DATA: ItemFinancier[] = [
     date: "2026-01-27",
     montant: 750,
     statut: "recue",
-    couleurStatut: "green",
   },
   {
     destinataire: "Mairie Gaillac",
     date: "2026-01-17",
     montant: 300,
     statut: "recue",
-    couleurStatut: "green",
   },
 ];
 
@@ -35,14 +34,12 @@ const PAIEMENTS_DATA: ItemFinancier[] = [
     date: "2026-01-22",
     montant: 400,
     statut: "paye",
-    couleurStatut: "green",
   },
   {
     destinataire: "Loyer local de répét",
     date: "2026-01-22",
     montant: 128,
     statut: "non_paye",
-    couleurStatut: "red",
   },
 ];
 
@@ -59,7 +56,6 @@ const SPECTACLES_DATA: SpectacleEquilibre[] = [
     nom: "Antigone",
     budget: 22,
     montant: -1200,
-    alerte: true,
   },
 ];
 
@@ -112,8 +108,8 @@ export default function PageAdministration() {
 
         {/* Ligne des cartes indicateurs clés */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 flex-nowrap mb-12">
-          <IndicateurCle titre="Trésorerie actuelle" valeur="12 540 €" sousTexte="" />
-          <IndicateurCle titre="Factures" valeur="320 €" sousTexte="attendus" />
+          <IndicateurCle titre="Trésorerie actuelle" valeur={formatMontant(12540)} sousTexte="" />
+          <IndicateurCle titre="Factures" valeur={formatMontant(320)} sousTexte="attendus" />
           <IndicateurCle titre="Spectacles en cours" valeur="5" sousTexte="spectacles actifs" />
           <IndicateurCle titre="Financements" valeur="4" sousTexte="dossiers en attente" />
         </div>
