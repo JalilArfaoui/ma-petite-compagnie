@@ -7,9 +7,9 @@ import { type BadgeProps } from "@/components/ui";
  */
 export const formatDateFr = (dateStr: string) => {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
-  const [year, month, day] = dateStr.split('-');
+  const [year, month, day] = dateStr.split("-");
   const date = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day)));
-  return `le ${date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })}`;
+  return `le ${date.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" })}`;
 };
 
 /**
@@ -19,9 +19,9 @@ export const formatDateFr = (dateStr: string) => {
  * @returns Le montant formaté (ex: "750 €" ou "+2 300 €").
  */
 export const formatMontant = (montant: number, showSign: boolean = false) => {
-  const formatted = new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'EUR',
+  const formatted = new Intl.NumberFormat("fr-FR", {
+    style: "currency",
+    currency: "EUR",
     maximumFractionDigits: 0,
   }).format(Math.abs(montant));
 
@@ -38,12 +38,18 @@ export const formatMontant = (montant: number, showSign: boolean = false) => {
  */
 export const formatStatut = (statut: string) => {
   switch (statut) {
-    case 'recue': return 'Reçue';
-    case 'recu': return 'Reçu';
-    case 'paye': return 'Payé';
-    case 'non_paye': return 'Non payé';
-    case 'en_attente': return 'En attente';
-    default: return statut;
+    case "recue":
+      return "Reçue";
+    case "recu":
+      return "Reçu";
+    case "paye":
+      return "Payé";
+    case "non_paye":
+      return "Non payé";
+    case "en_attente":
+      return "En attente";
+    default:
+      return statut;
   }
 };
 
@@ -54,9 +60,15 @@ export const formatStatut = (statut: string) => {
  */
 export const getCouleurStatut = (statut: string): BadgeProps["variant"] => {
   switch (statut) {
-    case 'recue': case 'recu': case 'paye': return 'green';
-    case 'non_paye': return 'red';
-    case 'en_attente': return 'yellow';
-    default: return 'gray';
+    case "recue":
+    case "recu":
+    case "paye":
+      return "green";
+    case "non_paye":
+      return "red";
+    case "en_attente":
+      return "yellow";
+    default:
+      return "gray";
   }
 };

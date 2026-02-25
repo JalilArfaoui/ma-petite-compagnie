@@ -7,12 +7,7 @@ import {
   FinancementsSubventions,
 } from "./components";
 import { formatMontant } from "./utils";
-import {
-  FACTURES_DATA,
-  PAIEMENTS_DATA,
-  SPECTACLES_DATA,
-  FINANCEMENTS_DATA,
-} from "./test_data";
+import { FACTURES_DATA, PAIEMENTS_DATA, SPECTACLES_DATA, FINANCEMENTS_DATA } from "./test_data";
 
 // --- Page Principale ---
 

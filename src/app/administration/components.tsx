@@ -105,7 +105,10 @@ export function ListeItemsFinanciers({
           </div>
           <div className="flex flex-col items-end gap-1">
             <Text className={STYLES.textTitle}>{formatMontant(item.montant)}</Text>
-            <Badge variant={getCouleurStatut(item.statut)} className="text-[10px] px-2 py-0 text-center">
+            <Badge
+              variant={getCouleurStatut(item.statut)}
+              className="text-[10px] px-2 py-0 text-center"
+            >
               {formatStatut(item.statut)}
             </Badge>
           </div>
