@@ -15,14 +15,14 @@ import {
 const FACTURES_DATA: ItemFinancier[] = [
   {
     destinataire: "Théâtre municipal des Lices",
-    date: "le 27 janvier 2026",
+    date: "2026-01-27",
     montant: "750 €",
     statut: "reçue",
     couleurStatut: "green",
   },
   {
     destinataire: "Mairie Gaillac",
-    date: "le 17 janvier 2026",
+    date: "2026-01-17",
     montant: "300 €",
     statut: "reçue",
     couleurStatut: "green",
@@ -32,14 +32,14 @@ const FACTURES_DATA: ItemFinancier[] = [
 const PAIEMENTS_DATA: ItemFinancier[] = [
   {
     destinataire: "Décorations scène",
-    date: "le 22 janvier 2026",
+    date: "2026-01-22",
     montant: "400 €",
     statut: "payé",
     couleurStatut: "green",
   },
   {
     destinataire: "Loyer local de répét",
-    date: "le 22 janvier 2026",
+    date: "2026-01-22",
     montant: "128 €",
     statut: "non payé",
     couleurStatut: "red",

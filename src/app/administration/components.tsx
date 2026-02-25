@@ -90,6 +90,13 @@ export function SectionEntete({
   );
 }
 
+const formatDateFr = (dateStr: string) => {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+  const [year, month, day] = dateStr.split('-');
+  const date = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day)));
+  return `le ${date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })}`;
+};
+
 // Composant pour afficher une liste d'éléments financiers (factures ou paiements)
 export function ListeItemsFinanciers({
   items,
@@ -104,7 +111,7 @@ export function ListeItemsFinanciers({
         <div key={idx} className={STYLES.itemCardFlex}>
           <div>
             <Text className={STYLES.textTitle}>{item.destinataire}</Text>
-            <Text className={STYLES.textSubtitle}>{item.date}</Text>
+            <Text className={STYLES.textSubtitle}>{formatDateFr(item.date)}</Text>
           </div>
           <div className="flex flex-col items-end gap-1">
             <Text className={STYLES.textTitle}>{item.montant}</Text>
