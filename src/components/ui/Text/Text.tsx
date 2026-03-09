@@ -8,7 +8,7 @@ interface TextProps extends HTMLAttributes<HTMLElement> {
 export const Text = forwardRef<HTMLElement, TextProps>(
   ({ as: Component = "p", className, ...props }, ref) => {
     return (
-      <Component ref={ref} className={cn("font-serif text-[#43566b]", className)} {...props} />
+      <Component ref={ref} className={cn("font-sans text-text-primary", className)} {...props} />
     );
   }
 );

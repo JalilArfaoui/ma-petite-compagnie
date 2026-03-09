@@ -13,7 +13,7 @@ const CardRoot = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "rounded-[20px] bg-[#F9FAFC] p-[20px] border-none shadow-sm hover:shadow-md transition-shadow flex flex-col gap-[20px]",
+      "rounded-[20px] bg-hover p-[20px] border-none shadow-sm transition-shadow flex flex-col gap-[20px]",
       className
     )}
     {...props}
@@ -23,7 +23,7 @@ const CardRoot = React.forwardRef<
         className={cn(
           "w-fit p-[10px] rounded-full flex items-center justify-center text-3xl",
           iconColor === "red"
-            ? "bg-[#FFE3E7] text-[#c02626]"
+            ? "bg-primary-light text-primary"
             : iconColor === "blue"
               ? "bg-[#E9F2FD] text-[#2563eb]"
               : iconColor === "yellow"

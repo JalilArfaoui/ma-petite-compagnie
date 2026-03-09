@@ -17,7 +17,7 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
           href={href}
           ref={ref}
           className={cn(
-            "text-[#43566b] font-serif hover:text-[#d00039] active:text-[#5e0019] no-underline",
+            "text-text-primary font-serif hover:text-primary active:text-primary-active no-underline",
             className
           )}
           target="_blank"
@@ -32,7 +32,7 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
         href={href}
         ref={ref}
         className={cn(
-          "text-[#43566b] font-serif hover:text-[#d00039] active:text-[#5e0019] no-underline",
+          "text-text-primary font-serif hover:text-primary active:text-primary-active no-underline",
           className
         )}
         {...props}

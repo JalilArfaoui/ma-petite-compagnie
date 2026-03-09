@@ -35,17 +35,17 @@ export const Radio = React.forwardRef<
       type="radio"
       ref={ref}
       className={cn(
-        "appearance-none peer h-5 w-5 rounded-full border border-[#e1e8f1] bg-white checked:border-[#d00039] checked:bg-white transition-all hover:bg-[#f8fafc] hover:border-[#cbd5e1]",
+        "appearance-none peer h-5 w-5 rounded-full border border-border bg-white checked:border-primary checked:bg-white transition-all hover:bg-bg-hover hover:border-border-hover",
         className
       )}
       {...props}
     />
     {children && (
-      <span className="text-[1rem] text-[#43566b] font-serif leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+      <span className="text-[1rem] text-text-primary font-serif leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
         {children}
       </span>
     )}
-    <span className="absolute left-[5px] top-[5px] h-2.5 w-2.5 rounded-full bg-[#d00039] opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity"></span>
+    <span className="absolute left-[5px] top-[5px] h-2.5 w-2.5 rounded-full bg-primary opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity"></span>
   </label>
 ));
 Radio.displayName = "Radio";

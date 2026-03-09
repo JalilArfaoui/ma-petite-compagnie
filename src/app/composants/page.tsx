@@ -19,6 +19,7 @@ import {
   Stack,
   Text,
   Icon,
+  SearchBar,
 } from "@/components/ui";
 import { FaHome } from "react-icons/fa";
 
@@ -187,6 +188,10 @@ export default function Home() {
                     <Box>
                       <Text className="font-bold mb-2">Input</Text>
                       <Input placeholder="Type something..." />
+                    </Box>
+                    <Box>
+                      <Text className="font-bold mb-2">SearchBar</Text>
+                      <SearchBar placeholder="Rechercher..." />
                     </Box>
                     <Box>
                       <Text className="font-bold mb-2">Textarea</Text>
