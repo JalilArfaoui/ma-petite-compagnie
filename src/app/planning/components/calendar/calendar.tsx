@@ -156,7 +156,7 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick } : Event
         return day.day === today.getDate() &&
                day.month === today.getMonth() + 1 &&
                day.year === today.getFullYear();
-    };
+                    <ChangeCalendarView viewType={viewType} setViewType={setViewType} />
 
     const ref = React.useRef<HTMLDivElement>(null);
     const [globalSlotsHeight, setGlobalSlotsHeight] = useState(0);
