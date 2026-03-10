@@ -14,7 +14,7 @@ export type Result<T> = { succes: boolean; message: string; data: T | null };
  * @param contact
  * @returns
  */
-export function resultOf<T>(succes: boolean, message: string, data: T | null): Result<T> {
+function resultOf<T>(succes: boolean, message: string, data: T | null): Result<T> {
   return { succes: succes, message: message, data: data };
 }
 

@@ -4,7 +4,11 @@ import { get_Brevo_Client } from "@/lib/brevo";
 import type { Contact } from "@prisma/client";
 import { ApiError } from "next/dist/server/api-utils";
 
-import { Result, resultOf } from "../api/contact/contact";
+import { Result } from "../api/contact/contact";
+
+function resultOf<T>(succes: boolean, message: string, data: T | null): Result<T> {
+  return { succes: succes, message: message, data: data };
+}
 export async function relier_contact_to_Brevo(contact: Contact): Promise<Result<null>> {
   const client = get_Brevo_Client();
   if (!client || !contact.email) return resultOf(false, "La clé API BREVO est incorrecte", null);
