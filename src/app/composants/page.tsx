@@ -324,12 +324,12 @@ export default function Home() {
           <div className="flex flex-wrap gap-4">
             <Modal>
               <Modal.Trigger asChild>
-                <Button variant="solid">Ouvrir petite modal</Button>
+                <Button variant="solid">Ouvrir petite modale</Button>
               </Modal.Trigger>
               <Modal.Content size="sm">
                 <Modal.Header icon={<FaHome className="h-6 w-6" />}>
-                  <Modal.Title>Petite modal</Modal.Title>
-                  <Modal.Description>Exemple de modal de confirmation.</Modal.Description>
+                  <Modal.Title>Petite modale</Modal.Title>
+                  <Modal.Description>Exemple de modale de confirmation.</Modal.Description>
                 </Modal.Header>
                 <Modal.Body>
                   <Text>
@@ -348,11 +348,11 @@ export default function Home() {
 
             <Modal>
               <Modal.Trigger asChild>
-                <Button variant="outline">Ouvrir moyenne modal (Defaut)</Button>
+                <Button variant="outline">Ouvrir moyenne modale (Defaut)</Button>
               </Modal.Trigger>
               <Modal.Content size="md">
                 <Modal.Header>
-                  <Modal.Title>Moyenne modal</Modal.Title>
+                  <Modal.Title>Moyenne modale</Modal.Title>
                   <Modal.Description>La taille par défaut.</Modal.Description>
                 </Modal.Header>
                 <Modal.Body>
@@ -379,13 +379,13 @@ export default function Home() {
 
             <Modal>
               <Modal.Trigger asChild>
-                <Button variant="outline">Ouvrir grande modal</Button>
+                <Button variant="outline">Ouvrir grande modale</Button>
               </Modal.Trigger>
               <Modal.Content size="lg">
                 <Modal.Header icon={<Icon as={FaHome} className="text-primary" />}>
-                  <Modal.Title>Grande modal avec icône</Modal.Title>
+                  <Modal.Title>Grande modale avec icône</Modal.Title>
                   <Modal.Description>
-                    Une grande modal pour un contenu plus complexe.
+                    Une grande modale pour un contenu plus complexe.
                   </Modal.Description>
                 </Modal.Header>
                 <Modal.Body>
