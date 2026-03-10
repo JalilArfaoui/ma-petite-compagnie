@@ -13,6 +13,12 @@ const TYPE_CATEGORIE = [
   { value: "autre", label: "Autre" },
 ] as const;
 
+const TYPE_SPECTACLE = [
+  { value: "romeoetjuliette", label: "Roméo et Juliette" },
+  { value: "hamlet", label: "Hamlet" },
+  { value: "leroilion", label: "Le Roi Lion" },
+] as const;
+
 const MEMBRES_TROUPE = [
   "Alice Dupont",
   "Bernard Martin",
@@ -27,6 +33,7 @@ type Cachet = {
   date: string;
   montant: number;
   categorie: string;
+  spectacle: string;
   note?: string;
 };
 
@@ -38,10 +45,12 @@ export default function PageCachets() {
   const [date, setDate] = useState("");
   const [montant, setMontant] = useState(1);
   const [categorie, setCategorie] = useState("");
+  const [spectacle, setSpectacle] = useState("");
   const [note, setNote] = useState("");
   const [editId, setEditId] = useState<number | null>(null);
   const [filtreMembre, setFiltreMembre] = useState("");
   const [filtreCategorie, setFiltreCategorie] = useState("");
+  const [filtreSpectacle, setFiltreSpectacle] = useState("");
   const [tri, setTri] = useState<"date" | "montant">("date");
   const [erreur, setErreur] = useState<string | null>(null);
 
@@ -74,6 +83,12 @@ export default function PageCachets() {
       return;
     }
 
+    //validation obligatoire du spectacle
+    if (!spectacle.trim()) {
+      setErreur("Un spectacle doit être choisi");
+      return;
+    }
+
     //pas forcement nécéssaire puisque déjà géré dans le code de l'input, mais mieux vaut être prévoyant
     if (note.length > 200) {
       setErreur("La note ne peut pas dépasser 200 caractères");
@@ -83,7 +98,7 @@ export default function PageCachets() {
     if (editId !== null) {
       //edition cachet
       setCachets(
-        cachets.map((c) => (c.id === editId ? { ...c, date, montant, categorie, note } : c))
+        cachets.map((c) => (c.id === editId ? { ...c, date, montant, categorie, spectacle, note } : c))
       );
       setEditId(null);
     } else {
@@ -94,6 +109,7 @@ export default function PageCachets() {
         date,
         montant,
         categorie,
+        spectacle,
         note,
       };
       setCachets([...cachets, nouveauCachet]);
@@ -103,6 +119,7 @@ export default function PageCachets() {
     setDate("");
     setMontant(1);
     setCategorie("");
+    setSpectacle("");
     setNote("");
   }
 
@@ -118,6 +135,7 @@ export default function PageCachets() {
     setDate(c.date);
     setMontant(c.montant);
     setCategorie(c.categorie);
+    setSpectacle(c.spectacle);
     setNote(c.note || "");
   }
 
@@ -135,6 +153,11 @@ export default function PageCachets() {
   //filtrage par catégorie (agit uniquement sur cachets de membre x)
   const cachetsFiltres = filtreCategorie
     ? cachetsFiltresParMembre.filter((c) => c.categorie === filtreCategorie)
+    : cachetsFiltresParMembre;
+
+  //filtrage par spectacle (agit uniquement sur cachets de membre x)
+  const cachetsFiltres2 = filtreSpectacle
+    ? cachetsFiltresParMembre.filter((c) => c.spectacle === filtreSpectacle)
     : cachetsFiltresParMembre;
 
   //filtrage par date (décroissant) ou montant (décroissant), (agit uniquement sur cachets de membre x)
@@ -216,6 +239,20 @@ export default function PageCachets() {
         </div>
 
         <div>
+          <label htmlFor="spectacle">Catégorie</label>
+          <br />
+          <select id="spectacle" value={spectacle} onChange={(e) => setSpectacle(e.target.value)}>
+            <option value="">— Choisir un spectacle —</option>
+            {TYPE_SPECTACLE.map((spectacle) => (
+              <option key={spectacle.value} value={spectacle.value}>
+                {" "}
+                {spectacle.label}{" "}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
           <label>Note</label>
           <br />
           <input value={note} maxLength={200} onChange={(e) => setNote(e.target.value)} />
@@ -233,6 +270,7 @@ export default function PageCachets() {
               setDate("");
               setMontant(1);
               setCategorie("");
+              setSpectacle("");
               setNote("");
               setErreur(null);
             }}
@@ -263,6 +301,16 @@ export default function PageCachets() {
           ))}
         </select>
 
+        <label>Filtrer par spectacle: </label>
+        <select value={filtreSpectacle} onChange={(e) => setFiltreSpectacle(e.target.value)}>
+          <option value="">Tous</option>
+          {TYPE_SPECTACLE.map((spectacle) => (
+            <option key={spectacle.value} value={spectacle.value}>
+              {spectacle.label}
+            </option>
+          ))}
+        </select>
+
         <label>Trier par: </label>
         <select value={tri} onChange={(e) => setTri(e.target.value as "date" | "montant")}>
           <option value="date">Date</option>
@@ -278,6 +326,7 @@ export default function PageCachets() {
             <div>
               <span>{c.date}</span>
               <span>{c.categorie || "Sans catégorie"}</span>
+              <span>{c.spectacle}</span>
               <span>{c.montant} euros</span>
             </div>
 
