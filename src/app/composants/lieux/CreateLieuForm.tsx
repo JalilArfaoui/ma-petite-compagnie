@@ -2,6 +2,7 @@
 import type { Lieu } from "@/types/lieu";
 import { useState } from "react";
 import {Button, Input, SimpleGrid, Field} from "@/components/ui";
+import {creerLieu} from "@/app/actions/lieu";
 
 type Props = {
   onSuccess: (lieu: Lieu) => void;
@@ -14,27 +15,21 @@ export function CreateLieuForm({ onSuccess, onCancel, idCompagnie }: Props) {
   const [ville, setVille] = useState("");
   const [numeroSalle, setNumeroSalle] = useState("");
 
-  async function handleSubmitLieu(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  async function handleSubmitLieu(datas: FormData) {
+    const result = await creerLieu(datas)
 
-    const res = await fetch("/api/lieux", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ libelle, adresse, ville, numeroSalle, idCompagnie }),
-    });
-
-    if (!res.ok) {
+    if (result.status != 201 || !result.lieu) {
       alert("La création du lieu a échoué");
       return;
     }
 
-    const lieu: Lieu = await res.json();
+    const lieu: Lieu = result.lieu;
 
     onSuccess(lieu);
   }
 
   return (
-    <form onSubmit={handleSubmitLieu}>
+    <form action={handleSubmitLieu}>
       <div>
         <Field.Root required>
           <Field.Label>
