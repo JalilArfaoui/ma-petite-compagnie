@@ -9,12 +9,11 @@ export const dynamic = "force-dynamic";
 async function createReservationObjet(formData: FormData) {
   "use server";
 
-  const quantite = Number(formData.get("quantite"));
   const objetId = Number(formData.get("objetId"));
   const representationId = Number(formData.get("representationId"));
 
   await prisma.reservationObjet.create({
-    data: { quantite, objetId, representationId },
+    data: { objetId, representationId },
   });
 
   revalidatePath("/production/reservations-objets");
@@ -27,13 +26,12 @@ async function updateReservationObjet(formData: FormData) {
   "use server";
 
   const id = Number(formData.get("id"));
-  const quantite = Number(formData.get("quantite"));
   const objetId = Number(formData.get("objetId"));
   const representationId = Number(formData.get("representationId"));
 
   await prisma.reservationObjet.update({
     where: { id },
-    data: { quantite, objetId, representationId },
+    data: { objetId, representationId },
   });
 
   revalidatePath("/production/reservations-objets");
@@ -72,7 +70,7 @@ export default async function ReservationsObjetsPage() {
     prisma.reservationObjet.findMany({
       orderBy: { id: "desc" },
       include: {
-        objet: { include: { compagnie: true } },
+        objet: { include: { compagnie: true, typeObjet: { include: { categorie: true } } } },
         representation: {
           include: {
             spectacle: true,
@@ -82,8 +80,9 @@ export default async function ReservationsObjetsPage() {
       },
     }),
     prisma.objet.findMany({
-      orderBy: { nom: "asc" },
+      orderBy: { id: "asc" },
       where: { estDisponible: true },
+      include: { typeObjet: true },
     }),
     prisma.representation.findMany({
       orderBy: { date: "desc" },
@@ -104,7 +103,7 @@ export default async function ReservationsObjetsPage() {
           <h3 className="mb-6 text-xl font-bold text-[#D00039]">➕ Ajouter une réservation</h3>
 
           <form action={createReservationObjet}>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block font-semibold mb-2">Objet *</label>
                 <select
@@ -115,7 +114,7 @@ export default async function ReservationsObjetsPage() {
                   <option value="">Sélectionner un objet</option>
                   {objets.map((o) => (
                     <option key={o.id} value={o.id}>
-                      {o.nom} ({o.type})
+                      #{o.id} — {o.typeObjet.nom} ({o.etat})
                     </option>
                   ))}
                 </select>
@@ -135,18 +134,6 @@ export default async function ReservationsObjetsPage() {
                     </option>
                   ))}
                 </select>
-              </div>
-
-              <div>
-                <label className="block font-semibold mb-2">Quantité *</label>
-                <input
-                  name="quantite"
-                  type="number"
-                  min="1"
-                  placeholder="1"
-                  required
-                  className="w-full p-2 border border-slate-300 rounded-md focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039] outline-none"
-                />
               </div>
             </div>
 
@@ -178,13 +165,15 @@ export default async function ReservationsObjetsPage() {
                   {/* Header */}
                   <div>
                     <p className="text-xs text-slate-500 mb-1">#{r.id}</p>
-                    <h4 className="text-lg font-bold text-[#D00039] mb-2">{r.objet.nom}</h4>
+                    <h4 className="text-lg font-bold text-[#D00039] mb-2">
+                      {r.objet.typeObjet.nom} (#{r.objet.id})
+                    </h4>
                     <div className="flex flex-wrap gap-2">
                       <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
                         🎭 {r.representation.spectacle.titre}
                       </span>
-                      <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                        x{r.quantite}
+                      <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
+                        {r.objet.typeObjet.categorie.nom}
                       </span>
                     </div>
                   </div>
@@ -192,7 +181,7 @@ export default async function ReservationsObjetsPage() {
                   {/* Info */}
                   <div className="flex flex-col gap-2 text-sm">
                     <p>
-                      <strong>🎪 Objet:</strong> {r.objet.nom} ({r.objet.type})
+                      <strong>🎪 Objet:</strong> {r.objet.typeObjet.nom} — État: {r.objet.etat}
                     </p>
                     <p>
                       <strong>🏢 Compagnie:</strong> {r.objet.compagnie.nom}
@@ -213,7 +202,7 @@ export default async function ReservationsObjetsPage() {
                   <form action={updateReservationObjet}>
                     <input type="hidden" name="id" value={r.id} />
                     <div className="flex flex-col gap-3">
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                         <select
                           name="objetId"
                           defaultValue={r.objetId}
@@ -221,12 +210,13 @@ export default async function ReservationsObjetsPage() {
                         >
                           {objets.map((o) => (
                             <option key={o.id} value={o.id}>
-                              {o.nom}
+                              #{o.id} — {o.typeObjet.nom}
                             </option>
                           ))}
-                          {/* Keep current if not available anymore */}
                           {!objets.find((o) => o.id === r.objetId) && (
-                            <option value={r.objetId}>{r.objet.nom} (actuel)</option>
+                            <option value={r.objetId}>
+                              #{r.objet.id} — {r.objet.typeObjet.nom} (actuel)
+                            </option>
                           )}
                         </select>
                         <select
@@ -240,13 +230,6 @@ export default async function ReservationsObjetsPage() {
                             </option>
                           ))}
                         </select>
-                        <input
-                          name="quantite"
-                          type="number"
-                          min="1"
-                          defaultValue={r.quantite}
-                          className="text-sm h-8 px-2 border border-slate-300 rounded-md focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039] outline-none"
-                        />
                       </div>
 
                       <button

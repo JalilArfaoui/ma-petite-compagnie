@@ -102,11 +102,25 @@ enum TypeSpectacle {
   AUTRE
 }
 
-enum TypeObjet {
-  COSTUME
-  DECOR
-  MATERIEL_TECHNIQUE
-  ACCESSOIRE
+enum EtatObjet {
+  NEUF
+  ABIME
+  CASSE
+}
+
+model CategorieObjet {
+  id         Int         @id @default(autoincrement())
+  nom        String      @unique
+  typesObjet TypeObjet[]
+}
+
+model TypeObjet {
+  id          Int            @id @default(autoincrement())
+  nom         String
+  image       String?
+  categorieId Int
+  categorie   CategorieObjet @relation(fields: [categorieId], references: [id])
+  objets      Objet[]
 }
 
 model Spectacle {
@@ -141,17 +155,18 @@ model Representation {
 
 model Objet {
   id            Int               @id @default(autoincrement())
-  nom           String
-  type          TypeObjet
+  typeObjetId   Int
+  typeObjet     TypeObjet         @relation(fields: [typeObjetId], references: [id])
+  etat          EtatObjet         @default(NEUF)
   estDisponible Boolean           @default(true)
   compagnieId   Int
   compagnie     Compagnie         @relation("ObjetsCompagnie", fields: [compagnieId], references: [id])
+  commentaire   String?
   reservations  ReservationObjet[]
 }
 
 model ReservationObjet {
   id               Int            @id @default(autoincrement())
-  quantite         Int
   objetId          Int
   objet            Objet          @relation(fields: [objetId], references: [id], onDelete: Cascade)
   representationId Int
