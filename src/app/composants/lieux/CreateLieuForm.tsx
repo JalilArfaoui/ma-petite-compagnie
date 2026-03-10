@@ -1,7 +1,7 @@
 "use client";
 import type { Lieu } from "@/types/lieu";
 import { useState } from "react";
-import {Button, Input, SimpleGrid} from "@/components/ui";
+import {Button, Input, SimpleGrid, Field} from "@/components/ui";
 
 type Props = {
   onSuccess: (lieu: Lieu) => void;
@@ -38,7 +38,7 @@ export function CreateLieuForm({ onSuccess, onCancel, idCompagnie }: Props) {
       <div>
         <Field.Root required>
           <Field.Label>
-            Nom <Field.RequiredIndicator />
+            Nom {/*<Field.RequiredIndicator />*/}
           </Field.Label>
 
           <Input
@@ -53,7 +53,7 @@ export function CreateLieuForm({ onSuccess, onCancel, idCompagnie }: Props) {
       <div>
         <Field.Root required>
           <Field.Label>
-            Adresse <Field.RequiredIndicator />
+            Adresse {/*<Field.RequiredIndicator />*/}
           </Field.Label>
           <Input
             type="text"
@@ -67,7 +67,7 @@ export function CreateLieuForm({ onSuccess, onCancel, idCompagnie }: Props) {
       <div>
         <Field.Root required>
           <Field.Label>
-            Ville <Field.RequiredIndicator />
+            Ville {/*<Field.RequiredIndicator />*/}
           </Field.Label>
           <Input
             type="text"
@@ -81,25 +81,25 @@ export function CreateLieuForm({ onSuccess, onCancel, idCompagnie }: Props) {
       <div>
         <Field.Root>
           <Field.Label>
-            N° de la salle <Field.RequiredIndicator />
+            N° de la salle {/*<Field.RequiredIndicator />*/}
           </Field.Label>
           <Input type="text" value={numeroSalle} onChange={(e) => setNumeroSalle(e.target.value)} />
         </Field.Root>
       </div>
-      <SimpleGrid columns={{ base: 4, md: 5 }} gap={0}>
+      {/*<SimpleGrid columns={{ base: 4, md: 5 }} gap={0}>
         <GridItem colSpan={{ base: 1, md: 1 }}></GridItem>
-        <GridItem colSpan={{ base: 1, md: 1 }}>
+        <GridItem colSpan={{ base: 1, md: 1 }}>*/}
           <Button type="button" onClick={onCancel}>
             Annuler
           </Button>
-        </GridItem>
+      {/*</GridItem>
         <GridItem colSpan={{ base: 1, md: 1}}></GridItem>
-        <GridItem colSpan={{ base: 1, md: 1 }}>
+        <GridItem colSpan={{ base: 1, md: 1 }}>*/}
           <Button type="submit" disabled={!libelle || !adresse || !ville}>
             Créer
           </Button>
-        </GridItem>
-      </SimpleGrid>
+      {/*</GridItem>
+      </SimpleGrid>*/}
     </form>
   );
 }
