@@ -145,38 +145,33 @@ export default function VisionCachetsPage() {
       <Heading as="h3" className="font-semibold mt-9 pb-2 border-b text-center">
         Résultats
       </Heading>
-      <div className="mx-140 mt-6 mb-10 rounded-[20px] bg-hover p-[20px] border-none shadow-sm transition-shadow flex flex-col gap-[20px]">
-        <ul>
-          {filteredAndSorted.map((cachet) => (
-            <li key={cachet.id}>
-              Cachet #{cachet.id} — {cachet.categorie} — {cachet.montant} € —{" "}
-              {cachet.date.toLocaleDateString("fr-FR")}
-            </li>
-          ))}
-        </ul>
-
+      <div className="mx-140 mt-6 mb-10">
         <Card title="Table">
-              <Card.Body>
-                <Table>
-                  <Table.Head>
-                    <Table.Row>
-                      <Table.Header>Name</Table.Header>
-                      <Table.Header>Role</Table.Header>
-                    </Table.Row>
-                  </Table.Head>
-                  <Table.Body>
-                    <Table.Row>
-                      <Table.Cell>Jean Dupont</Table.Cell>
-                      <Table.Cell>Directeur</Table.Cell>
-                    </Table.Row>
-                    <Table.Row>
-                      <Table.Cell>Marie Martin</Table.Cell>
-                      <Table.Cell>Comédienne</Table.Cell>
-                    </Table.Row>
-                  </Table.Body>
-                </Table>
-              </Card.Body>
-            </Card>
+          <Card.Body>
+            <Table>
+              <Table.Head>
+                <Table.Row>
+                  <Table.Header>Numero</Table.Header>
+                  <Table.Header>Categorie</Table.Header>
+                  <Table.Header>Montant</Table.Header>
+                  <Table.Header>Date d'ajout</Table.Header>
+                </Table.Row>
+              </Table.Head>
+              <Table.Body>
+                {filteredAndSorted.map((cachet) => (
+                  <Table.Row key={cachet.id}>
+                    <Table.Cell>{cachet.id}</Table.Cell>
+                    <Table.Cell>{cachet.categorie}</Table.Cell>
+                    <Table.Cell>{cachet.montant} €</Table.Cell>
+                    <Table.Cell>
+                      {cachet.date.toLocaleDateString("fr-FR")}
+                    </Table.Cell>
+                  </Table.Row>
+                ))}
+              </Table.Body>
+            </Table>
+          </Card.Body>
+        </Card>
     </div>
     </div>
   );
