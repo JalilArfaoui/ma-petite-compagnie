@@ -1,6 +1,7 @@
-import { Evenement } from "@prisma/client";
+
 import isToday from "../methods/isToday";
-import { CalendarDay } from "../calendar";
+import { CalendarDay, EvenementBuiltInt } from "../calendar";
+
 
 
 export default function MonthlyTile({
@@ -9,15 +10,15 @@ export default function MonthlyTile({
     viewType,
     onEventClick,
     slotHeight,
-} : {
-    calDay: CalendarDay,
-    index: number,
-    onEventClick?: (event: Evenement) => void,
-    viewType: 'monthly' | 'weekly',
-    slotHeight?: number
+}: {
+    calDay: CalendarDay;
+    index: number;
+    onEventClick?: (event: EvenementBuiltInt) => void;
+    viewType: 'monthly' | 'weekly';
+    slotHeight?: number;
 }) {
 
-    
+
 
     return (
         <div
@@ -38,7 +39,8 @@ export default function MonthlyTile({
                         <div
                             key={event.id}
                             className="event-tile"
-                            onClick={() => onEventClick?.(event)}
+                            onClick={() => onEventClick?.({...event, dateDebut: event.dateDebut, 
+                            dateFin: event.dateFin})}
                             title={event.nom}
 
                             style={{
