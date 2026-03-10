@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 import { Evenement } from "../calendar";
 import isToday from "../methods/isToday";
+=======
+import { Evenement } from "@prisma/client";
+import isToday from "../methods/isToday";
+import { CalendarDay } from "../calendar";
+>>>>>>> b78cfb5f285e18054aef1a7b0a7cf0751d66eb7e
 
 
 export default function MonthlyTile({
@@ -9,13 +15,18 @@ export default function MonthlyTile({
     onEventClick,
     slotHeight,
 } : {
+<<<<<<< HEAD
     calDay: { day: number; month: number; year: number; isCurrentMonth: boolean; events: Evenement[] },
+=======
+    calDay: CalendarDay,
+>>>>>>> b78cfb5f285e18054aef1a7b0a7cf0751d66eb7e
     index: number,
     onEventClick?: (event: Evenement) => void,
     viewType: 'monthly' | 'weekly',
     slotHeight?: number
 }) {
 
+<<<<<<< HEAD
     /*
 
         La hauteur d'un jour correspond à 100%.
@@ -28,6 +39,8 @@ export default function MonthlyTile({
 
     */
 
+=======
+>>>>>>> b78cfb5f285e18054aef1a7b0a7cf0751d66eb7e
     
 
     return (

@@ -12,6 +12,15 @@
     align-items: center;
     margin-bottom: 24px;
     padding: 0 8px;
+<<<<<<< HEAD
+=======
+
+    .buttons-container {
+        display:flex;
+        flex-direction: row;
+        gap: 8px;
+    }
+>>>>>>> b78cfb5f285e18054aef1a7b0a7cf0751d66eb7e
 }
 
 .header-center {
@@ -39,7 +48,14 @@
     cursor: pointer;
     transition: all 0.2s ease;
     font-size: 24px;
+<<<<<<< HEAD
     color: #4a4a4a;
+=======
+    svg {
+            fill: #000000;
+
+    }
+>>>>>>> b78cfb5f285e18054aef1a7b0a7cf0751d66eb7e
 }
 
 .nav-button:hover {
