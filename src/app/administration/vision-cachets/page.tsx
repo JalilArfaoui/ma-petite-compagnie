@@ -1,5 +1,28 @@
 "use client";
 
+import {
+  Alert,
+  Badge,
+  Button,
+  Card,
+  Checkbox,
+  Input,
+  Link,
+  List,
+  Radio,
+  RadioGroup,
+  Switch,
+  Table,
+  Textarea,
+  Heading,
+  Box,
+  Container,
+  Stack,
+  Text,
+  Icon,
+  SearchBar,
+  Modal,
+} from "@/components/ui";
 import { useState, useMemo } from "react";
 
 type Categorie =
@@ -63,9 +86,14 @@ export default function VisionCachetsPage() {
 
   return (
     <div>
-      <h1>Liste des cachets</h1>
+      <Heading as="h1" className="font-extrabold mb-6 pb-2">
+        Liste des cachets
+      </Heading>
 
-      <h3>Filtrer par catégorie</h3>
+      <Heading as="h3" className="font-semibold mb-6 pb-2">
+        Filtrer par catégorie
+      </Heading>
+      
       <select
         value={categorieFilter}
         onChange={(e) => setCategorieFilter(e.target.value as "tous" | Categorie)}
