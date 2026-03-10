@@ -1,51 +1,26 @@
 "use client";
 
 import { Contact, Role } from "@prisma/client";
-import { useState, FormEvent } from "react";
+import { useState } from "react";
 import { Box, Card, Input, Radio, RadioGroup, Stack, Button } from "@/components/ui";
 
-export function ContactDetails({ contactDonnee }: { contactDonnee: Contact | null }) {
+export function ContactDetails({
+  onSubmitted,
+  contactDonnee,
+}: {
+  onSubmitted: (donneeFormulaire: FormData) => void;
+  contactDonnee: Contact | null;
+}) {
   const [nom, setNom] = useState(contactDonnee?.nom ?? "");
   const [prenom, setPrenom] = useState(contactDonnee?.prenom ?? "");
   const [email, setEmail] = useState(contactDonnee?.email ?? "");
   const [tel, setTel] = useState(contactDonnee?.tel ?? "");
-  const [role, setRole] = useState<Role>(contactDonnee?.role ?? "USER");
-
-  const [message, setMessage] = useState<string | null>(null);
-
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.set("nom", nom);
-    formData.set("prenom", prenom);
-    formData.set("email", email);
-    formData.set("tel", tel);
-    formData.set("role", role);
-
-    try {
-      const { creerContactAction } = await import("../actions/contactFormAction");
-      const contact = await creerContactAction(formData);
-
-      if (contact?.email) {
-        setMessage("Contact créé et relié à Brevo");
-      } else {
-        setMessage("Problème lors de la création du contact");
-      }
-
-      setNom("");
-      setPrenom("");
-      setEmail("");
-      setTel("");
-      setRole("USER");
-    } catch (err) {
-      console.error(err);
-      setMessage("Erreur creation du contact");
-    }
-  };
-
+  const [role, setRole] = useState<"COMEDIEN" | "TECHNICIEN" | "PARTENAIRE">(
+    contactDonnee?.role ?? "COMEDIEN"
+  );
   return (
     <Card>
-      <form onSubmit={handleSubmit}>
+      <form action={onSubmitted}>
         <Stack>
           <Box>
             Nom :
@@ -77,6 +52,7 @@ export function ContactDetails({ contactDonnee }: { contactDonnee: Contact | nul
               placeholder="Richard@email.com"
               onChange={(e) => setEmail(e.target.value)}
               value={email}
+              required
             />
           </Box>
 
@@ -92,19 +68,13 @@ export function ContactDetails({ contactDonnee }: { contactDonnee: Contact | nul
 
           <Box>
             Rôles
-            <RadioGroup
-              name="role"
-              value={role}
-              onValueChange={(v) => setRole(v.valueOf() as Role)}
-            >
+            <RadioGroup name="role" value={role} onChange={(v) => setRole(v.valueOf() as Role)}>
               <Radio value="USER">Utilisateur</Radio>
               <Radio value="PARTENAIRE">Partenaire</Radio>
             </RadioGroup>
           </Box>
 
           <Button type="submit">Confirmer</Button>
-
-          {message && <Box>{message}</Box>}
         </Stack>
       </form>
     </Card>

@@ -2,7 +2,9 @@ import { BrevoClient } from "@getbrevo/brevo";
 
 export function get_Brevo_Client() {
   if (!process.env.BREVO_API_KEY) {
-    console.warn("maivaise key, pas sync Brevo");
+    console.warn(
+      "La clé API est mauvaise. La synchronisation avec Brevo n'a pas pu être effectué."
+    );
     return null;
   }
 

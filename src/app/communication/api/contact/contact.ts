@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 /**
  * Résultat pour envoyer un message uniforme lorsqu'une interaction avec la BD ce fait.
  */
-type Result<T> = { succes: boolean; message: string; contact: T | null };
+export type Result<T> = { succes: boolean; message: string; data: T | null };
 
 /**
  * Méthode utilitaire pour créer un objet résultat sans créer l'objet.
@@ -14,8 +14,8 @@ type Result<T> = { succes: boolean; message: string; contact: T | null };
  * @param contact
  * @returns
  */
-function resultOf<T>(succes: boolean, message: string, contact: T | null): Result<T> {
-  return { succes: succes, message: message, contact: contact };
+export function resultOf<T>(succes: boolean, message: string, data: T | null): Result<T> {
+  return { succes: succes, message: message, data: data };
 }
 
 function validerTelephone(tel: string) {
