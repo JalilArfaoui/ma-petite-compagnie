@@ -1,6 +1,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
-
+import { SearchBar } from "../SearchBar/SearchBar";
+SearchBar;
 // Simplified Radio Group that matches Chakra's API loosely or just usage
 // Existing Radio.tsx exported Radio and RadioGroup.
 
