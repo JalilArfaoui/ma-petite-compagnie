@@ -65,7 +65,7 @@ const ModalContent = React.forwardRef<
       {children}
       <DialogPrimitive.Close className="absolute right-6 top-6 rounded-full p-2 opacity-70 transition-opacity hover:opacity-100 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-primary disabled:pointer-events-none">
         <IoClose className="h-5 w-5" />
-        <span className="sr-only">Close</span>
+        <span className="sr-only">Fermer</span>
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
   </ModalPortal>
