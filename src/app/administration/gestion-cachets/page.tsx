@@ -98,7 +98,9 @@ export default function PageCachets() {
     if (editId !== null) {
       //edition cachet
       setCachets(
-        cachets.map((c) => (c.id === editId ? { ...c, date, montant, categorie, spectacle, note } : c))
+        cachets.map((c) =>
+          c.id === editId ? { ...c, date, montant, categorie, spectacle, note } : c
+        )
       );
       setEditId(null);
     } else {
