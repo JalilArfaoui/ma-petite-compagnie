@@ -35,10 +35,13 @@ export default function ContactPage() {
       }
     });
     toaster.create({ description: "Les contacts ont été supprimés", type: "success" });
+    deselectAll();
     setContacts((prev) => {
       return prev.filter((c) => !contactsSelectionne.includes(c));
     });
-    deselectAll();
+    setContactsFiltre((prev) => {
+      return prev.filter((c) => !contactsSelectionne.includes(c));
+    });
   }
   function updateSelected(contact: Contact) {
     setDernierContactSelect(contact);
@@ -53,7 +56,11 @@ export default function ContactPage() {
   function afficherContact(contact: Contact) {
     return (
       <Box className="flex flex-col items-center" key={contact.id}>
-        <Box className={dernierContactSelect === contact ? "orange" : "transparent"}>
+        <Box
+          className={
+            contactsSelectionne.includes(contact) ? " shadow-xl shadow-red-200" : "transparent"
+          }
+        >
           <ContactCard contact={contact} onSelect={updateSelected} />
         </Box>
         {dernierContactSelect === contact && (
@@ -135,7 +142,7 @@ export default function ContactPage() {
         </select>
       </Stack>
 
-      <SimpleGrid className="grid grid-cols-1 lg:grid-cols-3" gap={10}>
+      <SimpleGrid className="grid grid-cols-1 lg:grid-cols-5" gap={10}>
         {contactsFiltre.map(afficherContact)}
       </SimpleGrid>
     </Box>
