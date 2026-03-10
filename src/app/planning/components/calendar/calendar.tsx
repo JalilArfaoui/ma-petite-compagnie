@@ -31,7 +31,7 @@ const WEEKDAYS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', '
 const MONTHS = [
     'Janvier', 'Fevrier', 'Mars', 'Avril', 'Mai', 'Juin',
     'Juillet', 'Aout', 'Septembre', 'Octobre', 'Novembre', 'Decembre'
-];
+import { weekdays as WEEKDAYS, months as MONTHS } from './utils/constant';
 
 const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick } : EventCalendarProps) => {
     const [currentDate, setCurrentDate] = useState(new Date());
