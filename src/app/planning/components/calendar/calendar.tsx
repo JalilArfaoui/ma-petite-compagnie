@@ -151,7 +151,7 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick } : Event
         setCurrentDate(new Date());
     };
 
-    const isToday = (day: CalendarDay): boolean => {
+                    <button onClick={goToToday} className="today-button">Aujourd&apos;hui</button>
         const today = new Date();
         return day.day === today.getDate() &&
                day.month === today.getMonth() + 1 &&
