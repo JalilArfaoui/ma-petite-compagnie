@@ -1,5 +1,5 @@
 "use client";
-import type { Lieu } from "@/types/lieu";
+import {Lieu} from "@prisma/client";
 import { useState } from "react";
 import {Button, Input, SimpleGrid, Field} from "@/components/ui";
 import {creerLieu} from "@/app/actions/lieu";

@@ -1,6 +1,7 @@
 "use client";
 
 import {SubmitEventHandler, useState} from "react";
+import {Evenement} from "@prisma/client";
 import {Box, Button, Input, Select, SimpleGrid, Modal, Field} from "@/components/ui";
 import {CreateLieuForm} from "@/app/composants/lieux/CreateLieuForm";
 import {CreateCategorieForm} from "@/app/composants/categories/CreateCategorieForm";
@@ -31,12 +32,12 @@ export function CreateEvenementForm({
 
   async function handleSubmitEvenement(datas:FormData) {
     const result = await creerEvenement(datas);
-      if (result.status != 201) {
+      if (result.status != 201 || !result.evenement) {
         // TODO gérer les erreurs UI
         return alert("Erreur lors de la création de l'évènement");
       }
       // Vérification console de la création (provisoire)
-      const evenement = await result.json()
+      const evenement:Evenement = result.evenement;
       if (onSuccess) onSuccess(evenement);
   }
 
@@ -47,9 +48,9 @@ export function CreateEvenementForm({
         <Field.Label>
           Nom {/*<Field.RequiredIndicator />*/}
         </Field.Label>
-        <Input type={"text"} value={nom} onChange={(e) => setNom(e.target.value)} required />
+        <Input name={"nom"} type={"text"} value={nom} onChange={(e) => setNom(e.target.value)} required />
       </Field.Root>
-      <Select value={lieuId?.toString()} onValueChange={(e) => setLieuId(Number(e))}>
+      <Select name={"lieuId"} value={lieuId?.toString()} onValueChange={(e) => setLieuId(Number(e))}>
         {/*<SimpleGrid columns={{ base: 2, md: 4 }} gap={0}>
           <GridItem colSpan={{ base: 1, md: 4 }}>*/}
 
@@ -91,10 +92,11 @@ export function CreateEvenementForm({
           {/*<Field.RequiredIndicator />*/}
         </Field.Label>
         <Input
-          type={"datetime-local"}
-          value={dateDebut}
-          onChange={(e) => setDateDebut(e.target.value)}
-          required
+            name={"dateDebut"}
+            type={"datetime-local"}
+            value={dateDebut}
+            onChange={(e) => setDateDebut(e.target.value)}
+            required
         />
       </Field.Root>
       <Field.Root required>
@@ -102,6 +104,7 @@ export function CreateEvenementForm({
           Fin {/*<Field.RequiredIndicator />*/}
         </Field.Label>
         <Input
+            name={"dateFin"}
           type={"datetime-local"}
           value={dateFin}
           onChange={(e) => setDateFin(e.target.value)}
@@ -110,6 +113,7 @@ export function CreateEvenementForm({
       </Field.Root>
 
       <Select
+          name={"categorieId"}
           value={categorieId?.toString()}
         onValueChange={(e) => setCategorieId(Number(e))}
       >
