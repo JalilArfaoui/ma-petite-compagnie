@@ -46,7 +46,7 @@ export default function MonthlyTile({
                             style={{
                                 position: viewType === 'weekly' ? 'absolute' : 'relative',
                                 top: viewType === 'weekly' ? `calc(50px + ${(hourStart) * (slotHeight || 35.6)}px)` : 'auto',
-                                height: viewType === 'weekly' ? `calc(${(hourEnd - hourStart) * (slotHeight || 35.6)}px)` : 'auto',
+                    <div className="more-events">+{calDay.events.length - 3} de plus</div>
                             }}
                         >
                             <span className="event-time">
