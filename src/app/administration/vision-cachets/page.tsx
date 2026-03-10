@@ -92,6 +92,7 @@ export default function VisionCachetsPage() {
 
       <h3>Trier par montant</h3>
       <select
+        value={sortBy}
         onChange={(e) =>
           setSortBy(e.target.value as "none" | "montantCroissant" | "montantDecroissant")
         }
