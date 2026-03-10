@@ -86,7 +86,7 @@ export default function VisionCachetsPage() {
 
   return (
     <div>
-      <Heading as="h3" className="font-extrabold mb-6 pt-10 text-center">
+      <Heading as="h3" className="font-extrabold mb-4 pt-6 text-center">
         Liste des cachets
       </Heading>
 
@@ -154,6 +154,29 @@ export default function VisionCachetsPage() {
             </li>
           ))}
         </ul>
+
+        <Card title="Table">
+              <Card.Body>
+                <Table>
+                  <Table.Head>
+                    <Table.Row>
+                      <Table.Header>Name</Table.Header>
+                      <Table.Header>Role</Table.Header>
+                    </Table.Row>
+                  </Table.Head>
+                  <Table.Body>
+                    <Table.Row>
+                      <Table.Cell>Jean Dupont</Table.Cell>
+                      <Table.Cell>Directeur</Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.Cell>Marie Martin</Table.Cell>
+                      <Table.Cell>Comédienne</Table.Cell>
+                    </Table.Row>
+                  </Table.Body>
+                </Table>
+              </Card.Body>
+            </Card>
     </div>
     </div>
   );
