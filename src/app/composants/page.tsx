@@ -20,12 +20,15 @@ import {
   Text,
   Icon,
   SearchBar,
+  Toaster,
 } from "@/components/ui";
+import { toaster } from "@/components/ui/Toast/toaster";
 import { FaHome } from "react-icons/fa";
 
 export default function Home() {
   return (
     <Container className="py-10 px-4 max-w-7xl mx-auto">
+      <Toaster />
       <Stack className="gap-10">
         <Box className="text-center">
           <Heading as="h3" className="mb-4">
@@ -275,6 +278,56 @@ export default function Home() {
                 </Card.Body>
               </Card>
             </div>
+            <Card title="Toasters">
+              <Card.Body>
+                <div className="flex flex-wrap gap-4">
+                  <Button
+                    onClick={() =>
+                      toaster.create({
+                        title: "Succès",
+                        description: "Action effectuée avec succès",
+                        type: "success",
+                      })
+                    }
+                  >
+                    Success Toast
+                  </Button>
+                  <Button
+                    onClick={() =>
+                      toaster.create({
+                        title: "Erreur",
+                        description: "Une erreur est survenue",
+                        type: "error",
+                      })
+                    }
+                  >
+                    Error Toast
+                  </Button>
+                  <Button
+                    onClick={() =>
+                      toaster.create({
+                        title: "Info",
+                        description: "Voici une information importante",
+                        type: "info",
+                      })
+                    }
+                  >
+                    Info Toast
+                  </Button>
+                  <Button
+                    onClick={() =>
+                      toaster.create({
+                        title: "Attention",
+                        description: "Ceci est un avertissement",
+                        type: "warning",
+                      })
+                    }
+                  >
+                    Warning Toast
+                  </Button>
+                </div>
+              </Card.Body>
+            </Card>
 
             <Card title="Table">
               <Card.Body>
