@@ -20,6 +20,7 @@ import {
   Text,
   Icon,
   SearchBar,
+  Modal,
 } from "@/components/ui";
 import { FaHome } from "react-icons/fa";
 
@@ -314,6 +315,96 @@ export default function Home() {
               </Card.Body>
             </Card>
           </Stack>
+        </Box>
+
+        <Box>
+          <Heading as="h3" className="text-xl font-bold mb-6 pb-2 border-b">
+            Modals
+          </Heading>
+          <div className="flex flex-wrap gap-4">
+            <Modal>
+              <Modal.Trigger asChild>
+                <Button variant="solid">Ouvrir petite modale</Button>
+              </Modal.Trigger>
+              <Modal.Content size="sm">
+                <Modal.Header icon={<FaHome className="h-6 w-6" />}>
+                  <Modal.Title>Petite modale</Modal.Title>
+                  <Modal.Description>Exemple de modale de confirmation.</Modal.Description>
+                </Modal.Header>
+                <Modal.Body>
+                  <Text>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
+                    incididunt ut labore et dolore magna aliqua.
+                  </Text>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Modal.Close asChild>
+                    <Button variant="outline">Annuler</Button>
+                  </Modal.Close>
+                  <Button variant="solid">Confirmer</Button>
+                </Modal.Footer>
+              </Modal.Content>
+            </Modal>
+
+            <Modal>
+              <Modal.Trigger asChild>
+                <Button variant="outline">Ouvrir moyenne modale (Defaut)</Button>
+              </Modal.Trigger>
+              <Modal.Content size="md">
+                <Modal.Header>
+                  <Modal.Title>Moyenne modale</Modal.Title>
+                  <Modal.Description>La taille par défaut.</Modal.Description>
+                </Modal.Header>
+                <Modal.Body>
+                  <Stack className="gap-4">
+                    <Text>
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
+                      incididunt ut labore et dolore magna aliqua.
+                    </Text>
+                    <Box className="p-4 bg-slate-50 rounded-lg border">
+                      <Text className="text-sm">
+                        Vous pouvez intégrer n&apos;importe quel composant ici.
+                      </Text>
+                    </Box>
+                  </Stack>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Modal.Close asChild>
+                    <Button variant="outline">Annuler</Button>
+                  </Modal.Close>
+                  <Button variant="solid">Confirmer</Button>
+                </Modal.Footer>
+              </Modal.Content>
+            </Modal>
+
+            <Modal>
+              <Modal.Trigger asChild>
+                <Button variant="outline">Ouvrir grande modale</Button>
+              </Modal.Trigger>
+              <Modal.Content size="lg">
+                <Modal.Header icon={<Icon as={FaHome} className="text-primary" />}>
+                  <Modal.Title>Grande modale avec icône</Modal.Title>
+                  <Modal.Description>
+                    Une grande modale pour un contenu plus complexe.
+                  </Modal.Description>
+                </Modal.Header>
+                <Modal.Body>
+                  <div className="grid grid-cols-2 gap-4">
+                    <Box className="h-32 bg-slate-100 rounded-xl" />
+                    <Box className="h-32 bg-slate-100 rounded-xl" />
+                    <Box className="h-32 bg-slate-100 rounded-xl" />
+                    <Box className="h-32 bg-slate-100 rounded-xl" />
+                  </div>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Modal.Close asChild>
+                    <Button variant="outline">Annuler</Button>
+                  </Modal.Close>
+                  <Button variant="solid">Confirmer</Button>
+                </Modal.Footer>
+              </Modal.Content>
+            </Modal>
+          </div>
         </Box>
       </Stack>
     </Container>
