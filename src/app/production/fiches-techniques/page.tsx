@@ -163,6 +163,31 @@ export default async function FichesTechniquesPage() {
                     </p>
                   </div>
 
+                <div>
+                  <a
+                      href={`fiches-techniques/${f.id}/pdf`}
+                      download
+                      className="flex items-center gap-2 px-4 py-2 bg-white border border-[#D00039] text-[#D00039] text-sm font-semibold rounded-md hover:bg-[#D00039] hover:text-white transition-colors whitespace-nowrap"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-4 h-4"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" y1="15" x2="12" y2="3" />
+                      </svg>
+                      Télécharger PDF
+                    </a>
+                </div>
+
+
                   {/* Separator */}
                   <div className="h-px bg-slate-200" />
 
