@@ -30,7 +30,8 @@ interface EventCalendarProps {
     onEventClick?: (event: Evenement) => void;
 }
 
-const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }) => {
+
+const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick } : EventCalendarProps) => {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [calendarDays, setCalendarDays] = useState<CalendarDay[]>([]);
     const [viewType, setViewType] = useState<'monthly' | 'weekly'>('monthly');
