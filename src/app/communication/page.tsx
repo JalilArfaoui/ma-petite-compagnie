@@ -1,20 +1,25 @@
 "use client";
-import { Heading, Link, Box, Button, Stack, SimpleGrid } from "@/components/ui";
+import { Heading, Link, Box, Button, Stack, SimpleGrid, Select, SearchBar } from "@/components/ui";
 import { listerContacts, supprimerContact } from "./api/contact/contact";
 import { useEffect, useState } from "react";
 import { Contact } from "@prisma/client";
 import { ContactCard } from "./components/ContactCard";
 import "../globals.css";
 import { toaster } from "@/components/ui/Toast/toaster";
+
+const filtreOptions: string[] = ["nom", "date_creation", "prenom", "role", "tel", "email"];
 export default function ContactPage() {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [contactsSelectionne, setContactsSelectionne] = useState<Contact[]>([]);
   const [dernierContactSelect, setDernierContactSelect] = useState<Contact>();
+  const [contactsFiltre, setContactsFiltre] = useState<Contact[]>([]);
+  const [filterSelected, setFilterSelected] = useState<keyof Contact>("nom");
   useEffect(() => {
     async function loadContact() {
       const resultat = await listerContacts(30, 1);
       if (resultat.succes) {
         setContacts(resultat.donnee ?? []);
+        setContactsFiltre(resultat.donnee ?? []);
       } else {
         toaster.create({ description: resultat.message, type: "error" });
       }
@@ -45,7 +50,20 @@ export default function ContactPage() {
       }
     });
   }
-
+  function afficherContact(contact: Contact) {
+    return (
+      <Box className="flex flex-col items-center" key={contact.id}>
+        <Box className={dernierContactSelect === contact ? "orange" : "transparent"}>
+          <ContactCard contact={contact} onSelect={updateSelected} />
+        </Box>
+        {dernierContactSelect === contact && (
+          <Link href={"/communication/" + contact.id}>
+            <Button>Modifier</Button>
+          </Link>
+        )}
+      </Box>
+    );
+  }
   function selectAll() {
     setContactsSelectionne(() => {
       return contacts;
@@ -56,6 +74,35 @@ export default function ContactPage() {
     setContactsSelectionne(() => {
       return [];
     });
+  }
+
+  function filtrer(texte: string) {
+    console.log(texte);
+    if (texte === "") {
+      setContactsFiltre(contacts);
+    } else {
+      const filter: Contact[] = [];
+
+      contacts.forEach((c) => {
+        const str = filterSelected as keyof typeof c;
+
+        switch (str) {
+          case "date_creation":
+            if (c.date_creation.toLocaleDateString().startsWith(texte)) {
+              filter.push(c);
+            }
+
+            break;
+          default:
+            if (c[str]?.toString().startsWith(texte)) {
+              filter.push(c);
+            }
+            break;
+        }
+      });
+      console.log(filter);
+      setContactsFiltre(filter);
+    }
   }
   return (
     <Box className=" py-5 flex-col items-center gap-4">
@@ -75,23 +122,21 @@ export default function ContactPage() {
         <Button variant="solid" onClick={() => deselectAll()}>
           Tout désélectionner
         </Button>
+        <SearchBar onChange={(e) => filtrer(e.target.value)}></SearchBar>
+        <select
+          value={filterSelected}
+          onChange={(e) => setFilterSelected(e.target.value as keyof Contact)}
+        >
+          {filtreOptions.map((key) => (
+            <option key={key} value={key}>
+              {key}
+            </option>
+          ))}
+        </select>
       </Stack>
 
-      <SimpleGrid className="columns-1 lg:columns-3" gap={10}>
-        {contacts.map((contact) => {
-          return (
-            <Box className="flex flex-col items-center" key={contact.id}>
-              <Box className={dernierContactSelect === contact ? "orange" : "transparent"}>
-                <ContactCard contact={contact} onSelect={updateSelected} />
-              </Box>
-              {dernierContactSelect === contact && (
-                <Link href={"/communication/" + contact.id}>
-                  <Button>Modifier</Button>
-                </Link>
-              )}
-            </Box>
-          );
-        })}
+      <SimpleGrid className="grid grid-cols-1 lg:grid-cols-3" gap={10}>
+        {contactsFiltre.map(afficherContact)}
       </SimpleGrid>
     </Box>
   );
