@@ -3,20 +3,16 @@ import { Contact } from "@prisma/client";
 import { render, screen } from "@testing-library/react";
 import { creerObjetContactAvecNom, creerUnContactAPartirInformation } from "./testContactUtility";
 import ContactDetails from "@/app/communication/components/contactDetails";
-import { ChakraProvider } from "@chakra-ui/react";
-import { defaultSystem } from "@chakra-ui/react";
 
 describe("Test des pages pour le contact", () => {
   it("La page détails d'un contact doit afficher les informations du contact", async () => {
     const contact = creerObjetContactAvecNom("TestRender");
     const contactFinal: Contact = creerUnContactAPartirInformation(contact);
     render(
-      <ChakraProvider value={defaultSystem}>
-        <ContactDetails
-          onSubmitted={(e) => console.log(e)}
-          contactDonnee={contactFinal}
-        ></ContactDetails>
-      </ChakraProvider>
+      <ContactDetails
+        onSubmitted={(e) => console.log(e)}
+        contactDonnee={contactFinal}
+      ></ContactDetails>
     );
 
     // Vérifie que les noms s'affichent
