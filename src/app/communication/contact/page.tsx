@@ -3,25 +3,27 @@ import { Heading, Link, Box } from "@/components/ui";
 import ContactDetails from "../components/contactDetails";
 import { creerContactAction } from "../action/contactFormAction";
 
-import { toaster } from "@/components/ui/Toast/toaster";
-
+import { Toaster, toaster } from "@/components/ui/Toast/toaster";
 export function ContactCreation() {
   async function onSubmit(FormData: FormData) {
     const result = await creerContactAction(FormData);
     if (result.succes) {
       toaster.create({
+        title: "Succés",
         description: `Le contact a été créé. `,
         type: "info",
       });
     } else {
       toaster.create({
         description: result.message,
+        title: "Erreur",
         type: "error",
       });
     }
   }
   return (
     <Box alignContent={"center"}>
+      <Toaster />
       <Box textAlign={"center"}>
         <Heading as={"h3"}>Création d&rsquo;un contact</Heading>
       </Box>

@@ -60,22 +60,20 @@ export function ContactDetails({
           </Box>
           <Box>
             Rôles
-            {/*TODO : après que les composants UI ont été changés le radio group ne fonctionne pas attendre que ce soit mise a jour */}
             <RadioGroup
               name="role"
               value={role}
               onChange={(v) => {
                 setRole(v.valueOf() as Role);
-                console.log(role);
               }}
             >
-              <Radio radioGroup="role" value="COMEDIEN">
+              <Radio radioGroup="role" value="COMEDIEN" name="role">
                 Comedien
               </Radio>
-              <Radio radioGroup="role" value="TECHNICIEN">
+              <Radio radioGroup="role" value="TECHNICIEN" name="role">
                 Technicien
               </Radio>
-              <Radio radioGroup="role" value="PARTENAIRE">
+              <Radio radioGroup="role" value="PARTENAIRE" name="role">
                 Partenaire
               </Radio>
             </RadioGroup>

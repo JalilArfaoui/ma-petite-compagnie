@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Contact } from "@prisma/client";
 import { ContactCard } from "./components/ContactCard";
 import "../globals.css";
-import { toaster } from "@/components/ui/Toast/toaster";
+import { Toaster, toaster } from "@/components/ui/Toast/toaster";
 
 const filtreOptions: string[] = ["nom", "date_creation", "prenom", "role", "tel", "email"];
 export default function ContactPage() {
@@ -113,6 +113,7 @@ export default function ContactPage() {
   }
   return (
     <Box className=" py-5 flex-col items-center gap-4">
+      <Toaster />
       <Stack className="gap-5 items-center">
         <Heading as="h3">Page de contact </Heading>
         <Link href="./communication/contact">
