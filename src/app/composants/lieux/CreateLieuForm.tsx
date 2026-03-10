@@ -37,6 +37,7 @@ export function CreateLieuForm({ onSuccess, onCancel, idCompagnie }: Props) {
           </Field.Label>
 
           <Input
+              name={"libelle"}
             type="text"
             placeholder={"Opéra National du Capitole"}
             value={libelle}
@@ -51,6 +52,7 @@ export function CreateLieuForm({ onSuccess, onCancel, idCompagnie }: Props) {
             Adresse {/*<Field.RequiredIndicator />*/}
           </Field.Label>
           <Input
+              name={"adresse"}
             type="text"
             placeholder={"Pl. du Capitole"}
             value={adresse}
@@ -65,6 +67,7 @@ export function CreateLieuForm({ onSuccess, onCancel, idCompagnie }: Props) {
             Ville {/*<Field.RequiredIndicator />*/}
           </Field.Label>
           <Input
+              name={"ville"}
             type="text"
             placeholder={"Toulouse"}
             value={ville}
@@ -78,7 +81,7 @@ export function CreateLieuForm({ onSuccess, onCancel, idCompagnie }: Props) {
           <Field.Label>
             N° de la salle {/*<Field.RequiredIndicator />*/}
           </Field.Label>
-          <Input type="text" value={numeroSalle} onChange={(e) => setNumeroSalle(e.target.value)} />
+          <Input name={"numero_salle"} type="text" value={numeroSalle} onChange={(e) => setNumeroSalle(e.target.value)} />
         </Field.Root>
       </div>
       {/*<SimpleGrid columns={{ base: 4, md: 5 }} gap={0}>
