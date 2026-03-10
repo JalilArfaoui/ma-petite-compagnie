@@ -86,62 +86,75 @@ export default function VisionCachetsPage() {
 
   return (
     <div>
-      <Heading as="h1" className="font-extrabold mb-6 pb-2">
+      <Heading as="h3" className="font-extrabold mb-6 pt-10 text-center">
         Liste des cachets
       </Heading>
 
-      <Heading as="h3" className="font-semibold mb-6 pb-2">
-        Filtrer par catégorie
+      <div className="mx-140 rounded-[20px] bg-hover p-[20px] border-none shadow-sm transition-shadow flex flex-col gap-[20px]">
+        <Heading as="h4" className="font-semibold">
+          Filtrer par catégorie
+        </Heading>
+
+        <select
+          value={categorieFilter}
+          onChange={(e) => setCategorieFilter(e.target.value as "tous" | Categorie)}
+          className="p-2 border border-slate-300 rounded-md w-full"
+        >
+          <option value="tous">Tous</option>
+          <option value="representation">Représentation</option>
+          <option value="repetition">Répétition</option>
+          <option value="formation">Formation</option>
+          <option value="creation">Création</option>
+          <option value="production">Production</option>
+          <option value="enregistrement">Enregistrement</option>
+          <option value="intervention">Intervention</option>
+          <option value="autre">Autre</option>
+        </select>
+
+        <Heading as="h4" className="font-semibold">
+          Trier par date
+        </Heading>
+        <select
+          value={sortBy}
+          onChange={(e) =>
+            setSortBy(e.target.value as "none" | "dateCroissante" | "dateDecroissante")
+          }
+          className="p-2 border border-slate-300 rounded-md w-full"
+        >
+          <option value="none">Aucun tri</option>
+          <option value="dateCroissante">Date croissante</option>
+          <option value="dateDecroissante">Date décroissante</option>
+        </select>
+
+        <Heading as="h4" className="font-semibold">
+          Trier par montant
+        </Heading>
+        <select
+          value={sortBy}
+          onChange={(e) =>
+            setSortBy(e.target.value as "none" | "montantCroissant" | "montantDecroissant")
+          }
+          className="p-2 border border-slate-300 rounded-md w-full"
+        >
+          <option value="none">Aucun tri</option>
+          <option value="montantCroissant">Montant croissant</option>
+          <option value="montantDecroissant">Montant décroissant</option>
+        </select>
+      </div>
+
+      <Heading as="h3" className="font-semibold mt-9 pb-2 border-b text-center">
+        Résultats
       </Heading>
-      
-      <select
-        value={categorieFilter}
-        onChange={(e) => setCategorieFilter(e.target.value as "tous" | Categorie)}
-      >
-        <option value="tous">Tous</option>
-        <option value="representation">Représentation</option>
-        <option value="repetition">Répétition</option>
-        <option value="formation">Formation</option>
-        <option value="creation">Création</option>
-        <option value="production">Production</option>
-        <option value="enregistrement">Enregistrement</option>
-        <option value="intervention">Intervention</option>
-        <option value="autre">Autre</option>
-      </select>
-
-      <h3>Trier par date</h3>
-      <select
-        value={sortBy}
-        onChange={(e) =>
-          setSortBy(e.target.value as "none" | "dateCroissante" | "dateDecroissante")
-        }
-      >
-        <option value="none">Aucun tri</option>
-        <option value="dateCroissante">Date croissante</option>
-        <option value="dateDecroissante">Date décroissante</option>
-      </select>
-
-      <h3>Trier par montant</h3>
-      <select
-        value={sortBy}
-        onChange={(e) =>
-          setSortBy(e.target.value as "none" | "montantCroissant" | "montantDecroissant")
-        }
-      >
-        <option value="none">Aucun tri</option>
-        <option value="montantCroissant">Montant croissant</option>
-        <option value="montantDecroissant">Montant décroissant</option>
-      </select>
-
-      <h2>Résultats</h2>
-      <ul>
-        {filteredAndSorted.map((cachet) => (
-          <li key={cachet.id}>
-            Cachet #{cachet.id} — {cachet.categorie} — {cachet.montant} € —{" "}
-            {cachet.date.toLocaleDateString("fr-FR")}
-          </li>
-        ))}
-      </ul>
+      <div className="mx-140 mt-6 mb-10 rounded-[20px] bg-hover p-[20px] border-none shadow-sm transition-shadow flex flex-col gap-[20px]">
+        <ul>
+          {filteredAndSorted.map((cachet) => (
+            <li key={cachet.id}>
+              Cachet #{cachet.id} — {cachet.categorie} — {cachet.montant} € —{" "}
+              {cachet.date.toLocaleDateString("fr-FR")}
+            </li>
+          ))}
+        </ul>
+    </div>
     </div>
   );
 }
