@@ -139,7 +139,7 @@ export async function modifierContact(contactId: number, nouveauContact: Contact
     if (contactExistant) {
       return resultOf(
         false,
-        "Cette email est déjà utilisé. Veuillez utiliser un email différent.",
+        "Cet email est déjà utilisé. Veuillez utiliser un email différent.",
         null
       );
     }
