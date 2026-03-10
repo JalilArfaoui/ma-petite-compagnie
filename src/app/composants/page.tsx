@@ -206,7 +206,7 @@ export default function Home() {
                       <Text className="font-bold mb-2">Select</Text>
                       <Select defaultValue="item1">
                         <Select.Trigger>
-                          <Select.Value placeholder="Choisi un item" />
+                          <Select.Value />
                         </Select.Trigger>
                         <Select.Content>
                           <Select.Group>
