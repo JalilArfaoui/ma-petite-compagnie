@@ -1,16 +1,6 @@
 "use server"
 
 import { prisma } from "@/lib/prisma"
-import {NextResponse} from "next/server";
-
-type CreateEvenementBody = {
-    nom: string
-    compagnieId: number
-    lieuId: number
-    categorieId: number
-    dateDebut: string
-    dateFin: string
-}
 
 export async function creerEvenement(formData: FormData) {
     const nom = formData.get("nom") as string
@@ -21,17 +11,12 @@ export async function creerEvenement(formData: FormData) {
     const dateFin = formData.get("dateFin") as string
     try {
         if (!nom || !compagnieId || !lieuId || !categorieId || !dateDebut || !dateFin) {
-            return NextResponse.json(
-                { message: "Des informations sont manquantes, l'évènement ne peux pas être créé." },
-                { status: 400 }
-            )
+            return { message: "Des informations sont manquantes, l'évènement ne peux pas être créé.", status: 400,
+                evenement:null}
         }
 
         if (new Date(dateFin) <= new Date(dateDebut)) {
-            return NextResponse.json(
-                { message: "Le début de l'évènement doit précéder la date de fin." },
-                { status: 400 }
-            )
+            return { message: "Le début de l'évènement doit précéder la date de fin.", status: 400 , evenement:null}
         }
 
         // TODO Vérifier que l'évènement ne créer pas un conflict
@@ -47,14 +32,11 @@ export async function creerEvenement(formData: FormData) {
             }
         })
 
-        return NextResponse.json(evenement, { status: 201 })
+        return {message:"",evenement:evenement, status: 201 }
 
 
     } catch (error) {
         console.error(error)
-        return NextResponse.json(
-            { message: "Erreur serveur" },
-            { status: 500 }
-        )
+        return { message: "Erreur serveur", status: 500 , evenement:null}
     }
 }
