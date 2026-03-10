@@ -419,7 +419,7 @@ export default function Home() {
                     </Text>
                     <Box className="p-4 bg-slate-50 rounded-lg border">
                       <Text className="text-sm">
-                        Vous pouvez intégrer n'importe quel composant ici.
+                        Vous pouvez intégrer n&apos;importe quel composant ici.
                       </Text>
                     </Box>
                   </Stack>
