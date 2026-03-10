@@ -1,8 +1,6 @@
 "use server"
 
 import { prisma } from "@/lib/prisma"
-import {Categorie} from "@prisma/client";
-import {NextResponse} from "next/server";
 
 export async function creerCategorie(datas: FormData) {
     const nom = datas.get("nom") as string;
