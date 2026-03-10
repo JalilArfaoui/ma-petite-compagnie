@@ -4,6 +4,8 @@ import { CreateEvenementForm } from "@/app/composants/evenements/CreateEvenement
 
 export default function CreateEvenementPage() {
 
+    
+
     return (
       <div>
         <h1>Création d’un évènement (dev)</h1>
