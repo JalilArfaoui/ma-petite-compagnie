@@ -2,8 +2,8 @@
 
 import {useState} from "react";
 import {Categorie} from "@prisma/client";
-import {Field, GridItem} from "@chakra-ui/react";
-import {Button, Input, SimpleGrid} from "@/components/ui";
+import {Button, Input, SimpleGrid, Field} from "@/components/ui";
+import {creerCategorie} from "@/app/actions/categorie";
 
 type Props = {
     onSuccess: (categorie:Categorie) => void;
@@ -15,32 +15,27 @@ export function CreateCategorieForm({ onSuccess, onCancel, idCompagnie }: Props)
     const [nom, setNom] = useState("");
     const [couleur, setCouleur] = useState("#000000");
 
-    async function handleSubmitCategorie(e: React.FormEvent<HTMLFormElement>) {
-        e.preventDefault();
+    async function handleSubmitCategorie(datas:FormData) {
+        console.log(datas);
+        const result = await creerCategorie(datas);
 
-        const res = await fetch("/api/categories", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ nom, idCompagnie }),
-        });
-
-        if (!res.ok) {
+        if (result.status != 201 || !result.categorie) {
             alert("La création d'une catégorie a échoué");
             return;
         }
-
-        const categorie: Categorie = await res.json();
+        const categorie: Categorie = result.categorie;
 
         onSuccess(categorie);
     }
 
     return (
-        <form onSubmit={handleSubmitCategorie}>
+        <form action={handleSubmitCategorie}>
             <Field.Root required>
                 <Field.Label>
-                    Nom <Field.RequiredIndicator />
+                    Nom {/*<Field.RequiredIndicator />*/}
                 </Field.Label>
                 <Input
+                    name={"nom"}
                     type="text"
                     placeholder={"Répétition"}
                     value={nom}
@@ -54,24 +49,25 @@ export function CreateCategorieForm({ onSuccess, onCancel, idCompagnie }: Props)
                 </Field.Label>
                 {/* TODO montrer une card représentative d'un évènement pour montrer la couleur */}
                 <Input
+                    name={"couleur"}
                     type="color"
                     value={couleur}
                     onChange={(e) => setCouleur(e.target.value)}/>
             </Field.Root>
-            <SimpleGrid columns={{ base: 4, md: 5 }} gap={{ base: "0px", md: "0px" }}>
+            {/*<SimpleGrid columns={{ base: 4, md: 5 }} gap={{ base: "0px", md: "0px" }}>
                 <GridItem colSpan={{ base: 1, md: 1 }}></GridItem>
-                <GridItem colSpan={{ base: 1, md: 1 }}>
+                <GridItem colSpan={{ base: 1, md: 1 }}>*/}
                     <Button type="button" onClick={onCancel}>
                         Annuler
                     </Button>
-                </GridItem>
+            {/*</GridItem>
                 <GridItem colSpan={{ base: 1, md: 1}}></GridItem>
-                <GridItem colSpan={{ base: 1, md: 1 }}>
+                <GridItem colSpan={{ base: 1, md: 1 }}>*/}
                     <Button type="submit" disabled={!nom}>
                         Créer
                     </Button>
-                </GridItem>
-            </SimpleGrid>
+            {/*</GridItem>
+            </SimpleGrid>*/}
         </form>
     )
 }
