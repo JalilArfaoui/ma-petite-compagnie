@@ -21,9 +21,9 @@ import {
   Icon,
   SearchBar,
   Toaster,
+  toaster,
   Modal,
 } from "@/components/ui";
-import { toaster } from "@/components/ui/Toast/toaster";
 import { FaHome } from "react-icons/fa";
 
 export default function Home() {
