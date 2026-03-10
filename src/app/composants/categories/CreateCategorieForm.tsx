@@ -16,7 +16,6 @@ export function CreateCategorieForm({ onSuccess, onCancel, idCompagnie }: Props)
     const [couleur, setCouleur] = useState("#000000");
 
     async function handleSubmitCategorie(datas:FormData) {
-        console.log(datas);
         const result = await creerCategorie(datas);
 
         if (result.status != 201 || !result.categorie) {

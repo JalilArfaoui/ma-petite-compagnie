@@ -12,7 +12,7 @@ export async function creerLieu(datas: FormData) {
 
     try {
         if (!libelle || !adresse || !ville || !idCompagnie) {
-            return NextResponse.json({ message: "Des informations sont manquantes." }, { status: 400 });
+            return { message: "Des informations sont manquantes.", status: 400, lieu:null };
         }
         const lieu = await prisma.lieu.create({
             data: {
