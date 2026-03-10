@@ -40,7 +40,7 @@ export default function VisionCachetsPage() {
     let result = [...CACHETS_DATA];
 
     if (categorieFilter !== "tous") {
-      result = result.filter((item) => item.categorie === categorieFilter);
+      result = result.filter((cachet) => cachet.categorie === categorieFilter);
     }
 
     switch (sortBy) {
@@ -80,6 +80,7 @@ export default function VisionCachetsPage() {
 
       <h3>Trier par date</h3>
       <select
+        value={sortBy}
         onChange={(e) =>
           setSortBy(e.target.value as "none" | "dateCroissante" | "dateDecroissante")
         }
