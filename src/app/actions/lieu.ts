@@ -1,0 +1,31 @@
+"use server"
+
+import { prisma } from "@/lib/prisma"
+import {NextResponse} from "next/server";
+
+export async function creerLieu(datas: FormData) {
+    const libelle = datas.get("libelle") as string
+    const adresse = datas.get("adresse") as string
+    const ville = datas.get("ville") as string
+    const numero_salle = datas.get("numero_salle") as string | null
+    const idCompagnie = 1
+
+    try {
+        if (!libelle || !adresse || !ville || !idCompagnie) {
+            return NextResponse.json({ message: "Des informations sont manquantes." }, { status: 400 });
+        }
+        const lieu = await prisma.lieu.create({
+            data: {
+                libelle,
+                adresse,
+                ville,
+                numero_salle,
+                idCompagnie,
+            },
+        });
+        return {message:"", status:201, lieu:lieu}
+    } catch (error) {
+        console.error(error);
+        return { message: "Erreur serveur:" + error, status: 500, lieu:null };
+    }
+}
