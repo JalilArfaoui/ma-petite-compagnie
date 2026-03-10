@@ -66,7 +66,10 @@ export default function VisionCachetsPage() {
       <h1>Liste des cachets</h1>
 
       <h3>Filtrer par catégorie</h3>
-      <select onChange={(e) => setCategorieFilter(e.target.value as "tous" | Categorie)}>
+      <select
+        value={categorieFilter}
+        onChange={(e) => setCategorieFilter(e.target.value as "tous" | Categorie)}
+      >
         <option value="tous">Tous</option>
         <option value="representation">Représentation</option>
         <option value="repetition">Répétition</option>
