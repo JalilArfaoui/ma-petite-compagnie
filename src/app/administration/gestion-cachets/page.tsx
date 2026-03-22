@@ -2,17 +2,6 @@
 
 import { useState } from "react";
 
-const TYPE_CATEGORIE = [
-  { value: "representation", label: "Représentation" },
-  { value: "repetition", label: "Répétition" },
-  { value: "formation", label: "Formation" },
-  { value: "creation", label: "Création" },
-  { value: "production", label: "Production" },
-  { value: "enregistrement", label: "Enregistrement" },
-  { value: "intervention", label: "Intervention" },
-  { value: "autre", label: "Autre" },
-] as const;
-
 const TYPE_SPECTACLE = [
   { value: "romeoetjuliette", label: "Roméo et Juliette" },
   { value: "hamlet", label: "Hamlet" },
@@ -32,7 +21,6 @@ type Cachet = {
   membre: string;
   date: string;
   montant: number;
-  categorie: string;
   spectacle: string;
   note?: string;
 };
@@ -43,13 +31,11 @@ export default function PageCachets() {
   const [membreSearch, setMembreSearch] = useState("");
   const [membreOpen, setMembreOpen] = useState(false); //liste membres affichée ou pas
   const [date, setDate] = useState("");
-  const [montant, setMontant] = useState(1);
-  const [categorie, setCategorie] = useState("");
+  const [montant, setMontant] = useState(110);
   const [spectacle, setSpectacle] = useState("");
   const [note, setNote] = useState("");
   const [editId, setEditId] = useState<number | null>(null);
   const [filtreMembre, setFiltreMembre] = useState("");
-  const [filtreCategorie, setFiltreCategorie] = useState("");
   const [filtreSpectacle, setFiltreSpectacle] = useState("");
   const [tri, setTri] = useState<"date" | "montant">("date");
   const [erreur, setErreur] = useState<string | null>(null);
@@ -72,14 +58,8 @@ export default function PageCachets() {
     }
 
     //pas forcement nécéssaire puisque déjà géré dans le code de l'input, mais mieux vaut être prévoyant
-    if (montant < 0) {
-      setErreur("Le montant ne peux pas être négatif");
-      return;
-    }
-
-    //validation obligatoire de la catégorie
-    if (!categorie.trim()) {
-      setErreur("La catégorie est obligatoire");
+    if (montant < 110) {
+      setErreur("Le montant ne peux pas être inférieur au minimum légal (smic horaire * 12, soit 110 euros)")
       return;
     }
 
@@ -99,7 +79,7 @@ export default function PageCachets() {
       //edition cachet
       setCachets(
         cachets.map((c) =>
-          c.id === editId ? { ...c, date, montant, categorie, spectacle, note } : c
+          c.id === editId ? { ...c, date, montant, spectacle, note } : c
         )
       );
       setEditId(null);
@@ -110,7 +90,6 @@ export default function PageCachets() {
         membre,
         date,
         montant,
-        categorie,
         spectacle,
         note,
       };
@@ -119,8 +98,7 @@ export default function PageCachets() {
 
     setMembre("");
     setDate("");
-    setMontant(1);
-    setCategorie("");
+    setMontant(110);
     setSpectacle("");
     setNote("");
   }
@@ -136,7 +114,6 @@ export default function PageCachets() {
     setMembreSearch(c.membre);
     setDate(c.date);
     setMontant(c.montant);
-    setCategorie(c.categorie);
     setSpectacle(c.spectacle);
     setNote(c.note || "");
   }
@@ -152,13 +129,8 @@ export default function PageCachets() {
     ? cachets.filter((c) => c.membre === filtreMembre)
     : cachets;
 
-  //filtrage par catégorie (agit uniquement sur cachets de membre x)
-  const cachetsFiltres = filtreCategorie
-    ? cachetsFiltresParMembre.filter((c) => c.categorie === filtreCategorie)
-    : cachetsFiltresParMembre;
-
   //filtrage par spectacle (agit uniquement sur cachets de membre x)
-  const cachetsFiltres2 = filtreSpectacle
+  const cachetsFiltres = filtreSpectacle
     ? cachetsFiltresParMembre.filter((c) => c.spectacle === filtreSpectacle)
     : cachetsFiltresParMembre;
 
@@ -176,12 +148,12 @@ export default function PageCachets() {
       <form onSubmit={ajouterCachet}>
         {erreur && <div>{erreur}</div>}
         <div>
-          <label>Membre</label>
+          <label>Membre d'équipe</label>
           <br />
           <input
             type="text"
             value={membreSearch}
-            placeholder="Rechercher un membre"
+            placeholder="Rechercher un membre d'équipe"
             onFocus={() => setMembreOpen(true)}
             onChange={(e) => {
               setMembreSearch(e.target.value);
@@ -191,7 +163,7 @@ export default function PageCachets() {
 
           {membreOpen && (
             <ul>
-              {membresFiltres.length === 0 && <li>Aucun membre trouvé</li>}
+              {membresFiltres.length === 0 && <li>Aucun membre d'équipe trouvé</li>}
 
               {membresFiltres.map((nom) => (
                 <li
@@ -220,28 +192,14 @@ export default function PageCachets() {
           <br />
           <input
             type="number"
-            min={1}
+            min={110}
             value={montant}
             onChange={(e) => setMontant(Number(e.target.value))}
           />
         </div>
 
         <div>
-          <label htmlFor="categorie">Catégorie</label>
-          <br />
-          <select id="categorie" value={categorie} onChange={(e) => setCategorie(e.target.value)}>
-            <option value="">— Choisir une catégorie —</option>
-            {TYPE_CATEGORIE.map((categorie) => (
-              <option key={categorie.value} value={categorie.value}>
-                {" "}
-                {categorie.label}{" "}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label htmlFor="spectacle">Catégorie</label>
+          <label htmlFor="spectacle">Spectacle</label>
           <br />
           <select id="spectacle" value={spectacle} onChange={(e) => setSpectacle(e.target.value)}>
             <option value="">— Choisir un spectacle —</option>
@@ -270,8 +228,7 @@ export default function PageCachets() {
               setMembreSearch("");
               setMembreOpen(false);
               setDate("");
-              setMontant(1);
-              setCategorie("");
+              setMontant(110);
               setSpectacle("");
               setNote("");
               setErreur(null);
@@ -292,17 +249,7 @@ export default function PageCachets() {
             </option>
           ))}
         </select>
-
-        <label>Filtrer par catégorie: </label>
-        <select value={filtreCategorie} onChange={(e) => setFiltreCategorie(e.target.value)}>
-          <option value="">Toutes</option>
-          {TYPE_CATEGORIE.map((categorie) => (
-            <option key={categorie.value} value={categorie.value}>
-              {categorie.label}
-            </option>
-          ))}
-        </select>
-
+        
         <label>Filtrer par spectacle: </label>
         <select value={filtreSpectacle} onChange={(e) => setFiltreSpectacle(e.target.value)}>
           <option value="">Tous</option>
@@ -327,7 +274,7 @@ export default function PageCachets() {
           <li key={c.id}>
             <div>
               <span>{c.date}</span>
-              <span>{c.categorie || "Sans catégorie"}</span>
+              <span>Représentation</span>
               <span>{c.spectacle}</span>
               <span>{c.montant} euros</span>
             </div>
