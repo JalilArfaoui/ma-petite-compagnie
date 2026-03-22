@@ -59,7 +59,9 @@ export default function PageCachets() {
 
     //pas forcement nécéssaire puisque déjà géré dans le code de l'input, mais mieux vaut être prévoyant
     if (montant < 110) {
-      setErreur("Le montant ne peux pas être inférieur au minimum légal (smic horaire * 12, soit 110 euros)")
+      setErreur(
+        "Le montant ne peux pas être inférieur au minimum légal (smic horaire * 12, soit 110 euros)"
+      );
       return;
     }
 
@@ -78,9 +80,7 @@ export default function PageCachets() {
     if (editId !== null) {
       //edition cachet
       setCachets(
-        cachets.map((c) =>
-          c.id === editId ? { ...c, date, montant, spectacle, note } : c
-        )
+        cachets.map((c) => (c.id === editId ? { ...c, membre, date, montant, spectacle, note } : c))
       );
       setEditId(null);
     } else {
@@ -148,7 +148,7 @@ export default function PageCachets() {
       <form onSubmit={ajouterCachet}>
         {erreur && <div>{erreur}</div>}
         <div>
-          <label>Membre d'équipe</label>
+          <label>Membre équipe</label>
           <br />
           <input
             type="text"
@@ -163,7 +163,7 @@ export default function PageCachets() {
 
           {membreOpen && (
             <ul>
-              {membresFiltres.length === 0 && <li>Aucun membre d'équipe trouvé</li>}
+              {membresFiltres.length === 0 && <li>Aucun membre équipe trouvé</li>}
 
               {membresFiltres.map((nom) => (
                 <li
@@ -249,7 +249,7 @@ export default function PageCachets() {
             </option>
           ))}
         </select>
-        
+
         <label>Filtrer par spectacle: </label>
         <select value={filtreSpectacle} onChange={(e) => setFiltreSpectacle(e.target.value)}>
           <option value="">Tous</option>
