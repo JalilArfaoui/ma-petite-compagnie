@@ -78,7 +78,7 @@ export default function PageCachets() {
 
     setErrors(foundErrors);
 
-    //pas d'erreur trouvée
+    //erreur(s) trouvée(s)
     if (Object.keys(foundErrors).length > 0) {
       return;
     }
@@ -188,7 +188,7 @@ export default function PageCachets() {
               Montant du cachet
             </Heading>
             <br />
-            {errors.montant && <p className="text-red-600 text-sm">{errors.montnt}</p>}
+            {errors.montant && <p className="text-red-600 text-sm">{errors.montant}</p>}
             <input
               className="flex w-full rounded-[12px] border border-border bg-white px-4 py-3 text-[1rem] text-text-primary font-serif placeholder:text-text-muted transition-all hover:border-border-hover hover:bg-bg-hover focus-visible:outline-none focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-60 disabled:bg-bg-disabled focus:border-primary focus:ring-1 focus:ring-primary"
               type="number"
