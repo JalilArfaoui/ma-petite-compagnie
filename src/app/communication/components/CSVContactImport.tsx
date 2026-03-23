@@ -1,5 +1,5 @@
 "use client";
-import { Box, Button, Drawer, Input, List, Modal, Select, Stack, Text } from "@/components/ui";
+import { Box, Button, Input, Modal, Stack, Text } from "@/components/ui";
 import { useRef, useState } from "react";
 
 export function CSVContactImport({
@@ -12,8 +12,6 @@ export function CSVContactImport({
   onCSVRead: (donnees: Record<string, string>[]) => void;
 }) {
   const attributes = [...requiredAttributes, ...optionnalAttributes];
-
-  console.log(attributes);
 
   const modal = useRef<HTMLButtonElement>(null);
   const inputFile = useRef<HTMLInputElement>(null);
@@ -39,7 +37,6 @@ export function CSVContactImport({
 
       datas.push(obj);
     });
-    console.log(datas);
     onCSVRead(datas);
   };
   function changeChamps(index: number, newType: string) {
@@ -70,17 +67,14 @@ export function CSVContactImport({
     console.log("Importation du csv");
     console.log(attributes);
     if (!inputFile.current?.files || !inputFile.current?.files[0]) {
-      console.log(champs);
       setErreur("Aucun fichier sélectionné");
       return;
     }
     if (champsDoublon()) {
-      // TODO erreur
       setErreur("Votre sélection contient des choix doublons");
       return;
     }
     if (!champsContientRequiredAttributes()) {
-      //TODO erreur
       setErreur("Votre sélection ne contient pas tous les choix obligatoires");
       return;
     }
