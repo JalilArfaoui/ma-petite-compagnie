@@ -33,7 +33,7 @@ export default function ContactPage() {
         </Link>
       </Stack>
 
-      <SimpleGrid className="columns-1 lg:columns-3" gap={10}>
+      <SimpleGrid className="grid grid-cols-1 lg:grid-cols-5" gap={10}>
         {contacts.map((contact) => {
           return (
             <Box className="flex flex-col items-center" key={contact.id}>
