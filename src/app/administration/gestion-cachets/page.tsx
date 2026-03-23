@@ -48,38 +48,32 @@ export default function PageCachets() {
     //validation obligatoire de la date
     if (!date.trim()) {
       foundErrors.date = "La date est obligatoire";
-      return;
     }
 
     const today = new Date().toISOString().split("T")[0];
     if (date > today) {
       foundErrors.date = "La date ne peut pas être dans le futur";
-      return;
     }
 
     //pas forcement nécéssaire puisque déjà géré dans le code de l'input, mais mieux vaut être prévoyant
     if (montant < 110) {
       foundErrors.montant =
         "Le montant ne peux pas être inférieur au minimum légal (smic horaire * 12, soit 110 euros)";
-      return;
     }
 
     //validation obligatoire du spectacle
     if (!spectacle.trim()) {
       foundErrors.spectacle = "Un spectacle doit être choisi";
-      return;
     }
 
     //pas forcement nécéssaire puisque déjà géré dans le code de l'input, mais mieux vaut être prévoyant
     if (note.length > 200) {
       foundErrors.note = "La note ne peut pas dépasser 200 caractères";
-      return;
     }
 
-    // 👉 ON MET LES ERREURS
     setErrors(foundErrors);
 
-    // 👉 STOP si erreurs
+    //pas d'erreur trouvée
     if (Object.keys(foundErrors).length > 0) {
       return;
     }
@@ -148,12 +142,13 @@ export default function PageCachets() {
       </Heading>
 
       <form onSubmit={ajouterCachet}>
-        <div className="mx-140 rounded-[20px] bg-hover p-[20px] border-none shadow-sm transition-shadow flex flex-col gap-[20px]">
+        <div className="mx-auto max-w-4xl rounded-[20px] bg-hover p-[20px] border-none shadow-sm transition-shadow flex flex-col gap-[20px]">
           <div>
             <Heading as="h4" className="font-semibold">
               Membre équipe
             </Heading>
             <br />
+            {errors.membre && <p className="text-red-500 text-sm">{errors.membre}</p>}
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
               id="membre"
@@ -255,7 +250,7 @@ export default function PageCachets() {
         Cachets enregistrés
       </Heading>
 
-      <div className="mx-100 rounded-[20px] bg-hover p-[20px] border-none shadow-sm transition-shadow flex flex-col gap-[20px]">
+      <div className="mx-auto max-w-4xl rounded-[20px] bg-hover p-[20px] border-none shadow-sm transition-shadow flex flex-col gap-[20px]">
         <div className="flex flex-wrap gap-6 items-end">
           <div className="flex flex-col gap-1">
             <label>Filtrer par membre</label>
@@ -320,22 +315,32 @@ export default function PageCachets() {
             <Table.Body>
               {cachetsTries.map((c) => (
                 <Table.Row key={c.id}>
-                  <Table.Cell>{c.membre}</Table.Cell>
+                  <Table.Cell>
+                    {MEMBRES_TROUPE.find((m) => m.value === c.membre)?.label ?? c.membre}
+                  </Table.Cell>
                   <Table.Cell>{new Date(c.date).toLocaleDateString("fr-FR")}</Table.Cell>
                   <Table.Cell>{c.montant} €</Table.Cell>
-                  <Table.Cell>{c.spectacle}</Table.Cell>
+                  <Table.Cell>
+                    {TYPE_SPECTACLE.find((s) => s.value === c.spectacle)?.label ?? c.spectacle}
+                  </Table.Cell>
                   <Table.Cell>{c.note || "-"}</Table.Cell>
                   <Table.Cell>
-                    <Button variant="outline" size="sm">
-                      <button onClick={() => editerCachet(c)} aria-label="Modifier">
-                        Modifier
-                      </button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => editerCachet(c)}
+                      aria-label="Modifier cachet"
+                    >
+                      Modifier
                     </Button>
 
-                    <Button variant="outline" size="sm">
-                      <button onClick={() => supprimerCachet(c.id)} aria-label="Supprimer">
-                        Supprimer
-                      </button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => supprimerCachet(c.id)}
+                      aria-label="Supprimer cachet"
+                    >
+                      Supprimer
                     </Button>
                   </Table.Cell>
                 </Table.Row>
