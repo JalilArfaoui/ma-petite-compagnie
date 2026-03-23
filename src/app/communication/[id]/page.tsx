@@ -2,7 +2,7 @@
 import { use, useEffect, useState } from "react";
 
 import { Contact } from "@prisma/client";
-import { toaster } from "@/components/ui/Toast/toaster";
+import { Toaster, toaster } from "@/components/ui/Toast/toaster";
 import { modifierContactAction } from "../action/contactFormAction";
 import ContactDetails from "../components/contactDetails";
 import { trouverParIdContact } from "../api/contact/contact";
@@ -50,6 +50,7 @@ export function ContactModification({ params }: { params: Promise<{ id: string }
   }
   return (
     <Box alignContent={"center"}>
+      <Toaster />
       <Box textAlign={"center"}>
         <Heading as={"h3"}>Modification d&rsquo;un contact</Heading>
       </Box>
