@@ -68,8 +68,6 @@ export function CSVContactImport({
     });
   }
   function confirmation() {
-    console.log("Importation du csv");
-    console.log(attributes);
     if (!inputFile.current?.files || !inputFile.current?.files[0]) {
       setErreur("Aucun fichier sélectionné");
       return;
@@ -130,7 +128,7 @@ export function CSVContactImport({
               );
             })}
             <Button onClick={() => addChamp()} size={"sm"}>
-              Ajouter champ
+              Ajouter colonne
             </Button>
             {erreur && <Text className=" text-red-600">{erreur}</Text>}
           </Stack>
