@@ -2,6 +2,25 @@
 import { Box, Button, Input, Modal, Stack, Text } from "@/components/ui";
 import { useRef, useState } from "react";
 
+async function readCSV(colonnes: string[], file: File): Promise<Record<string, string>[]> {
+  const text = await file.text();
+
+  const rows = text.split("\n").map((row) => row.split(","));
+  console.log(rows);
+  const datas: Record<string, string>[] = [];
+  rows.forEach((row, i) => {
+    if (i === 0) return; // Skip header
+
+    const obj: Record<string, string> = {};
+
+    colonnes.forEach((colonne, index) => {
+      obj[colonne] = row[index] || ""; // associe le champ à la valeur de la colonne
+    });
+
+    datas.push(obj);
+  });
+  return datas;
+}
 export function CSVContactImport({
   requiredAttributes,
   optionnalAttributes,
@@ -21,22 +40,7 @@ export function CSVContactImport({
     const file = input.files?.[0];
     if (!file) return;
 
-    const text = await file.text();
-
-    const rows = text.split("\n").map((row) => row.split(","));
-    console.log(rows);
-    const datas: Record<string, string>[] = [];
-    rows.forEach((row, i) => {
-      if (i === 0) return; // skip header si besoin
-
-      const obj: Record<string, string> = {};
-
-      champs.forEach((champ, index) => {
-        obj[champ] = row[index] || ""; // associe le champ à la valeur de la colonne
-      });
-
-      datas.push(obj);
-    });
+    const datas = await readCSV(champs, file);
     onCSVRead(datas);
   };
   function changeChamps(index: number, newType: string) {
