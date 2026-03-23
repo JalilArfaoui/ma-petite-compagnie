@@ -97,13 +97,23 @@ export function CSVContactImport({
         </Modal.Header>
         <Modal.Body>
           <Stack className="gap-4">
-            <Input ref={inputFile} type="file" accept=".csv"></Input>
-            <Text>Colonnes : </Text>
+            <Box>
+              <Text className="font-bold "> Fichier CSV: </Text>
+              <Input ref={inputFile} type="file" accept=".csv"></Input>
+            </Box>
+
+            <Text className="font-bold">Colonnes : </Text>
             {champs.map((attributeChamp, i) => {
               return (
-                <Stack key={i} direction="row">
+                <Stack
+                  key={i}
+                  direction="row"
+                  className="bg-gray-100 p-1 rounded-2xl items-center ml-10 mr-10 "
+                >
                   {" "}
-                  <Box>(Colonne numéro : {i})</Box>
+                  <Box className="font-bold ">
+                    ({i + 1}){requiredAttributes.includes(attributeChamp) && "*"}
+                  </Box>
                   <select
                     defaultValue={attributeChamp}
                     onChange={(e) => changeChamps(i, e.target.value)}
@@ -121,16 +131,18 @@ export function CSVContactImport({
                       );
                     })}
                   </select>
-                  <Button size={"sm"} variant={"outline"} onClick={() => supprimerColonne(i)}>
-                    Supprimer colonne
-                  </Button>
+                  <Stack direction="row" justify="end" className="w-full bg-transparent">
+                    <Button size={"sm"} variant={"outline"} onClick={() => supprimerColonne(i)}>
+                      Supprimer colonne
+                    </Button>
+                  </Stack>
                 </Stack>
               );
             })}
-            <Button onClick={() => addChamp()} size={"sm"}>
+            <Button className="mt-10" onClick={() => addChamp()} size={"sm"}>
               Ajouter colonne
             </Button>
-            {erreur && <Text className=" text-red-600">{erreur}</Text>}
+            {erreur && <Text className=" text-red-600 text-center">{erreur}</Text>}
           </Stack>
         </Modal.Body>
         <Modal.Footer>
