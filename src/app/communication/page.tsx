@@ -3,10 +3,16 @@ import { Heading, Link, Box, Button, Stack, Text } from "@/components/ui";
 
 import { Toaster } from "@/components/ui/Toast/toaster";
 import { ContactTable } from "./components/ContactTable";
+import { CSVContactImport } from "./components/CSVContactImport";
 export default function ContactPage() {
   return (
     <Box className=" py-5 flex-col items-center gap-4">
       <Toaster />
+      <CSVContactImport
+        requiredAttributes={["nom", "prenom"]}
+        optionnalAttributes={["email"]}
+        onCSVRead={csvToContacts}
+      ></CSVContactImport>
       <Stack
         className="gap-5 items-center w-full justify-between  mb-10 z-10 bg-white"
         direction="row"
