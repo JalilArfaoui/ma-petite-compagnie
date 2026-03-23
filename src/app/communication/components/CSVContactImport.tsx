@@ -18,6 +18,7 @@ export function CSVContactImport({
   const modal = useRef<HTMLButtonElement>(null);
   const inputFile = useRef<HTMLInputElement>(null);
   const [champs, setChamps] = useState<string[]>(requiredAttributes ?? []);
+  const [erreur, setErreur] = useState("");
   const handleFile = async (input: HTMLInputElement) => {
     const file = input.files?.[0];
     if (!file) return;
@@ -54,7 +55,7 @@ export function CSVContactImport({
       return champs.find((champ2, i2) => i !== i2 && champ === champ2);
     });
   }
-  function champsContientRequired() {
+  function champsContientRequiredAttributes() {
     return requiredAttributes.every((attribute) => champs.includes(attribute));
   }
   function addChamp() {
@@ -68,19 +69,25 @@ export function CSVContactImport({
   function confirmation() {
     console.log("Importation du csv");
     console.log(attributes);
-    if (inputFile.current?.files) {
+    if (!inputFile.current?.files || !inputFile.current?.files[0]) {
       console.log(champs);
-      if (champsDoublon()) {
-        // TODO erreur
-        return;
-      }
-      if (!champsContientRequired()) {
-        //TODO erreur
-        return;
-      }
-      handleFile(inputFile.current);
-      modal.current?.click();
+      setErreur("Aucun fichier sélectionné");
+      return;
     }
+    if (champsDoublon()) {
+      // TODO erreur
+      setErreur("Votre sélection contient des choix doublons");
+      return;
+    }
+    if (!champsContientRequiredAttributes()) {
+      //TODO erreur
+      setErreur("Votre sélection ne contient pas tous les choix obligatoires");
+      return;
+    }
+
+    setErreur("");
+    handleFile(inputFile.current);
+    modal.current?.click();
   }
   return (
     <Modal>
@@ -118,7 +125,7 @@ export function CSVContactImport({
                       );
                     })}
                   </select>
-                  <Button size={"sm"} onClick={() => supprimerColonne(i)}>
+                  <Button size={"sm"} variant={"outline"} onClick={() => supprimerColonne(i)}>
                     Supprimer colonne
                   </Button>
                 </Stack>
@@ -127,6 +134,7 @@ export function CSVContactImport({
             <Button onClick={() => addChamp()} size={"sm"}>
               Ajouter champ
             </Button>
+            {erreur && <Text className=" text-red-600">{erreur}</Text>}
           </Stack>
         </Modal.Body>
         <Modal.Footer>
