@@ -45,6 +45,11 @@ export default function PageCachets() {
 
     const foundErrors: { [key: string]: string } = {};
 
+    //validation obligatoire du membre
+    if (!membre) {
+      foundErrors.membre = "Un membre doit être sélectionné";
+    }
+
     //validation obligatoire de la date
     if (!date.trim()) {
       foundErrors.date = "La date est obligatoire";
@@ -67,8 +72,8 @@ export default function PageCachets() {
     }
 
     //pas forcement nécéssaire puisque déjà géré dans le code de l'input, mais mieux vaut être prévoyant
-    if (note.length > 200) {
-      foundErrors.note = "La note ne peut pas dépasser 200 caractères";
+    if (note.length > 120) {
+      foundErrors.note = "La note ne peut pas dépasser 120 caractères";
     }
 
     setErrors(foundErrors);
@@ -148,7 +153,7 @@ export default function PageCachets() {
               Membre équipe
             </Heading>
             <br />
-            {errors.membre && <p className="text-red-500 text-sm">{errors.membre}</p>}
+            {errors.membre && <p className="text-red-600 text-sm">{errors.membre}</p>}
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
               id="membre"
@@ -170,6 +175,7 @@ export default function PageCachets() {
               Date
             </Heading>
             <br />
+            {errors.date && <p className="text-red-600 text-sm">{errors.date}</p>}
             <input
               className="flex w-full rounded-[12px] border border-border bg-white px-4 py-3 text-[1rem] text-text-primary font-serif placeholder:text-text-muted transition-all hover:border-border-hover hover:bg-bg-hover focus-visible:outline-none focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-60 disabled:bg-bg-disabled focus:border-primary focus:ring-1 focus:ring-primary"
               type="date"
@@ -182,6 +188,7 @@ export default function PageCachets() {
               Montant du cachet
             </Heading>
             <br />
+            {errors.montant && <p className="text-red-600 text-sm">{errors.montnt}</p>}
             <input
               className="flex w-full rounded-[12px] border border-border bg-white px-4 py-3 text-[1rem] text-text-primary font-serif placeholder:text-text-muted transition-all hover:border-border-hover hover:bg-bg-hover focus-visible:outline-none focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-60 disabled:bg-bg-disabled focus:border-primary focus:ring-1 focus:ring-primary"
               type="number"
@@ -195,6 +202,7 @@ export default function PageCachets() {
               Spectacle
             </Heading>
             <br />
+            {errors.spectacle && <p className="text-red-600 text-sm">{errors.spectacle}</p>}
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
               id="spectacle"
@@ -215,10 +223,11 @@ export default function PageCachets() {
               Note
             </Heading>
             <br />
+            {errors.note && <p className="text-red-600 text-sm">{errors.note}</p>}
             <input
               className="flex w-full rounded-[12px] border border-border bg-white px-4 py-3 text-[1rem] text-text-primary font-serif placeholder:text-text-muted transition-all hover:border-border-hover hover:bg-bg-hover focus-visible:outline-none focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-60 disabled:bg-bg-disabled focus:border-primary focus:ring-1 focus:ring-primary"
               value={note}
-              maxLength={200}
+              maxLength={120}
               onChange={(e) => setNote(e.target.value)}
             />
           </div>
