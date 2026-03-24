@@ -12,6 +12,7 @@ export type MappageAttributs = {
    */
   attributsCSV: string[];
 };
+
 /**
  *
  * @param mappageAttributs Parmètres qui définit le mapping entre les attributs du csv et les champs de l'objet
@@ -25,18 +26,20 @@ async function readCSV(
   file: File
 ): Promise<Record<string, string>[]> {
   const text = await file.text();
-
   const rows = text.split("\n").map((row) => row.split(","));
+
   const datas: Record<string, string>[] = [];
   rows.forEach((CSVcolonnes, numeroLigne) => {
     if (numeroLigne === 0) return; // Skip header
-
     const obj: Record<string, string> = {};
     mappageAttributs.attributsCSV.forEach((attributCSVChoisie, indexObjet) => {
       if (attributCSVChoisie !== "Aucun") {
         // Récupère la colonne par rapport à l'entete du fichier avec le champ choisie
         const indexColonne = fichierEntetes.indexOf(attributCSVChoisie);
-        const valeurCSV = CSVcolonnes[indexColonne].replace("\r", "") || "";
+        let valeurCSV = CSVcolonnes[indexColonne].trimEnd() || "";
+        if (valeurCSV.endsWith("\r")) {
+          valeurCSV = valeurCSV.substring(0, valeurCSV.length - 1);
+        }
         obj[mappageAttributs.attributsObjets[indexObjet]] = valeurCSV;
       }
     });
@@ -67,9 +70,11 @@ export type Attributes = {
  */
 export function CSVContactImport({
   attributs,
+  nomObjet,
   onCSVRead,
 }: {
   attributs: Attributes;
+  nomObjet: string;
   onCSVRead: (donnees: Record<string, string>[]) => void;
 }) {
   const AttributsCSV: CSVAttribute[] = [
@@ -84,7 +89,7 @@ export function CSVContactImport({
   const [fichierEnTete, setFichierEnTete] = useState<string[]>([]);
   const modal = useRef<HTMLButtonElement>(null);
   const CSVFileInput = useRef<HTMLInputElement>(null);
-  const [champsCSVSelectionnes, setChampsSelectionnes] = useState<string[]>(attributsObjets);
+  const [champsCSVSelectionnes, setChampsCSVSelectionnes] = useState<string[]>(attributsObjets);
   const [erreur, setErreur] = useState("");
 
   /**
@@ -103,8 +108,8 @@ export function CSVContactImport({
     );
     onCSVRead(datas);
   };
-  function updateChampsSelectionnes(indexChamp: number, newChamp: string) {
-    setChampsSelectionnes((prev) =>
+  function updateChampsCSVSelectionnes(indexChamp: number, newChamp: string) {
+    setChampsCSVSelectionnes((prev) =>
       prev.map((champ, i) => {
         const result = i === indexChamp ? newChamp : champ;
         return result;
@@ -139,8 +144,8 @@ export function CSVContactImport({
     });
 
     setFichierEnTete([...header]);
-    setChampsSelectionnes([
-      ...header.map((value, i) => {
+    setChampsCSVSelectionnes([
+      ...header.map(() => {
         return "Aucun";
       }),
     ]);
@@ -148,7 +153,10 @@ export function CSVContactImport({
 
   function afficherSelectChampsFichier(id: number) {
     return (
-      <select defaultValue={"Aucun"} onChange={(e) => updateChampsSelectionnes(id, e.target.value)}>
+      <select
+        defaultValue={"Aucun"}
+        onChange={(e) => updateChampsCSVSelectionnes(id, e.target.value)}
+      >
         <option key={-1}>Aucun</option>
         {fichierEnTete.map((att, indexAttribute) => {
           return <option key={indexAttribute}>{att}</option>;
@@ -160,7 +168,7 @@ export function CSVContactImport({
     return AttributsCSV.map((CSVAttribute, id) => {
       return (
         <Table.Row key={id}>
-          <Table.Cell>{CSVAttribute.name} </Table.Cell>
+          <Table.Cell>{CSVAttribute.name}</Table.Cell>
           <Table.Cell>{afficherSelectChampsFichier(id)}</Table.Cell>
           <Table.Cell>
             {CSVAttribute.required ? <Box className="text-red-500">*</Box> : ""}
@@ -214,14 +222,14 @@ export function CSVContactImport({
                 accept=".csv"
               ></Input>
             </Box>
-            <Text className="font-bold">Colonnes : </Text>
+            <Text className="font-bold">Champs de la conversion : </Text>
 
             <Table className="text-center">
               <Table.Head>
                 <Table.Row className=" text-center">
-                  <Table.Header>Champ</Table.Header>
-                  <Table.Header>Champ du CSV</Table.Header>
-                  <Table.Header>Obligatoire</Table.Header>
+                  <Table.Header className="text-center">Champ de {nomObjet}</Table.Header>
+                  <Table.Header className="text-center">Champ du CSV</Table.Header>
+                  <Table.Header className="text-center">Obligatoire</Table.Header>
                 </Table.Row>
               </Table.Head>
               <Table.Body>{afficherChampsAttributs()}</Table.Body>
