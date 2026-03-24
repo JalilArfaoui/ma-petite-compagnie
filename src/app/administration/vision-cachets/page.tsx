@@ -71,9 +71,9 @@ export default function VisionCachetsPage() {
           className="p-2 border border-slate-300 rounded-md w-full"
         >
           <option value="tous">Tous les spectacles</option>
-          <option value="Hamlet">Hamlet</option>
-          <option value="Le Roi Lion">Le Roi Lion</option>
-          <option value="Romeo et Juliette">Romeo et Juliette</option>
+          {[...new Set(CACHETS_DATA.map((c) => c.spectacle))].map((s) => (
+            <option key={s} value={s}>{s}</option>
+          ))}
         </select>
 
         <Heading as="h4" className="font-semibold">
