@@ -2,26 +2,42 @@
 import { Box, Button, Input, Modal, Stack, Table, Text } from "@/components/ui";
 import { useRef, useState } from "react";
 
+export type MappageAttributs = {
+  /**
+   * Champs de l'objet mappé
+   */
+  attributsObjets: string[];
+  /**
+   * Champs des attributs à mapper
+   */
+  attributsCSV: string[];
+};
+/**
+ *
+ * @param mappageAttributs Parmètres qui définit le mapping entre les attributs du csv et les champs de l'objet
+ * @param fichierEntetes Les champs d'entete du fichier CSV
+ * @param file Le fichier CSV
+ * @returns
+ */
 async function readCSV(
-  champsObjets: string[],
-  champsCSVChoisie: string[],
-  champsCSV: string[],
+  mappageAttributs: MappageAttributs,
+  fichierEntetes: string[],
   file: File
 ): Promise<Record<string, string>[]> {
   const text = await file.text();
 
   const rows = text.split("\n").map((row) => row.split(","));
   const datas: Record<string, string>[] = [];
-  rows.forEach((row, i) => {
-    if (i === 0) return; // Skip header
+  rows.forEach((CSVcolonnes, numeroLigne) => {
+    if (numeroLigne === 0) return; // Skip header
 
     const obj: Record<string, string> = {};
-    console.log(row);
-    champsCSVChoisie.forEach((champChoisie, index) => {
-      if (champChoisie !== "Aucun") {
-        const r = row[champsCSV.indexOf(champChoisie) - 1].replace("\r", "") || "";
-        console.log(r);
-        obj[index] = r; // associe le champ à la valeur de la colonne
+    mappageAttributs.attributsCSV.forEach((attributCSVChoisie, indexObjet) => {
+      if (attributCSVChoisie !== "Aucun") {
+        // Récupère la colonne par rapport à l'entete du fichier avec le champ choisie
+        const indexColonne = fichierEntetes.indexOf(attributCSVChoisie);
+        const valeurCSV = CSVcolonnes[indexColonne].replace("\r", "") || "";
+        obj[mappageAttributs.attributsObjets[indexObjet]] = valeurCSV;
       }
     });
 
@@ -30,86 +46,134 @@ async function readCSV(
   return datas;
 }
 
+/**
+ * Attributs du CSV, avec son nom de l'entete et si il est obligatoire
+ */
 type CSVAttribute = {
   name: string;
   required: boolean;
 };
+/**
+ * Attributs qui vont permettre de créer un objet par rapport à ce qui est lue avec le CSV
+ */
+export type Attributes = {
+  attributsObligatoire: string[];
+  attributsOptionnels: string[];
+};
 
+/**
+ * Composants UI qui permet de mapper un fichier CSV en objet avec les attributs données en argument
+ * @param onCSVRead Méthode appelé quand le fichier CSV est lue
+ */
 export function CSVContactImport({
-  requiredAttributes,
-  optionnalAttributes,
+  attributs,
   onCSVRead,
 }: {
-  requiredAttributes: string[];
-  optionnalAttributes: string[];
+  attributs: Attributes;
   onCSVRead: (donnees: Record<string, string>[]) => void;
 }) {
-  const CSVAttributes: CSVAttribute[] = [
-    ...requiredAttributes.map((attribute) => {
+  const AttributsCSV: CSVAttribute[] = [
+    ...attributs.attributsObligatoire.map((attribute) => {
       return { name: attribute, champDuCSV: "", required: true };
     }),
-    ...optionnalAttributes.map((attribute) => {
+    ...attributs.attributsOptionnels.map((attribute) => {
       return { name: attribute, champDuCSV: "", required: false };
     }),
   ];
-  const attributes = [...requiredAttributes, ...optionnalAttributes];
-  const [champsCSV, setChampsCSV] = useState<string[]>([]);
+  const attributsObjets = [...attributs.attributsObligatoire, ...attributs.attributsOptionnels];
+  const [fichierEnTete, setFichierEnTete] = useState<string[]>([]);
   const modal = useRef<HTMLButtonElement>(null);
-  const inputFile = useRef<HTMLInputElement>(null);
-  const [champs, setChamps] = useState<string[]>(attributes);
+  const CSVFileInput = useRef<HTMLInputElement>(null);
+  const [champsCSVSelectionnes, setChampsSelectionnes] = useState<string[]>(attributsObjets);
   const [erreur, setErreur] = useState("");
+
+  /**
+   * Méthode pour s'occuper de la lecture du csv et faire le mapping du CSV en objet
+   * @param input
+   * @returns
+   */
   const handleFile = async (input: HTMLInputElement) => {
     const file = input.files?.[0];
     if (!file) return;
-    console.log(champsCSV);
-    console.log(champs);
-    const datas = await readCSV(attributes, champs, champsCSV, file);
+
+    const datas = await readCSV(
+      { attributsObjets: attributsObjets, attributsCSV: champsCSVSelectionnes },
+      fichierEnTete,
+      file
+    );
     onCSVRead(datas);
   };
-  function updateChamps(index: number, newType: string) {
-    setChamps((prev) =>
+  function updateChampsSelectionnes(indexChamp: number, newChamp: string) {
+    setChampsSelectionnes((prev) =>
       prev.map((champ, i) => {
-        const result = i === index ? newType : champ;
+        const result = i === indexChamp ? newChamp : champ;
         return result;
       })
     );
   }
 
   function champObligatoireNonChoisi() {
-    console.log(champs);
-    return champs.find((champ, i) => {
-      const CSVAttribute = CSVAttributes.at(i);
+    return champsCSVSelectionnes.find((champ, i) => {
+      const CSVAttribute = AttributsCSV.at(i);
 
       return CSVAttribute?.required ? champ === "Aucun" : false;
     });
   }
   function champsDoublon() {
-    return champs.find((champ, i) => {
-      return champs.find((champ2, i2) => i !== i2 && champ !== "Aucun" && champ === champ2);
+    return champsCSVSelectionnes.find((champ, i) => {
+      return champsCSVSelectionnes.find(
+        (champ2, i2) => i !== i2 && champ !== "Aucun" && champ === champ2
+      );
     });
   }
 
-  async function lireChampCSV(input: HTMLInputElement) {
+  async function modifierChampsEnTete(input: HTMLInputElement) {
     const file = input.files?.[0];
     if (!file) return;
 
     const text = await file.text();
 
     let header = text.split("\n").map((row) => row.split(","))[0];
-    console.log(header);
     header = header.map((texte) => {
       return texte.replace("\r", "");
     });
 
-    setChampsCSV(["Aucun", ...header]);
-    setChamps([
+    setFichierEnTete([...header]);
+    setChampsSelectionnes([
       ...header.map((value, i) => {
         return "Aucun";
       }),
     ]);
   }
+
+  function afficherSelectChampsFichier(id: number) {
+    return (
+      <select defaultValue={"Aucun"} onChange={(e) => updateChampsSelectionnes(id, e.target.value)}>
+        <option key={-1}>Aucun</option>
+        {fichierEnTete.map((att, indexAttribute) => {
+          return <option key={indexAttribute}>{att}</option>;
+        })}
+      </select>
+    );
+  }
+  function afficherChampsAttributs() {
+    return AttributsCSV.map((CSVAttribute, id) => {
+      return (
+        <Table.Row key={id}>
+          <Table.Cell>{CSVAttribute.name} </Table.Cell>
+          <Table.Cell>{afficherSelectChampsFichier(id)}</Table.Cell>
+          <Table.Cell>
+            {CSVAttribute.required ? <Box className="text-red-500">*</Box> : ""}
+          </Table.Cell>
+        </Table.Row>
+      );
+    });
+  }
+  function afficherErreur() {
+    return <Text className=" text-red-600 text-center">{erreur}</Text>;
+  }
   function confirmation() {
-    if (!inputFile.current?.files || !inputFile.current?.files[0]) {
+    if (!CSVFileInput.current?.files || !CSVFileInput.current?.files[0]) {
       setErreur("Aucun fichier sélectionné");
       return;
     }
@@ -123,7 +187,10 @@ export function CSVContactImport({
     }
 
     setErreur("");
-    handleFile(inputFile.current);
+    handleFile(CSVFileInput.current);
+    fermerModal();
+  }
+  function fermerModal() {
     modal.current?.click();
   }
   return (
@@ -141,9 +208,9 @@ export function CSVContactImport({
             <Box>
               <Text className="font-bold"> Fichier CSV: </Text>
               <Input
-                ref={inputFile}
+                ref={CSVFileInput}
                 type="file"
-                onChange={(e) => lireChampCSV(e.target)}
+                onChange={(e) => modifierChampsEnTete(e.target)}
                 accept=".csv"
               ></Input>
             </Box>
@@ -153,34 +220,13 @@ export function CSVContactImport({
               <Table.Head>
                 <Table.Row className=" text-center">
                   <Table.Header>Champ</Table.Header>
-                  <Table.Header>Champs CSV</Table.Header>
+                  <Table.Header>Champ du CSV</Table.Header>
                   <Table.Header>Obligatoire</Table.Header>
                 </Table.Row>
               </Table.Head>
-              <Table.Body>
-                {CSVAttributes.map((CSVAttribute, id) => {
-                  return (
-                    <Table.Row key={id}>
-                      <Table.Cell>{CSVAttribute.name} </Table.Cell>
-                      <Table.Cell>
-                        <select
-                          defaultValue={"Aucun"}
-                          onChange={(e) => updateChamps(id, e.target.value)}
-                        >
-                          {champsCSV.map((att, indexAttribute) => {
-                            return <option key={indexAttribute}>{att}</option>;
-                          })}
-                        </select>
-                      </Table.Cell>
-                      <Table.Cell>
-                        {CSVAttribute.required ? <Box className="text-red-500">*</Box> : ""}
-                      </Table.Cell>
-                    </Table.Row>
-                  );
-                })}
-              </Table.Body>
+              <Table.Body>{afficherChampsAttributs()}</Table.Body>
             </Table>
-            {erreur && <Text className=" text-red-600 text-center">{erreur}</Text>}
+            {erreur && afficherErreur()}
           </Stack>
         </Modal.Body>
         <Modal.Footer>

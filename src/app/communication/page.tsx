@@ -25,8 +25,10 @@ export default function ContactPage() {
   return (
     <Box className=" py-5 flex-col items-center gap-4">
       <CSVContactImport
-        requiredAttributes={["nom", "prenom"]}
-        optionnalAttributes={["email"]}
+        attributs={{
+          attributsObligatoire: ["Nom", "Prénom"],
+          attributsOptionnels: ["Email", "Notes", "Téléphone", "Ville", "Adresse"],
+        }}
         onCSVRead={csvToContacts}
       ></CSVContactImport>
       <Stack className="gap-5 items-center">
