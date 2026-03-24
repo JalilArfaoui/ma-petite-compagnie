@@ -59,7 +59,7 @@ export default function VisionCachetsPage() {
       <Heading as="h3" className="font-extrabold mb-4 pt-6 text-center">
         Liste des cachets
       </Heading>
-      
+
       <div className="mx-auto max-w-4xl bg-hover p-[20px] border-none shadow-sm transition-shadow flex flex-col gap-[20px]">
         <Heading as="h4" className="font-semibold">
           Filtrer par spectacle
@@ -77,22 +77,7 @@ export default function VisionCachetsPage() {
         </select>
 
         <Heading as="h4" className="font-semibold">
-          Trier par date
-        </Heading>
-        <select
-          value={sortBy}
-          onChange={(e) =>
-            setSortBy(e.target.value as "none" | "dateCroissante" | "dateDecroissante")
-          }
-          className="p-2 border border-slate-300 rounded-md w-full"
-        >
-          <option value="none">Aucun tri</option>
-          <option value="dateCroissante">Date croissante</option>
-          <option value="dateDecroissante">Date décroissante</option>
-        </select>
-
-        <Heading as="h4" className="font-semibold">
-          Trier par montant
+          Options de triage
         </Heading>
         <select
           value={sortBy}
@@ -110,7 +95,7 @@ export default function VisionCachetsPage() {
       <Heading as="h3" className="font-semibold mt-9 pb-2 border-b text-center">
         Résultats
       </Heading>
-      <div className="mx-140 mt-6 mb-10">
+      <div className="mx-auto max-w-4xl mt-6 mb-10">
         <Card>
           <Card.Body>
             <Table>
