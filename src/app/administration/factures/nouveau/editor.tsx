@@ -25,7 +25,7 @@ import { creerFacture } from "@/app/actions/finance";
 // Dynamic import for PDFViewer
 const PDFViewer = dynamic(() => import("@react-pdf/renderer").then((mod) => mod.PDFViewer), {
   ssr: false,
-  loading: () => <Box p={4}>Chargement de l'aperçu...</Box>,
+  loading: () => <Box p={4}>Chargement de l&apos;aperçu...</Box>,
 });
 
 type LigneForm = {
@@ -85,7 +85,7 @@ export function FactureEditor({ compagnie }: { compagnie: Compagnie }) {
     setLignes(lignes.filter((_, i) => i !== index));
   };
 
-  const updateLine = (index: number, field: keyof LigneForm, value: any) => {
+  const updateLine = <K extends keyof LigneForm>(index: number, field: K, value: LigneForm[K]) => {
     const newLignes = [...lignes];
     newLignes[index] = { ...newLignes[index], [field]: value };
     setLignes(newLignes);
@@ -221,7 +221,7 @@ export function FactureEditor({ compagnie }: { compagnie: Compagnie }) {
                             border: "1px solid #ccc",
                           }}
                           value={ligne.type}
-                          onChange={(e) => updateLine(i, "type", e.target.value)}
+                          onChange={(e) => updateLine(i, "type", e.target.value as LigneType)}
                         >
                           <option value="PRESTATION">Prestation</option>
                           <option value="FRAIS">Frais</option>

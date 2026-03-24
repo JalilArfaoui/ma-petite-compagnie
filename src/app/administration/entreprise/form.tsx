@@ -45,7 +45,7 @@ export function CompanyForm({ initialData }: { initialData: Compagnie }) {
           <Stack gap={4}>
             <Box>
               <Text fontWeight="bold" mb={1}>
-                Nom de l'entreprise (Non modifiable)
+                Nom de l&apos;entreprise (Non modifiable)
               </Text>
               <Input value={initialData.nom} readOnly disabled bg="gray.100" />
             </Box>
@@ -90,7 +90,7 @@ export function CompanyForm({ initialData }: { initialData: Compagnie }) {
                 placeholder="https://example.com"
               />
               <Text fontSize="xs" color="gray.500">
-                S'affichera sur la facture si renseigné
+                S&apos;affichera sur la facture si renseigné
               </Text>
             </Box>
 
