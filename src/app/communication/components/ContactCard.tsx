@@ -1,8 +1,14 @@
 import { Card, Stack, Heading, SimpleGrid, Text, Box } from "@/components/ui";
 import { Contact } from "@prisma/client";
-export function ContactCard({ contact }: { contact: Contact }) {
+export function ContactCard({
+  contact,
+  onSelect,
+}: {
+  contact: Contact;
+  onSelect: (contact: Contact) => void;
+}) {
   return (
-    <Card>
+    <Card onClick={() => onSelect(contact)}>
       <Heading as={"h4"}>
         {contact.nom} {contact.prenom}
       </Heading>
