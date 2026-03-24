@@ -17,7 +17,6 @@ export function CreateCategorieForm({ onSuccess, onCancel, idCompagnie }: Props)
 
     async function handleSubmitCategorie(datas:FormData) {
         const result = await creerCategorie(datas);
-
         if (result.status != 201 || !result.categorie) {
             alert("La création d'une catégorie a échoué");
             return;
