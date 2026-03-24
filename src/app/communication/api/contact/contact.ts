@@ -5,17 +5,17 @@ import { prisma } from "@/lib/prisma";
 /**
  * Résultat pour envoyer un message uniforme lorsqu'une interaction avec la BD ce fait.
  */
-type Result<T> = { succes: boolean; message: string; contact: T | null };
+type Result<T> = { succes: boolean; message: string; donnee: T | null };
 
 /**
  * Méthode utilitaire pour créer un objet résultat sans créer l'objet.
  * @param succes
  * @param message
- * @param contact
+ * @param donnee
  * @returns
  */
-function resultOf<T>(succes: boolean, message: string, contact: T | null): Result<T> {
-  return { succes: succes, message: message, contact: contact };
+function resultOf<T>(succes: boolean, message: string, donnee: T | null): Result<T> {
+  return { succes: succes, message: message, donnee: donnee };
 }
 
 function validerTelephone(tel: string) {
@@ -107,4 +107,57 @@ export async function creerContact(contact: ContactInformation) {
     console.log(error);
     return resultOf(false, "Une erreur est survenue lors de la création du contact", null);
   }
+}
+
+export async function listerContacts(paginationTaille: number = 10, page: number = 1) {
+  if (paginationTaille < 1 || page < 1) {
+    paginationTaille = 10;
+    page = 1;
+  }
+
+  const skip = paginationTaille * (page - 1);
+  try {
+    const contacts = await prisma.contact.findMany({ skip, take: paginationTaille });
+    return resultOf(true, "", contacts);
+  } catch (error) {
+    return resultOf(false, "Erreur lors de la récupération des contacts", null);
+  }
+}
+
+export async function modifierContact(contactId: number, nouveauContact: ContactInformation) {
+  const verificationResultat = validerContact(nouveauContact);
+  if (!verificationResultat.succes) {
+    return verificationResultat;
+  }
+  if (nouveauContact.email) {
+    const contactExistant = await prisma.contact.findFirst({
+      where: {
+        email: nouveauContact.email,
+        NOT: { id: contactId },
+      },
+    });
+    if (contactExistant) {
+      return resultOf(
+        false,
+        "Cet email est déjà utilisé. Veuillez utiliser un email différent.",
+        null
+      );
+    }
+  }
+  try {
+    const contactModifie = await prisma.contact.update({
+      where: { id: contactId },
+      data: { ...nouveauContact },
+    });
+    return resultOf(true, "", contactModifie);
+  } catch (error) {
+    return resultOf(false, "Le contact n'existe pas ou n'a pas pu être modifié.", null);
+  }
+}
+export async function trouverParIdContact(id: number) {
+  const contact = await prisma.contact.findUnique({ where: { id: id } });
+  if (!contact) {
+    return resultOf(false, "Le contact n'existe pas.", null);
+  }
+  return resultOf(true, "", contact);
 }

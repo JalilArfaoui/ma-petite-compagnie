@@ -6,6 +6,7 @@ import {Box, Button, Input, Select, SimpleGrid, Modal, Field} from "@/components
 import {CreateLieuForm} from "@/app/composants/lieux/CreateLieuForm";
 import {CreateCategorieForm} from "@/app/composants/categories/CreateCategorieForm";
 import {creerEvenement} from "@/app/actions/evenement";
+import {DialogContent, DialogTitle} from "@radix-ui/react-dialog";
 
 type Props = {
   onSuccess?: (evenement: Evenement) => void;
@@ -25,8 +26,8 @@ export function CreateEvenementForm({
   const [nom, setNom] = useState("");
   const [dateDebut, setDateDebut] = useState("");
   const [dateFin, setDateFin] = useState("");
-  const [lieuId, setLieuId] = useState<number | null>(null);
-  const [categorieId, setCategorieId] = useState<number | null>(null);
+  const [lieuId, setLieuId] = useState<number>(0);
+  const [categorieId, setCategorieId] = useState<number>(0);
   const [showCreateLieu, setShowCreateLieu] = useState(false);
   const [showCreateCategorie, setShowCreateCategorie] = useState(false);
 
@@ -50,40 +51,33 @@ export function CreateEvenementForm({
         </Field.Label>
         <Input name={"nom"} type={"text"} value={nom} onChange={(e) => setNom(e.target.value)} required />
       </Field.Root>
-      <Select name={"lieuId"} value={lieuId?.toString()} onValueChange={(e) => setLieuId(Number(e))}>
-        {/*<SimpleGrid columns={{ base: 2, md: 4 }} gap={0}>
-          <GridItem colSpan={{ base: 1, md: 4 }}>*/}
+      <Select
+          name="lieuId"
+          value={lieuId?.toString() ?? ""}
+          onValueChange={(e) => setLieuId(Number(e))}>
+        <Box>
+          <Field.Root required>
+            <Field.Label>Lieu</Field.Label>
+          </Field.Root>
+        </Box>
 
-            <Box>
-              <Field.Root required>
-                <Field.Label>
-                  Lieu {/*<Field.RequiredIndicator />*/}
-                </Field.Label>
-              </Field.Root>
-            </Box>
-        {/*</GridItem>
-          <GridItem colSpan={{ base: 1, md: 3 }}>*/}
-            <Box>
-                <Select.Trigger>
-                  <Select.Value placeholder={"Sélectionner un lieu"} />
-                </Select.Trigger>
+        <Box>
+          <Select.Trigger>
+            <Select.Value placeholder="Sélectionner un lieu" />
+          </Select.Trigger>
 
-                <Select.Content>
-                  {lieux.map((lieu) => (
-                    <Select.Item key={lieu.id} value={lieu.libelle}>
-                      {lieu.libelle}
-                      <Select.ItemIndicator />
-                    </Select.Item>
-                  ))}
-                </Select.Content>
-            </Box>
-        {/*</GridItem>
-            <GridItem colSpan={{ base: 1, md: 1 }}>*/}
-              <Box>
-                <Button onClick={() => setShowCreateLieu(true)}>+</Button>
-              </Box>
-        {/*}</GridItem>
-        </SimpleGrid>*/}
+          <Select.Content>
+            {lieux.map((lieu) => (
+                <Select.Item key={lieu.id} value={lieu.id.toString()}>
+                  {lieu.libelle}
+                  <Select.ItemIndicator />
+                </Select.Item>
+            ))}
+          </Select.Content>
+        </Box>
+        <Box>
+          <Button onClick={() => setShowCreateLieu(true)}>+</Button>
+        </Box>
       </Select>
       {/* Format des datetime-local YYYY-MM-DDTHH:mm*/}
       <Field.Root required>
@@ -113,39 +107,33 @@ export function CreateEvenementForm({
       </Field.Root>
 
       <Select
-          name={"categorieId"}
-          value={categorieId?.toString()}
-        onValueChange={(e) => setCategorieId(Number(e))}
+          name="categorieId"
+          value={categorieId?.toString() ?? ""}
+          onValueChange={(e) => setCategorieId(Number(e))}
       >
-        {/*<SimpleGrid columns={{ base: 2, md: 4 }} gap={{ base: "10px", md: "0px" }}>
-          <GridItem colSpan={{ base: 1, md: 4 }}>*/}
-            <Box>
-        <Field.Root required>
-          <Field.Label>
-            Catégorie {/*<Field.RequiredIndicator />*/}
-          </Field.Label>
-        </Field.Root>
-          </Box>
-        {/*</GridItem>
-        <GridItem colSpan={{ base: 1, md: 3 }}>*/}
-          <Box>
+        <Box>
+          <Field.Root required>
+            <Field.Label>Catégorie</Field.Label>
+          </Field.Root>
+        </Box>
+
+        <Box>
           <Select.Trigger>
-            <Select.Value placeholder={"Sélectionner une catégorie"} />
+            <Select.Value placeholder="Sélectionner une catégorie" />
           </Select.Trigger>
+
           <Select.Content>
             {categories.map((categorie) => (
-              <Select.Item key={categorie.id} value={categorie.nom}>
-                {categorie.nom}
-                <Select.ItemIndicator />
-              </Select.Item>
+                <Select.Item key={categorie.id} value={categorie.id.toString()}>
+                  {categorie.nom}
+                  <Select.ItemIndicator />
+                </Select.Item>
             ))}
           </Select.Content>
-          </Box>
-        {/*}</GridItem>
-          <GridItem colSpan={{ base: 1, md: 1 }}>*/}
-            <Box>
-              <Button onClick={() => setShowCreateCategorie(true)}>+</Button>
-            </Box>
+        </Box>
+        <Box>
+          <Button onClick={() => setShowCreateCategorie(true)}>+</Button>
+        </Box>
         {/*</GridItem>
         </SimpleGrid>*/}
       </Select>
@@ -163,28 +151,41 @@ export function CreateEvenementForm({
       {showCreateLieu && (
           <Modal
               open={showCreateLieu}
-              onClose={() => setShowCreateLieu(false)}>
-            <CreateLieuForm
-                idCompagnie={compagnieId}
-                onSuccess={() => {
-                  setShowCreateLieu(false)
-                }}
-                onCancel={() => setShowCreateLieu(false)}
-            />
+              onOpenChange={setShowCreateLieu}
+          >
+            <Modal.Header>
+              <Modal.Title>Lieu</Modal.Title>
+              <Modal.Description>
+                Créé un lieu s&#39;il n&#39;existe pas déjà
+              </Modal.Description>
+            </Modal.Header>
+            <Modal.Content>
+              <CreateLieuForm
+                  idCompagnie={compagnieId}
+                  onSuccess={() => setShowCreateLieu(false)}
+                  onCancel={() => setShowCreateLieu(false)}
+              />
+            </Modal.Content>
           </Modal>
       )}
         {showCreateCategorie && (
-            <Modal
-                open={showCreateCategorie}
-                onClose={() => setShowCreateCategorie(false)}>
+          <Modal
+          open={showCreateCategorie}
+            onOpenChange={setShowCreateCategorie}>
+            <Modal.Header>
+              <Modal.Title>Catégorie</Modal.Title>
+              <Modal.Description>
+                Créé une nouvelle catégorie si elle n&#39;existe pas déjà
+              </Modal.Description>
+            </Modal.Header>
+            <Modal.Content>
               <CreateCategorieForm
                   idCompagnie={compagnieId}
-                  onSuccess={() => {
-                    setShowCreateCategorie(false)
-                  }}
+                  onSuccess={() => setShowCreateCategorie(false)}
                   onCancel={() => setShowCreateCategorie(false)}
               />
-            </Modal>
+            </Modal.Content>
+          </Modal>
         )}
     </div>
   );

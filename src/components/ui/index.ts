@@ -23,7 +23,7 @@ export * from "./Switch/Switch";
 export * from "./Table/Table";
 export * from "./Text/Text";
 export * from "./Textarea/Textarea";
-export * from "./Toast/Toast";
+export * from "./Toast/toaster";
 export * from "./Tooltip/Tooltip";
 export * from "./Popover/Popover";
 export * from "./Drawer/Drawer";
