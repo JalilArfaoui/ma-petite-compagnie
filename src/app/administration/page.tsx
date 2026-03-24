@@ -1,12 +1,25 @@
+"use client";
+
+import { useState } from "react";
 import { Heading, Container, Stack, Text, SimpleGrid, Toaster } from "@/components/ui";
-import { FaBars } from "react-icons/fa";
-import { IndicateurCle, RecettesSection, EquilibreFinancier, DepensesSection } from "./components";
+import { IndicateurCle, RecettesSection, EquilibreFinancier, DepensesSection, Recette, Depense } from "./components";
 import { formatMontant } from "./utils";
 import { RECETTES_DATA, DEPENSES_DATA, SPECTACLES_DATA } from "./test_data";
 
 // --- Page Principale ---
 
 export default function PageAdministration() {
+  const [recettes, setRecettes] = useState<Recette[]>(RECETTES_DATA);
+  const [depenses, setDepenses] = useState<Depense[]>(DEPENSES_DATA);
+
+  const totalRecettes = recettes.reduce((acc, r) => acc + r.montant, 0);
+  const totalDepenses = depenses.reduce((acc, d) => acc + d.montant, 0);
+
+  // La Trésorerie est calculée uniquement sur la base des données (fictives pour le moment) :
+  // Recettes réellement encaissées ("paye") - Dépenses
+  const totalPaye = recettes.filter(r => r.statut === "paye").reduce((acc, r) => acc + r.montant, 0);
+  const trésorerieActuelle = totalPaye - totalDepenses;
+
   return (
     <div className="min-h-screen bg-[#fffbef] font-sans pb-20 relative">
       <Toaster />
@@ -24,10 +37,10 @@ export default function PageAdministration() {
 
         {/* Ligne des cartes indicateurs clés */}
         <SimpleGrid gap={4} className="grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mb-12">
-          <IndicateurCle titre="Trésorerie actuelle" valeur={formatMontant(12540)} sousTexte="" />
-          <IndicateurCle titre="Recettes" valeur={formatMontant(8400)} sousTexte="attendues" />
+          <IndicateurCle titre="Trésorerie actuelle" valeur={formatMontant(trésorerieActuelle)} sousTexte="" />
+          <IndicateurCle titre="Recettes" valeur={formatMontant(totalRecettes)} sousTexte="réalisées" />
+          <IndicateurCle titre="Dépenses" valeur={formatMontant(totalDepenses)} sousTexte="payées" />
           <IndicateurCle titre="Spectacles en cours" valeur="5" sousTexte="spectacles actifs" />
-          <IndicateurCle titre="Dépenses" valeur={formatMontant(528)} sousTexte="réalisées" />
         </SimpleGrid>
 
         {/* Section principale avec les 3 colonnes */}
@@ -35,9 +48,9 @@ export default function PageAdministration() {
           gap={6}
           className="grid-cols-1 lg:grid-cols-[1.1fr_1.5fr_1.1fr] items-start min-w-0"
         >
-          <RecettesSection initialRecettes={RECETTES_DATA} />
+          <RecettesSection recettes={recettes} setRecettes={setRecettes} />
           <EquilibreFinancier spectacles={SPECTACLES_DATA} />
-          <DepensesSection initialDepenses={DEPENSES_DATA} />
+          <DepensesSection depenses={depenses} setDepenses={setDepenses} />
         </SimpleGrid>
       </Container>
     </div>

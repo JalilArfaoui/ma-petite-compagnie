@@ -20,7 +20,8 @@ export const formatMontant = (montant: number, showSign: boolean = false) => {
   const formatted = new Intl.NumberFormat("fr-FR", {
     style: "currency",
     currency: "EUR",
-    maximumFractionDigits: 0,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(Math.abs(montant));
 
   if (showSign) {

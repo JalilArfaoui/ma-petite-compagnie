@@ -7,8 +7,13 @@ import { ModalAjoutRapide } from "../modals";
 import { Depense } from "./types";
 import { NoteInfo, FadeContainer, ItemFinancierCard, VoirToutLink } from "./shared";
 
-export function DepensesSection({ initialDepenses }: { initialDepenses: Depense[] }) {
-  const [depenses, setDepenses] = useState<Depense[]>(initialDepenses);
+export function DepensesSection({ 
+  depenses, 
+  setDepenses 
+}: { 
+  depenses: Depense[]; 
+  setDepenses: React.Dispatch<React.SetStateAction<Depense[]>>;
+}) {
 
   const totalDepenses = depenses.reduce((acc, d) => acc + d.montant, 0);
 
@@ -22,7 +27,7 @@ export function DepensesSection({ initialDepenses }: { initialDepenses: Depense[
       nom: data.nom,
       date: new Date().toISOString().split("T")[0],
       montant: data.montant,
-      spectacles: [],
+      spectacles: data.spectacles || [],
     };
     setDepenses([nouvelleDepense, ...depenses]);
     toaster.success({

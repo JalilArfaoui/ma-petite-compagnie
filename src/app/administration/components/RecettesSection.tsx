@@ -7,8 +7,13 @@ import { ModalAjoutRapide } from "../modals";
 import { Recette } from "./types";
 import { NoteInfo, FadeContainer, ItemFinancierCard, VoirToutLink } from "./shared";
 
-export function RecettesSection({ initialRecettes }: { initialRecettes: Recette[] }) {
-  const [recettes, setRecettes] = useState<Recette[]>(initialRecettes);
+export function RecettesSection({ 
+  recettes, 
+  setRecettes 
+}: { 
+  recettes: Recette[]; 
+  setRecettes: React.Dispatch<React.SetStateAction<Recette[]>>;
+}) {
   const [showFactures, setShowFactures] = useState(true);
   const [showSubventions, setShowSubventions] = useState(true);
 
@@ -37,9 +42,9 @@ export function RecettesSection({ initialRecettes }: { initialRecettes: Recette[
       nom: data.nom,
       montant: data.montant,
       date: new Date().toISOString().split("T")[0],
-      type: "facture",
-      statut: "en_attente",
-      spectacles: [],
+      type: data.type,
+      statut: data.statut,
+      spectacles: data.spectacles || [],
     };
     setRecettes([nouvelle, ...recettes]);
     toaster.success({ title: "Recette ajoutée" });

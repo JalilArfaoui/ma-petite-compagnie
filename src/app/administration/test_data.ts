@@ -1,13 +1,32 @@
-import { Recette, SpectacleEquilibre, Depense } from "./components";
+import { Recette, SpectacleEquilibre, Depense } from "./components/types";
+
+export const LISTE_SPECTACLES = [
+  "Le Misanthrope",
+  "Le Nuit des Rois",
+  "Les Fourberies de Scapin",
+  "Le malade imaginaire",
+  "Antigone",
+  "L'Avare",
+  "Cyrano de Bergerac"
+];
 
 export const RECETTES_DATA: Recette[] = [
+  {
+    id: "r-init",
+    nom: "Fonds de roulement initial",
+    type: "financement",
+    date: "2025-12-01",
+    spectacles: [],
+    montant: 10600.83,
+    statut: "paye",
+  },
   {
     id: "r1",
     nom: "Théâtre municipal des Lices",
     type: "facture",
     date: "2026-01-27",
     spectacles: ["Le Misanthrope"],
-    montant: 750,
+    montant: 750.50,
     statut: "paye",
   },
   {
@@ -16,7 +35,7 @@ export const RECETTES_DATA: Recette[] = [
     type: "facture",
     date: "2026-01-17",
     spectacles: [],
-    montant: 300,
+    montant: 300.25,
     statut: "paye",
   },
   {
