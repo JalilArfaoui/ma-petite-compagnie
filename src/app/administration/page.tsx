@@ -1,4 +1,4 @@
-import { Heading, Container, Stack, Text, SimpleGrid } from "@/components/ui";
+import { Heading, Container, Stack, Text, SimpleGrid, Toaster } from "@/components/ui";
 import { FaBars } from "react-icons/fa";
 import {
   IndicateurCle,
@@ -14,6 +14,7 @@ import { FACTURES_DATA, PAIEMENTS_DATA, SPECTACLES_DATA, FINANCEMENTS_DATA } fro
 export default function PageAdministration() {
   return (
     <div className="min-h-screen bg-[#fffbef] font-sans pb-20 relative">
+      <Toaster />
       <Container maxW="max-w-6xl" className="mx-auto pt-16 px-4">
         {/* En-tête de la page */}
         <Stack className="mb-10">

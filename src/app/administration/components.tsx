@@ -1,6 +1,6 @@
 "use client";
 
-import { Text, Badge, Tooltip, Card, Link } from "@/components/ui";
+import { Text, Badge, Tooltip, Card, Link, toaster } from "@/components/ui";
 import { FaExclamationTriangle, FaCheck } from "react-icons/fa";
 import { formatDateFr, formatMontant } from "./utils";
 
@@ -213,10 +213,19 @@ export function EquilibreFinancier({ spectacles }: { spectacles: SpectacleEquili
 
 // Bouton pour marquer un élément comme reçu ou payé
 export function BoutonValider({ onClick }: { onClick?: () => void }) {
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    toaster.success({
+      title: "Financements/subventions validé",
+      description: "Le statut a été mis à jour avec succès.",
+    });
+    if (onClick) onClick();
+  };
+
   return (
     <Tooltip label="Marquer comme reçu">
       <button
-        onClick={onClick}
+        onClick={handleClick}
         className="ml-auto text-green-600 hover:bg-green-50 p-1 rounded-full bg-white border border-gray-100 shadow-sm cursor-pointer"
         title="Valider"
       >
