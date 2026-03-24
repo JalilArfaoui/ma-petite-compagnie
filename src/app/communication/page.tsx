@@ -10,8 +10,10 @@ export default function ContactPage() {
     <Box className=" py-5 flex-col items-center gap-4">
       <Toaster />
       <CSVContactImport
-        requiredAttributes={["nom", "prenom"]}
-        optionnalAttributes={["email"]}
+        attributs={{
+          attributsObligatoire: ["Nom", "Prénom"],
+          attributsOptionnels: ["Email", "Notes", "Téléphone", "Ville", "Adresse"],
+        }}
         onCSVRead={csvToContacts}
       ></CSVContactImport>
       <Stack
