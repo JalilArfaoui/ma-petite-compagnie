@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Text, Badge, Tooltip, Card, Link, toaster } from "@/components/ui";
-import { FaExclamationTriangle, FaCheck } from "react-icons/fa";
+import { Text, Badge, Tooltip, Card, Link, toaster, Alert } from "@/components/ui";
+import { FaExclamationTriangle, FaCheck, FaInfoCircle } from "react-icons/fa";
 import { formatDateFr, formatMontant } from "./utils";
 
 // ===== Variables CSS partagées =====
@@ -53,6 +53,23 @@ export function IndicateurCle({
         <Text className="text-gray-500">{sousTexte}</Text>
       </div>
     </Card>
+  );
+}
+
+// Composant de note d'information réutilisable (basé sur Alert)
+export function NoteInfo({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return (
+    <Alert
+      status="info"
+      className={`mb-4 py-2 px-3 border-none flex items-center gap-0 ${className}`}
+    >
+      <Alert.Icon className="mr-2">
+        <FaInfoCircle size={12} />
+      </Alert.Icon>
+      <Alert.Description className="text-[11px] leading-tight m-0 p-0">
+        {children}
+      </Alert.Description>
+    </Alert>
   );
 }
 
@@ -161,6 +178,10 @@ export function RecettesSection({ initialRecettes }: { initialRecettes: Recette[
 
   return (
     <Card title={`Recettes (${formatMontant(totalRecettes)})`} className="h-full bg-white">
+      <NoteInfo>
+        Note : ces montants incluent les recettes en attente (vision prévisionnelle).
+      </NoteInfo>
+
       <SousSectionEntete titre="Factures" montant={totalFactures} couleur="green" />
       {renderListe(factures)}
 
@@ -252,7 +273,12 @@ export function BarreBudget({
 // Section Équilibre Financier des Spectacles
 export function EquilibreFinancier({ spectacles }: { spectacles: SpectacleEquilibre[] }) {
   return (
-    <Card title="Spectacles : équilibre financier (budget / réalisé)" className="h-full bg-white">
+    <Card title="Équilibre financier des spectacles" className="h-full bg-white">
+      <NoteInfo>
+        Cette section compare le budget prévisionnel avec les dépenses et recettes réellement
+        réalisées pour chaque spectacle.
+      </NoteInfo>
+
       <div className="flex flex-col gap-4">
         {spectacles.map((spec, idx) => (
           <Card key={idx} className="p-4 bg-white !gap-0 shadow-sm border border-gray-100">
@@ -279,6 +305,10 @@ export function EquilibreFinancier({ spectacles }: { spectacles: SpectacleEquili
             </div>
           </Card>
         ))}
+      </div>
+
+      <div className="text-right mt-6">
+        <Link href="#">Voir les détails</Link>
       </div>
     </Card>
   );
