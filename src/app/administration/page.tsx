@@ -14,12 +14,6 @@ import { FACTURES_DATA, PAIEMENTS_DATA, SPECTACLES_DATA, FINANCEMENTS_DATA } fro
 export default function PageAdministration() {
   return (
     <div className="min-h-screen bg-[#fffbef] font-sans pb-20 relative">
-      {/* Bouton de menu déroulant en haut à gauche */}
-      {/* Simule un bouton (code mort) avant que le groupe SOCLE implémente la sidebar dépliable */}
-      <div className="absolute top-6 left-6 flex items-center gap-2 cursor-pointer text-gray-600 hover:text-primary transition-colors">
-        <FaBars className="text-xl" />
-      </div>
-
       <Container maxW="max-w-6xl" className="mx-auto pt-16 px-4">
         {/* En-tête de la page */}
         <Stack className="mb-10">
