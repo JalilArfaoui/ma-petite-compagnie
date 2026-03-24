@@ -2,12 +2,12 @@ import { Heading, Container, Stack, Text, SimpleGrid, Toaster } from "@/componen
 import { FaBars } from "react-icons/fa";
 import {
   IndicateurCle,
-  FacturesAvenir,
+  RecettesSection,
   EquilibreFinancier,
-  FinancementsSubventions,
+  DepensesSection,
 } from "./components";
 import { formatMontant } from "./utils";
-import { FACTURES_DATA, PAIEMENTS_DATA, SPECTACLES_DATA, FINANCEMENTS_DATA } from "./test_data";
+import { RECETTES_DATA, DEPENSES_DATA, SPECTACLES_DATA } from "./test_data";
 
 // --- Page Principale ---
 
@@ -30,21 +30,16 @@ export default function PageAdministration() {
         {/* Ligne des cartes indicateurs clés */}
         <SimpleGrid gap={4} className="grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mb-12">
           <IndicateurCle titre="Trésorerie actuelle" valeur={formatMontant(12540)} sousTexte="" />
-          <IndicateurCle titre="Factures" valeur={formatMontant(320)} sousTexte="attendus" />
+          <IndicateurCle titre="Recettes" valeur={formatMontant(8400)} sousTexte="attendues" />
           <IndicateurCle titre="Spectacles en cours" valeur="5" sousTexte="spectacles actifs" />
-          <IndicateurCle titre="Financements" valeur="4" sousTexte="dossiers en attente" />
+          <IndicateurCle titre="Dépenses" valeur={formatMontant(528)} sousTexte="réalisées" />
         </SimpleGrid>
 
         {/* Section principale avec les 3 colonnes */}
         <SimpleGrid gap={6} className="grid-cols-1 lg:grid-cols-[1fr_2fr_1fr] items-start">
-          <FacturesAvenir
-            factures={FACTURES_DATA}
-            paiements={PAIEMENTS_DATA}
-            totalFactures={1050}
-            totalPaiements={-528}
-          />
+          <RecettesSection initialRecettes={RECETTES_DATA} />
           <EquilibreFinancier spectacles={SPECTACLES_DATA} />
-          <FinancementsSubventions financements={FINANCEMENTS_DATA} />
+          <DepensesSection initialDepenses={DEPENSES_DATA} />
         </SimpleGrid>
       </Container>
     </div>

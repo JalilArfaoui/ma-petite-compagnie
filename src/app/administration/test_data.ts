@@ -1,32 +1,68 @@
-import { ItemFinancier, SpectacleEquilibre, FinancementSubvention } from "./components";
+import { Recette, SpectacleEquilibre, Depense } from "./components";
 
-export const FACTURES_DATA: ItemFinancier[] = [
+export const RECETTES_DATA: Recette[] = [
   {
-    destinataire: "Théâtre municipal des Lices",
+    id: "r1",
+    nom: "Théâtre municipal des Lices",
+    type: "facture",
     date: "2026-01-27",
     montant: 750,
-    statut: "recue",
-  },
-  {
-    destinataire: "Mairie Gaillac",
-    date: "2026-01-17",
-    montant: 300,
-    statut: "recue",
-  },
-];
-
-export const PAIEMENTS_DATA: ItemFinancier[] = [
-  {
-    destinataire: "Décorations scène",
-    date: "2026-01-22",
-    montant: 400,
     statut: "paye",
   },
   {
-    destinataire: "Loyer local de répét",
+    id: "r2",
+    nom: "Mairie Gaillac",
+    type: "facture",
+    date: "2026-01-17",
+    montant: 300,
+    statut: "paye",
+  },
+  {
+    id: "r2-pending",
+    nom: "Théâtre de Cordes",
+    type: "facture",
+    date: "2026-02-10",
+    montant: 450,
+    statut: "en_attente",
+  },
+  {
+    id: "r3",
+    nom: "DRAC Occitanie",
+    type: "financement",
+    spectacle: "Le Misanthrope",
+    montant: 5000,
+    statut: "en_attente",
+  },
+  {
+    id: "r4",
+    nom: "Ville d'Albi",
+    type: "financement",
+    spectacle: "Le Nuit des Rois",
+    montant: 1150,
+    statut: "paye",
+  },
+  {
+    id: "r5",
+    nom: "Conseil départemental",
+    type: "financement",
+    spectacle: "Le malade imaginaire",
+    montant: 750,
+    statut: "en_attente",
+  },
+];
+
+export const DEPENSES_DATA: Depense[] = [
+  {
+    id: "d1",
+    nom: "Décorations scène",
+    date: "2026-01-22",
+    montant: 400,
+  },
+  {
+    id: "d2",
+    nom: "Loyer local de répét",
     date: "2026-01-22",
     montant: 128,
-    statut: "non_paye",
   },
 ];
 
@@ -43,26 +79,5 @@ export const SPECTACLES_DATA: SpectacleEquilibre[] = [
     nom: "Antigone",
     pourcentageConsomme: 22,
     montant: -1200,
-  },
-];
-
-export const FINANCEMENTS_DATA: FinancementSubvention[] = [
-  {
-    organisme: "DRAC Occitanie",
-    spectacle: "Le Misanthrope",
-    montant: 5000,
-    statut: "en_attente",
-  },
-  {
-    organisme: "Ville d'Albi",
-    spectacle: "Le Nuit des Rois",
-    montant: 1150,
-    statut: "recu",
-  },
-  {
-    organisme: "Conseil départemental",
-    spectacle: "Le malade imaginaire",
-    montant: 750,
-    statut: "en_attente",
   },
 ];
