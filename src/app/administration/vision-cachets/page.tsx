@@ -60,7 +60,7 @@ export default function VisionCachetsPage() {
         Liste des cachets
       </Heading>
 
-      <div className="mx-auto max-w-4xl bg-hover p-[20px] border-none shadow-sm transition-shadow flex flex-col gap-[20px]">
+      <div className="mx-auto max-w-4xl bg-hover p-5 border-none shadow-sm transition-shadow flex flex-col gap-5">
         <Heading as="h4" className="font-semibold">
           Filtrer par spectacle
         </Heading>
@@ -72,7 +72,9 @@ export default function VisionCachetsPage() {
         >
           <option value="tous">Tous les spectacles</option>
           {[...new Set(CACHETS_DATA.map((c) => c.spectacle))].map((s) => (
-            <option key={s} value={s}>{s}</option>
+            <option key={s} value={s}>
+              {s}
+            </option>
           ))}
         </select>
 
