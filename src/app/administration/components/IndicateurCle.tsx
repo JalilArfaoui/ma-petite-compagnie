@@ -20,9 +20,7 @@ export function IndicateurCle({
         return (
           <>
             {match[1]}
-            <span className="text-[0.65em] font-medium opacity-70 ml-[2px]">
-              {match[2]}
-            </span>
+            <span className="text-[0.65em] font-medium opacity-70 ml-[2px]">{match[2]}</span>
           </>
         );
       }

@@ -7,11 +7,11 @@ import { ModalAjoutRapide } from "../modals";
 import { Recette } from "./types";
 import { NoteInfo, FadeContainer, ItemFinancierCard, VoirToutLink } from "./shared";
 
-export function RecettesSection({ 
-  recettes, 
-  setRecettes 
-}: { 
-  recettes: Recette[]; 
+export function RecettesSection({
+  recettes,
+  setRecettes,
+}: {
+  recettes: Recette[];
   setRecettes: React.Dispatch<React.SetStateAction<Recette[]>>;
 }) {
   const [showFactures, setShowFactures] = useState(true);
@@ -41,10 +41,11 @@ export function RecettesSection({
       id: `r-temp-${Date.now()}`,
       nom: data.nom,
       montant: data.montant,
-      date: new Date().toISOString().split("T")[0],
+      date: data.date,
       type: data.type,
       statut: data.statut,
       spectacles: data.spectacles || [],
+      fichier: data.fichier,
     };
     setRecettes([nouvelle, ...recettes]);
     toaster.success({ title: "Recette ajoutée" });

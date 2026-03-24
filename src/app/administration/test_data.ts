@@ -7,7 +7,7 @@ export const LISTE_SPECTACLES = [
   "Le malade imaginaire",
   "Antigone",
   "L'Avare",
-  "Cyrano de Bergerac"
+  "Cyrano de Bergerac",
 ];
 
 export const RECETTES_DATA: Recette[] = [
@@ -26,7 +26,7 @@ export const RECETTES_DATA: Recette[] = [
     type: "facture",
     date: "2026-01-27",
     spectacles: ["Le Misanthrope"],
-    montant: 750.50,
+    montant: 750.5,
     statut: "paye",
   },
   {

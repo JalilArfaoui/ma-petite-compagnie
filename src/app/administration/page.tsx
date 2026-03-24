@@ -2,7 +2,14 @@
 
 import { useState } from "react";
 import { Heading, Container, Stack, Text, SimpleGrid, Toaster } from "@/components/ui";
-import { IndicateurCle, RecettesSection, EquilibreFinancier, DepensesSection, Recette, Depense } from "./components";
+import {
+  IndicateurCle,
+  RecettesSection,
+  EquilibreFinancier,
+  DepensesSection,
+  Recette,
+  Depense,
+} from "./components";
 import { formatMontant } from "./utils";
 import { RECETTES_DATA, DEPENSES_DATA, SPECTACLES_DATA } from "./test_data";
 
@@ -16,8 +23,10 @@ export default function PageAdministration() {
   const totalDepenses = depenses.reduce((acc, d) => acc + d.montant, 0);
 
   // La Trésorerie est calculée uniquement sur la base des données (fictives pour le moment) :
-  // Recettes réellement encaissées ("paye") - Dépenses
-  const totalPaye = recettes.filter(r => r.statut === "paye").reduce((acc, r) => acc + r.montant, 0);
+  // Recettes réellement encaissées (avec le statut "paye") - Dépenses
+  const totalPaye = recettes
+    .filter((r) => r.statut === "paye")
+    .reduce((acc, r) => acc + r.montant, 0);
   const trésorerieActuelle = totalPaye - totalDepenses;
 
   return (
@@ -37,9 +46,21 @@ export default function PageAdministration() {
 
         {/* Ligne des cartes indicateurs clés */}
         <SimpleGrid gap={4} className="grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mb-12">
-          <IndicateurCle titre="Trésorerie actuelle" valeur={formatMontant(trésorerieActuelle)} sousTexte="" />
-          <IndicateurCle titre="Recettes" valeur={formatMontant(totalRecettes)} sousTexte="réalisées" />
-          <IndicateurCle titre="Dépenses" valeur={formatMontant(totalDepenses)} sousTexte="payées" />
+          <IndicateurCle
+            titre="Trésorerie actuelle"
+            valeur={formatMontant(trésorerieActuelle)}
+            sousTexte=""
+          />
+          <IndicateurCle
+            titre="Recettes"
+            valeur={formatMontant(totalRecettes)}
+            sousTexte="réalisées"
+          />
+          <IndicateurCle
+            titre="Dépenses"
+            valeur={formatMontant(totalDepenses)}
+            sousTexte="payées"
+          />
           <IndicateurCle titre="Spectacles en cours" valeur="5" sousTexte="spectacles actifs" />
         </SimpleGrid>
 
