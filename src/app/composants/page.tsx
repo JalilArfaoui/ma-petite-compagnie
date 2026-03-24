@@ -20,13 +20,10 @@ import {
   Text,
   Icon,
   SearchBar,
-<<<<<<< HEAD
   Toaster,
-=======
+  toaster,
   Modal,
->>>>>>> caa3374 (modals)
 } from "@/components/ui";
-import { toaster } from "@/components/ui/Toast/toaster";
 import { FaHome } from "react-icons/fa";
 
 export default function Home() {
