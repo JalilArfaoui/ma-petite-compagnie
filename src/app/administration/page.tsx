@@ -1,11 +1,6 @@
 import { Heading, Container, Stack, Text, SimpleGrid, Toaster } from "@/components/ui";
 import { FaBars } from "react-icons/fa";
-import {
-  IndicateurCle,
-  RecettesSection,
-  EquilibreFinancier,
-  DepensesSection,
-} from "./components";
+import { IndicateurCle, RecettesSection, EquilibreFinancier, DepensesSection } from "./components";
 import { formatMontant } from "./utils";
 import { RECETTES_DATA, DEPENSES_DATA, SPECTACLES_DATA } from "./test_data";
 
@@ -36,7 +31,10 @@ export default function PageAdministration() {
         </SimpleGrid>
 
         {/* Section principale avec les 3 colonnes */}
-        <SimpleGrid gap={6} className="grid-cols-1 lg:grid-cols-[1fr_2fr_1fr] items-start">
+        <SimpleGrid
+          gap={6}
+          className="grid-cols-1 lg:grid-cols-[1.1fr_1.5fr_1.1fr] items-start min-w-0"
+        >
           <RecettesSection initialRecettes={RECETTES_DATA} />
           <EquilibreFinancier spectacles={SPECTACLES_DATA} />
           <DepensesSection initialDepenses={DEPENSES_DATA} />
