@@ -4,6 +4,7 @@ import { Heading, Link, Box, Button, Stack, Text } from "@/components/ui";
 import { Toaster } from "@/components/ui/Toast/toaster";
 import { ContactTable } from "./components/ContactTable";
 import { CSVContactImport } from "./components/CSVContactImport";
+import { csvToContacts } from "./action/CSVToContacts";
 export default function ContactPage() {
   return (
     <Box className=" py-5 flex-col items-center gap-4">

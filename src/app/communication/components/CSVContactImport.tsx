@@ -6,7 +6,6 @@ async function readCSV(colonnes: string[], file: File): Promise<Record<string, s
   const text = await file.text();
 
   const rows = text.split("\n").map((row) => row.split(","));
-  console.log(rows);
   const datas: Record<string, string>[] = [];
   rows.forEach((row, i) => {
     if (i === 0) return; // Skip header
@@ -14,7 +13,8 @@ async function readCSV(colonnes: string[], file: File): Promise<Record<string, s
     const obj: Record<string, string> = {};
 
     colonnes.forEach((colonne, index) => {
-      obj[colonne] = row[index] || ""; // associe le champ à la valeur de la colonne
+      const r = row[index].replace("\r", "") || "";
+      obj[colonne] = r; // associe le champ à la valeur de la colonne
     });
 
     datas.push(obj);
@@ -43,7 +43,7 @@ export function CSVContactImport({
     const datas = await readCSV(champs, file);
     onCSVRead(datas);
   };
-  function changeChamps(index: number, newType: string) {
+  function updateChamps(index: number, newType: string) {
     setChamps((prev) =>
       prev.map((champ, i) => {
         const result = i === index ? newType : champ;
@@ -116,7 +116,7 @@ export function CSVContactImport({
                   </Box>
                   <select
                     defaultValue={attributeChamp}
-                    onChange={(e) => changeChamps(i, e.target.value)}
+                    onChange={(e) => updateChamps(i, e.target.value)}
                   >
                     {attributes.map((attribute, indexAttribute) => {
                       return (
