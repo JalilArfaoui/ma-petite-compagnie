@@ -6,6 +6,7 @@ import {Box, Button, Input, Select, SimpleGrid, Modal, Field} from "@/components
 import {CreateLieuForm} from "@/app/composants/lieux/CreateLieuForm";
 import {CreateCategorieForm} from "@/app/composants/categories/CreateCategorieForm";
 import {creerEvenement} from "@/app/actions/evenement";
+import {DialogContent, DialogTitle} from "@radix-ui/react-dialog";
 
 type Props = {
   onSuccess?: (evenement: Evenement) => void;
@@ -150,28 +151,41 @@ export function CreateEvenementForm({
       {showCreateLieu && (
           <Modal
               open={showCreateLieu}
-              onClose={() => setShowCreateLieu(false)}>
-            <CreateLieuForm
-                idCompagnie={compagnieId}
-                onSuccess={() => {
-                  setShowCreateLieu(false)
-                }}
-                onCancel={() => setShowCreateLieu(false)}
-            />
+              onOpenChange={setShowCreateLieu}
+          >
+            <Modal.Header>
+              <Modal.Title>Lieu</Modal.Title>
+              <Modal.Description>
+                Créé un lieu s&#39;il n&#39;existe pas déjà
+              </Modal.Description>
+            </Modal.Header>
+            <Modal.Content>
+              <CreateLieuForm
+                  idCompagnie={compagnieId}
+                  onSuccess={() => setShowCreateLieu(false)}
+                  onCancel={() => setShowCreateLieu(false)}
+              />
+            </Modal.Content>
           </Modal>
       )}
         {showCreateCategorie && (
-            <Modal
-                open={showCreateCategorie}
-                onClose={() => setShowCreateCategorie(false)}>
+          <Modal
+          open={showCreateCategorie}
+            onOpenChange={setShowCreateCategorie}>
+            <Modal.Header>
+              <Modal.Title>Catégorie</Modal.Title>
+              <Modal.Description>
+                Créé une nouvelle catégorie si elle n&#39;existe pas déjà
+              </Modal.Description>
+            </Modal.Header>
+            <Modal.Content>
               <CreateCategorieForm
                   idCompagnie={compagnieId}
-                  onSuccess={() => {
-                    setShowCreateCategorie(false)
-                  }}
+                  onSuccess={() => setShowCreateCategorie(false)}
                   onCancel={() => setShowCreateCategorie(false)}
               />
-            </Modal>
+            </Modal.Content>
+          </Modal>
         )}
     </div>
   );
