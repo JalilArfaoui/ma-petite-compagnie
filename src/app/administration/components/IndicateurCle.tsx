@@ -29,7 +29,12 @@ export function IndicateurCle({
   };
 
   return (
-    <Card title={titre} className="h-full bg-white">
+    <Card
+      title={titre}
+      role="button"
+      tabIndex={0}
+      className="h-full bg-white cursor-pointer transition-all duration-200 hover:shadow-lg hover:translate-y-[-2px] active:scale-[0.98] group border border-transparent hover:border-primary-light/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light"
+    >
       <div className="flex items-baseline gap-2">
         <Text className="text-4xl text-gray-900">{renderValeur()}</Text>
         <Text className="text-gray-500">{sousTexte}</Text>
