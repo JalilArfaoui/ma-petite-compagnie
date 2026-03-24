@@ -1,18 +1,11 @@
 "use client";
 
-import { Heading, Text, Badge, Tooltip, type BadgeProps } from "@/components/ui";
+import { Text, Badge, Tooltip, Card } from "@/components/ui";
 import { FaExclamationTriangle, FaCheck } from "react-icons/fa";
 import { formatDateFr, formatMontant, formatStatut, getCouleurStatut } from "./utils";
 
 // ===== Variables CSS partagées =====
 const STYLES = {
-  // Conteneur principal des sections
-  sectionContainer: "bg-white rounded-xl p-5 border border-[#EBE5D9]",
-
-  // Petites cartes listant les éléments (factures, financements...)
-  itemCard: "bg-white p-3 rounded-lg border border-gray-100 shadow-sm",
-  itemCardFlex:
-    "bg-white p-3 rounded-lg border border-gray-100 shadow-sm flex justify-between items-center",
   textTitle: "font-bold text-sm text-gray-900",
   textSubtitle: "text-xs text-gray-500",
   linkButton: "text-sm text-gray-500 underline hover:text-gray-800",
@@ -51,13 +44,12 @@ export function IndicateurCle({
   sousTexte: string;
 }) {
   return (
-    <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 flex flex-col justify-center h-full">
-      <Text className="font-semibold mb-2">{titre}</Text>
+    <Card title={titre} className="h-full bg-white">
       <div className="flex items-baseline gap-2">
         <Text className="text-4xl text-gray-900">{valeur}</Text>
         <Text className="text-gray-500">{sousTexte}</Text>
       </div>
-    </div>
+    </Card>
   );
 }
 
@@ -97,21 +89,23 @@ export function ListeItemsFinanciers({
   return (
     <div className={`flex flex-col gap-3 ${className}`}>
       {items.map((item, idx) => (
-        <div key={idx} className={STYLES.itemCardFlex}>
-          <div>
-            <Text className={STYLES.textTitle}>{item.destinataire}</Text>
-            <Text className={STYLES.textSubtitle}>{formatDateFr(item.date)}</Text>
+        <Card key={idx} className="p-3 bg-white !gap-0">
+          <div className="flex justify-between items-center">
+            <div>
+              <Text className={STYLES.textTitle}>{item.destinataire}</Text>
+              <Text className={STYLES.textSubtitle}>{formatDateFr(item.date)}</Text>
+            </div>
+            <div className="flex flex-col items-end gap-1">
+              <Text className={STYLES.textTitle}>{formatMontant(item.montant)}</Text>
+              <Badge
+                variant={getCouleurStatut(item.statut)}
+                className="text-[10px] px-2 py-0 text-center"
+              >
+                {formatStatut(item.statut)}
+              </Badge>
+            </div>
           </div>
-          <div className="flex flex-col items-end gap-1">
-            <Text className={STYLES.textTitle}>{formatMontant(item.montant)}</Text>
-            <Badge
-              variant={getCouleurStatut(item.statut)}
-              className="text-[10px] px-2 py-0 text-center"
-            >
-              {formatStatut(item.statut)}
-            </Badge>
-          </div>
-        </div>
+        </Card>
       ))}
     </div>
   );
@@ -130,11 +124,7 @@ export function FacturesAvenir({
   totalPaiements?: number;
 }) {
   return (
-    <div className={STYLES.sectionContainer}>
-      <Heading as="h5" className="mb-4 text-gray-800">
-        Factures & paiements à venir
-      </Heading>
-
+    <Card title="Factures & paiements à venir" className="h-full bg-white">
       {/* En-tête Factures */}
       <SectionEntete titre="Factures" montant={totalFactures} type="factures" />
 
@@ -150,7 +140,7 @@ export function FacturesAvenir({
           Voir tout
         </a>
       </div>
-    </div>
+    </Card>
   );
 }
 
@@ -175,40 +165,50 @@ export function BarreBudget({
 // Section Équilibre Financier des Spectacles
 export function EquilibreFinancier({ spectacles }: { spectacles: SpectacleEquilibre[] }) {
   return (
-    <div className={STYLES.sectionContainer}>
-      <Heading as="h5" className="mb-6 text-gray-800">
-        Spectacles : équilibre financier (budget / réalisé)
-      </Heading>
-
-      <div className="flex flex-col gap-0 border-t border-gray-200">
+    <Card title="Spectacles : équilibre financier (budget / réalisé)" className="h-full bg-white">
+      <div className="flex flex-col gap-4">
         {spectacles.map((spec, idx) => (
-          <div
-            key={idx}
-            className="flex justify-between items-center py-4 border-b border-gray-200"
-          >
-            <Text className="text-sm text-gray-800 w-1/3">{spec.nom}</Text>
+          <Card key={idx} className="p-4 bg-white !gap-0">
+            <div className="flex justify-between items-center w-full">
+              <Text className="text-sm text-gray-800 w-1/3">{spec.nom}</Text>
 
-            <div className="flex-1 flex justify-center">
-              <BarreBudget
-                pourcentage={spec.pourcentageConsomme}
-                couleur={spec.montant >= 0 ? "green" : "red"}
-              />
-            </div>
+              <div className="flex-1 flex justify-center">
+                <BarreBudget
+                  pourcentage={spec.pourcentageConsomme}
+                  couleur={spec.montant >= 0 ? "green" : "red"}
+                />
+              </div>
 
-            <div className="w-1/3 text-right flex justify-end items-center gap-2">
-              {spec.montant < 0 && (
-                <span className="text-yellow-500 text-lg" title="Attention budget dépassé">
-                  <FaExclamationTriangle />
-                </span>
-              )}
-              <Text className="text-sm font-semibold text-gray-900 whitespace-nowrap">
-                {formatMontant(spec.montant, true)}
-              </Text>
+              <div className="w-1/3 text-right flex justify-end items-center gap-2">
+                {spec.montant < 0 && (
+                  <span className="text-yellow-500 text-lg" title="Attention budget dépassé">
+                    <FaExclamationTriangle />
+                  </span>
+                )}
+                <Text className="text-sm font-semibold text-gray-900 whitespace-nowrap">
+                  {formatMontant(spec.montant, true)}
+                </Text>
+              </div>
             </div>
-          </div>
+          </Card>
         ))}
       </div>
-    </div>
+    </Card>
+  );
+}
+
+// Bouton pour marquer un élément comme reçu ou payé
+export function BoutonValider({ onClick }: { onClick?: () => void }) {
+  return (
+    <Tooltip label="Marquer comme reçu">
+      <button
+        onClick={onClick}
+        className="ml-auto text-green-600 hover:bg-green-50 p-1 rounded-full bg-white border border-gray-100 shadow-sm cursor-pointer"
+        title="Valider"
+      >
+        <FaCheck size={10} />
+      </button>
+    </Tooltip>
   );
 }
 
@@ -219,36 +219,22 @@ export function FinancementsSubventions({
   financements: FinancementSubvention[];
 }) {
   return (
-    <div className={STYLES.sectionContainer}>
-      <Heading as="h5" className="mb-4 text-gray-800">
-        Financements & Subventions
-      </Heading>
-
+    <Card title="Financements & Subventions" className="h-full bg-white">
       <div className="flex flex-col gap-3 mb-4">
         {financements.map((fin, idx) => (
-          <div key={idx} className={STYLES.itemCard}>
-            <Text className={STYLES.textTitle}>{fin.organisme}</Text>
-            <Text className={`${STYLES.textSubtitle} mb-2`}>{fin.spectacle}</Text>
-            <div className="flex items-center gap-2 text-xs">
-              <span
-                className={`w-2 h-2 rounded-full ${fin.statut === "recu" ? "bg-[#53826A]" : "bg-[#F2C94C]"}`}
-              ></span>
-              <span className="font-bold text-gray-900">{formatMontant(fin.montant)}</span>
-              <span className={fin.statut === "recu" ? "text-[#53826A]" : "text-[#F2C94C]"}>
-                {formatStatut(fin.statut)}
-              </span>
-              {fin.statut === "en_attente" && (
-                <Tooltip label="Marquer comme reçu">
-                  <button
-                    className="ml-auto text-green-600 hover:bg-green-50 p-1 rounded-full bg-white border border-gray-100 shadow-sm cursor-pointer"
-                    title="Valider"
-                  >
-                    <FaCheck size={10} />
-                  </button>
-                </Tooltip>
-              )}
+          <Card key={idx} className="p-3 bg-white !gap-0">
+            <div className="flex flex-col gap-1">
+              <Text className={STYLES.textTitle}>{fin.organisme}</Text>
+              <Text className={`${STYLES.textSubtitle} mb-2`}>{fin.spectacle}</Text>
+              <div className="flex items-center gap-2 text-xs">
+                <Badge variant={getCouleurStatut(fin.statut)} className="text-[10px] px-2 py-0">
+                  {formatStatut(fin.statut)}
+                </Badge>
+                <span className="font-bold text-gray-900">{formatMontant(fin.montant)}</span>
+                {fin.statut === "en_attente" && <BoutonValider />}
+              </div>
             </div>
-          </div>
+          </Card>
         ))}
       </div>
 
@@ -257,6 +243,6 @@ export function FinancementsSubventions({
           Voir tout
         </a>
       </div>
-    </div>
+    </Card>
   );
 }
