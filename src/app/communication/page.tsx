@@ -4,6 +4,7 @@ import { listerContacts } from "./api/contact/contact";
 import { useEffect, useState } from "react";
 import { Contact } from "@prisma/client";
 import { ContactCard } from "./components/ContactCard";
+import "../globals.css";
 import { toaster } from "@/components/ui/Toast/toaster";
 export default function ContactPage() {
   const [contacts, setContacts] = useState<Contact[]>([]);
@@ -19,15 +20,15 @@ export default function ContactPage() {
     loadContact();
   }, []);
   return (
-    <Box paddingY={5} display="flex" flexDirection="column" alignItems="center" gap={4}>
-      <Stack gap={5} alignItems={"center"}>
+    <Box className=" py-5 flex-col items-center gap-4">
+      <Stack className="gap-5 items-center">
         <Heading as="h3">Page de contact </Heading>
         <Link href="./communication/contact">
-          <Button scale={0.9}>Créer un contact</Button>
+          <Button className=" scale-0.9">Créer un contact</Button>
         </Link>
       </Stack>
 
-      <SimpleGrid columns={[1, null, 3]} gap={10}>
+      <SimpleGrid className="columns-1 lg:columns-3" gap={10}>
         {contacts.map((contact) => (
           <ContactCard key={contact.id} contact={contact} />
         ))}
