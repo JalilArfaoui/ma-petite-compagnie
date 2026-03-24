@@ -1,6 +1,10 @@
 "use client"
 
 import { CreateEvenementForm } from "@/app/composants/evenements/CreateEvenementForm"
+
+export default function CreateEvenementPage() {
+
+    
 import {getCategories} from "@/app/actions/categorie";
 import {getLieux} from "@/app/actions/lieu";
 import {useState, useEffect} from "react";
