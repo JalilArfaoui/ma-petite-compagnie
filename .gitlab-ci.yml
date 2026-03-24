@@ -1,0 +1,44 @@
+image: node:22-alpine
+
+stages:
+  - quality
+  - test
+  - build
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+
+before_script:
+  - npm ci
+
+lint:
+  stage: quality
+  script:
+    - npm run lint
+
+format:
+  stage: quality
+  script:
+    - npm run format:check
+
+typecheck:
+  stage: quality
+  script:
+    - npx tsc --noEmit
+
+test:
+  stage: test
+  script:
+    - npm run test
+
+build:
+  stage: build
+  script:
+    - npm run db:generate
+    - npm run build
+  artifacts:
+    paths:
+      - .next/
+    expire_in: 1 day
