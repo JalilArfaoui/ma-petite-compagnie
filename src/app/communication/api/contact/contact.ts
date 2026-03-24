@@ -123,3 +123,65 @@ export async function listerContacts(paginationTaille: number = 10, page: number
     return resultOf(false, "Erreur lors de la récupération des contacts", null);
   }
 }
+
+export async function modifierContact(contactId: number, nouveauContact: ContactInformation) {
+  const verificationResultat = validerContact(nouveauContact);
+  if (!verificationResultat.succes) {
+    return verificationResultat;
+  }
+  if (nouveauContact.email) {
+    const contactExistant = await prisma.contact.findFirst({
+      where: {
+        email: nouveauContact.email,
+        NOT: { id: contactId },
+      },
+    });
+    if (contactExistant) {
+      return resultOf(
+        false,
+        "Cet email est déjà utilisé. Veuillez utiliser un email différent.",
+        null
+      );
+    }
+  }
+  try {
+    const contactModifie = await prisma.contact.update({
+      where: { id: contactId },
+      data: { ...nouveauContact },
+    });
+    return resultOf(true, "", contactModifie);
+  } catch (error) {
+    return resultOf(false, "Le contact n'existe pas ou n'a pas pu être modifié.", null);
+  }
+}
+
+export async function supprimerContact(id: number) {
+  try {
+    return await resultOf(true, "", prisma.contact.delete({ where: { id: id } }));
+  } catch (error) {
+    return resultOf(false, "Le contact n'a pas pu être supprimé", null);
+  }
+}
+
+export async function supprimerContactAvecNom(nom: string) {
+  try {
+    return await resultOf(true, "", prisma.contact.deleteMany({ where: { nom: nom } }));
+  } catch (error) {
+    return resultOf(false, "Le contact n'a pas pu être supprimé", null);
+  }
+}
+export async function supprimerContactsAvecEmail(email: string) {
+  try {
+    return await resultOf(true, "", prisma.contact.deleteMany({ where: { email: email } }));
+  } catch (error) {
+    return resultOf(false, "Le contact n'a pas pu être supprimé", null);
+  }
+}
+
+export async function trouverParIdContact(id: number) {
+  const contact = await prisma.contact.findUnique({ where: { id: id } });
+  if (!contact) {
+    return resultOf(false, "Le contact n'existe pas.", null);
+  }
+  return resultOf(true, "", contact);
+}

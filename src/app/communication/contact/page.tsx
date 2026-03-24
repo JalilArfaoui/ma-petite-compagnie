@@ -3,7 +3,7 @@ import { Heading, Link, Box } from "@/components/ui";
 import ContactDetails from "../components/contactDetails";
 import { creerContactAction } from "../action/contactFormAction";
 
-import { toaster } from "@/components/ui/Toast/toaster";
+import { Toaster, toaster } from "@/components/ui/Toast/toaster";
 
 export function ContactCreation() {
   async function onSubmit(FormData: FormData) {
@@ -22,6 +22,7 @@ export function ContactCreation() {
   }
   return (
     <Box alignContent={"center"}>
+      <Toaster />
       <Box textAlign={"center"}>
         <Heading as={"h3"}>Création d&rsquo;un contact</Heading>
       </Box>
