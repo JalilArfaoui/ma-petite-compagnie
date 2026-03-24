@@ -35,10 +35,7 @@ export default function PageAdministration() {
         </SimpleGrid>
 
         {/* Section principale avec les 3 colonnes */}
-        <SimpleGrid
-          gap={6}
-          className="grid-cols-1 lg:grid-cols-[1fr_2fr_1fr] items-start"
-        >
+        <SimpleGrid gap={6} className="grid-cols-1 lg:grid-cols-[1fr_2fr_1fr] items-start">
           <FacturesAvenir
             factures={FACTURES_DATA}
             paiements={PAIEMENTS_DATA}
