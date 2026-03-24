@@ -1,8 +1,13 @@
 "use client";
-import { Box, Button, Input, Modal, Stack, Text } from "@/components/ui";
+import { Box, Button, Input, Modal, Stack, Table, Text } from "@/components/ui";
 import { useRef, useState } from "react";
 
-async function readCSV(colonnes: string[], file: File): Promise<Record<string, string>[]> {
+async function readCSV(
+  champsObjets: string[],
+  champsCSVChoisie: string[],
+  champsCSV: string[],
+  file: File
+): Promise<Record<string, string>[]> {
   const text = await file.text();
 
   const rows = text.split("\n").map((row) => row.split(","));
@@ -11,16 +16,25 @@ async function readCSV(colonnes: string[], file: File): Promise<Record<string, s
     if (i === 0) return; // Skip header
 
     const obj: Record<string, string> = {};
-
-    colonnes.forEach((colonne, index) => {
-      const r = row[index].replace("\r", "") || "";
-      obj[colonne] = r; // associe le champ à la valeur de la colonne
+    console.log(row);
+    champsCSVChoisie.forEach((champChoisie, index) => {
+      if (champChoisie !== "Aucun") {
+        const r = row[champsCSV.indexOf(champChoisie) - 1].replace("\r", "") || "";
+        console.log(r);
+        obj[index] = r; // associe le champ à la valeur de la colonne
+      }
     });
 
     datas.push(obj);
   });
   return datas;
 }
+
+type CSVAttribute = {
+  name: string;
+  required: boolean;
+};
+
 export function CSVContactImport({
   requiredAttributes,
   optionnalAttributes,
@@ -30,17 +44,26 @@ export function CSVContactImport({
   optionnalAttributes: string[];
   onCSVRead: (donnees: Record<string, string>[]) => void;
 }) {
+  const CSVAttributes: CSVAttribute[] = [
+    ...requiredAttributes.map((attribute) => {
+      return { name: attribute, champDuCSV: "", required: true };
+    }),
+    ...optionnalAttributes.map((attribute) => {
+      return { name: attribute, champDuCSV: "", required: false };
+    }),
+  ];
   const attributes = [...requiredAttributes, ...optionnalAttributes];
-
+  const [champsCSV, setChampsCSV] = useState<string[]>([]);
   const modal = useRef<HTMLButtonElement>(null);
   const inputFile = useRef<HTMLInputElement>(null);
-  const [champs, setChamps] = useState<string[]>(requiredAttributes ?? []);
+  const [champs, setChamps] = useState<string[]>(attributes);
   const [erreur, setErreur] = useState("");
   const handleFile = async (input: HTMLInputElement) => {
     const file = input.files?.[0];
     if (!file) return;
-
-    const datas = await readCSV(champs, file);
+    console.log(champsCSV);
+    console.log(champs);
+    const datas = await readCSV(attributes, champs, champsCSV, file);
     onCSVRead(datas);
   };
   function updateChamps(index: number, newType: string) {
@@ -51,21 +74,39 @@ export function CSVContactImport({
       })
     );
   }
+
+  function champObligatoireNonChoisi() {
+    console.log(champs);
+    return champs.find((champ, i) => {
+      const CSVAttribute = CSVAttributes.at(i);
+
+      return CSVAttribute?.required ? champ === "Aucun" : false;
+    });
+  }
   function champsDoublon() {
     return champs.find((champ, i) => {
-      return champs.find((champ2, i2) => i !== i2 && champ === champ2);
+      return champs.find((champ2, i2) => i !== i2 && champ !== "Aucun" && champ === champ2);
     });
   }
-  function champsContientRequiredAttributes() {
-    return requiredAttributes.every((attribute) => champs.includes(attribute));
-  }
-  function addChamp() {
-    setChamps((prev) => [...prev, ""]);
-  }
-  function supprimerColonne(i: number) {
-    setChamps((prev) => {
-      return prev.filter((champs, inedx) => i !== inedx);
+
+  async function lireChampCSV(input: HTMLInputElement) {
+    const file = input.files?.[0];
+    if (!file) return;
+
+    const text = await file.text();
+
+    let header = text.split("\n").map((row) => row.split(","))[0];
+    console.log(header);
+    header = header.map((texte) => {
+      return texte.replace("\r", "");
     });
+
+    setChampsCSV(["Aucun", ...header]);
+    setChamps([
+      ...header.map((value, i) => {
+        return "Aucun";
+      }),
+    ]);
   }
   function confirmation() {
     if (!inputFile.current?.files || !inputFile.current?.files[0]) {
@@ -76,8 +117,8 @@ export function CSVContactImport({
       setErreur("Votre sélection contient des choix doublons");
       return;
     }
-    if (!champsContientRequiredAttributes()) {
-      setErreur("Votre sélection ne contient pas tous les choix obligatoires");
+    if (champObligatoireNonChoisi()) {
+      setErreur("Un champ obligatoire n'a pas de champ associé au CSV.");
       return;
     }
 
@@ -98,50 +139,47 @@ export function CSVContactImport({
         <Modal.Body>
           <Stack className="gap-4">
             <Box>
-              <Text className="font-bold "> Fichier CSV: </Text>
-              <Input ref={inputFile} type="file" accept=".csv"></Input>
+              <Text className="font-bold"> Fichier CSV: </Text>
+              <Input
+                ref={inputFile}
+                type="file"
+                onChange={(e) => lireChampCSV(e.target)}
+                accept=".csv"
+              ></Input>
             </Box>
-
             <Text className="font-bold">Colonnes : </Text>
-            {champs.map((attributeChamp, i) => {
-              return (
-                <Stack
-                  key={i}
-                  direction="row"
-                  className="bg-gray-100 p-1 rounded-2xl items-center ml-10 mr-10 "
-                >
-                  {" "}
-                  <Box className="font-bold ">
-                    ({i + 1}){requiredAttributes.includes(attributeChamp) && "*"}
-                  </Box>
-                  <select
-                    defaultValue={attributeChamp}
-                    onChange={(e) => updateChamps(i, e.target.value)}
-                  >
-                    {attributes.map((attribute, indexAttribute) => {
-                      return (
-                        <option
-                          key={indexAttribute}
-                          className={
-                            requiredAttributes.includes(attribute) ? "text-red-600" : "text-black"
-                          }
+
+            <Table className="text-center">
+              <Table.Head>
+                <Table.Row className=" text-center">
+                  <Table.Header>Champ</Table.Header>
+                  <Table.Header>Champs CSV</Table.Header>
+                  <Table.Header>Obligatoire</Table.Header>
+                </Table.Row>
+              </Table.Head>
+              <Table.Body>
+                {CSVAttributes.map((CSVAttribute, id) => {
+                  return (
+                    <Table.Row key={id}>
+                      <Table.Cell>{CSVAttribute.name} </Table.Cell>
+                      <Table.Cell>
+                        <select
+                          defaultValue={"Aucun"}
+                          onChange={(e) => updateChamps(id, e.target.value)}
                         >
-                          {attribute}
-                        </option>
-                      );
-                    })}
-                  </select>
-                  <Stack direction="row" justify="end" className="w-full bg-transparent">
-                    <Button size={"sm"} variant={"outline"} onClick={() => supprimerColonne(i)}>
-                      Supprimer colonne
-                    </Button>
-                  </Stack>
-                </Stack>
-              );
-            })}
-            <Button className="mt-10" onClick={() => addChamp()} size={"sm"}>
-              Ajouter colonne
-            </Button>
+                          {champsCSV.map((att, indexAttribute) => {
+                            return <option key={indexAttribute}>{att}</option>;
+                          })}
+                        </select>
+                      </Table.Cell>
+                      <Table.Cell>
+                        {CSVAttribute.required ? <Box className="text-red-500">*</Box> : ""}
+                      </Table.Cell>
+                    </Table.Row>
+                  );
+                })}
+              </Table.Body>
+            </Table>
             {erreur && <Text className=" text-red-600 text-center">{erreur}</Text>}
           </Stack>
         </Modal.Body>
