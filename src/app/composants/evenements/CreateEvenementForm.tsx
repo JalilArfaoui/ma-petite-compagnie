@@ -1,26 +1,24 @@
 "use client";
 
-import {SubmitEventHandler, useState} from "react";
+import {SubmitEventHandler, useEffect, useState} from "react";
 import {Evenement} from "@prisma/client";
 import {Box, Button, Input, Select, SimpleGrid, Modal, Field} from "@/components/ui";
 import {CreateLieuForm} from "@/app/composants/lieux/CreateLieuForm";
 import {CreateCategorieForm} from "@/app/composants/categories/CreateCategorieForm";
 import {creerEvenement} from "@/app/actions/evenement";
 import {DialogContent, DialogTitle} from "@radix-ui/react-dialog";
+import {getCategories} from "@/app/actions/categorie";
+import {getLieux} from "@/app/actions/lieu";
 
 type Props = {
   onSuccess?: (evenement: Evenement) => void;
   onCancel?: () => void;
-  lieux: { id: number; libelle: string }[];
-  categories: { id: number; nom: string }[];
   compagnieId: number;
 };
 
 export function CreateEvenementForm({
   onSuccess,
   onCancel,
-  lieux,
-  categories,
   compagnieId,
 }: Props) {
   const [nom, setNom] = useState("");
@@ -30,6 +28,27 @@ export function CreateEvenementForm({
   const [categorieId, setCategorieId] = useState<number>(0);
   const [showCreateLieu, setShowCreateLieu] = useState(false);
   const [showCreateCategorie, setShowCreateCategorie] = useState(false);
+  const [lieuxMap, setLieuxMap] = useState<{ id: number, libelle: string }[]>([]);
+  const [categoriesMap, setCategoriesMap] = useState<{ id: number, nom: string }[]>([]);
+
+  useEffect(() => {
+    async function fetchDataCategorie() {
+      const result = (await getCategories()).categories;
+      const mapped = result?.map(({ id, nom }) => ({ id, nom })) ?? [];
+      setCategoriesMap(mapped);
+    }
+    fetchDataCategorie();
+  }, []);
+
+  useEffect(() => {
+    async function fetchDataLieu() {
+      const result = (await getLieux()).lieux;
+      const mapped = result?.map(({ id, libelle }) => ({ id, libelle })) ?? [];
+      setLieuxMap(mapped);
+    }
+
+    fetchDataLieu();
+  }, []);
 
   async function handleSubmitEvenement(datas:FormData) {
     const result = await creerEvenement(datas);
@@ -67,7 +86,7 @@ export function CreateEvenementForm({
           </Select.Trigger>
 
           <Select.Content>
-            {lieux.map((lieu) => (
+            {lieuxMap.map((lieu) => (
                 <Select.Item key={lieu.id} value={lieu.id.toString()}>
                   {lieu.libelle}
                   <Select.ItemIndicator />
@@ -123,7 +142,7 @@ export function CreateEvenementForm({
           </Select.Trigger>
 
           <Select.Content>
-            {categories.map((categorie) => (
+            {categoriesMap.map((categorie) => (
                 <Select.Item key={categorie.id} value={categorie.id.toString()}>
                   {categorie.nom}
                   <Select.ItemIndicator />
@@ -162,7 +181,11 @@ export function CreateEvenementForm({
             <Modal.Content>
               <CreateLieuForm
                   idCompagnie={compagnieId}
-                  onSuccess={() => setShowCreateLieu(false)}
+                  onSuccess={( lieu) =>
+                  {
+                    const { id, libelle } = lieu;
+                    setLieuxMap((prev) =>[ ...prev,{id,libelle}]);
+                    setShowCreateLieu(false)}}
                   onCancel={() => setShowCreateLieu(false)}
               />
             </Modal.Content>
@@ -181,7 +204,11 @@ export function CreateEvenementForm({
             <Modal.Content>
               <CreateCategorieForm
                   idCompagnie={compagnieId}
-                  onSuccess={() => setShowCreateCategorie(false)}
+                  onSuccess={( categorie) =>
+                  {
+                    const { id, nom } = categorie;
+                    setCategoriesMap((prev) =>[ ...prev,{id,nom}]);
+                      setShowCreateCategorie(false)}}
                   onCancel={() => setShowCreateCategorie(false)}
               />
             </Modal.Content>
