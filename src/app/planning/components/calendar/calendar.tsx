@@ -2,6 +2,28 @@
 import React, { useState, useEffect } from 'react';
 import MonthlyTile from './tiles/monthly-tile';
 import CreateEventAction from '../actions/create-event';
+import {
+  Alert,
+  Badge,
+  Button,
+  Card,
+  Checkbox,
+  Input,
+  Link,
+  List,
+  Radio,
+  RadioGroup,
+  Switch,
+  Table,
+  Textarea,
+  Heading,
+  Box,
+  Container,
+  Stack,
+  Text,
+  Icon,
+  SearchBar,
+} from "@/components/ui";
 
 export type EvenementBuiltInt = {
     id: number;
@@ -183,28 +205,29 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick } : Event
     return (
         <div className="event-calendar">
             <div className="calendar-header">
-                <button onClick={goToPreviousMonth} className="nav-button">
+                <Button variant="solid" onClick={goToPreviousMonth}>
                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
                         <path d="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z"/>
                     </svg>
-                </button>
+                </Button>
 
                 <div className="header-center">
-                    <h2 className="month-year">{MONTHS[month - 1]} {year}</h2>
-                    <button onClick={goToToday} className="today-button">
-                        Aujourd'hui
-                    </button>
+                    <Heading as="h1" className="month-year">{MONTHS[month - 1]} {year}</Heading>
+                    <Button variant="outline" onClick={goToToday} >
+                        <Heading as="h5"> Aujourd'hui
+                        </Heading>
+                    </Button>
                 </div>
 
                 <div className="buttons-container">
-                    <button onClick={() => setViewType(viewType === 'monthly' ? 'weekly' : 'monthly')} className='view-button'>
+                    <Button variant="outline" onClick={() => setViewType(viewType === 'monthly' ? 'weekly' : 'monthly')} >
                         {viewType === 'monthly' ? 'Semaine' : 'Mois'}
-                    </button>
-                    <button onClick={goToNextMonth} className="nav-button">
+                    </Button>
+                    <Button variant="solid" onClick={goToNextMonth}>
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
                             <path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/>
                         </svg>
-                    </button>
+                    </Button>
                 </div>
             </div>
 
