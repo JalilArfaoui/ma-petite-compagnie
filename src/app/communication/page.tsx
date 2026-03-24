@@ -14,6 +14,7 @@ export default function ContactPage() {
           attributsObligatoire: ["Nom", "Prénom"],
           attributsOptionnels: ["Email", "Notes", "Téléphone", "Ville", "Adresse"],
         }}
+        nomObjet="Contact"
         onCSVRead={csvToContacts}
       ></CSVContactImport>
       <Stack
