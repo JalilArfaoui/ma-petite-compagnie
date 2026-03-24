@@ -2,15 +2,38 @@
 import React, { useState, useEffect } from 'react';
 import MonthlyTile from './tiles/monthly-tile';
 import CreateEventAction from '../actions/create-event';
-import { months, weekdays } from './utils/constant';
-import useHandleResize from './methods/useHandleResize';
-import isToday from './methods/isToday';
-import isEventOnDay from './methods/isEventOnDay';
-import { moveView } from './methods/moveView';
-import ChangeCalendarView from './change-view';
-import { TimeSlotsOverlay, WeeklyTimeSlots } from './time-slots';
-import { Evenement } from '@prisma/client';
+import {
+  Alert,
+  Badge,
+  Button,
+  Card,
+  Checkbox,
+  Input,
+  Link,
+  List,
+  Radio,
+  RadioGroup,
+  Switch,
+  Table,
+  Textarea,
+  Heading,
+  Box,
+  Container,
+  Stack,
+  Text,
+  Icon,
+  SearchBar,
+} from "@/components/ui";
 
+export type EvenementBuiltInt = {
+    id: number;
+    nom: string;
+    compagnieId: number;
+    lieuId: number;
+    categorieId: number;
+    dateDebut: number;
+    dateFin: number;
+}
 
 export type CalendarDay = {
     day: number;
@@ -150,28 +173,33 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick } : Event
 
 
     return (
-            <div className="event-calendar">
-                <div className="calendar-header">
-                    <button onClick={() => moveView.goToPreviousMonth({ currentDate, setCurrentDate, viewType, year, month })} className="nav-button">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z"/></svg>
-                    </button>
-                    
-                    <div className="header-center">
-                        <h2 className="month-year">{months[month - 1]} {year}</h2>
-                        <button onClick={goToToday} className="today-button">
-                            Today
-                        </button>
-                    </div>
+        <div className="event-calendar">
+            <div className="calendar-header">
+                <Button variant="solid" onClick={goToPreviousMonth}>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
+                        <path d="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z"/>
+                    </svg>
+                </Button>
 
-                        
-                    <div className="buttons-container">
-                        <ChangeCalendarView viewType={viewType} setViewType={setViewType} />
-                        <button onClick={() => moveView.goToNextMonth({ currentDate, setCurrentDate, viewType, year, month })} className="nav-button">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/></svg>
-                        </button>
-                    </div>
+                <div className="header-center">
+                    <Heading as="h1" className="month-year">{MONTHS[month - 1]} {year}</Heading>
+                    <Button variant="outline" onClick={goToToday} >
+                        <Heading as="h5"> Aujourd'hui
+                        </Heading>
+                    </Button>
                 </div>
-                
+
+                <div className="buttons-container">
+                    <Button variant="outline" onClick={() => setViewType(viewType === 'monthly' ? 'weekly' : 'monthly')} >
+                        {viewType === 'monthly' ? 'Semaine' : 'Mois'}
+                    </Button>
+                    <Button variant="solid" onClick={goToNextMonth}>
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
+                            <path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/>
+                        </svg>
+                    </Button>
+                </div>
+            </div>
 
                 <div className="calendar">
                     <CreateEventAction />
