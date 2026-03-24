@@ -2,6 +2,8 @@ import { getInfosCompagnie } from "@/app/actions/finance";
 import { FactureEditor } from "./editor";
 import { Container } from "@chakra-ui/react";
 
+export const dynamic = "force-dynamic";
+
 export default async function Page() {
   const compagnie = await getInfosCompagnie();
 

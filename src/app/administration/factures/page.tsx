@@ -4,20 +4,25 @@ import { Container, Heading, Stack, Button, Table, Badge, Link } from "@/compone
 import { Flex } from "@chakra-ui/react";
 import NextLink from "next/link";
 
+export const dynamic = "force-dynamic";
+
 export default async function Page() {
   const factures = await getFactures();
 
   const formatPrice = (amount: number) =>
     new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(amount);
 
+  type FactureType = (typeof factures)[0];
+  type LigneType = FactureType["lignes"][0];
+
   // Calculate total TTC helpers
-  const getTotalTTC = (f: any) => {
+  const getTotalTTC = (f: FactureType) => {
     const totalHT = f.lignes.reduce(
-      (acc: number, l: any) => acc + l.quantite * l.prixUnitaireHT,
+      (acc: number, l: LigneType) => acc + l.quantite * l.prixUnitaireHT,
       0
     );
     const totalTVA = f.lignes.reduce(
-      (acc: number, l: any) => acc + l.quantite * l.prixUnitaireHT * (l.tva / 100),
+      (acc: number, l: LigneType) => acc + l.quantite * l.prixUnitaireHT * (l.tva / 100),
       0
     );
     return totalHT + totalTVA;
@@ -76,7 +81,7 @@ export default async function Page() {
 
         <Flex justify="center" mt={4}>
           <Button as={NextLink} href="/administration/entreprise" variant="ghost">
-            Paramètres de l'entreprise
+            Paramètres de l&apos;entreprise
           </Button>
         </Flex>
       </Stack>
