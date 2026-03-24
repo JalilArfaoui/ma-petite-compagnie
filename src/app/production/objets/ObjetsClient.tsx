@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import { Card } from "@/components/ui/Card/Card";
 import { Badge } from "@/components/ui/Badge/Badge";
@@ -83,6 +83,12 @@ const etatConfig: Record<
   CASSE: { label: "Cassé", variant: "red", emoji: "❌" },
 };
 
+const etatOrder: Record<EtatObjet, number> = {
+  NEUF: 0,
+  ABIME: 1,
+  CASSE: 2,
+};
+
 function countByEtat(objets: ObjetData[]) {
   const counts: Record<EtatObjet, number> = { NEUF: 0, ABIME: 0, CASSE: 0 };
   for (const o of objets) {
@@ -148,7 +154,8 @@ function TypeObjetCard({
   compagnies: CompagnieData[];
   representations: RepresentationData[];
 }) {
-  const [showEtatModal, setShowEtatModal] = useState<EtatObjet | null>(null);
+  const [showStockModal, setShowStockModal] = useState(false);
+  const [stockEtatFilter, setStockEtatFilter] = useState<"TOUS" | EtatObjet>("TOUS");
   const [showEditModal, setShowEditModal] = useState(false);
   const [showReserveModal, setShowReserveModal] = useState(false);
   const [showAddObjetModal, setShowAddObjetModal] = useState(false);
@@ -157,17 +164,29 @@ function TypeObjetCard({
   const total = typeObjet.objets.length;
   const availableCount = typeObjet.objets.filter((o) => o.estDisponible).length;
 
-  const objetsForEtat = showEtatModal
-    ? typeObjet.objets.filter((o) => o.etat === showEtatModal)
-    : [];
+  const stockObjets = useMemo(() => {
+    const filtered =
+      stockEtatFilter === "TOUS"
+        ? typeObjet.objets
+        : typeObjet.objets.filter((o) => o.etat === stockEtatFilter);
+
+    return [...filtered].sort((a, b) => {
+      const etatDiff = etatOrder[a.etat] - etatOrder[b.etat];
+      if (etatDiff !== 0) {
+        return etatDiff;
+      }
+
+      return a.id - b.id;
+    });
+  }, [stockEtatFilter, typeObjet.objets]);
 
   const availableObjets = typeObjet.objets.filter((o) => o.estDisponible);
 
   return (
     <>
-      <Card className="relative overflow-hidden hover:shadow-lg transition-shadow">
+      <Card className="relative overflow-hidden border border-slate-200/70 hover:shadow-lg transition-all bg-white">
         {/* Image */}
-        <div className="w-full h-40 bg-slate-100 rounded-xl overflow-hidden mb-2">
+        <div className="w-full h-40 bg-slate-100 rounded-xl overflow-hidden mb-4">
           {typeObjet.image ? (
             <Image
               src={typeObjet.image}
@@ -185,32 +204,33 @@ function TypeObjetCard({
         </div>
 
         {/* Title & Category */}
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <h3 className="text-lg font-bold text-slate-900">{typeObjet.nom}</h3>
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <h3 className="text-xl font-bold text-slate-900 leading-tight">{typeObjet.nom}</h3>
           <Badge variant="purple">{typeObjet.categorie.nom}</Badge>
         </div>
 
         {/* Inventory count */}
-        <p className="text-sm text-slate-600 mb-3">
+        <p className="text-sm text-slate-600 mb-4">
           <strong>{total}</strong> en inventaire · <strong>{availableCount}</strong> disponible
           {availableCount > 1 ? "s" : ""}
         </p>
 
-        {/* État breakdown - clickable */}
-        <div className="flex flex-wrap gap-2 mb-4">
+        {/* État breakdown */}
+        <div className="flex flex-wrap gap-2 mb-5">
           {(["NEUF", "ABIME", "CASSE"] as EtatObjet[]).map((etat) =>
             counts[etat] > 0 ? (
-              <button key={etat} onClick={() => setShowEtatModal(etat)} className="cursor-pointer">
-                <Badge variant={etatConfig[etat].variant}>
-                  {etatConfig[etat].emoji} {etatConfig[etat].label}: {counts[etat]}
-                </Badge>
-              </button>
+              <Badge key={etat} variant={etatConfig[etat].variant}>
+                {etatConfig[etat].emoji} {etatConfig[etat].label}: {counts[etat]}
+              </Badge>
             ) : null
           )}
         </div>
 
         {/* Actions */}
         <div className="flex flex-wrap gap-2">
+          <Button variant="outline" size="sm" onClick={() => setShowStockModal(true)}>
+            📦 Stock
+          </Button>
           <Button variant="solid" size="sm" onClick={() => setShowEditModal(true)}>
             ✏️ Modifier
           </Button>
@@ -223,17 +243,46 @@ function TypeObjetCard({
         </div>
       </Card>
 
-      {/* Modal: Liste par état */}
+      {/* Modal: Stock */}
       <Modal
-        isOpen={showEtatModal !== null}
-        onClose={() => setShowEtatModal(null)}
-        title={`${typeObjet.nom} — ${showEtatModal ? etatConfig[showEtatModal].label : ""}`}
+        isOpen={showStockModal}
+        onClose={() => setShowStockModal(false)}
+        title={`Stock: ${typeObjet.nom}`}
       >
-        {objetsForEtat.length === 0 ? (
+        <div className="mb-4 flex flex-wrap items-center gap-2">
+          <span className="text-sm font-semibold text-slate-600">Filtrer par état:</span>
+          <button
+            type="button"
+            onClick={() => setStockEtatFilter("TOUS")}
+            className={`h-8 px-3 text-xs rounded-md border cursor-pointer transition-colors ${
+              stockEtatFilter === "TOUS"
+                ? "bg-[#D00039] text-white border-[#D00039]"
+                : "border-slate-300 text-slate-600 hover:bg-slate-100"
+            }`}
+          >
+            Tous
+          </button>
+          {(["NEUF", "ABIME", "CASSE"] as EtatObjet[]).map((etat) => (
+            <button
+              key={etat}
+              type="button"
+              onClick={() => setStockEtatFilter(etat)}
+              className={`h-8 px-3 text-xs rounded-md border cursor-pointer transition-colors ${
+                stockEtatFilter === etat
+                  ? "bg-[#D00039] text-white border-[#D00039]"
+                  : "border-slate-300 text-slate-600 hover:bg-slate-100"
+              }`}
+            >
+              {etatConfig[etat].emoji} {etatConfig[etat].label}
+            </button>
+          ))}
+        </div>
+
+        {stockObjets.length === 0 ? (
           <p className="text-slate-500">Aucun objet dans cet état.</p>
         ) : (
           <div className="flex flex-col gap-3">
-            {objetsForEtat.map((obj) => (
+            {stockObjets.map((obj) => (
               <div key={obj.id} className="p-4 bg-slate-50 rounded-xl border border-slate-200">
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-semibold text-sm">Objet #{obj.id}</span>
@@ -491,7 +540,10 @@ export default function ObjetsClient({
   representations,
 }: ObjetsClientProps) {
   const [search, setSearch] = useState("");
+  const [selectedCategorie, setSelectedCategorie] = useState("TOUTES");
   const [showUnavailable, setShowUnavailable] = useState(false);
+  const [itemsPerPage, setItemsPerPage] = useState(6);
+  const [currentPage, setCurrentPage] = useState(1);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   const filteredTypes = useMemo(() => {
@@ -505,13 +557,42 @@ export default function ObjetsClient({
       );
     }
 
+    // Filter by category
+    if (selectedCategorie !== "TOUTES") {
+      const selectedCategorieId = Number(selectedCategorie);
+      result = result.filter((t) => t.categorieId === selectedCategorieId);
+    }
+
     // Filter by availability unless showing all
     if (!showUnavailable) {
       result = result.filter((t) => t.objets.some((o) => o.estDisponible));
     }
 
-    return result;
-  }, [typesObjets, search, showUnavailable]);
+    // Default order by category then by name for a predictable inventory view
+    return [...result].sort((a, b) => {
+      const categoryDiff = a.categorie.nom.localeCompare(b.categorie.nom, "fr", {
+        sensitivity: "base",
+      });
+      if (categoryDiff !== 0) {
+        return categoryDiff;
+      }
+
+      return a.nom.localeCompare(b.nom, "fr", { sensitivity: "base" });
+    });
+  }, [typesObjets, search, selectedCategorie, showUnavailable]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredTypes.length / itemsPerPage));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+
+  const paginatedTypes = useMemo(() => {
+    const startIndex = (safeCurrentPage - 1) * itemsPerPage;
+    return filteredTypes.slice(startIndex, startIndex + itemsPerPage);
+  }, [safeCurrentPage, filteredTypes, itemsPerPage]);
+
+  const totalObjetsInFilteredList = filteredTypes.reduce((acc, t) => acc + t.objets.length, 0);
+  const startDisplayIndex =
+    filteredTypes.length === 0 ? 0 : (safeCurrentPage - 1) * itemsPerPage + 1;
+  const endDisplayIndex = Math.min(safeCurrentPage * itemsPerPage, filteredTypes.length);
 
   return (
     <div className="max-w-7xl mx-auto px-4">
@@ -519,22 +600,68 @@ export default function ObjetsClient({
         {/* Header */}
         <h1 className="text-4xl text-[#D00039] text-center font-bold">🎪 Gestion des Objets</h1>
 
-        {/* Search + Controls */}
-        <div className="flex flex-col md:flex-row gap-4 items-center">
-          <div className="flex-1 w-full">
-            <SearchBar
-              placeholder="Rechercher un type d'objet..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+        {/* Filters + controls */}
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col md:flex-row gap-4 items-center">
+            <div className="flex-1 w-full">
+              <SearchBar
+                placeholder="Rechercher un type d'objet..."
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setCurrentPage(1);
+                }}
+              />
+            </div>
+            <div className="w-full md:w-72">
+              <select
+                value={selectedCategorie}
+                onChange={(e) => {
+                  setSelectedCategorie(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="w-full rounded-[12px] border border-slate-300 px-4 py-3 text-sm"
+              >
+                <option value="TOUTES">Toutes les catégories</option>
+                {categories.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.nom}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-          <div className="flex gap-4 items-center">
-            <Checkbox
-              checked={showUnavailable}
-              onChange={(e) => setShowUnavailable((e.target as HTMLInputElement).checked)}
-            >
-              Afficher les indisponibles
-            </Checkbox>
+
+          <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
+            <div className="flex flex-wrap gap-4 items-center">
+              <Checkbox
+                checked={showUnavailable}
+                onChange={(e) => {
+                  setShowUnavailable((e.target as HTMLInputElement).checked);
+                  setCurrentPage(1);
+                }}
+              >
+                Afficher les indisponibles
+              </Checkbox>
+              <div className="flex items-center gap-2">
+                <label className="text-sm font-medium text-slate-600">Items par page</label>
+                <select
+                  value={itemsPerPage}
+                  onChange={(e) => {
+                    setItemsPerPage(Number(e.target.value));
+                    setCurrentPage(1);
+                  }}
+                  className="rounded-[10px] border border-slate-300 px-3 py-2 text-sm"
+                >
+                  {[3, 6, 9, 12].map((count) => (
+                    <option key={count} value={count}>
+                      {count}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
             <Button variant="solid" size="sm" onClick={() => setShowCreateModal(true)}>
               ➕ Nouveau type d&apos;objet
             </Button>
@@ -544,19 +671,22 @@ export default function ObjetsClient({
         {/* Info bar */}
         <div className="flex items-center gap-2 text-sm text-slate-500">
           <span>
-            {filteredTypes.length} type{filteredTypes.length > 1 ? "s" : ""} d&apos;objet
-            {filteredTypes.length > 1 ? "s" : ""} affiché{filteredTypes.length > 1 ? "s" : ""}
+            {filteredTypes.length} type{filteredTypes.length > 1 ? "s" : ""} d&apos;objet affiché
+            {filteredTypes.length > 1 ? "s" : ""}
           </span>
           <span>·</span>
           <span>
-            {filteredTypes.reduce((acc, t) => acc + t.objets.length, 0)} objet
-            {filteredTypes.reduce((acc, t) => acc + t.objets.length, 0) > 1 ? "s" : ""} au total
+            {totalObjetsInFilteredList} objet{totalObjetsInFilteredList > 1 ? "s" : ""} au total
+          </span>
+          <span>·</span>
+          <span>
+            Affichage {startDisplayIndex}-{endDisplayIndex}
           </span>
         </div>
 
         {/* Grid of TypeObjet cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredTypes.map((typeObjet) => (
+          {paginatedTypes.map((typeObjet) => (
             <TypeObjetCard
               key={typeObjet.id}
               typeObjet={typeObjet}
@@ -574,6 +704,35 @@ export default function ObjetsClient({
                 ? `Aucun type d'objet ne correspond à "${search}"`
                 : "Aucun objet disponible pour le moment."}
             </p>
+          </div>
+        )}
+
+        {/* Pager */}
+        {filteredTypes.length > 0 && (
+          <div className="w-full mt-2 flex items-center justify-center gap-4">
+            <button
+              type="button"
+              onClick={() => setCurrentPage((p) => Math.max(1, Math.min(totalPages, p) - 1))}
+              disabled={safeCurrentPage === 1}
+              className="h-10 w-10 rounded-lg border border-slate-300 text-slate-700 text-2xl leading-none flex items-center justify-center cursor-pointer transition-colors hover:bg-[#D00039] hover:text-white hover:border-[#D00039] disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              ‹
+            </button>
+
+            <p className="text-slate-600 text-sm font-semibold">
+              Page {safeCurrentPage} sur {totalPages}
+            </p>
+
+            <button
+              type="button"
+              onClick={() =>
+                setCurrentPage((p) => Math.min(totalPages, Math.min(totalPages, p) + 1))
+              }
+              disabled={safeCurrentPage === totalPages}
+              className="h-10 w-10 rounded-lg border border-slate-300 text-slate-700 text-2xl leading-none flex items-center justify-center cursor-pointer transition-colors hover:bg-[#D00039] hover:text-white hover:border-[#D00039] disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              ›
+            </button>
           </div>
         )}
       </div>
