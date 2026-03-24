@@ -14,9 +14,7 @@ export function ContactDetails({
   const [prenom, setPrenom] = useState(contactDonnee?.prenom ?? "");
   const [email, setEmail] = useState(contactDonnee?.email ?? "");
   const [tel, setTel] = useState(contactDonnee?.tel ?? "");
-  const [role, setRole] = useState<"COMEDIEN" | "TECHNICIEN" | "PARTENAIRE">(
-    contactDonnee?.role ?? "COMEDIEN"
-  );
+  const [role, setRole] = useState<Role>(contactDonnee?.role ?? "COMEDIEN");
   return (
     <Card>
       <form action={onSubmitted}>
@@ -28,6 +26,7 @@ export function ContactDetails({
               name="nom"
               onChange={(e) => setNom(e.target.value)}
               value={nom}
+              required
             />
           </Box>
 
@@ -38,6 +37,7 @@ export function ContactDetails({
               placeholder="Benoit"
               onChange={(e) => setPrenom(e.target.value)}
               value={prenom}
+              required
             />
           </Box>
           <Box>
@@ -47,6 +47,7 @@ export function ContactDetails({
               placeholder="Richard@email.com"
               onChange={(e) => setEmail(e.target.value)}
               value={email}
+              required
             />
           </Box>
           <Box>
@@ -60,14 +61,16 @@ export function ContactDetails({
           </Box>
           <Box>
             Rôles
-            <RadioGroup
-              name="role"
-              value={role}
-              onValueChange={(v) => setRole(v.valueOf() as Role)}
-            >
-              <Radio value="COMEDIEN">Comedien</Radio>
-              <Radio value="TECHNICIEN">Technicien</Radio>
-              <Radio value="PARTENAIRE">Partenaire</Radio>
+            <RadioGroup name="role" value={role} onChange={(v) => setRole(v.valueOf() as Role)}>
+              <Radio value="COMEDIEN" name="role">
+                Comedien
+              </Radio>
+              <Radio value="TECHNICIEN" name="role">
+                Technicien
+              </Radio>
+              <Radio value="PARTENAIRE" name="role">
+                Partenaire
+              </Radio>
             </RadioGroup>
           </Box>
           <Button type="submit">Confirmer</Button>
