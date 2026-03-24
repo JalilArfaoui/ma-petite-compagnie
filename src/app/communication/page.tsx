@@ -1,9 +1,9 @@
 "use client";
 import { Heading, Link, Box, Button, Stack, SimpleGrid } from "@/components/ui";
-import { creerContact, listerContacts } from "./api/contact/contact";
+import { listerContacts } from "./api/contact/contact";
 import { useEffect, useState } from "react";
-import { Contact, Role } from "@prisma/client";
-import { ContactInformation } from "./api/contact/contact";
+import { Contact } from "@prisma/client";
+import { csvToContacts } from "./action/CSVToContacts";
 import { ContactCard } from "./components/ContactCard";
 import { CSVContactImport } from "./components/CSVContactImport";
 import "../globals.css";
@@ -22,19 +22,6 @@ export default function ContactPage() {
     loadContact();
   }, []);
 
-  function isContactInformation(obj: unknown): obj is ContactInformation {
-    const o = obj as Record<string, string>;
-    return typeof o.nom === "string" && typeof o.prenom === "string";
-  }
-
-  function csvToContacts(donnees: Record<string, string>[]) {
-    donnees.forEach((element) => {
-      console.log(element);
-      if (isContactInformation(element)) {
-        console.log(element);
-      }
-    });
-  }
   return (
     <Box className=" py-5 flex-col items-center gap-4">
       <CSVContactImport
