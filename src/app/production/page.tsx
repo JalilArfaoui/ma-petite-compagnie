@@ -32,7 +32,7 @@ async function createSpectacle(formData: FormData) {
     data: {
       titre: titre,
       type: type,
-      compagnieId: 1,
+      compagnieId: 1, // placeholder
     },
   });
 
@@ -132,7 +132,7 @@ export default async function ProductionPage() {
                     <option disabled value="">
                       type de spectacle
                     </option>
-                    <option value="THEATRE">Thetre</option>
+                    <option value="THEATRE">Theatre</option>
                     <option value="DANSE">Danse</option>
                     <option value="MUSIQUE">Musique</option>
                     <option value="CIRQUE">Cirque</option>
