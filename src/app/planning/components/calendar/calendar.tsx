@@ -192,13 +192,13 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick } : Event
                 <div className="header-center">
                     <h2 className="month-year">{MONTHS[month - 1]} {year}</h2>
                     <button onClick={goToToday} className="today-button">
-                        Today
+                        Aujourd'hui
                     </button>
                 </div>
 
                 <div className="buttons-container">
-                    <button onClick={() => setViewType(viewType === 'monthly' ? 'weekly' : 'monthly')}>
-                        {viewType === 'monthly' ? 'Weekly View' : 'Monthly View'}
+                    <button onClick={() => setViewType(viewType === 'monthly' ? 'weekly' : 'monthly')} className='view-button'>
+                        {viewType === 'monthly' ? 'Semaine' : 'Mois'}
                     </button>
                     <button onClick={goToNextMonth} className="nav-button">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
