@@ -2,7 +2,7 @@
 
 import { Text, Badge, Tooltip, Card } from "@/components/ui";
 import { FaExclamationTriangle, FaCheck } from "react-icons/fa";
-import { formatDateFr, formatMontant, formatStatut, getCouleurStatut } from "./utils";
+import { formatDateFr, formatMontant } from "./utils";
 
 // ===== Variables CSS partagées =====
 const STYLES = {
@@ -88,25 +88,42 @@ export function ListeItemsFinanciers({
 }) {
   return (
     <div className={`flex flex-col gap-3 ${className}`}>
-      {items.map((item, idx) => (
-        <Card key={idx} className="p-3 bg-white !gap-0">
-          <div className="flex justify-between items-center">
-            <div>
-              <Text className={STYLES.textTitle}>{item.destinataire}</Text>
-              <Text className={STYLES.textSubtitle}>{formatDateFr(item.date)}</Text>
+      {items.map((item, idx) => {
+        // logique pour savoir la couleur du badge
+        const variant =
+          item.statut === "non_paye"
+            ? "red"
+            : ["recue", "recu", "paye"].includes(item.statut)
+              ? "green"
+              : "gray";
+
+        // logique pour formater le texte affiché
+        const label =
+          item.statut === "recue"
+            ? "Reçue"
+            : item.statut === "paye"
+              ? "Payé"
+              : item.statut === "non_paye"
+                ? "Non payé"
+                : item.statut;
+
+        return (
+          <Card key={idx} className="p-3 bg-white !gap-0">
+            <div className="flex justify-between items-center">
+              <div>
+                <Text className={STYLES.textTitle}>{item.destinataire}</Text>
+                <Text className={STYLES.textSubtitle}>{formatDateFr(item.date)}</Text>
+              </div>
+              <div className="flex flex-col items-end gap-1">
+                <Text className={STYLES.textTitle}>{formatMontant(item.montant)}</Text>
+                <Badge variant={variant} className="text-[10px] px-2 py-0 text-center">
+                  {label}
+                </Badge>
+              </div>
             </div>
-            <div className="flex flex-col items-end gap-1">
-              <Text className={STYLES.textTitle}>{formatMontant(item.montant)}</Text>
-              <Badge
-                variant={getCouleurStatut(item.statut)}
-                className="text-[10px] px-2 py-0 text-center"
-              >
-                {formatStatut(item.statut)}
-              </Badge>
-            </div>
-          </div>
-        </Card>
-      ))}
+          </Card>
+        );
+      })}
     </div>
   );
 }
@@ -221,21 +238,27 @@ export function FinancementsSubventions({
   return (
     <Card title="Financements & Subventions" className="h-full bg-white">
       <div className="flex flex-col gap-3 mb-4">
-        {financements.map((fin, idx) => (
-          <Card key={idx} className="p-3 bg-white !gap-0">
-            <div className="flex flex-col gap-1">
-              <Text className={STYLES.textTitle}>{fin.organisme}</Text>
-              <Text className={`${STYLES.textSubtitle} mb-2`}>{fin.spectacle}</Text>
-              <div className="flex items-center gap-2 text-xs">
-                <Badge variant={getCouleurStatut(fin.statut)} className="text-[10px] px-2 py-0">
-                  {formatStatut(fin.statut)}
-                </Badge>
-                <span className="font-bold text-gray-900">{formatMontant(fin.montant)}</span>
-                {fin.statut === "en_attente" && <BoutonValider />}
+        {financements.map((fin, idx) => {
+          // logique pour savoir la couleur du badge
+          const variant = fin.statut === "recu" ? "green" : "yellow";
+          const label = fin.statut === "recu" ? "Reçu" : "En attente";
+
+          return (
+            <Card key={idx} className="p-3 bg-white !gap-0">
+              <div className="flex flex-col gap-1">
+                <Text className={STYLES.textTitle}>{fin.organisme}</Text>
+                <Text className={`${STYLES.textSubtitle} mb-2`}>{fin.spectacle}</Text>
+                <div className="flex items-center gap-2 text-xs">
+                  <Badge variant={variant} className="text-[10px] px-2 py-0">
+                    {label}
+                  </Badge>
+                  <span className="font-bold text-gray-900">{formatMontant(fin.montant)}</span>
+                  {fin.statut === "en_attente" && <BoutonValider />}
+                </div>
               </div>
-            </div>
-          </Card>
-        ))}
+            </Card>
+          );
+        })}
       </div>
 
       <div className="text-right">
