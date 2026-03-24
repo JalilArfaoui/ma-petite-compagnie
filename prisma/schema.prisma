@@ -116,7 +116,7 @@ model CategorieObjet {
 
 model TypeObjet {
   id          Int            @id @default(autoincrement())
-  nom         String
+  nom         String         @unique
   image       String?
   categorieId Int
   categorie   CategorieObjet @relation(fields: [categorieId], references: [id])
