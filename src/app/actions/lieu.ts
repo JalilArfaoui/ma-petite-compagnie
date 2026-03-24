@@ -29,3 +29,23 @@ export async function creerLieu(datas: FormData) {
         return { message: "Erreur serveur:" + error, status: 500, lieu:null };
     }
 }
+
+export async function getLieux() {
+    try{
+        const idCompagnie = 1;
+        if(!idCompagnie) {
+            return { message: "L'id de la compagnie n'est pas récupéré", status: 400,
+                lieux:null};
+        }
+        const lieux = await  prisma.lieu.findMany({
+            where:{
+                idCompagnie:idCompagnie
+            }
+        })
+        return { message: "", status: 200,
+            lieux:lieux};
+    } catch (error) {
+        console.error(error);
+        return {lieux:null, message: "Erreur serveur:" + error, status: 500 };
+    }
+}
