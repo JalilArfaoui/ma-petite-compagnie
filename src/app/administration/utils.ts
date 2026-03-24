@@ -1,4 +1,3 @@
-
 /**
  * Formate une date ISO (YYYY-MM-DD) en format lisible : "le 27 janvier 2026".
  * @param dateStr La date au format ISO.
