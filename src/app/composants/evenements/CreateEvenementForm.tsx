@@ -53,7 +53,6 @@ export function CreateEvenementForm({
   async function handleSubmitEvenement(datas:FormData) {
     const result = await creerEvenement(datas);
       if (result.status != 201 || !result.evenement) {
-        // TODO gérer les erreurs UI
         return alert("Erreur lors de la création de l'évènement");
       }
       // Vérification console de la création (provisoire)
@@ -74,13 +73,9 @@ export function CreateEvenementForm({
           name="lieuId"
           value={lieuId?.toString() ?? ""}
           onValueChange={(e) => setLieuId(Number(e))}>
-        <Box>
           <Field.Root required>
             <Field.Label>Lieu</Field.Label>
           </Field.Root>
-        </Box>
-
-        <Box>
           <Select.Trigger>
             <Select.Value placeholder="Sélectionner un lieu" />
           </Select.Trigger>
@@ -93,10 +88,7 @@ export function CreateEvenementForm({
                 </Select.Item>
             ))}
           </Select.Content>
-        </Box>
-        <Box>
           <Button onClick={() => setShowCreateLieu(true)}>+</Button>
-        </Box>
       </Select>
       {/* Format des datetime-local YYYY-MM-DDTHH:mm*/}
       <Field.Root required>
@@ -156,7 +148,6 @@ export function CreateEvenementForm({
         {/*</GridItem>
         </SimpleGrid>*/}
       </Select>
-      {/* TODO Afficher les catégories existantes associées à la compagnie */}
       {/* TODO pouvoir sélectionner des participants */}
       {/*<SimpleGrid columns={{ base: 3, md: 3 }}>
           <GridItem colSpan={{ base: 1, md: 1 }}>*/}
@@ -185,6 +176,7 @@ export function CreateEvenementForm({
                   {
                     const { id, libelle } = lieu;
                     setLieuxMap((prev) =>[ ...prev,{id,libelle}]);
+                    setLieuId(id)
                     setShowCreateLieu(false)}}
                   onCancel={() => setShowCreateLieu(false)}
               />
