@@ -30,8 +30,11 @@ export * from "./Drawer/Drawer";
 export * from "./Header/Header";
 <<<<<<< HEAD
 export * from "./SearchBar/SearchBar";
+<<<<<<< HEAD
 export * from "./Modal/Modal";
 =======
 export * from "./Modal/Modal";
 export * from "./Field/Field";
 >>>>>>> a1edaf0 (chore:Field et Modal)
+=======
+>>>>>>> 4f1495a (Revert "Planification/calendrier-event")
