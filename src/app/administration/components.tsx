@@ -1,6 +1,6 @@
 "use client";
 
-import { Text, Badge, Tooltip, Card } from "@/components/ui";
+import { Text, Badge, Tooltip, Card, Link } from "@/components/ui";
 import { FaExclamationTriangle, FaCheck } from "react-icons/fa";
 import { formatDateFr, formatMontant } from "./utils";
 
@@ -8,7 +8,6 @@ import { formatDateFr, formatMontant } from "./utils";
 const STYLES = {
   textTitle: "font-bold text-sm text-gray-900",
   textSubtitle: "text-xs text-gray-500",
-  linkButton: "text-sm text-gray-500 underline hover:text-gray-800",
 };
 
 // --- Types pour les données ---
@@ -153,9 +152,7 @@ export function FacturesAvenir({
       <ListeItemsFinanciers items={paiements} className="mb-4" />
 
       <div className="text-right">
-        <a href="#" className={STYLES.linkButton}>
-          Voir tout
-        </a>
+        <Link href="#">Voir tout</Link>
       </div>
     </Card>
   );
@@ -262,9 +259,7 @@ export function FinancementsSubventions({
       </div>
 
       <div className="text-right">
-        <a href="#" className={STYLES.linkButton}>
-          Voir tout
-        </a>
+        <Link href="#">Voir tout</Link>
       </div>
     </Card>
   );
