@@ -4,7 +4,7 @@ import { Button, Card, Table, Heading } from "@/components/ui";
 
 import { useState } from "react";
 
-const TYPE_SPECTACLE = [
+const NOM_SPECTACLE = [
   { value: "romeoetjuliette", label: "Roméo et Juliette" },
   { value: "hamlet", label: "Hamlet" },
   { value: "leroilion", label: "Le Roi Lion" },
@@ -210,7 +210,7 @@ export default function PageCachets() {
               onChange={(e) => setSpectacle(e.target.value)}
             >
               <option value=""> Choisir un spectacle </option>
-              {TYPE_SPECTACLE.map((spectacle) => (
+              {NOM_SPECTACLE.map((spectacle) => (
                 <option key={spectacle.value} value={spectacle.value}>
                   {" "}
                   {spectacle.label}{" "}
@@ -242,7 +242,6 @@ export default function PageCachets() {
               onClick={() => {
                 setEditId(null);
                 setMembre("");
-                setDate("");
                 setMontant(110);
                 setSpectacle("");
                 setNote("");
@@ -264,9 +263,9 @@ export default function PageCachets() {
           <div className="flex flex-col gap-1">
             <label>Filtrer par membre</label>
             <select
+              className="p-2 border border-slate-300 rounded-md w-full"
               value={filtreMembre}
               onChange={(e) => setFiltreMembre(e.target.value)}
-              className="p-2 rounded"
             >
               <option value="">Tous les membres</option>
               {MEMBRES_TROUPE.map((nom) => (
@@ -280,12 +279,12 @@ export default function PageCachets() {
           <div className="flex flex-col gap-1">
             <label>Filtrer par spectacle</label>
             <select
+              className="p-2 border border-slate-300 rounded-md w-full"
               value={filtreSpectacle}
               onChange={(e) => setFiltreSpectacle(e.target.value)}
-              className="p-2 rounded"
             >
               <option value="">Tous</option>
-              {TYPE_SPECTACLE.map((spectacle) => (
+              {NOM_SPECTACLE.map((spectacle) => (
                 <option key={spectacle.value} value={spectacle.value}>
                   {spectacle.label}
                 </option>
@@ -296,9 +295,9 @@ export default function PageCachets() {
           <div className="flex flex-col gap-1">
             <label>Trier par</label>
             <select
+              className="p-2 border border-slate-300 rounded-md w-full"
               value={tri}
               onChange={(e) => setTri(e.target.value as "date" | "montant")}
-              className="p-2 rounded"
             >
               <option value="date">Date</option>
               <option value="montant">Montant de cachets</option>
@@ -330,7 +329,7 @@ export default function PageCachets() {
                   <Table.Cell>{new Date(c.date).toLocaleDateString("fr-FR")}</Table.Cell>
                   <Table.Cell>{c.montant} €</Table.Cell>
                   <Table.Cell>
-                    {TYPE_SPECTACLE.find((s) => s.value === c.spectacle)?.label ?? c.spectacle}
+                    {NOM_SPECTACLE.find((s) => s.value === c.spectacle)?.label ?? c.spectacle}
                   </Table.Cell>
                   <Table.Cell>{c.note || "-"}</Table.Cell>
                   <Table.Cell>
