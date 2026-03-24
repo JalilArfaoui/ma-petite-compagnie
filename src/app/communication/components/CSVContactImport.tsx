@@ -26,7 +26,7 @@ async function readCSV(
   file: File
 ): Promise<Record<string, string>[]> {
   const text = await file.text();
-  const rows = text.split("\n").map((row) => row.split(","));
+  const rows = text.split("\n").map((row) => splitVirgule(row));
 
   const datas: Record<string, string>[] = [];
   rows.forEach((CSVcolonnes, numeroLigne) => {
@@ -36,7 +36,7 @@ async function readCSV(
       if (attributCSVChoisie !== "Aucun") {
         // Récupère la colonne par rapport à l'entete du fichier avec le champ choisie
         const indexColonne = fichierEntetes.indexOf(attributCSVChoisie);
-        let valeurCSV = CSVcolonnes[indexColonne].trimEnd() || "";
+        let valeurCSV = CSVcolonnes[indexColonne] || "";
         if (valeurCSV.endsWith("\r")) {
           valeurCSV = valeurCSV.substring(0, valeurCSV.length - 1);
         }
@@ -47,6 +47,43 @@ async function readCSV(
     datas.push(obj);
   });
   return datas;
+}
+
+/**
+ * Méthode utilitaire pour séparer les parties d'un csv par virgule en prenant en compte, les champs avec des virgules à l'intérieur.
+ * Exemple : "Je suis Mathieu, et toi ?"
+ * Ce texte ne sera pas séparé par la virgule mais pris en compte en entier grâce au guillemets.
+ *
+ * @param texte Le texte à séparer par virgule
+ * @returns
+ */
+function splitVirgule(texte: string): string[] {
+  const seperation = [];
+  while (texte != "") {
+    texte = texte.replace(",", ";?;");
+    const parts = texte.split(";?;");
+    if (parts.length == 2) {
+      const first = parts[0];
+      const second = parts[1];
+      if (!first.startsWith('"')) {
+        seperation.push(first);
+        texte = second;
+      } else {
+        const indexComma = second.indexOf('"');
+
+        const separationComma =
+          first.substring(1, first.length) + "," + second.substring(0, indexComma);
+
+        seperation.push(separationComma);
+        texte = second.substring(indexComma + 2);
+      }
+    } else {
+      seperation.push(parts[0]);
+      break;
+    }
+  }
+
+  return seperation;
 }
 
 /**
