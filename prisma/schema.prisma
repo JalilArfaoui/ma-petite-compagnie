@@ -121,19 +121,31 @@ model TypeObjet {
   categorieId Int
   categorie   CategorieObjet @relation(fields: [categorieId], references: [id])
   objets      Objet[]
+  besoins     BesoinSpectacle[]
 }
 
 model Spectacle {
   id              Int              @id @default(autoincrement())
   titre           String
+  dure            Int?
   description     String?
-  type            TypeSpectacle
-  statut          StatutSpectacle
+  type            TypeSpectacle?
+  statut          StatutSpectacle  @default(EN_CREATION)
   budget_initial  Float            @default(0)
   compagnieId     Int
   compagnie       Compagnie        @relation("SpectaclesCompagnie", fields: [compagnieId], references: [id])
   ficheTechnique  FicheTechnique?
   representations Representation[]
+  besoins         BesoinSpectacle[]
+}
+
+model BesoinSpectacle {
+  id              Int           @id @default(autoincrement())
+  nb              Int           @default(1)
+  spectacleId Int
+  spectacle   Spectacle         @relation(fields: [spectacleId], references: [id], onDelete: Cascade)
+  typeObjetId Int
+  typeObjet   TypeObjet         @relation(fields: [typeObjetId], references: [id], onDelete: Cascade)
 }
 
 model FicheTechnique {
