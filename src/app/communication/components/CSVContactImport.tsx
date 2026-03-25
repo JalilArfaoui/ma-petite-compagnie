@@ -18,7 +18,7 @@ export function mappingTexte(
   fichierEntetes: string[],
   texteCSV: string
 ) {
-  const rows = texteCSV.split("\n").map((row) => splitVirgule(row));
+  const rows = texteCSV.split("\n").map((row) => splitVirgules(row));
   const datas: Record<string, string>[] = [];
   rows.forEach((CSVcolonnes, numeroLigne) => {
     if (numeroLigne === 0) return; // Skip header
@@ -54,7 +54,6 @@ async function readCSV(
   const text = await file.text();
   return mappingTexte(mappageAttributs, fichierEntetes, text);
 }
-
 /**
  * Méthode utilitaire pour séparer les parties d'un csv par virgule en prenant en compte, les champs avec des virgules à l'intérieur.
  * Exemple : "Je suis Mathieu, et toi ?"
@@ -63,33 +62,31 @@ async function readCSV(
  * @param texte Le texte à séparer par virgule
  * @returns
  */
-function splitVirgule(texte: string): string[] {
-  const seperation = [];
-  while (texte != "") {
-    texte = texte.replace(",", ";?;");
-    const parts = texte.split(";?;");
-    if (parts.length == 2) {
-      const first = parts[0];
-      const second = parts[1];
-      if (!first.startsWith('"')) {
-        seperation.push(first);
-        texte = second;
+function splitVirgules(texte: string): string[] {
+  const separation = [];
+  let indexTexte = 0;
+  let currentTexte = "";
+  let guillemets = false;
+  while (indexTexte < texte.length) {
+    if (texte.charAt(indexTexte) == '"') {
+      if (guillemets) {
+        separation.push(currentTexte);
+        currentTexte = "";
+        indexTexte += 2;
       } else {
-        const indexComma = second.indexOf('"');
-
-        const separationComma =
-          first.substring(1, first.length) + "," + second.substring(0, indexComma);
-
-        seperation.push(separationComma);
-        texte = second.substring(indexComma + 2);
+        indexTexte++;
       }
+      guillemets = !guillemets;
+    } else if (!guillemets && texte.charAt(indexTexte) == ",") {
+      separation.push(currentTexte);
+      currentTexte = "";
+      indexTexte += 1;
     } else {
-      seperation.push(parts[0]);
-      break;
+      currentTexte += texte.charAt(indexTexte);
+      indexTexte += 1;
     }
   }
-
-  return seperation;
+  return separation;
 }
 
 /**
