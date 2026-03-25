@@ -13,21 +13,12 @@ export type MappageAttributs = {
   attributsCSV: string[];
 };
 
-/**
- *
- * @param mappageAttributs Parmètres qui définit le mapping entre les attributs du csv et les champs de l'objet
- * @param fichierEntetes Les champs d'entete du fichier CSV
- * @param file Le fichier CSV
- * @returns
- */
-async function readCSV(
+export function mappingTexte(
   mappageAttributs: MappageAttributs,
   fichierEntetes: string[],
-  file: File
-): Promise<Record<string, string>[]> {
-  const text = await file.text();
-  const rows = text.split("\n").map((row) => splitVirgule(row));
-
+  texteCSV: string
+) {
+  const rows = texteCSV.split("\n").map((row) => splitVirgule(row));
   const datas: Record<string, string>[] = [];
   rows.forEach((CSVcolonnes, numeroLigne) => {
     if (numeroLigne === 0) return; // Skip header
@@ -47,6 +38,21 @@ async function readCSV(
     datas.push(obj);
   });
   return datas;
+}
+/**
+ *
+ * @param mappageAttributs Parmètres qui définit le mapping entre les attributs du csv et les champs de l'objet
+ * @param fichierEntetes Les champs d'entete du fichier CSV
+ * @param file Le fichier CSV
+ * @returns
+ */
+async function readCSV(
+  mappageAttributs: MappageAttributs,
+  fichierEntetes: string[],
+  file: File
+): Promise<Record<string, string>[]> {
+  const text = await file.text();
+  return mappingTexte(mappageAttributs, fichierEntetes, text);
 }
 
 /**
