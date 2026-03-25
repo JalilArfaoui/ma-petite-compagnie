@@ -22,7 +22,7 @@ export function DepensesSection({
 
   const handleAddDepense = (data: any) => {
     const nouvelleDepense: Depense = {
-      id: `d-temp-${Date.now()}`,
+      id: `d-temp-${Date.now()}`, // dépenses temporaires (non connecté à la bdd encore)
       nom: data.nom,
       date: data.date,
       montant: data.montant,

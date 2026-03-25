@@ -1,5 +1,10 @@
 import { Recette, SpectacleEquilibre, Depense } from "./components/types";
 
+// note dev :
+// fichier contenant les jeux de données de test
+// données fictives pour le moment
+// la connexion à la bdd sera ultérieure
+
 export const LISTE_SPECTACLES = [
   "Le Misanthrope",
   "Le Nuit des Rois",

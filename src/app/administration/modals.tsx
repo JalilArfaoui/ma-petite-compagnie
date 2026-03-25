@@ -5,7 +5,7 @@ import { Modal, Button, Select, Badge, Switch, Text, Input, Alert, Link } from "
 import { FaPlus, FaTimes, FaInfoCircle } from "react-icons/fa";
 import { LISTE_SPECTACLES } from "./test_data";
 
-// Modal pour ajout rapide fake
+// Modal pour ajout rapide -> fake pour le moment (non connecté à la bdd)
 export function ModalAjoutRapide({
   typeSection,
   onAdd,
@@ -70,7 +70,7 @@ export function ModalAjoutRapide({
 
   const resetAndClose = () => {
     setOpen(false);
-    // Simple reset
+    // reset
     setNom("");
     setMontant("");
     setDate(new Date().toISOString().split("T")[0]);
@@ -107,7 +107,7 @@ export function ModalAjoutRapide({
           </Modal.Description>
         </Modal.Header>
         <Modal.Body className="flex flex-col gap-6 pt-2 max-h-[75vh] overflow-y-auto">
-          {/* Nouveau : Tabs pour Recette (Subvention/Facture) */}
+          {/* tabs pour Recette (Subvention/Facture) */}
           {typeSection === "Recette" && (
             <div className="flex flex-col gap-3">
               <div className="flex bg-slate-100 p-1 rounded-lg">
@@ -136,14 +136,15 @@ export function ModalAjoutRapide({
               </div>
 
               {typeRecette === "facture" && (
+                // Avertissement qu'il existe un générateur fourni par le site pour générer des factures
                 <Alert status="warning" className="text-xs">
                   <Alert.Icon>
                     <FaInfoCircle className="h-4 w-4" />
                   </Alert.Icon>
                   <Alert.Title>À savoir sur les factures :</Alert.Title>
                   <Alert.Description>
-                    L'outil intègre un générateur de factures automatisé. Toute facture créée via
-                    ce générateur sera <strong>automatiquement</strong> comptabilisée ici.
+                    L'outil intègre un générateur de factures automatisé. Toute facture créée via ce
+                    générateur sera <strong>automatiquement</strong> comptabilisée ici.
                     <div className="mt-3 flex flex-col gap-2">
                       <p>
                         N'utilisez ce formulaire d'ajout manuel que si vous avez émis une facture en
@@ -183,7 +184,7 @@ export function ModalAjoutRapide({
             </div>
           </div>
 
-          {/* 2. Montant & Pièce jointe */}
+          {/* montant et pièce jointe */}
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-semibold text-gray-700">Montant (€)</label>
@@ -207,7 +208,7 @@ export function ModalAjoutRapide({
             </div>
           </div>
 
-          {/* Statut (Uniquement Recettes) */}
+          {/* statut (uniquement pour recettes) */}
           {typeSection === "Recette" && (
             <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
               <div className="flex flex-col">
@@ -220,7 +221,7 @@ export function ModalAjoutRapide({
             </div>
           )}
 
-          {/* Spectacles (Multi-select simulation) */}
+          {/* spectacles (sélections multiples) */}
           <div className="flex flex-col gap-2 mt-[-5px]">
             <label className="text-sm font-semibold text-gray-700">Spectacles rattachés</label>
             <Select onValueChange={handleAddSpectacle}>
@@ -238,7 +239,7 @@ export function ModalAjoutRapide({
               </Select.Content>
             </Select>
 
-            {/* Liste des badges spectacles */}
+            {/* Liste des badges spectacles (pour la sélection multiple) */}
             <div className="flex flex-wrap gap-2 mt-1">
               {spectacles.map((s) => (
                 <Badge

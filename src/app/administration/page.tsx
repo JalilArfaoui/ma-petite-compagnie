@@ -33,7 +33,7 @@ export default function PageAdministration() {
     <div className="min-h-screen bg-[#fffbef] font-sans pb-20 relative">
       <Toaster />
       <Container maxW="max-w-6xl" className="mx-auto pt-16 px-4">
-        {/* En-tête de la page */}
+        {/* en tete de la page */}
         <Stack className="mb-10">
           <Heading as="h3" className="text-primary mb-2">
             Administration & finances
@@ -44,7 +44,7 @@ export default function PageAdministration() {
           <Text className="text-gray-600 text-xl mt-2">Vue d&apos;ensemble financière</Text>
         </Stack>
 
-        {/* Ligne des cartes indicateurs clés */}
+        {/* cards indicateurs clés */}
         <SimpleGrid gap={4} className="grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mb-12">
           <IndicateurCle
             titre="Trésorerie actuelle"
@@ -64,7 +64,7 @@ export default function PageAdministration() {
           <IndicateurCle titre="Spectacles en cours" valeur="5" sousTexte="spectacles actifs" />
         </SimpleGrid>
 
-        {/* Section principale avec les 3 colonnes */}
+        {/* section principale avec les 3 colonnes */}
         <SimpleGrid
           gap={6}
           className="grid-cols-1 lg:grid-cols-[1.1fr_1.5fr_1.1fr] items-start min-w-0"
