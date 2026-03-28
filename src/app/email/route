@@ -1,0 +1,28 @@
+import { NextResponse } from "next/server";
+import { EnvoieEmail } from "./Action/EnvoieEmail" ;
+
+export async function POST(req: Request) {
+  try {
+    const { destinataire, sujet, message } = await req.json();
+
+    const resultat = await EnvoieEmail(
+      destinataire,
+      sujet,
+      message
+    );
+
+    if (!resultat.success) {
+      return NextResponse.json(
+        { erreur: resultat.error },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json(
+      { erreur: "Erreur serveur" },
+      { status: 500 }
+    );
+  }
+}
