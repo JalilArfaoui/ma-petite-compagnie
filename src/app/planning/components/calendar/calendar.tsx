@@ -205,7 +205,7 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick } : Event
     return (
         <div className="event-calendar">
             <div className="calendar-header">
-                <Button variant="solid" onClick={goToPreviousMonth}>
+                <Button variant="solid" onClick={goToPreviousMonth} className='btn-test'>
                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
                         <path d="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z"/>
                     </svg>
@@ -222,6 +222,9 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick } : Event
                 <div className="buttons-container">
                     <Button variant="outline" onClick={() => setViewType(viewType === 'monthly' ? 'weekly' : 'monthly')} >
                         {viewType === 'monthly' ? 'Semaine' : 'Mois'}
+                    </Button>
+                    <Button variant="outline" onClick={goToToday} >
+                        Aujourd'hui
                     </Button>
                     <Button variant="solid" onClick={goToNextMonth}>
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
