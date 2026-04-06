@@ -4,6 +4,11 @@ export async function POST(req: Request) {
   try {
     const { destinataire, sujet, message } = await req.json();
 
+    const messageEchappe = message
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+
     const reponse = await fetch("https://api.brevo.com/v3/smtp/email", {
       method: "POST",
       headers: {
@@ -18,7 +23,7 @@ export async function POST(req: Request) {
         },
         to: [{ email: destinataire }],
         subject: sujet,
-        htmlContent: `<p>${message}</p>`,
+        htmlContent: `<p>${messageEchappe}</p>`,
       }),
     });
 
