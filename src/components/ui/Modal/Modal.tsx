@@ -51,6 +51,17 @@ interface ModalContentProps
     React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>,
     VariantProps<typeof modalContentVariants> {}
 
+const VisuallyHidden = ({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) => (
+  <span
+    className={cn(
+      "absolute h-px w-px p-0 -m-px overflow-hidden whitespace-nowrap border-0 [clip:rect(0,0,0,0)]",
+      className
+    )}
+    {...props}
+  />
+);
+VisuallyHidden.displayName = "VisuallyHidden";
+
 const ModalContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   ModalContentProps
@@ -62,11 +73,14 @@ const ModalContent = React.forwardRef<
       className={cn(modalContentVariants({ size }), className)}
       {...props}
     >
+      <VisuallyHidden>
+        <DialogPrimitive.Title>Modal Content</DialogPrimitive.Title>
+      </VisuallyHidden>
+      {children}
       <DialogPrimitive.Close className="absolute right-6 top-6 rounded-full p-2 opacity-70 transition-opacity hover:opacity-100 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-primary disabled:pointer-events-none">
         <IoClose className="h-5 w-5" />
-        <span className="sr-only">Fermer</span>
+        <span className="sr-only">Close</span>
       </DialogPrimitive.Close>
-      {children}
     </DialogPrimitive.Content>
   </ModalPortal>
 ));

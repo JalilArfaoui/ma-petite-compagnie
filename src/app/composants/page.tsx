@@ -20,8 +20,6 @@ import {
   Text,
   Icon,
   SearchBar,
-  Toaster,
-  toaster,
   Modal,
 } from "@/components/ui";
 import { FaHome } from "react-icons/fa";
@@ -29,7 +27,6 @@ import { FaHome } from "react-icons/fa";
 export default function Home() {
   return (
     <Container className="py-10 px-4 max-w-7xl mx-auto">
-      <Toaster />
       <Stack className="gap-10">
         <Box className="text-center">
           <Heading as="h3" className="mb-4">
@@ -279,56 +276,6 @@ export default function Home() {
                 </Card.Body>
               </Card>
             </div>
-            <Card title="Toasters">
-              <Card.Body>
-                <div className="flex flex-wrap gap-4">
-                  <Button
-                    onClick={() =>
-                      toaster.create({
-                        title: "Succès",
-                        description: "Action effectuée avec succès",
-                        type: "success",
-                      })
-                    }
-                  >
-                    Success Toast
-                  </Button>
-                  <Button
-                    onClick={() =>
-                      toaster.create({
-                        title: "Erreur",
-                        description: "Une erreur est survenue",
-                        type: "error",
-                      })
-                    }
-                  >
-                    Error Toast
-                  </Button>
-                  <Button
-                    onClick={() =>
-                      toaster.create({
-                        title: "Info",
-                        description: "Voici une information importante",
-                        type: "info",
-                      })
-                    }
-                  >
-                    Info Toast
-                  </Button>
-                  <Button
-                    onClick={() =>
-                      toaster.create({
-                        title: "Attention",
-                        description: "Ceci est un avertissement",
-                        type: "warning",
-                      })
-                    }
-                  >
-                    Warning Toast
-                  </Button>
-                </div>
-              </Card.Body>
-            </Card>
 
             <Card title="Table">
               <Card.Body>
@@ -377,12 +324,12 @@ export default function Home() {
           <div className="flex flex-wrap gap-4">
             <Modal>
               <Modal.Trigger asChild>
-                <Button variant="solid">Ouvrir petite modale</Button>
+                <Button variant="solid">Ouvrir petite modal</Button>
               </Modal.Trigger>
               <Modal.Content size="sm">
                 <Modal.Header icon={<FaHome className="h-6 w-6" />}>
-                  <Modal.Title>Petite modale</Modal.Title>
-                  <Modal.Description>Exemple de modale de confirmation.</Modal.Description>
+                  <Modal.Title>Petite modal</Modal.Title>
+                  <Modal.Description>Exemple de modal de confirmation.</Modal.Description>
                 </Modal.Header>
                 <Modal.Body>
                   <Text>
@@ -401,11 +348,11 @@ export default function Home() {
 
             <Modal>
               <Modal.Trigger asChild>
-                <Button variant="outline">Ouvrir moyenne modale (Defaut)</Button>
+                <Button variant="outline">Ouvrir moyenne modal (Defaut)</Button>
               </Modal.Trigger>
               <Modal.Content size="md">
                 <Modal.Header>
-                  <Modal.Title>Moyenne modale</Modal.Title>
+                  <Modal.Title>Moyenne modal</Modal.Title>
                   <Modal.Description>La taille par défaut.</Modal.Description>
                 </Modal.Header>
                 <Modal.Body>
@@ -416,7 +363,7 @@ export default function Home() {
                     </Text>
                     <Box className="p-4 bg-slate-50 rounded-lg border">
                       <Text className="text-sm">
-                        Vous pouvez intégrer n&apos;importe quel composant ici.
+                        Vous pouvez intégrer n'importe quel composant ici.
                       </Text>
                     </Box>
                   </Stack>
@@ -432,13 +379,13 @@ export default function Home() {
 
             <Modal>
               <Modal.Trigger asChild>
-                <Button variant="outline">Ouvrir grande modale</Button>
+                <Button variant="outline">Ouvrir grande modal</Button>
               </Modal.Trigger>
               <Modal.Content size="lg">
                 <Modal.Header icon={<Icon as={FaHome} className="text-primary" />}>
-                  <Modal.Title>Grande modale avec icône</Modal.Title>
+                  <Modal.Title>Grande modal avec icône</Modal.Title>
                   <Modal.Description>
-                    Une grande modale pour un contenu plus complexe.
+                    Une grande modal pour un contenu plus complexe.
                   </Modal.Description>
                 </Modal.Header>
                 <Modal.Body>
