@@ -43,8 +43,8 @@ export function RecettesSection({
       nom: data.nom,
       montant: data.montant,
       date: data.date,
-      type: data.type as "facture" | "financement",
-      statut: data.statut as "en_attente" | "paye",
+      type: data.type ?? "facture",
+      statut: data.statut ?? "en_attente",
       spectacles: data.spectacles || [],
       fichier: data.fichier,
     };
