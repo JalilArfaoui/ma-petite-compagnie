@@ -180,7 +180,12 @@ export function ModalAjoutRapide({
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-semibold text-gray-700">Date</label>
-              <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+              <Input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="cursor-pointer [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+              />
             </div>
           </div>
 
@@ -203,7 +208,7 @@ export function ModalAjoutRapide({
               <input
                 type="file"
                 onChange={(e) => setFichier(e.target.files?.[0]?.name || "")}
-                className="text-sm text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-[11px] file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 cursor-pointer h-10 font-serif"
+                className="text-sm text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-[11px] file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 file:cursor-pointer cursor-pointer h-10 font-serif"
               />
             </div>
           </div>
