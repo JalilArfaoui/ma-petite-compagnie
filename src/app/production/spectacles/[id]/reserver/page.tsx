@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import {
   Badge,
   Box,
@@ -16,8 +17,6 @@ import {
   VStack,
 } from "@/components/ui";
 import { Prisma, BesoinSpectacle, StatutSpectacle, TypeSpectacle } from "@prisma/client";
-import { list } from "postcss";
-import { stringify } from "querystring";
 
 export const dynamic = "force-dynamic";
 
@@ -33,28 +32,33 @@ async function reserver(formData: FormData) {
   });
 
   if (rep != null) {
-    formData.forEach(async (data, key) => {
+    const promises: Promise<unknown>[] = [];
+    formData.forEach((data, key) => {
       if (!isNaN(Number(key))) {
-        await prisma.reservationObjet.create({
-          data: {
-            representationId: rep.id,
-            objetId: Number(data),
-          },
-        });
+        promises.push(
+          prisma.reservationObjet.create({
+            data: {
+              representationId: rep.id,
+              objetId: Number(data),
+            },
+          })
+        );
       }
     });
+    await Promise.all(promises);
   }
 
-  laDate = null;
   revalidatePath("/production");
+  redirect(`/production/spectacles/${spectacleId}/reserver`);
 }
 
 async function getObjets(formData: FormData) {
   "use server";
 
-  laDate = new Date(formData.get("date") as string);
+  const date = formData.get("date") as string;
+  const spectacleId = formData.get("spectacleId") as string;
 
-  revalidatePath("/production");
+  redirect(`/production/spectacles/${spectacleId}/reserver?date=${encodeURIComponent(date)}`);
 }
 
 /* =========================
@@ -72,11 +76,18 @@ const formatDateInput = (date: Date) => {
   return date.toISOString().slice(0, 16);
 };
 
-let laDate: Date | null = null;
 const compagnieId = 1; // TODO: remplacer par l'id de la compagnie connectée
 
-export default async function ProductionPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function ProductionPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ date?: string }>;
+}) {
   const { id } = await params;
+  const { date: dateParam } = await searchParams;
+  const laDate = dateParam ? new Date(dateParam) : null;
 
   const spectacle = await prisma.spectacle.findFirst({
     where: {
@@ -116,6 +127,7 @@ export default async function ProductionPage({ params }: { params: Promise<{ id:
             ))}
           </div>
           <form action={getObjets}>
+            <input name="spectacleId" type="hidden" value={id} />
             <div>
               <label className="block font-semibold mb-2">date de reservation</label>
               <input
@@ -218,6 +230,7 @@ export default async function ProductionPage({ params }: { params: Promise<{ id:
           {/* Separator */}
           <Box className="h-0.5 bg-primary" />
           <form action={getObjets}>
+            <input name="spectacleId" type="hidden" value={id} />
             <div>
               <label className="block font-semibold mb-2">date de reservation</label>
               <input
