@@ -11,7 +11,7 @@ export const Header = () => {
   const { data: session, status, update } = useSession();
   const pathname = usePathname();
   const isLoading = status === "loading";
-    
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigationItems = ["Production", "Planning", "Communication", "Administration"];
 
