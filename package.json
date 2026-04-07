@@ -17,6 +17,7 @@
     "db:studio": "prisma studio",
     "db:generate": "prisma generate",
     "db:reset": "prisma migrate reset",
+    "db:seed": "npx tsx prisma/seed.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
@@ -35,10 +36,12 @@
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@tailwindcss/postcss": "^4.1.18",
+    "@tailwindcss/vite": "^4.2.1",
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.34.0",
+    "jspdf": "^4.2.0",
     "next": "16.1.1",
     "next-auth": "^5.0.0-beta.30",
     "next-themes": "^0.4.6",
@@ -49,6 +52,9 @@
     "sonner": "^2.0.7",
     "styled-components": "^6.3.8",
     "tailwind-merge": "^3.4.0"
+  },
+  "prisma": {
+    "seed": "npx tsx prisma/seed.ts"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.1",
@@ -71,8 +77,9 @@
     "prettier": "^3.7.4",
     "prisma": "^7.4.1",
     "styled-components": "^6.3.8",
-    "tailwindcss": "^4.1.18",
-    "typescript": "^5",
+    "tailwindcss": "^4.2.1",
+    "tsx": "^4.21.0",
+    "typescript": "5.9.3",
     "vitest": "^4.0.17"
   }
 }
