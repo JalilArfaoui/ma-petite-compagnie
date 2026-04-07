@@ -3,7 +3,6 @@
 
   - You are about to drop the column `troupe` on the `Spectacle` table. All the data in the column will be lost.
   - The `type` column on the `Spectacle` table would be dropped and recreated. This will lead to data loss if there is data in the column.
-  - You are about to drop the `UtilisateurBouchon` table. If the table is not empty, all the data it contains will be lost.
   - Added the required column `compagnieId` to the `Spectacle` table without a default value. This is not possible if the table is not empty.
 
 */
@@ -12,12 +11,6 @@ CREATE TYPE "TypeSpectacle" AS ENUM ('THEATRE', 'DANSE', 'MUSIQUE', 'CIRQUE', 'A
 
 -- CreateEnum
 CREATE TYPE "EtatObjet" AS ENUM ('NEUF', 'ABIME', 'CASSE');
-
--- DropForeignKey
-ALTER TABLE "ParticipantsEvenement" DROP CONSTRAINT "ParticipantsEvenement_utilisateurId_fkey";
-
--- DropForeignKey
-ALTER TABLE "UtilisateurBouchon" DROP CONSTRAINT "UtilisateurBouchon_compagnieId_fkey";
 
 -- AlterTable
 ALTER TABLE "Spectacle" DROP COLUMN "troupe",
@@ -30,36 +23,6 @@ ADD COLUMN     "imageMimeType" TEXT,
 DROP COLUMN "type",
 ADD COLUMN     "type" "TypeSpectacle",
 ALTER COLUMN "statut" SET DEFAULT 'EN_CREATION';
-
--- DropTable
-DROP TABLE "UtilisateurBouchon";
-
--- CreateTable
-CREATE TABLE "User" (
-    "id" SERIAL NOT NULL,
-    "email" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
-    "nom" TEXT,
-    "prenom" TEXT,
-    "emailVerified" TIMESTAMP(3),
-    "image" TEXT,
-
-    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "CompanyMember" (
-    "id" SERIAL NOT NULL,
-    "userId" INTEGER NOT NULL,
-    "compagnieId" INTEGER NOT NULL,
-    "droitDestruction" BOOLEAN NOT NULL DEFAULT false,
-    "droitModificationInfos" BOOLEAN NOT NULL DEFAULT false,
-    "droitGestionUtilisateurs" BOOLEAN NOT NULL DEFAULT false,
-    "droitAccesPlanning" BOOLEAN NOT NULL DEFAULT false,
-    "droitGestionPlanning" BOOLEAN NOT NULL DEFAULT false,
-
-    CONSTRAINT "CompanyMember_pkey" PRIMARY KEY ("id")
-);
 
 -- CreateTable
 CREATE TABLE "CategorieObjet" (
@@ -132,12 +95,6 @@ CREATE TABLE "ReservationObjet" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
-
--- CreateIndex
-CREATE UNIQUE INDEX "CompanyMember_userId_compagnieId_key" ON "CompanyMember"("userId", "compagnieId");
-
--- CreateIndex
 CREATE UNIQUE INDEX "CategorieObjet_nom_key" ON "CategorieObjet"("nom");
 
 -- CreateIndex
@@ -145,15 +102,6 @@ CREATE UNIQUE INDEX "TypeObjet_nom_key" ON "TypeObjet"("nom");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "FicheTechnique_spectacleId_key" ON "FicheTechnique"("spectacleId");
-
--- AddForeignKey
-ALTER TABLE "ParticipantsEvenement" ADD CONSTRAINT "ParticipantsEvenement_utilisateurId_fkey" FOREIGN KEY ("utilisateurId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "CompanyMember" ADD CONSTRAINT "CompanyMember_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "CompanyMember" ADD CONSTRAINT "CompanyMember_compagnieId_fkey" FOREIGN KEY ("compagnieId") REFERENCES "Compagnie"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "TypeObjet" ADD CONSTRAINT "TypeObjet_categorieId_fkey" FOREIGN KEY ("categorieId") REFERENCES "CategorieObjet"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
