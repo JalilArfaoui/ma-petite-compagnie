@@ -73,7 +73,7 @@ const formatDateInput = (date: Date) => {
 };
 
 let laDate: Date | null = null;
-const compagnieId = 3;
+const compagnieId = 1; // TODO: remplacer par l'id de la compagnie connectée
 
 export default async function ProductionPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
