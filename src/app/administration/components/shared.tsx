@@ -1,7 +1,7 @@
 "use client";
 
 import { Text, Badge, Tooltip, Card, Link } from "@/components/ui";
-import { FaExclamationTriangle, FaCheck, FaInfoCircle } from "react-icons/fa";
+import { FaCheck, FaInfoCircle } from "react-icons/fa";
 import { formatDateFr, formatMontant } from "../utils";
 import { Recette, Depense } from "./types";
 

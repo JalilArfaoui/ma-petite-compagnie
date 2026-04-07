@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { Card, toaster } from "@/components/ui";
 import { formatMontant } from "../utils";
-import { ModalAjoutRapide } from "../modals";
+import { ModalAjoutRapide, DonneesAjoutFinancier } from "../modals";
 import { Depense } from "./types";
 import { NoteInfo, FadeContainer, ItemFinancierCard, VoirToutLink } from "./shared";
 
@@ -20,7 +19,7 @@ export function DepensesSection({
     .sort((a, b) => new Date(b.date || "").getTime() - new Date(a.date || "").getTime())
     .slice(0, 5);
 
-  const handleAddDepense = (data: any) => {
+  const handleAddDepense = (data: DonneesAjoutFinancier) => {
     const nouvelleDepense: Depense = {
       id: `d-temp-${Date.now()}`, // dépenses temporaires (non connecté à la bdd encore)
       nom: data.nom,
@@ -49,7 +48,7 @@ export function DepensesSection({
       </div>
 
       <NoteInfo className="mb-6">
-        Note : l'ensemble des dépenses affichées ici sont considérées comme payées.
+        Note : l&apos;ensemble des dépenses affichées ici sont considérées comme payées.
       </NoteInfo>
 
       <FadeContainer>

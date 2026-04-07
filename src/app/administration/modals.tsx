@@ -5,13 +5,28 @@ import { Modal, Button, Select, Badge, Switch, Text, Input, Alert, Link } from "
 import { FaPlus, FaTimes, FaInfoCircle } from "react-icons/fa";
 import { LISTE_SPECTACLES } from "./test_data";
 
+/**
+ * Représente la structure des données envoyées par le formulaire d'ajout rapide (modale).
+ * Ce type est utilisé de manière transverse entre la modale et les sections (Recettes/Dépenses)
+ * pour garantir que les informations saisies sont correctement transmises et typées.
+ */
+export type DonneesAjoutFinancier = {
+  nom: string;
+  montant: number;
+  date: string;
+  spectacles: string[];
+  fichier?: string;
+  type?: "facture" | "financement";
+  statut?: "en_attente" | "paye";
+};
+
 // Modal pour ajout rapide -> fake pour le moment (non connecté à la bdd)
 export function ModalAjoutRapide({
   typeSection,
   onAdd,
 }: {
   typeSection: "Recette" | "Dépense";
-  onAdd: (data: any) => void;
+  onAdd: (data: DonneesAjoutFinancier) => void;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -39,7 +54,7 @@ export function ModalAjoutRapide({
   const handleSubmit = () => {
     if (!nom || !montant || !date) return;
 
-    const payload: any = {
+    const payload: DonneesAjoutFinancier = {
       nom,
       montant: Number(montant),
       date,
@@ -143,18 +158,18 @@ export function ModalAjoutRapide({
                   </Alert.Icon>
                   <Alert.Title>À savoir sur les factures :</Alert.Title>
                   <Alert.Description>
-                    L'outil intègre un générateur de factures automatisé. Toute facture créée via ce
-                    générateur sera <strong>automatiquement</strong> comptabilisée ici.
+                    L&apos;outil intègre un générateur de factures automatisé. Toute facture créée
+                    via ce générateur sera <strong>automatiquement</strong> comptabilisée ici.
                     <div className="mt-3 flex flex-col gap-2">
                       <p>
-                        N'utilisez ce formulaire d'ajout manuel que si vous avez émis une facture en
-                        dehors notre système.
+                        N&apos;utilisez ce formulaire d&apos;ajout manuel que si vous avez émis une
+                        facture en dehors notre système.
                       </p>
                       <Link
                         href="#"
                         className="text-yellow-800 font-bold underline flex items-center gap-1 w-fit"
                       >
-                        Créer une facture avec l'outil intégré en cliquant ici
+                        Créer une facture avec l&apos;outil intégré en cliquant ici
                       </Link>
                     </div>
                   </Alert.Description>

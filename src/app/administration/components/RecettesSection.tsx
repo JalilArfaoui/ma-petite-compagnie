@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Card, Checkbox, toaster } from "@/components/ui";
 import { formatMontant } from "../utils";
-import { ModalAjoutRapide } from "../modals";
+import { ModalAjoutRapide, DonneesAjoutFinancier } from "../modals";
 import { Recette } from "./types";
 import { NoteInfo, FadeContainer, ItemFinancierCard, VoirToutLink } from "./shared";
 
@@ -36,14 +36,14 @@ export function RecettesSection({
   // Limiter l'affichage
   const recettesAffichees = recettesFiltrees.slice(0, 5);
 
-  const handleAddRecette = (data: any) => {
+  const handleAddRecette = (data: DonneesAjoutFinancier) => {
     const nouvelle: Recette = {
       id: `r-temp-${Date.now()}`,
       nom: data.nom,
       montant: data.montant,
       date: data.date,
-      type: data.type,
-      statut: data.statut,
+      type: data.type as "facture" | "financement",
+      statut: data.statut as "en_attente" | "paye",
       spectacles: data.spectacles || [],
       fichier: data.fichier,
     };
