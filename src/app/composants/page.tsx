@@ -20,13 +20,15 @@ import {
   Text,
   Icon,
   SearchBar,
-  Select,
+  Toaster,
 } from "@/components/ui";
+import { toaster } from "@/components/ui/Toast/toaster";
 import { FaHome } from "react-icons/fa";
 
 export default function Home() {
   return (
     <Container className="py-10 px-4 max-w-7xl mx-auto">
+      <Toaster />
       <Stack className="gap-10">
         <Box className="text-center">
           <Heading as="h3" className="mb-4">
@@ -198,26 +200,6 @@ export default function Home() {
                       <Text className="font-bold mb-2">Textarea</Text>
                       <Textarea placeholder="Type longer text..." />
                     </Box>
-                    <Box>
-                      <Text className="font-bold mb-2">Select</Text>
-                      <Select defaultValue="item1">
-                        <Select.Trigger>
-                          <Select.Value placeholder="Choisi un item" />
-                        </Select.Trigger>
-                        <Select.Content>
-                          <Select.Group>
-                            <Select.Label>Catégorie 1</Select.Label>
-                            <Select.Item value="item1">Item 1</Select.Item>
-                            <Select.Item value="item2">Item 2</Select.Item>
-                            <Select.Separator />
-                            <Select.Label>Catégorie 2</Select.Label>
-                            <Select.Item value="item3">Item 3</Select.Item>
-                            <Select.Item value="item4">Item 4</Select.Item>
-                            <Select.Item value="item5">Item 5</Select.Item>
-                          </Select.Group>
-                        </Select.Content>
-                      </Select>
-                    </Box>
                   </Stack>
                   <Stack className="gap-4">
                     <Box>
@@ -296,6 +278,56 @@ export default function Home() {
                 </Card.Body>
               </Card>
             </div>
+            <Card title="Toasters">
+              <Card.Body>
+                <div className="flex flex-wrap gap-4">
+                  <Button
+                    onClick={() =>
+                      toaster.create({
+                        title: "Succès",
+                        description: "Action effectuée avec succès",
+                        type: "success",
+                      })
+                    }
+                  >
+                    Success Toast
+                  </Button>
+                  <Button
+                    onClick={() =>
+                      toaster.create({
+                        title: "Erreur",
+                        description: "Une erreur est survenue",
+                        type: "error",
+                      })
+                    }
+                  >
+                    Error Toast
+                  </Button>
+                  <Button
+                    onClick={() =>
+                      toaster.create({
+                        title: "Info",
+                        description: "Voici une information importante",
+                        type: "info",
+                      })
+                    }
+                  >
+                    Info Toast
+                  </Button>
+                  <Button
+                    onClick={() =>
+                      toaster.create({
+                        title: "Attention",
+                        description: "Ceci est un avertissement",
+                        type: "warning",
+                      })
+                    }
+                  >
+                    Warning Toast
+                  </Button>
+                </div>
+              </Card.Body>
+            </Card>
 
             <Card title="Table">
               <Card.Body>
