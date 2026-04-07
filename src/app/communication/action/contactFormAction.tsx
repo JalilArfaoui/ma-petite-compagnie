@@ -5,8 +5,8 @@ import { ContactInformation, creerContact, modifierContact } from "../api/contac
 function transformerFormDataContact(FormData: FormData): ContactInformation {
   const listeIdsRaw = FormData.getAll("listeIds");
   // const listeIds = listeIdsRaw
-  //   .map((v) => parseInt(v.toString(), 10))
-  //   .filter((n) => !isNaN(n));
+  //    .map((v) => parseInt(v.toString(), 10))
+  //    .filter((n) => !isNaN(n));
   return {
     nom: FormData.get("nom")?.toString() ?? "",
     prenom: FormData.get("prenom")?.toString() ?? "",

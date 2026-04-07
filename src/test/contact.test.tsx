@@ -78,6 +78,9 @@ describe("Contact", () => {
       email: "prenom.nom",
       tel: "0011223344",
       role: "PARTENAIRE",
+      notes: null,
+      ville: null,
+      lieu: null,
     });
     expect(result.succes, "Le contact a été créé avec un mauvais email").toBe(false);
   });

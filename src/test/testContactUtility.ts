@@ -9,5 +9,8 @@ export function creerObjetContactAvecNom(nom: string, email: string): ContactInf
     email: email,
     tel: "0011223344",
     role: "PARTENAIRE",
+    lieu: null,
+    ville: null,
+    notes: null,
   };
 }
