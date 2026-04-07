@@ -28,9 +28,9 @@ export async function createCompany(formData: FormData) {
             droitGestionUtilisateurs: true,
             droitAccesPlanning: true,
             droitGestionPlanning: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
     revalidatePath("/");

@@ -1,4 +1,4 @@
-import NextAuth, { type DefaultSession } from "next-auth"
+import NextAuth, { type DefaultSession } from "next-auth";
 
 export type CompanyRights = {
   droitDestruction: boolean;
@@ -6,7 +6,7 @@ export type CompanyRights = {
   droitGestionUtilisateurs: boolean;
   droitAccesPlanning: boolean;
   droitGestionPlanning: boolean;
-}
+};
 
 declare module "next-auth" {
   interface Session {
@@ -17,7 +17,7 @@ declare module "next-auth" {
       id: string;
       nom?: string | null;
       prenom?: string | null;
-    } & DefaultSession["user"]
+    } & DefaultSession["user"];
   }
 
   interface User {
