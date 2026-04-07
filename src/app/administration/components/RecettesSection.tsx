@@ -86,11 +86,7 @@ export function RecettesSection({
 
       <FadeContainer>
         {recettesAffichees.map((item) => (
-          <ItemFinancierCard
-            key={item.id}
-            item={item}
-            onValider={validerRecette}
-          />
+          <ItemFinancierCard key={item.id} item={item} onValider={validerRecette} />
         ))}
         {recettesFiltrees.length === 0 && (
           <div className="text-sm text-center py-4 text-text-muted italic">

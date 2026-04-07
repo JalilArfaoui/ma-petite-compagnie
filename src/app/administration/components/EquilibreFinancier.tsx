@@ -16,7 +16,10 @@ export function EquilibreFinancier({ spectacles }: { spectacles: SpectacleEquili
 
       <FadeContainer>
         {spectacles.map((spec) => (
-          <Card key={spec.nom} className="p-4 bg-white !gap-0 shadow-sm border border-gray-100 mb-1">
+          <Card
+            key={spec.nom}
+            className="p-4 bg-white !gap-0 shadow-sm border border-gray-100 mb-1"
+          >
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full gap-2 sm:gap-4">
               <Text className="text-sm font-semibold truncate w-full sm:w-1/3" title={spec.nom}>
                 {spec.nom}
