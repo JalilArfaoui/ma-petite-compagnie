@@ -1,12 +1,9 @@
 "use client";
 
-import { Text, Badge, Tooltip, Card, Link } from "@/components/ui";
+import { Text, Badge, Tooltip, Card, Link, Alert } from "@/components/ui";
 import { FaCheck, FaInfoCircle } from "react-icons/fa";
 import { formatDateFr, formatMontant } from "../utils";
 import { Recette, Depense } from "./types";
-
-// Composant de note d'information réutilisable (basé sur Alert)
-import { Alert } from "@/components/ui";
 
 export function NoteInfo({
   children,

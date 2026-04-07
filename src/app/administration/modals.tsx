@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Modal, Button, Select, Badge, Switch, Text, Input, Alert, Link } from "@/components/ui";
 import { FaPlus, FaTimes, FaInfoCircle } from "react-icons/fa";
-import { LISTE_SPECTACLES } from "./test_data";
 
 /**
  * Représente la structure des données envoyées par le formulaire d'ajout rapide (modale).
@@ -24,9 +23,11 @@ export type DonneesAjoutFinancier = {
 export function ModalAjoutRapide({
   typeSection,
   onAdd,
+  spectacles,
 }: {
   typeSection: "Recette" | "Dépense";
   onAdd: (data: DonneesAjoutFinancier) => void;
+  spectacles: string[];
 }) {
   const [open, setOpen] = useState(false);
 
@@ -35,20 +36,20 @@ export function ModalAjoutRapide({
   const [montant, setMontant] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [fichier, setFichier] = useState<string>("");
-  const [spectacles, setSpectacles] = useState<string[]>([]);
+  const [selectedSpectacles, setSelectedSpectacles] = useState<string[]>([]);
 
   // Champs spécifiques aux Recettes
   const [typeRecette, setTypeRecette] = useState<"facture" | "financement">("financement"); // subvention par défaut
   const [estPaye, setEstPaye] = useState(false);
 
   const handleAddSpectacle = (val: string) => {
-    if (!spectacles.includes(val)) {
-      setSpectacles([...spectacles, val]);
+    if (!selectedSpectacles.includes(val)) {
+      setSelectedSpectacles([...selectedSpectacles, val]);
     }
   };
 
   const handleRemoveSpectacle = (val: string) => {
-    setSpectacles(spectacles.filter((s) => s !== val));
+    setSelectedSpectacles(selectedSpectacles.filter((s) => s !== val));
   };
 
   const handleSubmit = () => {
@@ -58,7 +59,7 @@ export function ModalAjoutRapide({
       nom,
       montant: Number(montant),
       date,
-      spectacles: spectacles,
+      spectacles: selectedSpectacles,
     };
 
     if (fichier) {
@@ -78,7 +79,7 @@ export function ModalAjoutRapide({
     setMontant("");
     setDate(new Date().toISOString().split("T")[0]);
     setFichier("");
-    setSpectacles([]);
+    setSelectedSpectacles([]);
     setTypeRecette("financement");
     setEstPaye(false);
   };
@@ -90,7 +91,7 @@ export function ModalAjoutRapide({
     setMontant("");
     setDate(new Date().toISOString().split("T")[0]);
     setFichier("");
-    setSpectacles([]);
+    setSelectedSpectacles([]);
     setTypeRecette("financement");
     setEstPaye(false);
   };
@@ -253,18 +254,20 @@ export function ModalAjoutRapide({
               </Select.Trigger>
               <Select.Content>
                 <Select.Group>
-                  {LISTE_SPECTACLES.filter((s) => !spectacles.includes(s)).map((s) => (
-                    <Select.Item key={s} value={s}>
-                      {s}
-                    </Select.Item>
-                  ))}
+                  {spectacles
+                    .filter((s) => !selectedSpectacles.includes(s))
+                    .map((s) => (
+                      <Select.Item key={s} value={s}>
+                        {s}
+                      </Select.Item>
+                    ))}
                 </Select.Group>
               </Select.Content>
             </Select>
 
             {/* Liste des badges spectacles (pour la sélection multiple) */}
             <div className="flex flex-wrap gap-2 mt-1">
-              {spectacles.map((s) => (
+              {selectedSpectacles.map((s) => (
                 <Badge
                   key={s}
                   variant="purple"
@@ -280,7 +283,7 @@ export function ModalAjoutRapide({
                   </button>
                 </Badge>
               ))}
-              {spectacles.length === 0 && (
+              {selectedSpectacles.length === 0 && (
                 <Text className="text-[11px] text-text-muted italic">
                   Aucun spectacle sélectionné.
                 </Text>

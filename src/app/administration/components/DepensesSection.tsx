@@ -5,6 +5,7 @@ import { formatMontant } from "../utils";
 import { ModalAjoutRapide, DonneesAjoutFinancier } from "../modals";
 import { Depense } from "./types";
 import { NoteInfo, FadeContainer, ItemFinancierCard, VoirToutLink } from "./shared";
+import { LISTE_SPECTACLES } from "../test_data";
 
 export function DepensesSection({
   depenses,
@@ -45,7 +46,11 @@ export function DepensesSection({
           </span>
         </h3>
         <div className="flex-shrink-0">
-          <ModalAjoutRapide typeSection="Dépense" onAdd={handleAddDepense} />
+          <ModalAjoutRapide
+            typeSection="Dépense"
+            onAdd={handleAddDepense}
+            spectacles={LISTE_SPECTACLES}
+          />
         </div>
       </div>
 
