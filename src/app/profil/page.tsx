@@ -147,7 +147,7 @@ export default function ProfilePage() {
                 ) : (
                   <Box className="py-8 text-center bg-slate-50 rounded-xl border border-dashed border-slate-200">
                     <Text className="text-slate-400 italic mb-4">
-                      Vous n'avez pas encore de compagnie.
+                      Vous n&apos;avez pas encore de compagnie.
                     </Text>
                     <Link href="/compagnie/nouveau">
                       <Button size="sm" icon={<LuPlus />}>

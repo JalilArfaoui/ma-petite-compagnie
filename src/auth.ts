@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import bcryptjs from "bcryptjs";
+import { type CompanyRights } from "@/types/next-auth";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   session: { strategy: "jwt" },
@@ -77,17 +78,23 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           include: { compagnie: true },
         });
 
-        session.companies = memberships.map((m: any) => ({
+        session.companies = memberships.map((m) => ({
           id: m.compagnie.id,
           nom: m.compagnie.nom,
         }));
 
         if (!token.activeCompanyId && memberships.length > 0) {
-          session.activeCompanyId = memberships[0].compagnieId as number;
-          session.rights = memberships[0] as any;
+          session.activeCompanyId = memberships[0].compagnieId;
+          session.rights = {
+            droitDestruction: memberships[0].droitDestruction,
+            droitModificationInfos: memberships[0].droitModificationInfos,
+            droitGestionUtilisateurs: memberships[0].droitGestionUtilisateurs,
+            droitAccesPlanning: memberships[0].droitAccesPlanning,
+            droitGestionPlanning: memberships[0].droitGestionPlanning,
+          };
         } else {
-          session.activeCompanyId = token.activeCompanyId as number;
-          session.rights = token.rights as any;
+          session.activeCompanyId = token.activeCompanyId as number | null | undefined;
+          session.rights = token.rights as CompanyRights | null | undefined;
         }
       }
 

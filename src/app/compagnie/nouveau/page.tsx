@@ -40,7 +40,7 @@ export default function CreateCompanyPage() {
         className="flex items-center gap-2 text-slate-500 hover:text-primary mb-8 transition-colors group"
       >
         <LuArrowLeft className="group-hover:-translate-x-1 transition-transform" />
-        <span>Retour à l'accueil</span>
+        <span>Retour à l&apos;accueil</span>
       </Link>
 
       <Card className="p-8 shadow-xl border-black/5 bg-white">
