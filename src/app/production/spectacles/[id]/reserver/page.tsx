@@ -15,7 +15,7 @@ import {
   Text,
   VStack,
 } from "@/components/ui";
-import { BesoinSpectacle, StatutSpectacle, TypeSpectacle } from "@prisma/client";
+import { Prisma, BesoinSpectacle, StatutSpectacle, TypeSpectacle } from "@prisma/client";
 import { list } from "postcss";
 import { stringify } from "querystring";
 
@@ -167,7 +167,19 @@ export default async function ProductionPage({ params }: { params: Promise<{ id:
           spectacleId: spectacle.id,
         },
       });
-      const besoins: { [id: string]: BesoinSpectacle[] } = {};
+      type BesoinWithTypeObjet = Prisma.BesoinSpectacleGetPayload<{
+        include: {
+          typeObjet: {
+            include: {
+              categorie: { select: { nom: true } };
+              objets: true; // Prisma will further narrow based on your where clause usage
+            };
+          };
+        };
+      }>;
+
+      const besoins: Record<string, BesoinWithTypeObjet[]> = {};
+
       const categories: string[] = [];
       req.forEach((element) => {
         if (besoins[element.typeObjet.categorie.nom] == undefined) {
@@ -251,14 +263,14 @@ export default async function ProductionPage({ params }: { params: Promise<{ id:
                 <Heading as="h4" className="text-primary mb-2">
                   {categorie}
                 </Heading>
-                <table>
+                <table style={{ width: "50%" }}>
                   <tbody>
                     {besoins[categorie].map((besoin) => (
                       <tr key={besoin.id}>
-                        <td>
+                        <td style={{ width: "50%" }}>
                           {besoin.typeObjet.nom} * {besoin.nb}
                         </td>
-                        <td>
+                        <td style={{ width: "50%" }}>
                           {[
                             ...Array(Math.min(besoin.nb, besoin.typeObjet.objets.length)).keys(),
                           ].map((n) => (
@@ -278,20 +290,20 @@ export default async function ProductionPage({ params }: { params: Promise<{ id:
 
                           <p>
                             {besoin.nb <= besoin.typeObjet.objets.length ? null : (
-                              <span className="red">
+                              <span className="text-red-600">
                                 &#9888;
                                 {besoin.nb - besoin.typeObjet.objets.length + " "}
                                 {1 < besoin.nb - besoin.typeObjet.objets.length
                                   ? "manquants"
                                   : "manquant"}
                               </span>
-                            )}
+                            )}{" "}
                             {besoin.nb <=
                               besoin.typeObjet.objets.filter((objet) => objet.etat == "NEUF")
                                 .length ||
                             besoin.typeObjet.objets.filter((objet) => objet.etat == "ABIME")
                               .length == 0 ? null : (
-                              <span className="orange">
+                              <span className="text-orange-600">
                                 &#9888;{" "}
                                 {Math.min(
                                   besoin.nb -
