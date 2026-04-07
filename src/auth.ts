@@ -33,69 +33,79 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     async jwt({ token, user, trigger, session }) {
-      if (user) {
-        token.id = user.id;
-        token.nom = user.nom;
-        token.prenom = user.prenom;
-      }
+      try {
+        if (user) {
+          token.id = user.id;
+          token.nom = user.nom;
+          token.prenom = user.prenom;
+        }
 
-      if (trigger === "update" && session?.activeCompanyId !== undefined) {
-        const userId = token.id || token.sub;
-        if (session.activeCompanyId === null) {
-          token.activeCompanyId = null;
-          token.rights = null;
-        } else if (userId) {
-          const membership = await prisma.companyMember.findUnique({
-            where: {
-              userId_compagnieId: {
-                userId: Number(userId),
-                compagnieId: Number(session.activeCompanyId),
+        if (trigger === "update" && session?.activeCompanyId !== undefined) {
+          const userId = token.id || token.sub;
+          if (session.activeCompanyId === null) {
+            token.activeCompanyId = null;
+            token.rights = null;
+          } else if (userId) {
+            const membership = await prisma.companyMember.findUnique({
+              where: {
+                userId_compagnieId: {
+                  userId: Number(userId),
+                  compagnieId: Number(session.activeCompanyId),
+                },
               },
-            },
-          });
-          if (membership) {
-            token.activeCompanyId = membership.compagnieId;
-            token.rights = membership;
+            });
+            if (membership) {
+              token.activeCompanyId = membership.compagnieId;
+              token.rights = membership;
+            }
           }
         }
+      } catch (error) {
+        console.error("JWT Callback Error:", error);
       }
 
       return token;
     },
 
     async session({ session, token }) {
-      if (!session.user) return session;
+      try {
+        if (!session.user) return session;
 
-      const userId = token.id || token.sub;
+        const userId = token.id || token.sub;
 
-      session.user.id = token.id as string;
-      session.user.nom = token.nom as string;
-      session.user.prenom = token.prenom as string;
+        session.user.id = token.id as string;
+        session.user.nom = token.nom as string;
+        session.user.prenom = token.prenom as string;
 
-      if (userId) {
-        const memberships = await prisma.companyMember.findMany({
-          where: { userId: Number(userId) },
-          include: { compagnie: true },
-        });
+        if (userId) {
+          const memberships = await prisma.companyMember.findMany({
+            where: { userId: Number(userId) },
+            include: { compagnie: true },
+          });
 
-        session.companies = memberships.map((m) => ({
-          id: m.compagnie.id,
-          nom: m.compagnie.nom,
-        }));
+          session.companies = memberships.map((m) => ({
+            id: m.compagnie.id,
+            nom: m.compagnie.nom,
+          }));
 
-        if (!token.activeCompanyId && memberships.length > 0) {
-          session.activeCompanyId = memberships[0].compagnieId;
-          session.rights = {
-            droitDestruction: memberships[0].droitDestruction,
-            droitModificationInfos: memberships[0].droitModificationInfos,
-            droitGestionUtilisateurs: memberships[0].droitGestionUtilisateurs,
-            droitAccesPlanning: memberships[0].droitAccesPlanning,
-            droitGestionPlanning: memberships[0].droitGestionPlanning,
-          };
-        } else {
-          session.activeCompanyId = token.activeCompanyId as number | null | undefined;
-          session.rights = token.rights as CompanyRights | null | undefined;
+          if (!token.activeCompanyId && memberships.length > 0) {
+            session.activeCompanyId = memberships[0].compagnieId;
+            session.rights = {
+              droitModificationCompagnie: memberships[0].droitModificationCompagnie,
+              droitSuppressionCompagnie: memberships[0].droitSuppressionCompagnie,
+              droitAjoutMembre: memberships[0].droitAjoutMembre,
+              droitSuppressionMembre: memberships[0].droitSuppressionMembre,
+              droitGestionDroitsMembres: memberships[0].droitGestionDroitsMembres,
+              droitAccesPlanning: memberships[0].droitAccesPlanning,
+              droitGestionPlanning: memberships[0].droitGestionPlanning,
+            };
+          } else {
+            session.activeCompanyId = token.activeCompanyId as number | null | undefined;
+            session.rights = token.rights as CompanyRights | null | undefined;
+          }
         }
+      } catch (error) {
+        console.error("Session Callback Error:", error);
       }
 
       return session;

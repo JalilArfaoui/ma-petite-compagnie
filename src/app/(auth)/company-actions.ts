@@ -23,9 +23,11 @@ export async function createCompany(formData: FormData) {
           create: {
             userId: Number(session.user.id),
             // Default rights for creator
-            droitDestruction: true,
-            droitModificationInfos: true,
-            droitGestionUtilisateurs: true,
+            droitModificationCompagnie: true,
+            droitSuppressionCompagnie: true,
+            droitAjoutMembre: true,
+            droitSuppressionMembre: true,
+            droitGestionDroitsMembres: true,
             droitAccesPlanning: true,
             droitGestionPlanning: true,
           },
