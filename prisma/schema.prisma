@@ -125,18 +125,22 @@ model TypeObjet {
 }
 
 model Spectacle {
-  id              Int              @id @default(autoincrement())
-  titre           String
-  dure            Int?
-  description     String?
-  type            TypeSpectacle?
-  statut          StatutSpectacle  @default(EN_CREATION)
-  budget_initial  Float            @default(0)
-  compagnieId     Int
-  compagnie       Compagnie        @relation("SpectaclesCompagnie", fields: [compagnieId], references: [id])
-  ficheTechnique  FicheTechnique?
-  representations Representation[]
-  besoins         BesoinSpectacle[]
+  id                     Int              @id @default(autoincrement())
+  titre                  String
+  dure                   Int?
+  description            String?
+  type                   TypeSpectacle?
+  statut                 StatutSpectacle  @default(EN_CREATION)
+  budget_initial         Float            @default(0)
+  image                  Bytes?
+  imageMimeType          String?
+  dossierArtistique      Bytes?
+  dossierArtistiqueName  String?
+  compagnieId            Int
+  compagnie              Compagnie        @relation("SpectaclesCompagnie", fields: [compagnieId], references: [id])
+  ficheTechnique         FicheTechnique?
+  representations        Representation[]
+  besoins                BesoinSpectacle[]
 }
 
 model BesoinSpectacle {
@@ -151,6 +155,8 @@ model BesoinSpectacle {
 model FicheTechnique {
   id          Int       @id @default(autoincrement())
   texte       String
+  pdf         Bytes?
+  pdfName     String?
   spectacleId Int       @unique
   spectacle   Spectacle @relation(fields: [spectacleId], references: [id], onDelete: Cascade)
 }
