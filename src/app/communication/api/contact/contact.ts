@@ -110,16 +110,6 @@ export async function creerContact(contact: ContactInformation) {
 }
 
 export async function listerContacts(paginationTaille: number = 10, page: number = 1) {
-  if (paginationTaille < 1 || page < 1) {
-    paginationTaille = 10;
-    page = 1;
-  }
-
   const skip = paginationTaille * (page - 1);
-  try {
-    const contacts = await prisma.contact.findMany({ skip, take: paginationTaille });
-    return resultOf(true, "", contacts);
-  } catch (error) {
-    return resultOf(false, "Erreur lors de la récupération des contacts", null);
-  }
+  return resultOf(true, "", await prisma.contact.findMany({ skip: skip, take: paginationTaille }));
 }

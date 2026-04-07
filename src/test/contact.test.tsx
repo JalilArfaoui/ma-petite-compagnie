@@ -10,7 +10,7 @@ async function creerUnContactAvecNom(nom: string) {
   }
   return created;
 }
-it.skip("fichier .env chargé", () => {
+it("fichier .env chargé", () => {
   expect(
     process.env.DATABASE_URL,
     "Le fichier .env n'a pas été chargé vérifié que dotenv est utilisé dans vitest afin de le chargé"
