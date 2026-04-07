@@ -112,8 +112,11 @@ export function ModalAjoutRapide({
           <FaPlus size={12} className="text-slate-600" />
         </Button>
       </Modal.Trigger>
-      <Modal.Content size="lg">
-        <Modal.Header>
+      <Modal.Content
+        size="md"
+        className="flex flex-col inset-0 translate-x-0 translate-y-0 h-[100dvh] max-w-none sm:inset-auto sm:left-[50%] sm:top-[50%] sm:translate-x-[-50%] sm:translate-y-[-50%] sm:h-auto sm:max-h-[85dvh] sm:max-w-[640px]"
+      >
+        <Modal.Header className="shrink-0">
           <Modal.Title>Ajouter une {typeSection.toLowerCase()}</Modal.Title>
           <Modal.Description>
             {typeSection === "Recette"
@@ -121,7 +124,7 @@ export function ModalAjoutRapide({
               : "Remplissez les informations de votre dépense."}
           </Modal.Description>
         </Modal.Header>
-        <Modal.Body className="flex flex-col gap-6 pt-2 max-h-[75vh] overflow-y-auto">
+        <Modal.Body className="flex flex-col gap-5 pt-2 flex-1 min-h-0 overflow-y-auto">
           {/* tabs pour Recette (Subvention/Facture) */}
           {typeSection === "Recette" && (
             <div className="flex flex-col gap-3">
@@ -179,7 +182,7 @@ export function ModalAjoutRapide({
           )}
 
           {/* 1. Libellé & Date */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-semibold text-gray-700">Libellé</label>
               <Input
@@ -205,7 +208,7 @@ export function ModalAjoutRapide({
           </div>
 
           {/* montant et pièce jointe */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-semibold text-gray-700">Montant (€)</label>
               <Input
@@ -285,7 +288,7 @@ export function ModalAjoutRapide({
             </div>
           </div>
         </Modal.Body>
-        <Modal.Footer className="pt-4">
+        <Modal.Footer className="shrink-0 pt-4">
           <Button variant="ghost" onClick={resetAndClose}>
             Annuler
           </Button>

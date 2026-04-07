@@ -53,14 +53,16 @@ export function RecettesSection({
 
   return (
     <Card className="h-full bg-white">
-      <div className="flex justify-between items-center mb-5 mt-[-10px] md:mt-0">
-        <h3 className="text-[1.5rem] font-bold font-serif leading-none tracking-tight truncate pr-2">
+      <div className="flex justify-between items-start md:items-center mb-5 mt-[-10px] md:mt-0 gap-2">
+        <h3 className="text-[1.25rem] md:text-[1.5rem] font-bold font-serif leading-tight tracking-tight pr-2 flex flex-col md:flex-row md:items-baseline">
           Recettes{" "}
-          <span className="text-gray-500 font-sans text-xl ml-1">
+          <span className="text-gray-500 font-sans text-lg md:text-xl md:ml-2 mt-1 md:mt-0">
             ({formatMontant(totalRecettes)})
           </span>
         </h3>
-        <ModalAjoutRapide typeSection="Recette" onAdd={handleAddRecette} />
+        <div className="flex-shrink-0">
+          <ModalAjoutRapide typeSection="Recette" onAdd={handleAddRecette} />
+        </div>
       </div>
 
       <NoteInfo className="mb-6">

@@ -63,7 +63,9 @@ export function BarreBudget({
   const bgColorSecondaire = couleur === "green" ? "bg-[#A3CDA8]" : "bg-[#F0A8A8]";
 
   return (
-    <div className={`h-3 w-48 rounded-sm overflow-hidden ${bgColorSecondaire} relative`}>
+    <div
+      className={`h-3 w-full max-w-[192px] rounded-sm overflow-hidden ${bgColorSecondaire} relative`}
+    >
       <div className={`h-full ${bgColorPrincipal}`} style={{ width: `${pourcentage}%` }}></div>
     </div>
   );
@@ -93,13 +95,13 @@ export function ItemFinancierCard({
   return (
     <Tooltip label={tooltipLabel} delayDuration={0}>
       <Card className="p-3 bg-white !gap-0 shadow-sm border border-gray-100 transition-all hover:shadow-md cursor-help overflow-hidden">
-        <div className="flex justify-between items-start gap-2">
-          <div className="flex flex-col gap-1 min-w-0 flex-1 pr-2">
+        <div className="flex flex-col sm:flex-row justify-between items-start gap-1 sm:gap-2">
+          <div className="flex flex-col gap-1 min-w-0 flex-1">
             <Text className="font-bold text-sm truncate w-full" title={item.nom}>
               {item.nom}
             </Text>
             {isRecette && (
-              <div className="mt-0.5 mb-0.5">
+              <div className="mt-0.5">
                 <Badge
                   variant={typeBadgeVariant}
                   className="text-[9px] px-1.5 py-0 uppercase tracking-wider w-fit"
@@ -109,16 +111,16 @@ export function ItemFinancierCard({
               </div>
             )}
             {item.date && (
-              <Text className="text-xs text-text-muted truncate mt-1">
+              <Text className="text-xs text-text-muted truncate mt-0.5">
                 {formatDateFr(item.date)}
               </Text>
             )}
           </div>
 
-          <div className="flex flex-col items-end gap-1 flex-shrink-0">
+          <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 flex-shrink-0 w-full sm:w-auto mt-2 sm:mt-0 pt-2 sm:pt-0 border-t border-gray-50 sm:border-none">
             <Text className="font-bold text-sm">{formatMontant(item.montant)}</Text>
             {isRecette && (
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2">
                 <Badge
                   variant={isEnAttente ? "yellow" : "green"}
                   className="text-[10px] px-2 py-0 text-center whitespace-nowrap"
