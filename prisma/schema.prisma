@@ -73,6 +73,12 @@ enum Role {
   PARTENAIRE 
 }
 
+model ListeContact {
+  id Int @id @default(autoincrement())
+  nom String
+  contacts Contact[]
+}
+
 model Contact {
   id    Int     @id @default(autoincrement())
   nom String 
