@@ -1,8 +1,17 @@
--- CreateEnum
-CREATE TYPE "Role" AS ENUM ('COMEDIEN', 'TECHNICIEN', 'PARTENAIRE');
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'Role') THEN
+    CREATE TYPE "Role" AS ENUM ('COMEDIEN', 'TECHNICIEN', 'PARTENAIRE');
+  END IF;
+END$$;
 
 -- CreateEnum
-CREATE TYPE "StatutSpectacle" AS ENUM ('EN_CREATION', 'EN_REPETITION', 'EN_TOURNEE', 'ARCHIVE');
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'StatutSpectacle') THEN
+    CREATE TYPE "StatutSpectacle" AS ENUM ('EN_CREATION', 'EN_REPETITION', 'EN_TOURNEE', 'ARCHIVE');
+  END IF;
+END$$;
 
 -- CreateEnum
 CREATE TYPE "TypeSpectacle" AS ENUM ('THEATRE', 'DANSE', 'MUSIQUE', 'CIRQUE', 'AUTRE');
