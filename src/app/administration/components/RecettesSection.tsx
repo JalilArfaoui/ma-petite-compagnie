@@ -6,14 +6,15 @@ import { formatMontant } from "../utils";
 import { ModalAjoutRapide, DonneesAjoutFinancier } from "../modals";
 import { Recette } from "./types";
 import { NoteInfo, FadeContainer, ItemFinancierCard, VoirToutLink } from "./shared";
-import { LISTE_SPECTACLES } from "../test_data";
 
 export function RecettesSection({
   recettes,
   setRecettes,
+  spectacles,
 }: {
   recettes: Recette[];
   setRecettes: React.Dispatch<React.SetStateAction<Recette[]>>;
+  spectacles: string[];
 }) {
   const [showFactures, setShowFactures] = useState(true);
   const [showSubventions, setShowSubventions] = useState(true);
@@ -65,7 +66,7 @@ export function RecettesSection({
           <ModalAjoutRapide
             typeSection="Recette"
             onAdd={handleAddRecette}
-            spectacles={LISTE_SPECTACLES}
+            spectacles={spectacles}
           />
         </div>
       </div>

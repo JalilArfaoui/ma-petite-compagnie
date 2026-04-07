@@ -29,6 +29,8 @@ export default function PageAdministration() {
     .reduce((acc, r) => acc + r.montant, 0);
   const tresorerieActuelle = totalPaye - totalDepenses;
 
+  const nomsSpectacles = SPECTACLES_DATA.map((s) => s.nom);
+
   return (
     <div className="min-h-screen bg-[#fffbef] font-sans pb-20 relative">
       <Toaster />
@@ -69,9 +71,17 @@ export default function PageAdministration() {
           gap={6}
           className="grid-cols-1 lg:grid-cols-[1.1fr_1.5fr_1.1fr] items-start min-w-0"
         >
-          <RecettesSection recettes={recettes} setRecettes={setRecettes} />
+          <RecettesSection
+            recettes={recettes}
+            setRecettes={setRecettes}
+            spectacles={nomsSpectacles}
+          />
           <EquilibreFinancier spectacles={SPECTACLES_DATA} />
-          <DepensesSection depenses={depenses} setDepenses={setDepenses} />
+          <DepensesSection
+            depenses={depenses}
+            setDepenses={setDepenses}
+            spectacles={nomsSpectacles}
+          />
         </SimpleGrid>
       </Container>
     </div>

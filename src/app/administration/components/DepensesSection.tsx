@@ -5,14 +5,15 @@ import { formatMontant } from "../utils";
 import { ModalAjoutRapide, DonneesAjoutFinancier } from "../modals";
 import { Depense } from "./types";
 import { NoteInfo, FadeContainer, ItemFinancierCard, VoirToutLink } from "./shared";
-import { LISTE_SPECTACLES } from "../test_data";
 
 export function DepensesSection({
   depenses,
   setDepenses,
+  spectacles,
 }: {
   depenses: Depense[];
   setDepenses: React.Dispatch<React.SetStateAction<Depense[]>>;
+  spectacles: string[];
 }) {
   const totalDepenses = depenses.reduce((acc, d) => acc + d.montant, 0);
 
@@ -49,7 +50,7 @@ export function DepensesSection({
           <ModalAjoutRapide
             typeSection="Dépense"
             onAdd={handleAddDepense}
-            spectacles={LISTE_SPECTACLES}
+            spectacles={spectacles}
           />
         </div>
       </div>
