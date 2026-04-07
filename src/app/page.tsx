@@ -26,19 +26,19 @@ export default function Home() {
             <Card
               title="Planning de répétition"
               description="Gérez les disponibilités de vos comédiens. Générez des feuilles de service claires."
-              icon={<FaCalendar />}
+              icon={<FaHome />}
               iconColor="red"
             />
             <Card
               title="Production & Décors"
               description="Suivez le budget costumes au centime près. Listez les accessoires pour la tournée."
-              icon={<FaSplotch />}
+              icon={<FaHome />}
               iconColor="yellow"
             />
             <Card
               title="Casting & Équipe"
               description="Centralisez mensurations et contacts. Un trombinoscope toujours à jour."
-              icon={<FaUsers />}
+              icon={<FaHome />}
               iconColor="blue"
             />
           </div>
