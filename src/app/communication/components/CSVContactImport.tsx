@@ -244,7 +244,9 @@ export function CSVContactImport({
   return (
     <Modal>
       <Modal.Trigger asChild>
-        <Button variant="outline">Import contacts CSV</Button>
+        <Button variant="outline" size={"sm"}>
+          Importer des contacts par CSV
+        </Button>
       </Modal.Trigger>
       <Modal.Content size="md">
         <Modal.Header>
