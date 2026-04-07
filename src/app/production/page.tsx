@@ -4,6 +4,8 @@ import SpectaclesClient from "./SpectaclesClient";
 export const dynamic = "force-dynamic";
 
 export default async function ProductionPage() {
+  const compagnieId = 1;
+
   const spectacles = await prisma.spectacle.findMany({
     orderBy: { id: "desc" },
     select: {
@@ -12,6 +14,9 @@ export default async function ProductionPage() {
       type: true,
       statut: true,
       imageMimeType: true,
+    },
+    where: {
+      compagnieId: compagnieId,
     },
   });
 
