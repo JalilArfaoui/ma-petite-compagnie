@@ -2,10 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { jsPDF } from "jspdf";
 
-export async function GET(
-  _req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id: rawId } = await params;
   const id = Number(rawId);
 
@@ -69,7 +66,9 @@ export async function GET(
   doc.setTextColor(150, 150, 150);
   doc.setFontSize(8);
   const date = new Date().toLocaleDateString("fr-FR", {
-    year: "numeric", month: "long", day: "numeric",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
   doc.text(`Généré le ${date}`, pageWidth / 2, pageHeight - 6, { align: "center" });
 

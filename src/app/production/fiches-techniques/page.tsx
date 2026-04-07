@@ -163,8 +163,8 @@ export default async function FichesTechniquesPage() {
                     </p>
                   </div>
 
-                <div>
-                  <a
+                  <div>
+                    <a
                       href={`fiches-techniques/${f.id}/pdf`}
                       download
                       className="flex items-center gap-2 px-4 py-2 bg-white border border-[#D00039] text-[#D00039] text-sm font-semibold rounded-md hover:bg-[#D00039] hover:text-white transition-colors whitespace-nowrap"
@@ -185,8 +185,7 @@ export default async function FichesTechniquesPage() {
                       </svg>
                       Télécharger PDF
                     </a>
-                </div>
-
+                  </div>
 
                   {/* Separator */}
                   <div className="h-px bg-slate-200" />
