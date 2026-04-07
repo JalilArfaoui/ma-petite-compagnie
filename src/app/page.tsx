@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import { Heading, Container, Stack, Text, Card } from "@/components/ui";
 import { FaHome } from "react-icons/fa";
 
