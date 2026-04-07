@@ -45,9 +45,10 @@ async function reserver(formData: FormData) {
     });
   }
 
+  laDate = null;
   revalidatePath("/production");
 }
-/*
+
 async function getObjets(formData: FormData) {
   "use server";
 
@@ -55,7 +56,7 @@ async function getObjets(formData: FormData) {
 
   revalidatePath("/production");
 }
-*/
+
 /* =========================
    HELPER FUNCTIONS
 ========================= */
@@ -71,18 +72,10 @@ const formatDateInput = (date: Date) => {
   return date.toISOString().slice(0, 16);
 };
 
-export default async function ProductionPage(
-  { params }: { params: Promise<{ id: string }> },
-  searchParams: { params: Promise<{ date: string }> }
-) {
-  let laDate = null;
-  if (searchParams != undefined) {
-    const search = searchParams.params;
-    const date = (await search).date;
-    laDate = date ? new Date(date) : null;
-  }
+let laDate: Date | null = null;
+const compagnieId = 1; // TODO: remplacer par l'id de la compagnie connectée
 
-  const compagnieId = 1; // TODO: remplacer par l'id de la compagnie connectée
+export default async function ProductionPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
   const spectacle = await prisma.spectacle.findFirst({
@@ -122,7 +115,7 @@ export default async function ProductionPage(
               </p>
             ))}
           </div>
-          <form action="">
+          <form action={getObjets}>
             <div>
               <label className="block font-semibold mb-2">date de reservation</label>
               <input
@@ -224,7 +217,7 @@ export default async function ProductionPage(
           </div>
           {/* Separator */}
           <Box className="h-0.5 bg-primary" />
-          <form action="">
+          <form action={getObjets}>
             <div>
               <label className="block font-semibold mb-2">date de reservation</label>
               <input
