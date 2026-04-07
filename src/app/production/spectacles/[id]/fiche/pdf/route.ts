@@ -8,7 +8,7 @@ export async function GET(
 ) {
   const { id: rawId } = await params;
   const id = Number(rawId);
-
+  console.log(id);
   const fiche = await prisma.ficheTechnique.findUnique({
     where: { id },
     include: { spectacle: true },
