@@ -53,7 +53,7 @@
     "@testing-library/react": "^16.3.1",
     "@types/node": "^20",
     "@types/pg": "^8.16.0",
-    "@types/react": "^19",
+    "@types/react": "^19.2.14",
     "@types/react-dom": "^19",
     "@types/styled-components": "^5.1.36",
     "@vitejs/plugin-react": "^5.1.2",
