@@ -81,9 +81,11 @@ model CompanyMember {
   compagnieId Int
   compagnie   Compagnie @relation(fields: [compagnieId], references: [id])
 
-  droitDestruction           Boolean @default(false)
-  droitModificationInfos     Boolean @default(false)
-  droitGestionUtilisateurs   Boolean @default(false)
+  droitModificationCompagnie Boolean @default(false)
+  droitSuppressionCompagnie  Boolean @default(false)
+  droitAjoutMembre           Boolean @default(false)
+  droitSuppressionMembre     Boolean @default(false)
+  droitGestionDroitsMembres  Boolean @default(false)
   droitAccesPlanning         Boolean @default(false)
   droitGestionPlanning       Boolean @default(false)
 
