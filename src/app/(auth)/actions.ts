@@ -36,7 +36,8 @@ export async function registerUser(formData: FormData) {
     return { success: true };
   } catch (err: unknown) {
     console.error("Registration error:", err);
-    const errorMessage = err instanceof Error ? err.message : "Erreur lors de la création du compte.";
+    const errorMessage =
+      err instanceof Error ? err.message : "Erreur lors de la création du compte.";
     return { error: errorMessage };
   }
 }
