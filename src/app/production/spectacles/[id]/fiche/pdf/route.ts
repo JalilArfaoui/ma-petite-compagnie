@@ -5,7 +5,7 @@ import { jsPDF } from "jspdf";
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id: rawId } = await params;
   const id = Number(rawId);
-
+  console.log(id);
   const fiche = await prisma.ficheTechnique.findUnique({
     where: { id },
     include: { spectacle: true },

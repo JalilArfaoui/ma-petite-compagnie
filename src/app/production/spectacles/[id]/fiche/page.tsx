@@ -11,9 +11,10 @@ async function createFicheTechnique(formData: FormData) {
 
   const texte = formData.get("texte") as string;
   const spectacleId = Number(formData.get("spectacleId"));
+  const pdfName = "Fiche Technique - " + spectacleId + ".pdf";
 
   await prisma.ficheTechnique.create({
-    data: { texte, spectacleId },
+    data: { texte, spectacleId, pdfName },
   });
 
   revalidatePath("/production/fiches-techniques");
@@ -55,7 +56,9 @@ async function deleteFicheTechnique(formData: FormData) {
 /* =========================
    PAGE
 ========================= */
-export default async function FichesTechniquesPage() {
+export default async function FichesTechniquesPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id  } = await params;
+
   const [fichesTechniques, spectaclesSansFiche] = await Promise.all([
     prisma.ficheTechnique.findMany({
       orderBy: { id: "desc" },

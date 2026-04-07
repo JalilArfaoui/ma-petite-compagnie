@@ -179,19 +179,7 @@ export default async function ProductionPage({
           spectacleId: spectacle.id,
         },
       });
-      type BesoinWithTypeObjet = Prisma.BesoinSpectacleGetPayload<{
-        include: {
-          typeObjet: {
-            include: {
-              categorie: { select: { nom: true } };
-              objets: true; // Prisma will further narrow based on your where clause usage
-            };
-          };
-        };
-      }>;
-
-      const besoins: Record<string, BesoinWithTypeObjet[]> = {};
-
+      const besoins: { [id: string]: typeof req } = {};
       const categories: string[] = [];
       req.forEach((element) => {
         if (besoins[element.typeObjet.categorie.nom] == undefined) {
