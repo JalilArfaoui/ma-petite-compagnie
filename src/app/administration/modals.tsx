@@ -52,6 +52,16 @@ export function ModalAjoutRapide({
     setSelectedSpectacles(selectedSpectacles.filter((s) => s !== val));
   };
 
+  const resetFormulaire = () => {
+    setNom("");
+    setMontant("");
+    setDate(new Date().toISOString().split("T")[0]);
+    setFichier("");
+    setSelectedSpectacles([]);
+    setTypeRecette("financement");
+    setEstPaye(false);
+  };
+
   const handleSubmit = () => {
     if (!nom || !montant || !date) return;
 
@@ -75,25 +85,12 @@ export function ModalAjoutRapide({
 
     // Reset
     setOpen(false);
-    setNom("");
-    setMontant("");
-    setDate(new Date().toISOString().split("T")[0]);
-    setFichier("");
-    setSelectedSpectacles([]);
-    setTypeRecette("financement");
-    setEstPaye(false);
+    resetFormulaire();
   };
 
   const resetAndClose = () => {
     setOpen(false);
-    // reset
-    setNom("");
-    setMontant("");
-    setDate(new Date().toISOString().split("T")[0]);
-    setFichier("");
-    setSelectedSpectacles([]);
-    setTypeRecette("financement");
-    setEstPaye(false);
+    resetFormulaire();
   };
 
   return (
