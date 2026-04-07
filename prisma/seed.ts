@@ -338,8 +338,15 @@ async function main() {
       titre: "Carmen revisitée",
       type: "DANSE" as const,
       statut: "EN_REPETITION" as const,
-      compagnieId: compagnies[1].id,
+      compagnieId: compagnies[0].id,
       budget_initial: 20000,
+    },
+    {
+      titre: "Pestacle",
+      type: "MUSIQUE" as const,
+      statut: "EN_CREATION" as const,
+      compagnieId: compagnies[0].id,
+      budget_initial: 10000,
     },
     {
       titre: "Lumière noire",
@@ -407,4 +414,5 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect();
+    await pool.end();
   });
