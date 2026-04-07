@@ -51,7 +51,7 @@ export const Header = () => {
               <span className="xs:max-sm:hidden sm:max-md:inline md:inline">Connexion</span>
             </Button>
 
-            {/* Burger Menu Button - Mobile */}
+            {/* Burger Menu Buttons - Mobile */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="md:hidden p-2 hover:opacity-60 transition-opacity"
