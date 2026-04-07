@@ -102,7 +102,7 @@ enum Role {
 model ListeContact {
   id Int @id @default(autoincrement())
   nom String
-  contacts Contact[]
+  contacts Contact[] 
 }
 
 model Contact {
@@ -111,8 +111,12 @@ model Contact {
   prenom String
   role    Role?
   email String? @unique
-  tel String? 
+  tel String?
+  notes String?
+  ville String?
+  lieu String?
   date_creation DateTime @default(now())
+  listeContacts ListeContact[]
 }
 // partie groupe production
 
