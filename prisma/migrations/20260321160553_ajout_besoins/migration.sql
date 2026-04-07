@@ -183,6 +183,33 @@ CREATE TABLE IF NOT EXISTS "ReservationObjet" (
     CONSTRAINT "ReservationObjet_pkey" PRIMARY KEY ("id")
 );
 
+-- Ensure FK columns exist on tables that may have been created by earlier migrations
+ALTER TABLE "Lieu" ADD COLUMN IF NOT EXISTS "idCompagnie" INTEGER;
+ALTER TABLE "Categorie" ADD COLUMN IF NOT EXISTS "idCompagnie" INTEGER;
+ALTER TABLE "Evenement" ADD COLUMN IF NOT EXISTS "compagnieId" INTEGER;
+ALTER TABLE "Evenement" ADD COLUMN IF NOT EXISTS "lieuId" INTEGER;
+ALTER TABLE "Evenement" ADD COLUMN IF NOT EXISTS "categorieId" INTEGER;
+ALTER TABLE "Evenement" ADD COLUMN IF NOT EXISTS "dateDebut" TIMESTAMP(3);
+ALTER TABLE "Evenement" ADD COLUMN IF NOT EXISTS "dateFin" TIMESTAMP(3);
+ALTER TABLE "ParticipantsEvenement" ADD COLUMN IF NOT EXISTS "utilisateurId" INTEGER;
+ALTER TABLE "ParticipantsEvenement" ADD COLUMN IF NOT EXISTS "evenementId" INTEGER;
+ALTER TABLE "UtilisateurBouchon" ADD COLUMN IF NOT EXISTS "compagnieId" INTEGER;
+ALTER TABLE "TypeObjet" ADD COLUMN IF NOT EXISTS "categorieId" INTEGER;
+ALTER TABLE "Spectacle" ADD COLUMN IF NOT EXISTS "compagnieId" INTEGER;
+ALTER TABLE "Spectacle" ADD COLUMN IF NOT EXISTS "titre" TEXT;
+ALTER TABLE "Spectacle" ADD COLUMN IF NOT EXISTS "dure" INTEGER;
+ALTER TABLE "Spectacle" ADD COLUMN IF NOT EXISTS "budget_initial" DOUBLE PRECISION DEFAULT 0;
+ALTER TABLE "BesoinSpectacle" ADD COLUMN IF NOT EXISTS "spectacleId" INTEGER;
+ALTER TABLE "BesoinSpectacle" ADD COLUMN IF NOT EXISTS "typeObjetId" INTEGER;
+ALTER TABLE "FicheTechnique" ADD COLUMN IF NOT EXISTS "spectacleId" INTEGER;
+ALTER TABLE "FicheTechnique" ADD COLUMN IF NOT EXISTS "texte" TEXT;
+ALTER TABLE "Representation" ADD COLUMN IF NOT EXISTS "spectacleId" INTEGER;
+ALTER TABLE "Representation" ADD COLUMN IF NOT EXISTS "evenementId" INTEGER;
+ALTER TABLE "Objet" ADD COLUMN IF NOT EXISTS "typeObjetId" INTEGER;
+ALTER TABLE "Objet" ADD COLUMN IF NOT EXISTS "compagnieId" INTEGER;
+ALTER TABLE "ReservationObjet" ADD COLUMN IF NOT EXISTS "objetId" INTEGER;
+ALTER TABLE "ReservationObjet" ADD COLUMN IF NOT EXISTS "representationId" INTEGER;
+
 -- CreateIndex
 CREATE UNIQUE INDEX IF NOT EXISTS "Contact_email_key" ON "Contact"("email");
 
