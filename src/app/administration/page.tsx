@@ -27,7 +27,7 @@ export default function PageAdministration() {
   const totalPaye = recettes
     .filter((r) => r.statut === "paye")
     .reduce((acc, r) => acc + r.montant, 0);
-  const trésorerieActuelle = totalPaye - totalDepenses;
+  const tresorerieActuelle = totalPaye - totalDepenses;
 
   return (
     <div className="min-h-screen bg-[#fffbef] font-sans pb-20 relative">
@@ -48,7 +48,7 @@ export default function PageAdministration() {
         <SimpleGrid gap={4} className="grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mb-12">
           <IndicateurCle
             titre="Trésorerie actuelle"
-            valeur={formatMontant(trésorerieActuelle)}
+            valeur={formatMontant(tresorerieActuelle)}
             sousTexte=""
           />
           <IndicateurCle
