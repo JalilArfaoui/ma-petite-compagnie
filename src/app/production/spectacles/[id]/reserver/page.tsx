@@ -27,22 +27,11 @@ async function reserver(formData: FormData) {
   const date = new Date(formData.get("date") as string);
   const spectacleId = Number(formData.get("spectacleId"));
   const lieuId = Number(formData.get("lieuId"));
-  console.log(formData);
-  console.log(spectacleId);
-  await prisma.representation.create({
+
+  const rep = await prisma.representation.create({
     data: { date, spectacleId, lieuId },
   });
 
-  const rep = await prisma.representation.findFirst({
-    select: {
-      id: true,
-    },
-    where: {
-      date: date,
-      spectacleId: spectacleId,
-      lieuId: lieuId,
-    },
-  });
   if (rep != null) {
     formData.forEach(async (data, key) => {
       if (!isNaN(Number(key))) {

@@ -3,7 +3,13 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/Badge/Badge";
-import { updateSpectacle, deleteSpectacle, deleteBesoin, createBesoinsFromList, ensureFicheTechnique } from "./actions";
+import {
+  updateSpectacle,
+  deleteSpectacle,
+  deleteBesoin,
+  createBesoinsFromList,
+  ensureFicheTechnique,
+} from "./actions";
 import ObjectPickerModal from "./ObjectPickerModal";
 
 // ========== Types ==========
@@ -143,7 +149,7 @@ export default function SpectacleDetailClient({ spectacle, typeObjets, categorie
     const file = e.target.files?.[0];
     if (!file) return;
     setFtUploading(true);
-    const ftId = spectacle.ficheTechnique?.id ?? await ensureFicheTechnique(spectacle.id);
+    const ftId = spectacle.ficheTechnique?.id ?? (await ensureFicheTechnique(spectacle.id));
     const fd = new FormData();
     fd.append("file", file);
     await fetch(`/production/api/spectacles/ficheTechnique/${ftId}/pdf`, {
@@ -739,12 +745,11 @@ export default function SpectacleDetailClient({ spectacle, typeObjets, categorie
 
         {/* ===== SECTION 5: BOTTOM ACTIONS ===== */}
         <div className="flex flex-col sm:flex-row gap-3 mb-12">
-          <button
-            disabled
-            className="flex-1 bg-slate-200 text-slate-400 font-serif font-bold italic rounded-[12px] py-3 text-sm cursor-not-allowed"
-          >
-            Créer une représentation — Bientôt disponible
-          </button>
+          <a href={spectacle.id + "/reserver"}>
+            <button className="border border-red-200 text-red-600 bg-white hover:bg-red-50 font-serif rounded-[12px] px-6 py-3 text-sm transition-colors cursor-pointer">
+              Créer une représentation
+            </button>
+          </a>
           <button
             onClick={handleDelete}
             className="border border-red-200 text-red-600 bg-white hover:bg-red-50 font-serif rounded-[12px] px-6 py-3 text-sm transition-colors cursor-pointer"
