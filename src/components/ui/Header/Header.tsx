@@ -15,7 +15,10 @@ export const Header = () => {
       <Container className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex xs:max-sm:h-12 sm:max-md:h-14 md:h-16 items-center justify-between xs:max-sm:gap-2 sm:gap-3 md:gap-4">
           {/* Logo Section */}
-          <Link href="/" className="flex items-center xs:max-sm:gap-2 sm:gap-3 md:gap-4 hover:opacity-80 transition-opacity">
+          <Link
+            href="/"
+            className="flex items-center xs:max-sm:gap-2 sm:gap-3 md:gap-4 hover:opacity-80 transition-opacity"
+          >
             <Logo size={28} />
             <h1 className="font-black leading-[1.1] tracking-tight text-black font-serif xs:max-sm:text-[16px] sm:max-md:text-[18px] md:max-lg:text-[18px] lg:text-[22px]">
               Ma petite
@@ -39,16 +42,13 @@ export const Header = () => {
 
           {/* CTA & Burger Section */}
           <div className="flex items-center xs:max-sm:gap-2 sm:gap-3 md:gap-4">
-            
             {/* Login Button */}
             <Button
               variant="solid"
               icon={<LuLogIn className="xs:max-sm:text-lg sm:max-md:text-base md:text-lg" />}
               className="xs:max-sm:px-2 xs:max-sm:py-2 sm:max-md:px-3 sm:max-md:py-2 md:px-4 md:py-3 xs:max-sm:text-xs sm:max-md:text-sm md:text-base"
             >
-              <span className="xs:max-sm:hidden sm:max-md:inline md:inline">
-                Connexion
-              </span>
+              <span className="xs:max-sm:hidden sm:max-md:inline md:inline">Connexion</span>
             </Button>
 
             {/* Burger Menu Button - Mobile */}
@@ -57,11 +57,7 @@ export const Header = () => {
               className="md:hidden p-2 hover:opacity-60 transition-opacity"
               aria-label="Toggle menu"
             >
-              {isMenuOpen ? (
-                <LuX className="text-2xl" />
-              ) : (
-                <LuMenu className="text-2xl" />
-              )}
+              {isMenuOpen ? <LuX className="text-2xl" /> : <LuMenu className="text-2xl" />}
             </button>
           </div>
         </div>
