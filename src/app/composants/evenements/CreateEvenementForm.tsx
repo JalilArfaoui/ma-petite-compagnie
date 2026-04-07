@@ -1,12 +1,11 @@
 "use client";
 
-import {SubmitEventHandler, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {Evenement} from "@prisma/client";
-import {Box, Button, Input, Select, SimpleGrid, Modal, Field} from "@/components/ui";
+import {Box, Button, Input, Select, Modal, Field, Popover} from "@/components/ui";
 import {CreateLieuForm} from "@/app/composants/lieux/CreateLieuForm";
 import {CreateCategorieForm} from "@/app/composants/categories/CreateCategorieForm";
 import {creerEvenement} from "@/app/actions/evenement";
-import {DialogContent, DialogTitle} from "@radix-ui/react-dialog";
 import {getCategories} from "@/app/actions/categorie";
 import {getLieux} from "@/app/actions/lieu";
 
@@ -30,7 +29,9 @@ export function CreateEvenementForm({
   const [showCreateCategorie, setShowCreateCategorie] = useState(false);
   const [lieuxMap, setLieuxMap] = useState<{ id: number, libelle: string }[]>([]);
   const [categoriesMap, setCategoriesMap] = useState<{ id: number, nom: string }[]>([]);
-
+  const [participantsIds, setParticipantsIds] = useState<number[]>([]);
+  const [participantsMap, setParticipantsMap] = useState<{ id: number, nom: string}[]>([{id:0, nom:"Jean"},{id:1, nom:"Jeanne"}
+  ]);
   useEffect(() => {
     async function fetchDataCategorie() {
       const result = (await getCategories()).categories;
@@ -59,6 +60,14 @@ export function CreateEvenementForm({
       const evenement:Evenement = result.evenement;
       if (onSuccess) onSuccess(evenement);
   }
+
+  const toggleParticipants = (id:number) => {
+    setParticipantsIds((prev) =>
+        prev.includes(id)
+            ? prev.filter((i) => i !== id)
+            : [...prev, id]
+    );
+  };
 
   return (
       <div>
@@ -148,6 +157,30 @@ export function CreateEvenementForm({
         {/*</GridItem>
         </SimpleGrid>*/}
       </Select>
+      <Popover.Root>
+        <Popover.Trigger asChild>
+          <button>
+            {participantsIds.length
+                ? `${participantsIds.length} sélection(s)`
+                : "Sélectionner des participants"}
+          </button>
+        </Popover.Trigger>
+        <Popover.Content>
+          <div style={{ maxHeight: 200, overflowY: "auto" }}>
+            {participantsMap.map((pers) => (
+                <label key={pers.id} style={{ display: "block" }}>
+                  <input
+                      type="checkbox"
+                      checked={participantsIds.includes(pers.id)}
+                      onChange={() => toggleParticipants(pers.id)}
+                  />
+                  {pers.nom}
+                </label>
+            ))}
+          </div>
+        </Popover.Content>
+      </Popover.Root>
+
       {/* TODO pouvoir sélectionner des participants */}
       {/*<SimpleGrid columns={{ base: 3, md: 3 }}>
           <GridItem colSpan={{ base: 1, md: 1 }}>*/}
@@ -157,6 +190,7 @@ export function CreateEvenementForm({
               <Button type={"submit"}>Créer</Button>
       {/*}</GridItem>
       </SimpleGrid>*/}
+
     </form>
       {showCreateLieu && (
           <Modal
