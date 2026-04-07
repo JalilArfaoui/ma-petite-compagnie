@@ -60,7 +60,7 @@ export function DepensesSection({
 
       <FadeContainer>
         {depensesAffichees.map((item) => (
-          <ItemFinancierCard key={item.id} item={item} isRecette={false} />
+          <ItemFinancierCard key={item.id} item={item} />
         ))}
         {depensesAffichees.length === 0 && (
           <div className="text-sm text-center py-4 text-text-muted">Aucune dépense trouvée.</div>

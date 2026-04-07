@@ -68,16 +68,20 @@ export function BarreBudget({
   );
 }
 
+// Fonction guard permettant de déduire automatiquement si l'item est une Recette
+function isRecetteType(item: Recette | Depense): item is Recette {
+  return "statut" in item;
+}
+
 export function ItemFinancierCard({
   item,
-  isRecette,
   onValider,
 }: {
   item: Recette | Depense;
-  isRecette: boolean;
   onValider?: (id: string, e: React.MouseEvent) => void;
 }) {
-  const recette = isRecette ? (item as Recette) : null;
+  const isRecette = isRecetteType(item);
+  const recette = isRecette ? item : null;
   const isEnAttente = recette?.statut === "en_attente";
 
   const typeBadgeVariant = recette?.type === "facture" ? "purple" : "blue";

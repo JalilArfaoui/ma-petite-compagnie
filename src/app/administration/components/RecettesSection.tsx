@@ -89,7 +89,6 @@ export function RecettesSection({
           <ItemFinancierCard
             key={item.id}
             item={item}
-            isRecette={true}
             onValider={validerRecette}
           />
         ))}
