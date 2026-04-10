@@ -1,48 +1,54 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { getBrevoClient } from "@/lib/brevo";
+import { Role } from "@prisma/client";
 
-export async function sync_Brevo_vers_prisma() {
-  const client = getBrevoClient();
-  if (!client) {
-    console.warn("brevo non config");
+export async function sync_brevo_vers_prisma() {
+  if (!process.env.BREVO_API_KEY) {
+    console.warn("pas de clé brevo");
     return;
   }
+
   try {
-    const response = await client.contacts.getContacts({
-      limit: 50,
+    const res = await fetch("https://api.brevo.com/v3/contacts", {
+      method: "GET",
+      headers: {
+        "api-key": process.env.BREVO_API_KEY, // .env.example mais visuale dit faut donc je laisse .env si marche pas problème ici 
+      },
     });
-    const contacts_brevo = response.contacts ?? [];
-    for (const contact of contacts_brevo) {
+
+    const data = await res.json();
+
+    const contacts = data.contacts ?? [];
+
+    for (const contact of contacts) {
       if (!contact.email) continue;
-      const nom = contact.attributes?.NOM ?? "";
-      const prenom = contact.attributes?.PRENOM ?? "";
-      try {
-        await prisma.contact.upsert({
+
+      await prisma.contact.upsert({
         where: {
-            email: contact.email,
+          email: contact.email,
         },
         update: {
-            nom,
-            prenom,
-            role: "USER",
+          nom: contact.attributes?.NOM ?? "",
+          prenom: contact.attributes?.PRENOM ?? "",
+          tel: contact.attributes?.TELEPHONE ?? "",
+          ville: contact.attributes?.VILLE ?? "",
+          adresse: contact.attributes?.ADRESSE ?? "",
+          notes: contact.attributes?.NOTES ?? "",
         },
         create: {
-            nom,
-            prenom,
-            email: contact.email,
-            role: "USER",
+          email: contact.email,
+          nom: contact.attributes?.NOM ?? "",
+          prenom: contact.attributes?.PRENOM ?? "",
+          tel: contact.attributes?.TELEPHONE ?? "",
+          ville: contact.attributes?.VILLE ?? "",
+          adresse: contact.attributes?.ADRESSE ?? "",
+          notes: contact.attributes?.NOTES ?? "",
+          role: "COMEDIEN" as Role, // role def
         },
-        });
-        console.log("sync ok :", contact.email);
-      } catch (err) {
-        console.error("erreur prisma :", contact.email);
-      }
+      });
     }
-    return { success: true };
-  } catch (err) {
-    console.error("erreur brevo :", err);
-    return { success: false };
+  } catch (erreur_sync) {
+    console.error("erreur sync inverse", erreur_sync);
   }
 }

@@ -1,18 +1,18 @@
-import { prisma } from "@/lib/prisma";
-import { Heading, Box, Link } from "@/components/ui";
-import Formulaire_Email from "./Formulaire_Email";
+"use client";
 
-export default async function Page_Email() {
-  const contacts = await prisma.contact.findMany({
-    orderBy: { nom: "asc" },
-  });
+import { Heading, Box, Link } from "@/components/ui";
+import { Formulaire_Email } from "./Formulaire_Email";
+
+export default function Page_Email() {
   return (
     <Box>
-      <Heading>Envoyé un email</Heading>
+      <Heading>Envoye Email (Brevo)</Heading>
+
       <Box>
-        <Link href="/">retour</Link>
+        <Link href="./">Retour</Link>
       </Box>
-      <Formulaire_Email contacts={contacts} />
+
+      <Formulaire_Email />
     </Box>
   );
 }

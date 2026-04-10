@@ -1,24 +1,39 @@
 "use server";
 
-import { getBrevoClient } from "@/lib/brevo";
+import { prisma } from "@/lib/prisma";
 
-export async function reli_contact_to_Brevo(contact: any) {
-  const client = getBrevoClient();
-
-  if (!client) {
-    console.warn("brevo mal config");
+export async function sync_contact_vers_brevo(contact: any) {
+  if (!process.env.BREVO_API_KEY) {
+    console.warn("pas de clé brevo");
     return;
   }
 
-  if (!contact?.email) {
-    console.warn("contact pas email");
+  if (!contact.email) {
+    console.warn("contact sans email donc pas sync");
     return;
   }
 
   try {
-    await client.contacts.createContact({ email: contact.email, attributes: {NOM: contact.nom, PRENOM: contact.prenom, }, listIds: [Number(process.env.BREVO_LIST_ID ?? 0), ], updateEnabled: true,});
-    console.log("contact sync avec brevo :", contact.email);
-  } catch (err: any) {
-    console.error("erreur sync brevo :", err?.message);
+    await fetch("https://api.brevo.com/v3/contacts", {
+      method: "POST",
+      headers: {
+        "api-key": process.env.BREVO_API_KEY,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: contact.email,
+        attributes: {
+          NOM: contact.nom,
+          PRENOM: contact.prenom,
+          TELEPHONE: contact.tel,
+          VILLE: contact.ville,
+          ADRESSE: contact.adresse,
+          NOTES: contact.notes,
+        },
+        updateEnabled: true,
+      }),
+    });
+  } catch (erreur_sync) {
+    console.error("erreur sync brevo", erreur_sync);
   }
 }
