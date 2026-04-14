@@ -3,9 +3,9 @@ import {
   listerContacts,
   modifierContact,
   supprimerContact,
-  validerEmail,
-  validerTelephone,
 } from "../app/communication/api/contact/contact";
+import { validerTelephone } from "@/app/communication/utils/helper";
+import { validerEmail } from "@/app/communication/utils/helper";
 import { describe, it, expect, afterAll, beforeAll } from "vitest";
 import { creerObjetContactAvecNom } from "./testContactUtility";
 import { Contact } from "@prisma/client";
