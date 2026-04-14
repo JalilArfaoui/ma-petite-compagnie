@@ -18,11 +18,10 @@ function resultOf<T>(succes: boolean, message: string, donnee: T | null): Result
   return { succes: succes, message: message, donnee: donnee };
 }
 
-function validerTelephone(tel: string) {
+export function validerTelephone(tel: string) {
   let valide = true;
   if (tel && tel?.at(0) === "+") {
     if (
-      tel.length === 18 &&
       tel.at(3) === " " &&
       tel.charCodeAt(1) >= 48 &&
       tel.charCodeAt(1) <= 57 &&
@@ -31,7 +30,6 @@ function validerTelephone(tel: string) {
     ) {
       valide = true;
     } else if (
-      tel.length === 13 &&
       tel.charCodeAt(1) >= 48 &&
       tel.charCodeAt(1) <= 57 &&
       tel.charCodeAt(2) >= 48 &&
@@ -44,11 +42,28 @@ function validerTelephone(tel: string) {
     if (!valide) {
       return resultOf(false, "L'indicatif est mal écrit", null);
     }
-    const telRegex = /^(\+[0-9][0-9] )?(([0-9][0-9][-]){4}[0-9][0-9])|([0-9]{10})$/;
+    const telRegex =
+      /^((\+[0-9][0-9] )?(([0-9][0-9][-]){4}[0-9][0-9])|(\+[0-9][0-9] )?([0-9]{9,10}))$/;
+
+    if (!telRegex.test(tel)) {
+      return resultOf(false, "Le numéro de téléphone n'est pas valide.", null);
+    }
+  } else {
+    const telRegex =
+      /^((\+[0-9][0-9] )?(([0-9][0-9][-]){4}[0-9][0-9])|(\+[0-9][0-9] )?([0-9]{10}))$/;
+
     if (!telRegex.test(tel)) {
       return resultOf(false, "Le numéro de téléphone n'est pas valide.", null);
     }
   }
+  return resultOf(true, "", null);
+}
+export function validerEmail(email: string) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return resultOf(false, "L'adresse email n'est pas valide.", null);
+  }
+  return resultOf(true, "", null);
 }
 /**
  * Méthode pour vérifier les données d'un contact;
@@ -66,9 +81,9 @@ function validerContact(contact: ContactInformation) {
   }
 
   if (contact.email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(contact.email)) {
-      return resultOf(false, "L'adresse email n'est pas valide.", null);
+    const resultat = validerEmail(contact.email);
+    if (resultat && !resultat?.succes) {
+      return resultat;
     }
   }
 
