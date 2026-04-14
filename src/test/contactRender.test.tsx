@@ -6,8 +6,18 @@ import ContactDetails from "@/app/communication/components/contactDetails";
 
 describe("Test des pages pour le contact", () => {
   it("La page détails d'un contact doit afficher les informations du contact", async () => {
-    const contact = creerObjetContactAvecNom("TestRender", "prenom.nom@mail.fr");
-    const contactFinal: Contact = creerUnContactAPartirInformation(contact);
+    const contactFinal: Contact = {
+      id: -1,
+      date_creation: new Date(),
+      nom: "TestRender",
+      prenom: "User",
+      email: "prenom.nom@mail.fr",
+      tel: "0011223344",
+      role: "PARTENAIRE",
+      ville: "Paris",
+      lieu: "Rue quelque chose",
+      notes: "Client très important",
+    };
     render(
       <ContactDetails
         onSubmitted={(e) => console.log(e)}
@@ -20,9 +30,8 @@ describe("Test des pages pour le contact", () => {
     expect(await screen.getByDisplayValue("User")).toBeTruthy();
     expect(await screen.getByDisplayValue("prenom.nom@mail.fr")).toBeTruthy();
     expect(await screen.getByDisplayValue("0011223344")).toBeTruthy();
-    expect(await screen.getByDisplayValue("PARTENAIRE")).toBeTruthy();
-    expect(await screen.getByDisplayValue("null")).toBeTruthy();
-    expect(await screen.getByDisplayValue("null")).toBeTruthy();
-    expect(await screen.getByDisplayValue("null")).toBeTruthy();
+    expect(await screen.getByDisplayValue("Client très important")).toBeTruthy();
+    expect(await screen.getByDisplayValue("Paris")).toBeTruthy();
+    expect(await screen.getByDisplayValue("Rue quelque chose")).toBeTruthy();
   });
 });
