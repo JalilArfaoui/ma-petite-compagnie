@@ -22,7 +22,7 @@ type Cachet = {
   id: number;
   membre: string;
   date: string;
-  montant: number;
+  montant: string;
   spectacle: string;
   note?: string;
 };
@@ -31,7 +31,7 @@ export default function PageCachets() {
   const [cachets, setCachets] = useState<Cachet[]>([]);
   const [membre, setMembre] = useState("");
   const [date, setDate] = useState("");
-  const [montant, setMontant] = useState(110);
+  const [montant, setMontant] = useState("");
   const [spectacle, setSpectacle] = useState("");
   const [note, setNote] = useState("");
   const [editId, setEditId] = useState<number | null>(null);
@@ -61,7 +61,7 @@ export default function PageCachets() {
     }
 
     //pas forcement nécéssaire puisque déjà géré dans le code de l'input, mais mieux vaut être prévoyant
-    if (montant < 110) {
+    if (Number(montant) < 110) {
       foundErrors.montant =
         "Le montant ne peux pas être inférieur au minimum légal (smic horaire * 12, soit 110 euros)";
     }
@@ -104,7 +104,7 @@ export default function PageCachets() {
 
     setMembre("");
     setDate("");
-    setMontant(110);
+    setMontant("");
     setSpectacle("");
     setNote("");
   }
@@ -136,7 +136,7 @@ export default function PageCachets() {
   //filtrage par date (décroissant) ou montant (décroissant), (agit uniquement sur cachets de membre x)
   const cachetsTries = [...cachetsFiltres].sort((a, b) => {
     if (tri === "date") return b.date.localeCompare(a.date);
-    if (tri === "montant") return b.montant - a.montant;
+    if (tri === "montant") return Number(b.montant) - Number(a.montant);
     return 0;
   });
 
@@ -192,9 +192,10 @@ export default function PageCachets() {
             <input
               className="flex w-full rounded-[12px] border border-border bg-white px-4 py-3 text-[1rem] text-text-primary font-serif placeholder:text-text-muted transition-all hover:border-border-hover hover:bg-bg-hover focus-visible:outline-none focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-60 disabled:bg-bg-disabled focus:border-primary focus:ring-1 focus:ring-primary"
               type="number"
+              placeholder="minimum : 110"
               min={110}
               value={montant}
-              onChange={(e) => setMontant(Number(e.target.value))}
+              onChange={(e) => setMontant(e.target.value)}
             />
           </div>
           <div>
@@ -242,7 +243,7 @@ export default function PageCachets() {
               onClick={() => {
                 setEditId(null);
                 setMembre("");
-                setMontant(110);
+                setMontant("");
                 setSpectacle("");
                 setNote("");
                 setErrors({});
