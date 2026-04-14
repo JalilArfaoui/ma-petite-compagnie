@@ -76,7 +76,7 @@ export function ContactDetails({
           <Box>
             Adresse
             <Input
-              name="adresse"
+              name="lieu"
               placeholder="Rue du Berger, 12000"
               onChange={(e) => setAdresse(e.target.value)}
               value={adresse}
