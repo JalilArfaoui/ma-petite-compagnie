@@ -10,7 +10,7 @@ export function ContactDetails({
   onSubmitted: (donneeFormulaire: FormData) => void;
   contactDonnee: Contact | null;
 }) {
-const [nom, setNom] = useState(contactDonnee?.nom ?? "");
+  const [nom, setNom] = useState(contactDonnee?.nom ?? "");
   const [prenom, setPrenom] = useState(contactDonnee?.prenom ?? "");
   const [email, setEmail] = useState(contactDonnee?.email ?? "");
   const [tel, setTel] = useState(contactDonnee?.tel ?? "");
@@ -19,7 +19,7 @@ const [nom, setNom] = useState(contactDonnee?.nom ?? "");
   const [adresse, setAdresse] = useState(contactDonnee?.lieu ?? "");
   const [notes, setNotes] = useState(contactDonnee?.notes ?? "");
   return (
-   <Card>
+    <Card>
       <form action={onSubmitted}>
         <Stack>
           <Stack className="w-full h-full" direction="row" justify="evenly">
@@ -76,7 +76,7 @@ const [nom, setNom] = useState(contactDonnee?.nom ?? "");
           <Box>
             Adresse
             <Input
-              name="adresse"
+              name="lieu"
               placeholder="Rue du Berger, 12000"
               onChange={(e) => setAdresse(e.target.value)}
               value={adresse}
