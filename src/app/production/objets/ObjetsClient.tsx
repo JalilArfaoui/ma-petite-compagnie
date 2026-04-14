@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import Image from "next/image";
 import { Card } from "@/components/ui/Card/Card";
 import { Badge } from "@/components/ui/Badge/Badge";
@@ -114,18 +114,20 @@ function Modal({
   onClose,
   title,
   children,
+  maxWidth = "max-w-lg",
 }: {
   isOpen: boolean;
   onClose: () => void;
   title: string;
   children: React.ReactNode;
+  maxWidth?: string;
 }) {
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="fixed inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 max-h-[80vh] overflow-y-auto">
+      <div className={`relative bg-white rounded-2xl shadow-2xl ${maxWidth} w-full mx-4 max-h-[80vh] overflow-y-auto`}>
         <div className="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 rounded-t-2xl flex items-center justify-between">
           <h3 className="text-lg font-bold text-[#D00039]">{title}</h3>
           <button
@@ -138,6 +140,186 @@ function Modal({
         <div className="p-6">{children}</div>
       </div>
     </div>
+  );
+}
+
+// ========== Stock Row Component ==========
+
+function StockRow({ obj }: { obj: ObjetData }) {
+  const [etat, setEtat] = useState<EtatObjet>(obj.etat);
+  const [estDisponible, setEstDisponible] = useState(obj.estDisponible);
+  const [commentaire, setCommentaire] = useState(obj.commentaire || "");
+  const [showCheck, setShowCheck] = useState(false);
+  const [showPopover, setShowPopover] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const popoverRef = useRef<HTMLDivElement>(null);
+  const eyeRef = useRef<HTMLButtonElement>(null);
+
+  const origEtat = useRef(obj.etat);
+  const origDispo = useRef(obj.estDisponible);
+  const origComment = useRef(obj.commentaire || "");
+
+  // Sync when props change (after revalidation)
+  useEffect(() => {
+    setEtat(obj.etat);
+    setEstDisponible(obj.estDisponible);
+    setCommentaire(obj.commentaire || "");
+    origEtat.current = obj.etat;
+    origDispo.current = obj.estDisponible;
+    origComment.current = obj.commentaire || "";
+  }, [obj.etat, obj.estDisponible, obj.commentaire]);
+
+  const save = useCallback(
+    (newEtat: EtatObjet, newDispo: boolean, newComment: string) => {
+      if (
+        newEtat === origEtat.current &&
+        newDispo === origDispo.current &&
+        newComment === origComment.current
+      )
+        return;
+
+      const fd = new FormData();
+      fd.set("id", String(obj.id));
+      fd.set("etat", newEtat);
+      fd.set("estDisponible", String(newDispo));
+      fd.set("commentaire", newComment);
+
+      startTransition(async () => {
+        await updateObjet(fd);
+        origEtat.current = newEtat;
+        origDispo.current = newDispo;
+        origComment.current = newComment;
+        setShowCheck(true);
+        setTimeout(() => setShowCheck(false), 2000);
+      });
+    },
+    [obj.id]
+  );
+
+  const handleDelete = () => {
+    const fd = new FormData();
+    fd.set("id", String(obj.id));
+    startTransition(() => deleteObjet(fd));
+  };
+
+  // Close popover on outside click
+  useEffect(() => {
+    if (!showPopover) return;
+    const handler = (e: MouseEvent) => {
+      if (
+        popoverRef.current &&
+        !popoverRef.current.contains(e.target as Node) &&
+        eyeRef.current &&
+        !eyeRef.current.contains(e.target as Node)
+      ) {
+        setShowPopover(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showPopover]);
+
+  const hasReservations = obj.reservations.length > 0;
+
+  return (
+    <tr className={`border-b border-slate-100 ${isPending ? "opacity-50" : ""}`}>
+      <td className="px-3 py-2 text-sm text-slate-700 font-medium">#{obj.id}</td>
+      <td className="px-3 py-2">
+        <select
+          value={etat}
+          onChange={(e) => {
+            const v = e.target.value as EtatObjet;
+            setEtat(v);
+            save(v, estDisponible, commentaire);
+          }}
+          className="text-xs h-7 px-1.5 border border-slate-300 rounded-md w-full min-w-[80px]"
+        >
+          <option value="NEUF">Neuf</option>
+          <option value="ABIME">Abime</option>
+          <option value="CASSE">Casse</option>
+        </select>
+      </td>
+      <td className="px-3 py-2">
+        <select
+          value={estDisponible.toString()}
+          onChange={(e) => {
+            const v = e.target.value === "true";
+            setEstDisponible(v);
+            save(etat, v, commentaire);
+          }}
+          className="text-xs h-7 px-1.5 border border-slate-300 rounded-md w-full min-w-[60px]"
+        >
+          <option value="true">Oui</option>
+          <option value="false">Non</option>
+        </select>
+      </td>
+      <td className="px-3 py-2 text-xs text-slate-600 whitespace-nowrap">{obj.compagnie.nom}</td>
+      <td className="px-3 py-2">
+        <input
+          value={commentaire}
+          onChange={(e) => setCommentaire(e.target.value)}
+          onBlur={() => save(etat, estDisponible, commentaire)}
+          placeholder="..."
+          className="text-xs h-7 px-1.5 border border-slate-300 rounded-md w-full min-w-[100px]"
+        />
+      </td>
+      <td className="px-3 py-2 text-center relative">
+        {hasReservations ? (
+          <>
+            <span className="text-xs text-green-700 font-medium">Oui</span>
+            <button
+              ref={eyeRef}
+              type="button"
+              onClick={() => setShowPopover((p) => !p)}
+              className="ml-1 text-slate-500 hover:text-[#D00039] cursor-pointer"
+              title="Voir les reservations"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 inline">
+                <path d="M10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" />
+                <path fillRule="evenodd" d="M.664 10.59a1.651 1.651 0 010-1.186A10.004 10.004 0 0110 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0110 17c-4.257 0-7.893-2.66-9.336-6.41zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+              </svg>
+            </button>
+            {showPopover && (
+              <div
+                ref={popoverRef}
+                className="absolute z-50 right-0 top-full mt-1 w-72 bg-white border border-slate-200 rounded-lg shadow-lg p-3 text-left"
+              >
+                <p className="text-xs font-semibold text-slate-700 mb-2">Reservations</p>
+                {obj.reservations.map((r) => (
+                  <div key={r.id} className="text-xs text-slate-600 mb-1.5 pb-1.5 border-b border-slate-100 last:border-0 last:mb-0 last:pb-0">
+                    <p className="font-medium">{r.representation.spectacle.titre}</p>
+                    <p className="text-slate-400">
+                      {formatDate(r.representation.date)} @ {r.representation.lieu.libelle}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+          <span className="text-xs text-slate-400">Non</span>
+        )}
+      </td>
+      <td className="px-3 py-2 text-center whitespace-nowrap">
+        {showCheck && (
+          <span className="text-green-600 mr-1" title="Sauvegarde">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 inline">
+              <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
+            </svg>
+          </span>
+        )}
+        <button
+          type="button"
+          onClick={handleDelete}
+          className="text-red-400 hover:text-red-600 cursor-pointer"
+          title="Supprimer"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 inline">
+            <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+          </svg>
+        </button>
+      </td>
+    </tr>
   );
 }
 
@@ -248,6 +430,7 @@ function TypeObjetCard({
         isOpen={showStockModal}
         onClose={() => setShowStockModal(false)}
         title={`Stock: ${typeObjet.nom}`}
+        maxWidth="max-w-4xl"
       >
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <span className="text-sm font-semibold text-slate-600">Filtrer par état:</span>
@@ -281,93 +464,25 @@ function TypeObjetCard({
         {stockObjets.length === 0 ? (
           <p className="text-slate-500">Aucun objet dans cet état.</p>
         ) : (
-          <div className="flex flex-col gap-3">
-            {stockObjets.map((obj) => (
-              <div key={obj.id} className="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-semibold text-sm">Objet #{obj.id}</span>
-                  <div className="flex gap-1">
-                    <Badge variant={obj.estDisponible ? "green" : "red"}>
-                      {obj.estDisponible ? "Disponible" : "Indisponible"}
-                    </Badge>
-                    <Badge variant={etatConfig[obj.etat].variant}>
-                      {etatConfig[obj.etat].label}
-                    </Badge>
-                  </div>
-                </div>
-                <p className="text-sm text-slate-600">
-                  <strong>Compagnie:</strong> {obj.compagnie.nom}
-                </p>
-                {obj.commentaire && (
-                  <p className="text-sm text-slate-600 mt-1">
-                    <strong>Commentaire:</strong> {obj.commentaire}
-                  </p>
-                )}
-                {obj.reservations.length > 0 && (
-                  <div className="mt-2">
-                    <p className="text-xs font-semibold text-slate-500 mb-1">Réservations:</p>
-                    {obj.reservations.map((r) => (
-                      <p key={r.id} className="text-xs text-slate-500">
-                        📅 {formatDate(r.representation.date)} — {r.representation.spectacle.titre}{" "}
-                        @ {r.representation.lieu.libelle}
-                      </p>
-                    ))}
-                  </div>
-                )}
-
-                {/* Inline edit form */}
-                <form action={updateObjet} className="mt-3 flex flex-wrap gap-2 items-end">
-                  <input type="hidden" name="id" value={obj.id} />
-                  <div className="flex-1 min-w-[120px]">
-                    <label className="text-xs font-semibold text-slate-500">État</label>
-                    <select
-                      name="etat"
-                      defaultValue={obj.etat}
-                      className="w-full text-sm h-8 px-2 border border-slate-300 rounded-md"
-                    >
-                      <option value="NEUF">Neuf</option>
-                      <option value="ABIME">Abîmé</option>
-                      <option value="CASSE">Cassé</option>
-                    </select>
-                  </div>
-                  <div className="flex-1 min-w-[120px]">
-                    <label className="text-xs font-semibold text-slate-500">Dispo.</label>
-                    <select
-                      name="estDisponible"
-                      defaultValue={obj.estDisponible.toString()}
-                      className="w-full text-sm h-8 px-2 border border-slate-300 rounded-md"
-                    >
-                      <option value="true">Oui</option>
-                      <option value="false">Non</option>
-                    </select>
-                  </div>
-                  <div className="flex-[2] min-w-[150px]">
-                    <label className="text-xs font-semibold text-slate-500">Commentaire</label>
-                    <input
-                      name="commentaire"
-                      defaultValue={obj.commentaire || ""}
-                      placeholder="Commentaire..."
-                      className="w-full text-sm h-8 px-2 border border-slate-300 rounded-md"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="h-8 px-3 text-xs bg-[#D00039] text-white rounded-md hover:bg-[#a00030] cursor-pointer"
-                  >
-                    💾
-                  </button>
-                </form>
-                <form action={deleteObjet} className="mt-1">
-                  <input type="hidden" name="id" value={obj.id} />
-                  <button
-                    type="submit"
-                    className="h-8 px-3 text-xs border border-red-200 text-red-600 rounded-md hover:bg-red-50 cursor-pointer"
-                  >
-                    🗑️
-                  </button>
-                </form>
-              </div>
-            ))}
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="border-b border-slate-200">
+                  <th className="px-3 py-2 text-xs font-semibold text-slate-500">#</th>
+                  <th className="px-3 py-2 text-xs font-semibold text-slate-500">Etat</th>
+                  <th className="px-3 py-2 text-xs font-semibold text-slate-500">Dispo.</th>
+                  <th className="px-3 py-2 text-xs font-semibold text-slate-500">Compagnie</th>
+                  <th className="px-3 py-2 text-xs font-semibold text-slate-500">Commentaire</th>
+                  <th className="px-3 py-2 text-xs font-semibold text-slate-500 text-center">Réservé</th>
+                  <th className="px-3 py-2 text-xs font-semibold text-slate-500 text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {stockObjets.map((obj) => (
+                  <StockRow key={obj.id} obj={obj} />
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </Modal>
