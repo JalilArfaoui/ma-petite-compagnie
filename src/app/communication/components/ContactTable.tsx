@@ -13,6 +13,14 @@ import { CreateListe } from "./CreateListe";
 export function ContactTable() {
   const [contacts, setContacts] = useState<ContactWithListes[]>([]);
   const [contactsSelectionne, setContactsSelectionne] = useState<ContactWithListes[]>([]);
+  async function loadContact() {
+    const resultat = await getContactsWithListes(30, 1);
+    if (resultat.succes) {
+      setContacts(resultat.donnee ?? []);
+    } else {
+      toaster.create({ description: resultat.message, type: "error" });
+    }
+  }
   useEffect(() => {
     async function loadContact() {
       const resultat = await getContactsWithListes(30, 1);
@@ -88,6 +96,7 @@ export function ContactTable() {
             Supprimer
           </Button>
           <CreateListe
+            onCreatedListe={() => loadContact()}
             disabled={contactsSelectionne.length <= 0}
             getContacts={() => contactsSelectionne}
           ></CreateListe>
