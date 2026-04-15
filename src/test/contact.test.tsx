@@ -4,6 +4,8 @@ import {
   modifierContact,
   supprimerContact,
 } from "../app/communication/api/contact/contact";
+import { validerTelephone } from "@/app/communication/utils/helper";
+import { validerEmail } from "@/app/communication/utils/helper";
 import { describe, it, expect, afterAll, beforeAll } from "vitest";
 import { creerObjetContactAvecNom } from "./testContactUtility";
 import { Contact } from "@prisma/client";
@@ -38,6 +40,31 @@ describe("Contact", () => {
       }
     });
   });*/
+
+  it("Valider téléphone", async () => {
+    const resultat = validerTelephone("0011223344");
+    expect(resultat?.succes).toBe(true);
+    const resultat2 = validerTelephone("001122334");
+    expect(resultat2?.succes).toBe(false);
+    const resultat2Bis = validerTelephone("00112233445");
+    expect(resultat2Bis?.succes).toBe(false);
+
+    const resultat3 = validerTelephone("+33 011223344");
+    expect(resultat3?.succes).toBe(true);
+
+    const resultat4 = validerTelephone("00-11-22-33-44");
+    expect(resultat4?.succes).toBe(true);
+  });
+  it("Valider email", async () => {
+    const resultat = validerEmail("test.1@email.com");
+    expect(resultat.succes).toBe(true);
+    const resultat2 = validerEmail("test.10@email.");
+    expect(resultat2.succes).toBe(false);
+    const resultat3 = validerEmail("test.10email.");
+    expect(resultat3.succes).toBe(false);
+    const resultat4 = validerEmail("test.10@.com");
+    expect(resultat4.succes).toBe(false);
+  });
   it.skip("Créer un contact", async () => {
     const created = await creerUnContactAvecNom("TestLire2", "email@gmail.com");
     contactACleanup.push(created);

@@ -19,9 +19,9 @@ export function ContactDetails({
   const [adresse, setAdresse] = useState(contactDonnee?.lieu ?? "");
   const [notes, setNotes] = useState(contactDonnee?.notes ?? "");
   return (
-    <Card>
+   <Card>
       <form action={onSubmitted}>
-        <Stack>
+        <Stack gap={3} className="shadow-xl px-10 py-5 rounded-2xl">
           <Stack className="w-full h-full" direction="row" justify="evenly">
             <Box>
               Nom :{" "}
@@ -65,7 +65,7 @@ export function ContactDetails({
             />
           </Box>
           <Box>
-            Ville
+            Ville :
             <Input
               name="ville"
               placeholder="Paris"
@@ -74,16 +74,16 @@ export function ContactDetails({
             />
           </Box>
           <Box>
-            Adresse
+            Adresse :
             <Input
-              name="adresse"
+              name="lieu"
               placeholder="Rue du Berger, 12000"
               onChange={(e) => setAdresse(e.target.value)}
               value={adresse}
             />
           </Box>
           <Box>
-            Notes
+            Notes :
             <Textarea
               name="notes"
               placeholder="A contacter le 10 Mars"
@@ -92,7 +92,7 @@ export function ContactDetails({
             />
           </Box>
           <Box>
-            Rôles
+            Rôles :
             <RadioGroup name="role" value={role} onChange={(v) => setRole(v.valueOf() as Role)}>
               <Radio value="COMEDIEN" name="role">
                 Comedien

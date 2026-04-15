@@ -57,7 +57,7 @@ export default function ContactPage() {
         </Stack>
       </Stack>
 
-      <Box className="md:w-full lg:w-[75%] mx-auto  ">
+      <Box className="md:w-full lg:w-[90%] mx-auto   ">
         <ContactTable />
       </Box>
     </Box>
