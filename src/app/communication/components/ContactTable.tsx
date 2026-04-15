@@ -1,14 +1,11 @@
 import { useEffect, useState } from "react";
-import {
-  ContactWithListes,
-  getContactsWithListes,
-  listerContacts,
-  supprimerContact,
-} from "../api/contact/contact";
+import { ContactWithListes, getContactsWithListes, supprimerContact } from "../api/contact/contact";
 import { Box, Button, Stack, Table, Text, Toaster, toaster } from "@/components/ui";
-import { Contact } from "@prisma/client";
+import { Contact, ListeContact } from "@prisma/client";
 import { ContactGrid } from "./ContactGrid";
 import { CreateListe } from "./CreateListe";
+import { GetListe } from "./GetListe";
+import { createListe } from "../api/contact/liste";
 
 export function ContactTable() {
   const [contacts, setContacts] = useState<ContactWithListes[]>([]);
@@ -32,6 +29,34 @@ export function ContactTable() {
     }
     loadContact();
   }, []);
+  async function associerListe(listes: ListeContact[]) {
+    listes.forEach(async (liste) => {
+      const title = liste.nom;
+      const resultat = await createListe(title, contactsSelectionne);
+      if (resultat.succes) {
+        toaster.success({ title: "Les contacts séléctionnées ont bien été associés à la liste" });
+      } else {
+        toaster.error({ title: resultat.message });
+      }
+    });
+    setContacts((prev) => {
+      return prev.map((contact) => {
+        if (contactsSelectionne.includes(contact)) {
+          return {
+            ...contact,
+            listes: [...new Set([...contact.listes, ...listes.map((liste) => liste.nom)])],
+          };
+        } else {
+          return contact;
+        }
+      });
+    });
+    setContactsSelectionne(
+      contactsSelectionne.map((contact) => {
+        return { ...contact, listes: [...contact.listes, ...listes.map((liste) => liste.nom)] };
+      })
+    );
+  }
 
   async function supprimerUnContact(contact: Contact) {
     const resultat = await supprimerContact(contact.id);
@@ -82,10 +107,16 @@ export function ContactTable() {
     <Box className="">
       <Toaster />
       <Stack direction="row" gap={2} className="justify-between">
-        <Stack direction="row" gap={2} className="items-center" justify="start">
+        <Stack direction="row" gap={2} className="items-end" justify="start">
           <Text className="h-fit font-bold text-2xl">Liste de contacts</Text>
         </Stack>
-        <Stack direction="row" gap={2} justify="end">
+
+        <Stack
+          direction="row"
+          className="grid grid-cols-1 sm:grid-cols-2 flex-wrap "
+          gap={2}
+          justify="end"
+        >
           <Button
             className=" border-solid "
             variant={"outline"}
@@ -95,6 +126,10 @@ export function ContactTable() {
           >
             Supprimer
           </Button>
+          <GetListe
+            disabled={contactsSelectionne.length <= 0}
+            onGetListe={(a) => associerListe(a)}
+          ></GetListe>
           <CreateListe
             onCreatedListe={() => loadContact()}
             disabled={contactsSelectionne.length <= 0}

@@ -1,7 +1,5 @@
 import { Button, Table } from "@/components/ui";
-import { ListeContact } from "@prisma/client";
 import Link from "next/link";
-import { useState } from "react";
 import { ContactWithListes } from "../api/contact/contact";
 
 export function ContactGrid({
