@@ -93,11 +93,13 @@ export function ItemFinancierCard({
   onValider,
   onEdit,
   onDelete,
+  showSpectaclesInline = false,
 }: {
   item: Recette | Depense;
   onValider?: (id: string, e: React.MouseEvent) => void;
   onEdit?: (id: string, e: React.MouseEvent) => void;
   onDelete?: (id: string, e: React.MouseEvent) => void;
+  showSpectaclesInline?: boolean;
 }) {
   const isRecette = isRecetteType(item);
   const recette = isRecette ? item : null;
@@ -107,14 +109,8 @@ export function ItemFinancierCard({
   const typeLabel =
     recette?.type === "facture" ? "Facture" : recette?.type === "financement" ? "Subvention" : "";
 
-  const tooltipLabel =
-    item.spectacles && item.spectacles.length > 0
-      ? `${item.spectacles.join(", ")}`
-      : "Aucun spectacle rattaché";
-
   return (
-    <Tooltip label={tooltipLabel} delayDuration={0}>
-      <Card className="p-3 bg-white !gap-0 shadow-sm border border-gray-100 transition-all hover:shadow-md cursor-help overflow-hidden">
+    <Card className="p-3 bg-white !gap-0 shadow-sm border border-gray-100 transition-all hover:shadow-md overflow-hidden">
         <div className="flex flex-col sm:flex-row justify-between items-start gap-1 sm:gap-2">
           <div className="flex flex-col gap-1 min-w-0 flex-1">
             <Text className="font-bold text-sm truncate w-full" title={item.nom}>
@@ -134,6 +130,19 @@ export function ItemFinancierCard({
               <Text className="text-xs text-text-muted truncate mt-0.5">
                 {formatDateFr(item.date)}
               </Text>
+            )}
+            {showSpectaclesInline && item.spectacles && item.spectacles.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-1.5">
+                {item.spectacles.map((s, idx) => (
+                  <Badge
+                    key={idx}
+                    variant="outline"
+                    className="text-[9px] px-1.5 py-0 bg-gray-50 text-gray-600 border-gray-200"
+                  >
+                    {s}
+                  </Badge>
+                ))}
+              </div>
             )}
           </div>
 
@@ -188,7 +197,6 @@ export function ItemFinancierCard({
             )}
           </div>
         </div>
-      </Card>
-    </Tooltip>
+    </Card>
   );
 }

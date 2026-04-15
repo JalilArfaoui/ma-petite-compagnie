@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Card, Checkbox, toaster } from "@/components/ui";
+import { Card, toaster } from "@/components/ui";
 import { formatMontant } from "../utils";
 import { ModalAjoutRapide, DonneesAjoutFinancier } from "../modals";
 import { Recette } from "./types";
@@ -16,9 +16,6 @@ export function RecettesSection({
   setRecettes: React.Dispatch<React.SetStateAction<Recette[]>>;
   spectacles: string[];
 }) {
-  const [showFactures, setShowFactures] = useState(true);
-  const [showSubventions, setShowSubventions] = useState(true);
-
   const validerRecette = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setRecettes((prev) => prev.map((r) => (r.id === id ? { ...r, statut: "paye" as const } : r)));
@@ -30,10 +27,10 @@ export function RecettesSection({
 
   const totalRecettes = recettes.reduce((acc, r) => acc + r.montant, 0);
 
-  // Filtrer et trier par date décroissante
-  const recettesFiltrees = recettes
-    .filter((r) => (r.type === "facture" ? showFactures : showSubventions))
-    .sort((a, b) => new Date(b.date || "").getTime() - new Date(a.date || "").getTime());
+  // Trier par date décroissante
+  const recettesFiltrees = [...recettes].sort(
+    (a, b) => new Date(b.date || "").getTime() - new Date(a.date || "").getTime()
+  );
 
   // Limiter l'affichage
   const recettesAffichees = recettesFiltrees.slice(0, 5);
@@ -74,16 +71,6 @@ export function RecettesSection({
       <NoteInfo className="mb-6">
         Note : ces montants incluent les recettes en attente (vision prévisionnelle).
       </NoteInfo>
-
-      {/* Filtres par Checkbox */}
-      <div className="flex items-center gap-6 mb-6 px-1">
-        <Checkbox checked={showFactures} onChange={(e) => setShowFactures(e.target.checked)}>
-          Factures
-        </Checkbox>
-        <Checkbox checked={showSubventions} onChange={(e) => setShowSubventions(e.target.checked)}>
-          Subventions
-        </Checkbox>
-      </div>
 
       <FadeContainer>
         {recettesAffichees.map((item) => (

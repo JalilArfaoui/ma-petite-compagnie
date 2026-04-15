@@ -148,6 +148,7 @@ export default function RecettesPage() {
               <ItemFinancierCard
                 key={item.id}
                 item={item}
+                showSpectaclesInline={true}
                 onValider={validerRecette}
                 onEdit={
                   item.type === "facture"

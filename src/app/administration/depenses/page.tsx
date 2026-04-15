@@ -119,6 +119,7 @@ export default function DepensesPage() {
               <ItemFinancierCard
                 key={item.id}
                 item={item}
+                showSpectaclesInline={true}
                 onEdit={(id, e) => {
                   e.stopPropagation();
                   const cible = depenses.find((d) => d.id === id);
