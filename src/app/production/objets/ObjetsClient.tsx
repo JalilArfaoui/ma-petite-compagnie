@@ -53,11 +53,6 @@ interface CategorieData {
   nom: string;
 }
 
-interface CompagnieData {
-  id: number;
-  nom: string;
-}
-
 interface RepresentationData {
   id: number;
   date: string;
@@ -68,7 +63,6 @@ interface RepresentationData {
 interface ObjetsClientProps {
   typesObjets: TypeObjetData[];
   categories: CategorieData[];
-  compagnies: CompagnieData[];
   representations: RepresentationData[];
 }
 
@@ -127,7 +121,9 @@ function Modal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="fixed inset-0 bg-black/50" onClick={onClose} />
-      <div className={`relative bg-white rounded-2xl shadow-2xl ${maxWidth} w-full mx-4 max-h-[80vh] overflow-y-auto`}>
+      <div
+        className={`relative bg-white rounded-2xl shadow-2xl ${maxWidth} w-full mx-4 max-h-[80vh] overflow-y-auto`}
+      >
         <div className="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 rounded-t-2xl flex items-center justify-between">
           <h3 className="text-lg font-bold text-[#D00039]">{title}</h3>
           <button
@@ -274,19 +270,31 @@ function StockRow({ obj }: { obj: ObjetData }) {
               className="ml-1 text-slate-500 hover:text-[#D00039] cursor-pointer"
               title="Voir les reservations"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 inline">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="w-4 h-4 inline"
+              >
                 <path d="M10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" />
-                <path fillRule="evenodd" d="M.664 10.59a1.651 1.651 0 010-1.186A10.004 10.004 0 0110 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0110 17c-4.257 0-7.893-2.66-9.336-6.41zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+                <path
+                  fillRule="evenodd"
+                  d="M.664 10.59a1.651 1.651 0 010-1.186A10.004 10.004 0 0110 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0110 17c-4.257 0-7.893-2.66-9.336-6.41zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                  clipRule="evenodd"
+                />
               </svg>
             </button>
             {showPopover && (
               <div
                 ref={popoverRef}
-                className="absolute z-50 right-0 top-full mt-1 w-72 bg-white border border-slate-200 rounded-lg shadow-lg p-3 text-left"
+                className="absolute z-50 right-0 bottom-full mb-1 w-72 bg-white border border-slate-200 rounded-lg shadow-lg p-3 text-left"
               >
                 <p className="text-xs font-semibold text-slate-700 mb-2">Reservations</p>
                 {obj.reservations.map((r) => (
-                  <div key={r.id} className="text-xs text-slate-600 mb-1.5 pb-1.5 border-b border-slate-100 last:border-0 last:mb-0 last:pb-0">
+                  <div
+                    key={r.id}
+                    className="text-xs text-slate-600 mb-1.5 pb-1.5 border-b border-slate-100 last:border-0 last:mb-0 last:pb-0"
+                  >
                     <p className="font-medium">{r.representation.spectacle.titre}</p>
                     <p className="text-slate-400">
                       {formatDate(r.representation.date)} @ {r.representation.lieu.libelle}
@@ -303,8 +311,17 @@ function StockRow({ obj }: { obj: ObjetData }) {
       <td className="px-3 py-2 text-center whitespace-nowrap">
         {showCheck && (
           <span className="text-green-600 mr-1" title="Sauvegarde">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 inline">
-              <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className="w-4 h-4 inline"
+            >
+              <path
+                fillRule="evenodd"
+                d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                clipRule="evenodd"
+              />
             </svg>
           </span>
         )}
@@ -314,7 +331,12 @@ function StockRow({ obj }: { obj: ObjetData }) {
           className="text-red-400 hover:text-red-600 cursor-pointer"
           title="Supprimer"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 inline">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            className="w-4 h-4 inline"
+          >
             <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
           </svg>
         </button>
@@ -328,12 +350,10 @@ function StockRow({ obj }: { obj: ObjetData }) {
 function TypeObjetCard({
   typeObjet,
   categories,
-  compagnies,
   representations,
 }: {
   typeObjet: TypeObjetData;
   categories: CategorieData[];
-  compagnies: CompagnieData[];
   representations: RepresentationData[];
 }) {
   const [showStockModal, setShowStockModal] = useState(false);
@@ -473,8 +493,12 @@ function TypeObjetCard({
                   <th className="px-3 py-2 text-xs font-semibold text-slate-500">Dispo.</th>
                   <th className="px-3 py-2 text-xs font-semibold text-slate-500">Compagnie</th>
                   <th className="px-3 py-2 text-xs font-semibold text-slate-500">Commentaire</th>
-                  <th className="px-3 py-2 text-xs font-semibold text-slate-500 text-center">Réservé</th>
-                  <th className="px-3 py-2 text-xs font-semibold text-slate-500 text-center">Actions</th>
+                  <th className="px-3 py-2 text-xs font-semibold text-slate-500 text-center">
+                    Réservé
+                  </th>
+                  <th className="px-3 py-2 text-xs font-semibold text-slate-500 text-center">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -619,21 +643,6 @@ function TypeObjetCard({
             </select>
           </div>
           <div>
-            <label className="block text-sm font-semibold mb-1">Compagnie</label>
-            <select
-              name="compagnieId"
-              required
-              className="w-full rounded-[12px] border border-slate-300 px-4 py-3 text-sm"
-            >
-              <option value="">Sélectionner</option>
-              {compagnies.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.nom}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
             <label className="block text-sm font-semibold mb-1">Commentaire (optionnel)</label>
             <Input name="commentaire" placeholder="Ex: Pied bancal..." />
           </div>
@@ -651,7 +660,6 @@ function TypeObjetCard({
 export default function ObjetsClient({
   typesObjets,
   categories,
-  compagnies,
   representations,
 }: ObjetsClientProps) {
   const [search, setSearch] = useState("");
@@ -806,7 +814,6 @@ export default function ObjetsClient({
               key={typeObjet.id}
               typeObjet={typeObjet}
               categories={categories}
-              compagnies={compagnies}
               representations={representations}
             />
           ))}
