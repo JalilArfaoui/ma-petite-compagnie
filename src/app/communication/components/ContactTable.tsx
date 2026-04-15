@@ -102,16 +102,15 @@ export function ContactTable() {
               <Table.Cell className=" text-[10px] md:text-[16px]">Téléphone</Table.Cell>
               <Table.Cell className=" text-[10px] md:text-[16px]">Ville</Table.Cell>
               <Table.Cell className=" text-[10px] md:text-[16px]">Lieu</Table.Cell>
-              <Table.Cell className="text-[10px] md:text-[16px] max-w-[300px]">Notes</Table.Cell>
-              <Table.Cell className="max-w-[70px]"></Table.Cell>
-              <Table.Cell className="max-w-[70px]"></Table.Cell>
+              <Table.Cell className="text-[10px] md:text-[16px] max-w-75">Notes</Table.Cell>
+              <Table.Cell className=" max-w-17.5"></Table.Cell>
+              <Table.Cell className="max-w-17.5"></Table.Cell>
             </Table.Row>
           </Table.Head>
           <Table.Body>
-            {contacts.map((contact, index) => {
+            {contacts.map((contact) => {
               return (
                 <ContactGrid
-                  index={index}
                   key={contact.id}
                   onDelete={supprimerUnContact}
                   contact={contact}

@@ -6,10 +6,9 @@ import {
 } from "../app/communication/api/contact/contact";
 import { validerTelephone } from "@/app/communication/utils/helper";
 import { validerEmail } from "@/app/communication/utils/helper";
-import { describe, it, expect, afterAll, beforeAll } from "vitest";
+import { describe, it, expect } from "vitest";
 import { creerObjetContactAvecNom } from "./testContactUtility";
 import { Contact } from "@prisma/client";
-import { prisma } from "@/lib/prisma";
 
 async function creerUnContactAvecNom(nom: string, email: string): Promise<Contact> {
   const contact = await creerObjetContactAvecNom(nom, email);
@@ -27,6 +26,12 @@ it.skip("fichier .env chargé", () => {
 });
 describe("Contact", () => {
   const contactACleanup: Contact[] = [];
+  // ***********************
+  // Décommenter le code suivant seulement si vous voulez testez les contacts avec la BD
+  // Attention car toutes les données dans contacts seront supprimés pour que les tests n'échouent pas
+  // Une manière d'éviter de faire cela serait de faire une transaction et faire un rollback après les tests
+  // mais je ne sais pas comment le faire
+
   /*beforeAll(async () => {
     await prisma.contact.deleteMany({});
   });
@@ -40,7 +45,7 @@ describe("Contact", () => {
       }
     });
   });*/
-
+  // ********************
   it("Valider téléphone", async () => {
     const resultat = validerTelephone("0011223344");
     expect(resultat?.succes).toBe(true);

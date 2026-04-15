@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { Contact } from "@prisma/client";
 import { render, screen } from "@testing-library/react";
-import { creerObjetContactAvecNom, creerUnContactAPartirInformation } from "./testContactUtility";
 import ContactDetails from "@/app/communication/components/contactDetails";
 
 describe("Test des pages pour le contact", () => {
