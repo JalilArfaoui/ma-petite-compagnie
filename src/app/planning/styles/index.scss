@@ -149,6 +149,46 @@ body {
     width: 0;
     height: 0;
   }
+
+}
+
+.days.weekly {
+  .calendar-day {
+    padding: 0;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .day-number {
+    height: 50px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .events-container {
+    position: relative;
+    display: block;
+    min-height: 0;
+  }
+
+  .event-tile {
+    border-radius: 6px;
+    z-index: 2;
+  }
+
+  .event-tile:hover {
+    left: 4px !important;
+    width: calc(100% - 8px) !important;
+    right: auto !important;
+    z-index: 6;
+  }
+
+  .event-time {
+    color: inherit;
+  }
 }
 
 .time-slot-overlay {
@@ -224,7 +264,7 @@ body {
 
 .calendar-day.today {
   // background: rgba(239, 246, 255,0.75);
-  background: rgba(202, 131, 235, 0.75);
+  // background: rgba(202, 131, 235, 0.75);
 }
 
 .calendar-day.today .day-number {
@@ -244,8 +284,10 @@ body {
   font-weight: 500;
   color: #1f2937;
   margin-bottom: 4px;
-  align-self: flex-start;
-  margin: 0 auto;
+  align-self: center;
+  width: 100%;
+  text-align: center;
+  margin: 0;
 }
 
 .events-container {
@@ -288,14 +330,23 @@ body {
 
 .event-tile:nth-child(3n + 1) {
   --event-color: #667eea;
+  background: #e0e7ff;
+  border-color: #a5b4fc;
+  color: #3730a3;
 }
 
 .event-tile:nth-child(3n + 2) {
   --event-color: #f5576c;
+  background: #ffe4e6;
+  border-color: #fda4af;
+  color: #9f1239;
 }
 
 .event-tile:nth-child(3n + 3) {
   --event-color: #06b6d4;
+  background: #cffafe;
+  border-color: #67e8f9;
+  color: #155e75;
 }
 
 .event-dot {
@@ -323,7 +374,7 @@ body {
 
 .event-time {
   display: block;
-  color: #6b7280;
+  color: inherit;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
