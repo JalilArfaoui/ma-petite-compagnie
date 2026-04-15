@@ -529,6 +529,7 @@ export default function SpectacleDetailClient({ spectacle, typeObjets, categorie
                     </svg>
                     <span className="font-serif">{spectacle.ficheTechnique.pdfName}</span>
                   </div>
+                  <div className="flex flex-col gap-3">
                   <div className="flex gap-2">
                     <button
                       onClick={() =>
@@ -547,6 +548,14 @@ export default function SpectacleDetailClient({ spectacle, typeObjets, categorie
                     >
                       {ftUploading ? "..." : "Remplacer"}
                     </button>
+                  </div>
+                  <a href={`${spectacle.id}/fiche`}>
+                    <button
+                      className="w-full bg-white border border-[#D00039] text-[#D00039] hover:bg-[#FFF5F7] font-serif font-bold italic rounded-[12px] py-2 text-sm transition-colors cursor-pointer"
+                    >
+                      Modifier la fiche technique
+                    </button>
+                  </a>
                   </div>
                 </>
               ) : (
