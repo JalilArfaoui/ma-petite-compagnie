@@ -27,7 +27,7 @@ it.skip("fichier .env chargé", () => {
 });
 describe("Contact", () => {
   const contactACleanup: Contact[] = [];
-  /*beforeAll(async () => {
+  beforeAll(async () => {
     await prisma.contact.deleteMany({});
   });
   
@@ -39,7 +39,7 @@ describe("Contact", () => {
         console.log(await supprimerContact(contact.id));
       }
     });
-  });*/
+  });
 
   it("Valider téléphone", async () => {
     const resultat = validerTelephone("0011223344");
