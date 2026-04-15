@@ -218,25 +218,28 @@ export function ModalAjoutRapide({
 
               {typeRecette === "facture" && (
                 // Avertissement qu'il existe un générateur fourni par le site pour générer des factures
-                <Alert status="warning" className="text-xs">
+                <Alert status="warning" className="text-sm border-none bg-yellow-50/50">
                   <Alert.Icon>
-                    <FaInfoCircle className="h-4 w-4" />
+                    <FaInfoCircle className="h-4 w-4 text-yellow-700" />
                   </Alert.Icon>
-                  <Alert.Title>À savoir sur les factures :</Alert.Title>
-                  <Alert.Description>
-                    L&apos;outil intègre un générateur de factures automatisé. Toute facture créée
-                    via ce générateur sera <strong>automatiquement</strong> comptabilisée ici.
-                    <div className="mt-3 flex flex-col gap-2">
-                      <p>
-                        N&apos;utilisez ce formulaire d&apos;ajout manuel que si vous avez émis une
-                        facture en dehors notre système.
-                      </p>
-                      <Link
-                        href="#"
-                        className="text-yellow-800 font-bold underline flex items-center gap-1 w-fit"
-                      >
-                        Créer une facture avec l&apos;outil intégré en cliquant ici
+                  <Alert.Description className="text-yellow-900">
+                    La plateforme possède son propre générateur de factures. Nous vous conseillons
+                    vivement de l&apos;utiliser pour profiter de la comptabilisation automatique.
+                    <div className="mt-4 flex flex-col gap-3">
+                      <Link href="/administration/factures/nouveau" className="w-fit">
+                        <Button
+                          variant="solid"
+                          size="sm"
+                          className="bg-yellow-700 hover:bg-yellow-800 text-white rounded-full px-5 h-9 gap-2 shadow-md transition-all hover:scale-105"
+                        >
+                          <FaPlus size={10} />
+                          Générer une facture
+                        </Button>
                       </Link>
+                      <p className="text-[11px] text-yellow-800/80 italic">
+                        Utilisez le formulaire ci-dessous uniquement pour saisir une facture émise
+                        hors du système.
+                      </p>
                     </div>
                   </Alert.Description>
                 </Alert>
