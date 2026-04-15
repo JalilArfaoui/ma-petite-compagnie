@@ -65,7 +65,7 @@ export function ContactTable() {
     });
   }
   return (
-    <Box>
+    <Box className="">
       <Toaster />
       <Stack direction="row" gap={2} className="justify-between">
         <Stack direction="row" gap={2} className="items-center" justify="start">
@@ -92,32 +92,36 @@ export function ContactTable() {
           )}
         </Stack>
       </Stack>
-      <Table className="min-w-full">
-        <Table.Head>
-          <Table.Row>
-            <Table.Cell>Nom</Table.Cell>
-            <Table.Cell>Prénom</Table.Cell>
-            <Table.Cell>Email</Table.Cell>
-            <Table.Cell>Téléphone</Table.Cell>
-            <Table.Cell className=""></Table.Cell>
-            <Table.Cell className=" "></Table.Cell>
-          </Table.Row>
-        </Table.Head>
-        <Table.Body>
-          {contacts.map((contact, index) => {
-            return (
-              <ContactGrid
-                index={index}
-                key={contact.id}
-                onDelete={supprimerUnContact}
-                contact={contact}
-                onSelect={updateSelected}
-                className={contactsSelectionne.includes(contact) ? "bg-gray-100" : ""}
-              />
-            );
-          })}
-        </Table.Body>
-      </Table>
+      <div className="overflow-auto">
+        <Table>
+          <Table.Head>
+            <Table.Row>
+              <Table.Cell className=" text-[10px] md:text-[16px]">Nom</Table.Cell>
+              <Table.Cell className=" text-[10px] md:text-[16px]">Prénom</Table.Cell>
+              <Table.Cell className="text-[10px] md:text-[16px]">Email</Table.Cell>
+              <Table.Cell className=" text-[10px] md:text-[16px]">Téléphone</Table.Cell>
+              <Table.Cell className=" text-[10px] md:text-[16px]">Ville</Table.Cell>
+              <Table.Cell className=" text-[10px] md:text-[16px]">Lieu</Table.Cell>
+              <Table.Cell className="text-[10px] md:text-[16px] max-w-75">Notes</Table.Cell>
+              <Table.Cell className=" max-w-17.5"></Table.Cell>
+              <Table.Cell className="max-w-17.5"></Table.Cell>
+            </Table.Row>
+          </Table.Head>
+          <Table.Body>
+            {contacts.map((contact) => {
+              return (
+                <ContactGrid
+                  key={contact.id}
+                  onDelete={supprimerUnContact}
+                  contact={contact}
+                  onSelect={updateSelected}
+                  className={contactsSelectionne.includes(contact) ? "bg-gray-100" : ""}
+                />
+              );
+            })}
+          </Table.Body>
+        </Table>
+      </div>
     </Box>
   );
 }
