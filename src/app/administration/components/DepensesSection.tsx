@@ -55,10 +55,6 @@ export function DepensesSection({
         </div>
       </div>
 
-      <NoteInfo className="mb-6">
-        Note : l&apos;ensemble des dépenses affichées ici sont considérées comme payées.
-      </NoteInfo>
-
       <FadeContainer>
         {depensesAffichees.map((item) => (
           <ItemFinancierCard key={item.id} item={item} />

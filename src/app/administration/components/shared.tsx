@@ -111,92 +111,92 @@ export function ItemFinancierCard({
 
   return (
     <Card className="p-3 bg-white !gap-0 shadow-sm border border-gray-100 transition-all hover:shadow-md overflow-hidden">
-        <div className="flex flex-col sm:flex-row justify-between items-start gap-1 sm:gap-2">
-          <div className="flex flex-col gap-1 min-w-0 flex-1">
-            <Text className="font-bold text-sm truncate w-full" title={item.nom}>
-              {item.nom}
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-1 sm:gap-2">
+        <div className="flex flex-col gap-1 min-w-0 flex-1">
+          <Text className="font-bold text-sm truncate w-full" title={item.nom}>
+            {item.nom}
+          </Text>
+          {isRecette && (
+            <div className="mt-0.5">
+              <Badge
+                variant={typeBadgeVariant}
+                className="text-[9px] px-1.5 py-0 uppercase tracking-wider w-fit"
+              >
+                {typeLabel}
+              </Badge>
+            </div>
+          )}
+          {item.date && (
+            <Text className="text-xs text-text-muted truncate mt-0.5">
+              {formatDateFr(item.date)}
             </Text>
-            {isRecette && (
-              <div className="mt-0.5">
+          )}
+          {showSpectaclesInline && item.spectacles && item.spectacles.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-1.5">
+              {item.spectacles.map((s, idx) => (
                 <Badge
-                  variant={typeBadgeVariant}
-                  className="text-[9px] px-1.5 py-0 uppercase tracking-wider w-fit"
+                  key={idx}
+                  variant="outline"
+                  className="text-[9px] px-1.5 py-0 bg-gray-50 text-gray-600 border-gray-200"
                 >
-                  {typeLabel}
+                  {s}
                 </Badge>
-              </div>
-            )}
-            {item.date && (
-              <Text className="text-xs text-text-muted truncate mt-0.5">
-                {formatDateFr(item.date)}
-              </Text>
-            )}
-            {showSpectaclesInline && item.spectacles && item.spectacles.length > 0 && (
-              <div className="flex flex-wrap gap-1 mt-1.5">
-                {item.spectacles.map((s, idx) => (
-                  <Badge
-                    key={idx}
-                    variant="outline"
-                    className="text-[9px] px-1.5 py-0 bg-gray-50 text-gray-600 border-gray-200"
-                  >
-                    {s}
-                  </Badge>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 flex-shrink-0 w-full sm:w-auto mt-2 sm:mt-0 pt-2 sm:pt-0 border-t border-gray-50 sm:border-none">
-            <Text className="font-bold text-sm">{formatMontant(item.montant)}</Text>
-            {isRecette && (
-              <div className="flex items-center gap-2">
-                <Badge
-                  variant={isEnAttente ? "yellow" : "green"}
-                  className="text-[10px] px-2 py-0 text-center whitespace-nowrap"
-                >
-                  {isEnAttente ? "En attente" : "Payé"}
-                </Badge>
-                {isEnAttente && onValider && (
-                  <Tooltip label="Valider" delayDuration={0}>
-                    <button
-                      onClick={(e) => onValider(item.id, e)}
-                      className="text-green-600 hover:bg-green-50 p-1 rounded-full bg-white border border-gray-100 shadow-sm cursor-pointer transition-colors"
-                      title="Valider"
-                    >
-                      <FaCheck size={10} />
-                    </button>
-                  </Tooltip>
-                )}
-              </div>
-            )}
-            {(onEdit || onDelete) && (
-              <div className="flex items-center gap-2">
-                {onEdit && (
-                  <Tooltip label="Modifier" delayDuration={0}>
-                    <button
-                      onClick={(e) => onEdit(item.id, e)}
-                      className="text-blue-700 hover:bg-blue-50 p-1 rounded-full bg-white border border-gray-100 shadow-sm cursor-pointer transition-colors"
-                      title="Modifier"
-                    >
-                      <FaPen size={10} />
-                    </button>
-                  </Tooltip>
-                )}
-                {onDelete && (
-                  <Tooltip label="Supprimer" delayDuration={0}>
-                    <button
-                      onClick={(e) => onDelete(item.id, e)}
-                      className="text-red-600 hover:bg-red-50 p-1 rounded-full bg-white border border-gray-100 shadow-sm cursor-pointer transition-colors"
-                      title="Supprimer"
-                    >
-                      <FaTrash size={10} />
-                    </button>
-                  </Tooltip>
-                )}
-              </div>
-            )}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
+
+        <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 flex-shrink-0 w-full sm:w-auto mt-2 sm:mt-0 pt-2 sm:pt-0 border-t border-gray-50 sm:border-none">
+          <Text className="font-bold text-sm">{formatMontant(item.montant)}</Text>
+          {isRecette && (
+            <div className="flex items-center gap-2">
+              <Badge
+                variant={isEnAttente ? "yellow" : "green"}
+                className="text-[10px] px-2 py-0 text-center whitespace-nowrap"
+              >
+                {isEnAttente ? "En attente" : "Payé"}
+              </Badge>
+              {isEnAttente && onValider && (
+                <Tooltip label="Valider" delayDuration={0}>
+                  <button
+                    onClick={(e) => onValider(item.id, e)}
+                    className="text-green-600 hover:bg-green-50 p-1 rounded-full bg-white border border-gray-100 shadow-sm cursor-pointer transition-colors"
+                    title="Valider"
+                  >
+                    <FaCheck size={10} />
+                  </button>
+                </Tooltip>
+              )}
+            </div>
+          )}
+          {(onEdit || onDelete) && (
+            <div className="flex items-center gap-2">
+              {onEdit && (
+                <Tooltip label="Modifier" delayDuration={0}>
+                  <button
+                    onClick={(e) => onEdit(item.id, e)}
+                    className="text-blue-700 hover:bg-blue-50 p-1 rounded-full bg-white border border-gray-100 shadow-sm cursor-pointer transition-colors"
+                    title="Modifier"
+                  >
+                    <FaPen size={10} />
+                  </button>
+                </Tooltip>
+              )}
+              {onDelete && (
+                <Tooltip label="Supprimer" delayDuration={0}>
+                  <button
+                    onClick={(e) => onDelete(item.id, e)}
+                    className="text-red-600 hover:bg-red-50 p-1 rounded-full bg-white border border-gray-100 shadow-sm cursor-pointer transition-colors"
+                    title="Supprimer"
+                  >
+                    <FaTrash size={10} />
+                  </button>
+                </Tooltip>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
     </Card>
   );
 }

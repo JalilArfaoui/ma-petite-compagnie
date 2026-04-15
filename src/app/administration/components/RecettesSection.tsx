@@ -68,10 +68,6 @@ export function RecettesSection({
         </div>
       </div>
 
-      <NoteInfo className="mb-6">
-        Note : ces montants incluent les recettes en attente (vision prévisionnelle).
-      </NoteInfo>
-
       <FadeContainer>
         {recettesAffichees.map((item) => (
           <ItemFinancierCard key={item.id} item={item} onValider={validerRecette} />
