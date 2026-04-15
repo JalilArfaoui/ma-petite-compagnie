@@ -92,7 +92,7 @@ export function ContactTable() {
           )}
         </Stack>
       </Stack>
-      <div className="overflow-auto">
+      <div>
         <Table>
           <Table.Head>
             <Table.Row>
