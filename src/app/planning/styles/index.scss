@@ -20,6 +20,18 @@ body {
   margin-bottom: 24px;
   padding: 0 8px;
 
+  button {
+    min-height: 34px;
+    padding: 6px 10px;
+    font-size: 13px;
+    border-radius: 8px;
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
   .buttons-container {
     display: flex;
     flex-direction: row;
@@ -131,7 +143,7 @@ body {
   .calendar-day {
     height: 100%;
     min-height: 0;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .events-container {
@@ -140,9 +152,30 @@ body {
     -ms-overflow-style: none;
   }
 
+  .events-container:hover {
+    overflow: visible;
+  }
+
   .events-container::-webkit-scrollbar {
     width: 0;
     height: 0;
+  }
+
+  .event-tile {
+    position: relative;
+  }
+
+  .event-tile:hover {
+    z-index: 8;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.2);
+  }
+
+  .event-tile:hover .event-time,
+  .event-tile:hover .event-name {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    word-break: break-word;
   }
 
 }
@@ -272,6 +305,7 @@ body {
   align-items: center;
   justify-content: center;
   font-weight: 600;
+  margin: 0 auto;
 }
 
 .day-number {
@@ -283,6 +317,11 @@ body {
   width: 100%;
   text-align: center;
   margin: 0;
+}
+
+.days.weekly .calendar-day.today .day-number {
+  margin-top: 11px;
+  margin-bottom: 11px;
 }
 
 .events-container {

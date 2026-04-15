@@ -236,9 +236,9 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }: EventC
           <Heading as="h1" className="month-year">
             {MONTHS[month - 1]} {year}
           </Heading>
-          <Button variant="outline" onClick={goToToday}>
+          {/* <Button variant="outline" onClick={goToToday}>
             <Heading as="h5"> Aujourd'hui</Heading>
-          </Button>
+          </Button> */}
         </div>
 
         <div className="buttons-container">
