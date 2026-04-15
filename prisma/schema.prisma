@@ -75,7 +75,7 @@ enum Role {
 
 model ListeContact {
   id Int @id @default(autoincrement())
-  nom String
+  nom String @unique
   contacts Contact[] 
 }
 
@@ -86,6 +86,7 @@ model Contact {
   role    Role?
   email String? @unique
   tel String?
+
   notes String?
   ville String?
   lieu String?
