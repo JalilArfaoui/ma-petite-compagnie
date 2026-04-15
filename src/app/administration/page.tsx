@@ -52,18 +52,26 @@ export default function PageAdministration() {
             titre="Trésorerie actuelle"
             valeur={formatMontant(tresorerieActuelle)}
             sousTexte=""
+            href="#"
           />
           <IndicateurCle
             titre="Recettes"
             valeur={formatMontant(totalRecettes)}
             sousTexte="réalisées"
+            href="/administration/recettes"
           />
           <IndicateurCle
             titre="Dépenses"
             valeur={formatMontant(totalDepenses)}
             sousTexte="payées"
+            href="/administration/depenses"
           />
-          <IndicateurCle titre="Spectacles en cours" valeur="5" sousTexte="spectacles actifs" />
+          <IndicateurCle
+            titre="Gestion des cachets"
+              valeur="5"
+              sousTexte="cachets en attente"
+              href="/administration/gestion-cachets"
+          />
         </SimpleGrid>
 
         {/* section principale avec les 3 colonnes */}

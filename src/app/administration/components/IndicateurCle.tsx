@@ -1,15 +1,17 @@
 "use client";
 
-import { Text, Card } from "@/components/ui";
+import { Text, Card, Link } from "@/components/ui";
 
 export function IndicateurCle({
   titre,
   valeur,
   sousTexte,
+  href,
 }: {
   titre: string;
   valeur: React.ReactNode;
   sousTexte: string;
+  href?: string;
 }) {
   // Fonction pour isoler les centimes et réduire leur taille visuelle
   const renderValeur = () => {
@@ -28,7 +30,7 @@ export function IndicateurCle({
     return valeur;
   };
 
-  return (
+  const content = (
     <Card
       title={titre}
       role="button"
@@ -41,4 +43,14 @@ export function IndicateurCle({
       </div>
     </Card>
   );
+
+  if (href) {
+    return (
+      <Link href={href} className="no-underline block h-full">
+        {content}
+      </Link>
+    );
+  }
+
+  return content;
 }
