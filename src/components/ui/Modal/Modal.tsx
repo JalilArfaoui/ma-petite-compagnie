@@ -28,16 +28,16 @@ const ModalOverlay = React.forwardRef<
 ModalOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
 const modalContentVariants = cva(
-  "fixed overflow-auto left-[50%] top-[50%] z-50 grid w-full translate-x-[-50%] translate-y-[-50%] gap-0 border bg-white shadow-xl duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-[24px]",
+  "max-h-[95vh] fixed overflow-auto left-[50%] top-[50%] z-50 grid w-full translate-x-[-50%] translate-y-[-50%] gap-0 border bg-white shadow-xl duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-[24px]",
   {
     variants: {
       size: {
-        xs: "max-w-[320px] max-h-[100vh]",
-        sm: "max-w-[480px] max-h-[100vh]",
-        md: "max-w-[640px] max-h-[100vh]",
-        lg: "max-w-[800px] max-h-[100vh]",
-        xl: "max-w-[1024px] max-h-[100vh]",
-        full: "max-w-none w-[95vw] max-h-[95vh]",
+        xs: "max-w-[320px]",
+        sm: "max-w-[480px]",
+        md: "max-w-[640px]",
+        lg: "max-w-[800px]",
+        xl: "max-w-[1024px]",
+        full: "max-w-none w-[95vw]",
       },
     },
     defaultVariants: {
