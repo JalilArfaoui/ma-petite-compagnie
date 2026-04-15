@@ -21,6 +21,7 @@ import { Recette } from "../components/types";
 import { useGestionFinanciere } from "../hooks/useGestionFinanciere";
 
 export default function RecettesPage() {
+  // TODO(BDD): Remplacer RECETTES_DATA par un appel à la base de données (ex: Server Action ou API)
   const {
     items: recettes,
     setItems: setRecettes,
@@ -45,6 +46,7 @@ export default function RecettesPage() {
   }, [recettesTriees, showFactures, showSubventions]);
 
   const handleAddRecette = (data: DonneesAjoutFinancier) => {
+    // TODO(BDD): Envoyer les données à la base de données via une mutation (ex: prisma.recette.create)
     handleAdd(data, (d) => ({
       id: `r-temp-${Date.now()}`,
       nom: d.nom,
@@ -58,6 +60,7 @@ export default function RecettesPage() {
   };
 
   const handleEditRecette = (data: DonneesAjoutFinancier) => {
+    // TODO(BDD): Mettre à jour les données en base de données (ex: prisma.recette.update)
     handleEdit(data, (d) => ({
       id: d.id as string,
       nom: d.nom,
@@ -72,6 +75,7 @@ export default function RecettesPage() {
 
   const validerRecette = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
+    // TODO(BDD): Mettre à jour le statut en base de données (ex: prisma.recette.update)
     setRecettes((prev) => prev.map((r) => (r.id === id ? { ...r, statut: "paye" } : r)));
     toaster.success({
       title: "Recette validée",

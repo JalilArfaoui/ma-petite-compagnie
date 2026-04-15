@@ -33,6 +33,7 @@ export function useGestionFinanciere<
 
   const handleDelete = () => {
     if (!itemASupprimer) return;
+    // TODO(BDD): Supprimer l'item en base de données (ex: prisma.depense.delete)
     setItems((prev) => prev.filter((item) => item.id !== itemASupprimer.id));
     setItemASupprimer(null);
     toaster.success({ title: `${nomType} supprimé${nomType.endsWith("e") ? "e" : ""}` });

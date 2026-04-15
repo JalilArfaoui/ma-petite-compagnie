@@ -9,6 +9,7 @@ import { Depense } from "../components/types";
 import { useGestionFinanciere } from "../hooks/useGestionFinanciere";
 
 export default function DepensesPage() {
+  // TODO(BDD): Remplacer DEPENSES_DATA par un appel à la base de données (ex: Server Action ou API)
   const {
     items: depenses,
     itemsTries: depensesTries,
@@ -25,6 +26,7 @@ export default function DepensesPage() {
   const nomsSpectacles = SPECTACLES_DATA.map((s) => s.nom);
 
   const handleAddDepense = (data: DonneesAjoutFinancier) => {
+    // TODO(BDD): Envoyer les données à la base de données via une mutation (ex: prisma.depense.create)
     handleAdd(data, (d) => ({
       id: `d-temp-${Date.now()}`,
       nom: d.nom,
@@ -36,6 +38,7 @@ export default function DepensesPage() {
   };
 
   const handleEditDepense = (data: DonneesAjoutFinancier) => {
+    // TODO(BDD): Mettre à jour les données en base de données (ex: prisma.depense.update)
     handleEdit(data, (d) => ({
       id: d.id as string,
       nom: d.nom,

@@ -16,6 +16,7 @@ import { RECETTES_DATA, DEPENSES_DATA, SPECTACLES_DATA } from "./test_data";
 // --- Page Principale ---
 
 export default function PageAdministration() {
+  // TODO(BDD): Fetcher les données réelles depuis la base de données (ex: prisma.recette.findMany)
   const [recettes, setRecettes] = useState<Recette[]>(RECETTES_DATA);
   const [depenses, setDepenses] = useState<Depense[]>(DEPENSES_DATA);
 
