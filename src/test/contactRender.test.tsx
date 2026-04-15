@@ -34,6 +34,5 @@ describe("Test des pages pour le contact", () => {
     expect(await screen.getByDisplayValue("null")).toBeTruthy();
     expect(await screen.getByDisplayValue("null")).toBeTruthy();
     expect(await screen.getByDisplayValue("null")).toBeTruthy();
-
   });
 });
