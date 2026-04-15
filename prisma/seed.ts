@@ -404,6 +404,156 @@ async function main() {
   }
   console.log(`✅ ${reservationsData.length} réservations d'objets`);
 
+  // -- Utilisateurs (Membres) --
+  const usersData = [
+    { email: "jean.dupont@theatre.fr", password: "password", nom: "Dupont", prenom: "Jean" },
+    { email: "marie.martin@theatre.fr", password: "password", nom: "Martin", prenom: "Marie" },
+    { email: "pierre.bernard@theatre.fr", password: "password", nom: "Bernard", prenom: "Pierre" },
+    { email: "sophie.leclerc@theatre.fr", password: "password", nom: "Leclerc", prenom: "Sophie" },
+    { email: "thomas.gaston@theatre.fr", password: "password", nom: "Gaston", prenom: "Thomas" },
+    { email: "claire.laurent@theatre.fr", password: "password", nom: "Laurent", prenom: "Claire" },
+  ];
+
+  const users = [];
+  for (const u of usersData) {
+    const existing = await prisma.user.findFirst({
+      where: { email: u.email },
+    });
+    if (existing) {
+      users.push(existing);
+    } else {
+      users.push(await prisma.user.create({ data: u }));
+    }
+  }
+  console.log(`✅ ${users.length} utilisateurs créés`);
+
+  // -- CompanyMembers --
+  const companyMembersData = [
+    { userId: users[0].id, compagnieId: compagnies[0].id },
+    { userId: users[1].id, compagnieId: compagnies[0].id },
+    { userId: users[2].id, compagnieId: compagnies[0].id },
+    { userId: users[3].id, compagnieId: compagnies[1].id },
+    { userId: users[4].id, compagnieId: compagnies[2].id },
+    { userId: users[5].id, compagnieId: compagnies[0].id },
+  ];
+
+  const companyMembers = [];
+  for (const m of companyMembersData) {
+    const existing = await prisma.companyMember.findFirst({
+      where: { userId: m.userId, compagnieId: m.compagnieId },
+    });
+    if (existing) {
+      companyMembers.push(existing);
+    } else {
+      companyMembers.push(await prisma.companyMember.create({ data: m }));
+    }
+  }
+  console.log(`✅ ${companyMembers.length} membres de compagnie`);
+
+  // -- Cachets --
+  const cachetData = [
+    // Cachets pour "Le Songe d'une nuit d'été"
+    {
+      membreId: companyMembers[0].id,
+      spectacleId: spectacles[0].id,
+      date: new Date("2026-04-15T20:00:00"),
+      montant: "500€",
+      note: "Rôle de Puck",
+    },
+    {
+      membreId: companyMembers[1].id,
+      spectacleId: spectacles[0].id,
+      date: new Date("2026-04-15T20:00:00"),
+      montant: "600€",
+      note: "Rôle de Hermia",
+    },
+    {
+      membreId: companyMembers[2].id,
+      spectacleId: spectacles[0].id,
+      date: new Date("2026-04-22T20:00:00"),
+      montant: "550€",
+      note: "Rôle de Oberon",
+    },
+
+    // Cachets pour "Carmen revisitée"
+    {
+      membreId: companyMembers[1].id,
+      spectacleId: spectacles[1].id,
+      date: new Date("2026-05-10T19:30:00"),
+      montant: "750€",
+      note: "Danseuse principale - Carmen",
+    },
+    {
+      membreId: companyMembers[3].id,
+      spectacleId: spectacles[1].id,
+      date: new Date("2026-05-10T19:30:00"),
+      montant: "650€",
+      note: "Danseuse - José",
+    },
+    {
+      membreId: companyMembers[0].id,
+      spectacleId: spectacles[1].id,
+      date: new Date("2026-05-10T19:30:00"),
+      montant: "700€",
+      note: "Interprète supplémentaire",
+    },
+
+    // Cachets pour "Pestacle"
+    {
+      membreId: companyMembers[2].id,
+      spectacleId: spectacles[2].id,
+      date: new Date("2026-06-01T21:00:00"),
+      montant: "300€",
+      note: "Musicien - guitare",
+    },
+    {
+      membreId: companyMembers[5].id,
+      spectacleId: spectacles[2].id,
+      date: new Date("2026-06-01T21:00:00"),
+      montant: "350€",
+      note: "Musicienne - violon",
+    },
+
+    // Cachets pour "Lumière noire"
+    {
+      membreId: companyMembers[4].id,
+      spectacleId: spectacles[3].id,
+      date: new Date("2026-07-15T20:30:00"),
+      montant: "1000€",
+      note: "Technicien - équipements lumière",
+    },
+    {
+      membreId: companyMembers[1].id,
+      spectacleId: spectacles[3].id,
+      date: new Date("2026-07-15T20:30:00"),
+      montant: "800€",
+      note: "Acrobate/contorsionniste",
+    },
+    {
+      membreId: companyMembers[0].id,
+      spectacleId: spectacles[3].id,
+      date: new Date("2026-07-15T20:30:00"),
+      montant: "900€",
+      note: "Jongleur",
+    },
+  ];
+
+  await prisma.cachet.deleteMany({});
+
+  for (const c of cachetData) {
+    const existing = await prisma.cachet.findFirst({
+      where: {
+        membreId: c.membreId,
+        spectacleId: c.spectacleId,
+        date: c.date,
+      },
+    });
+    if (!existing) {
+      await prisma.cachet.create({ data: c });
+    }
+  }
+  console.log(`✅ ${cachetData.length} cachets`);
+
   console.log("Seed terminé !");
 }
 

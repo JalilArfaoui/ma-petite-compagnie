@@ -87,6 +87,8 @@ model CompanyMember {
   droitAccesPlanning         Boolean @default(false)
   droitGestionPlanning       Boolean @default(false)
 
+  cachets Cachet[]
+
   @@unique([userId, compagnieId])
 }
 // Partie groupe Communication
@@ -96,15 +98,6 @@ enum Role {
   PARTENAIRE 
 }
 
-model Contact {
-  id    Int     @id @default(autoincrement())
-  nom String 
-  prenom String
-  role    Role?
-  email String? @unique
-  tel String? 
-  date_creation DateTime @default(now())
-}
 // partie groupe production
 
 enum StatutSpectacle {
@@ -161,6 +154,7 @@ model Spectacle {
   ficheTechnique         FicheTechnique?
   representations        Representation[]
   besoins                BesoinSpectacle[]
+  cachets                Cachet[]
 }
 
 model BesoinSpectacle {
@@ -209,5 +203,16 @@ model ReservationObjet {
   objet            Objet          @relation(fields: [objetId], references: [id], onDelete: Cascade)
   representationId Int
   representation   Representation @relation(fields: [representationId], references: [id], onDelete: Cascade)
+}
+
+model Cachet {
+  id           Int      @id @default(autoincrement())
+  membreId     Int
+  membre       CompanyMember  @relation(fields: [membreId], references: [id], onDelete: Cascade)
+  date         DateTime @default(now())
+  spectacleId  Int
+  spectacle    Spectacle @relation(fields: [spectacleId], references: [id], onDelete: Cascade)
+  montant      String
+  note         String?
 }
 

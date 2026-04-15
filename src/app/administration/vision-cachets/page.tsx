@@ -1,39 +1,46 @@
 "use client";
 
 import { Card, Table, Heading } from "@/components/ui";
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { getCachets } from "./actions";
 
-type Spectacle = "Hamlet" | "Le Roi Lion" | "Romeo et Juliette";
-
+//seule la note est optionnelle, toutes les autres clés sont obligatoires donc pas de null permis
 type Cachet = {
   id: number;
+  membreId: number;
+  membre: { user: { nom: string | null; prenom: string | null } };
   date: string;
-  montant: number;
-  spectacle: Spectacle;
+  montant: string;
+  spectacleId: number;
+  spectacle: { titre: string };
+  note?: string | null;
 };
 
-//dictionnaire temporaire le temps que la bdd soit opérationnelle
-const CACHETS_DATA: Cachet[] = [
-  { id: 1, date: "2024-01-18", montant: 150, spectacle: "Le Roi Lion" },
-  { id: 2, date: "2024-03-21", montant: 300, spectacle: "Hamlet" },
-  { id: 3, date: "2024-06-04", montant: 200, spectacle: "Romeo et Juliette" },
-  { id: 4, date: "2024-07-15", montant: 180, spectacle: "Le Roi Lion" },
-  { id: 5, date: "2024-08-07", montant: 250, spectacle: "Hamlet" },
-  { id: 6, date: "2024-09-24", montant: 120, spectacle: "Le Roi Lion" },
-];
-
 export default function VisionCachetsPage() {
-  const [spectacleFilter, setSpectacleFilter] = useState<"tous" | Spectacle>("tous");
+  const [cachets, setCachets] = useState<Cachet[]>([]);
+  const [spectacleFilter, setSpectacleFilter] = useState<"tous" | string>("tous");
   const [sortBy, setSortBy] = useState<
     "none" | "dateCroissante" | "dateDecroissante" | "montantCroissant" | "montantDecroissant"
   >("none"); //pour avoir un seul tri actif à la fois
 
+  useEffect(() => {
+    getCachets().then((cachets) => {
+      const cachetFormatted = cachets.map((c) => ({
+        ...c,
+        //convertit date de type Date en date de type string
+        //simplement parce que je prefère utiliser string plutôt que Date pour la clé date
+        date: typeof c.date === "string" ? c.date : c.date.toISOString().split("T")[0],
+      }));
+      setCachets(cachetFormatted);
+    });
+  }, []);
+
   //filtrage + tri
   const filteredAndSorted = useMemo(() => {
-    let result = [...CACHETS_DATA];
+    let result = [...cachets];
 
     if (spectacleFilter !== "tous") {
-      result = result.filter((cachet) => cachet.spectacle === spectacleFilter);
+      result = result.filter((cachet) => cachet.spectacle.titre === spectacleFilter);
     }
 
     switch (sortBy) {
@@ -44,10 +51,10 @@ export default function VisionCachetsPage() {
         result.sort((a, b) => b.date.localeCompare(a.date));
         break;
       case "montantCroissant":
-        result.sort((a, b) => a.montant - b.montant);
+        result.sort((a, b) => Number(a.montant) - Number(b.montant));
         break;
       case "montantDecroissant":
-        result.sort((a, b) => b.montant - a.montant);
+        result.sort((a, b) => Number(b.montant) - Number(a.montant));
         break;
     }
 
@@ -67,11 +74,11 @@ export default function VisionCachetsPage() {
 
         <select
           value={spectacleFilter}
-          onChange={(e) => setSpectacleFilter(e.target.value as "tous" | Spectacle)}
+          onChange={(e) => setSpectacleFilter(e.target.value as "tous" | string)}
           className="p-2 border border-slate-300 rounded-md w-full"
         >
           <option value="tous">Tous les spectacles</option>
-          {[...new Set(CACHETS_DATA.map((c) => c.spectacle))].map((s) => (
+          {[...new Set(cachets.map((c) => c.spectacle.titre))].map((s) => (
             <option key={s} value={s}>
               {s}
             </option>
@@ -104,6 +111,7 @@ export default function VisionCachetsPage() {
               <Table.Head>
                 <Table.Row>
                   <Table.Header>Numero</Table.Header>
+                  <Table.Header>Membre</Table.Header>
                   <Table.Header>Date</Table.Header>
                   <Table.Header>Montant</Table.Header>
                   <Table.Header>Spectacle</Table.Header>
@@ -113,9 +121,12 @@ export default function VisionCachetsPage() {
                 {filteredAndSorted.map((cachet) => (
                   <Table.Row key={cachet.id}>
                     <Table.Cell>{cachet.id}</Table.Cell>
+                    <Table.Cell>
+                      {cachet.membre.user.prenom} {cachet.membre.user.nom}
+                    </Table.Cell>
                     <Table.Cell>{new Date(cachet.date).toLocaleDateString("fr-FR")}</Table.Cell>
-                    <Table.Cell>{cachet.montant} €</Table.Cell>
-                    <Table.Cell>{cachet.spectacle}</Table.Cell>
+                    <Table.Cell>{cachet.montant}</Table.Cell>
+                    <Table.Cell>{cachet.spectacle.titre}</Table.Cell>
                   </Table.Row>
                 ))}
               </Table.Body>

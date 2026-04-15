@@ -1,44 +1,47 @@
 "use client";
 
 import { Button, Card, Table, Heading } from "@/components/ui";
+import { useState, useEffect } from "react";
+import { getCachets } from "./actions";
 
-import { useState } from "react";
+//dois corriger bug symbole € ne s'affichant pas si modification d'un cachet
 
-const NOM_SPECTACLE = [
-  { value: "romeoetjuliette", label: "Roméo et Juliette" },
-  { value: "hamlet", label: "Hamlet" },
-  { value: "leroilion", label: "Le Roi Lion" },
-] as const;
-
-const MEMBRES_TROUPE = [
-  { value: "alicedupont", label: "Alice Dupont" },
-  { value: "bernardmartin", label: "Bernard Martin" },
-  { value: "clairedurand", label: "Claire Durand" },
-  { value: "davidlefevre", label: "David Lefevre" },
-  { value: "emmamoreau", label: "Emma Moreau" },
-] as const;
-
+//seule la note est optionnelle, toutes les autres clés sont obligatoires donc pas de null permis
 type Cachet = {
   id: number;
-  membre: string;
+  membreId: number;
+  membre: { user: { nom: string | null; prenom: string | null } };
   date: string;
-  montant: number;
-  spectacle: string;
-  note?: string;
+  montant: string;
+  spectacleId: number;
+  spectacle: { titre: string };
+  note?: string | null;
 };
 
 export default function PageCachets() {
   const [cachets, setCachets] = useState<Cachet[]>([]);
-  const [membre, setMembre] = useState("");
+  const [membreId, setMembreId] = useState<number | null>(null);
   const [date, setDate] = useState("");
-  const [montant, setMontant] = useState(110);
-  const [spectacle, setSpectacle] = useState("");
+  const [montant, setMontant] = useState("");
+  const [spectacleId, setSpectacleId] = useState<number | null>(null);
   const [note, setNote] = useState("");
   const [editId, setEditId] = useState<number | null>(null);
-  const [filtreMembre, setFiltreMembre] = useState("");
-  const [filtreSpectacle, setFiltreSpectacle] = useState("");
+  const [filtreMembre, setFiltreMembre] = useState<number | null>(null);
+  const [filtreSpectacle, setFiltreSpectacle] = useState<number | null>(null);
   const [tri, setTri] = useState<"date" | "montant">("date");
   const [errors, setErrors] = useState<{ [key: string]: string }>({}); //stocker une erreur par champ
+
+  useEffect(() => {
+    getCachets().then((cachets) => {
+      const cachetFormatted = cachets.map((c) => ({
+        ...c,
+        //convertit date de type Date en date de type string
+        //simplement parce que je prefère utiliser string plutôt que Date pour la clé date
+        date: typeof c.date === "string" ? c.date : c.date.toISOString().split("T")[0],
+      }));
+      setCachets(cachetFormatted);
+    });
+  }, []);
 
   function ajouterCachet(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -46,7 +49,7 @@ export default function PageCachets() {
     const foundErrors: { [key: string]: string } = {};
 
     //validation obligatoire du membre
-    if (!membre) {
+    if (!membreId) {
       foundErrors.membre = "Un membre doit être sélectionné";
     }
 
@@ -61,13 +64,13 @@ export default function PageCachets() {
     }
 
     //pas forcement nécéssaire puisque déjà géré dans le code de l'input, mais mieux vaut être prévoyant
-    if (montant < 110) {
+    if (Number(montant) < 110) {
       foundErrors.montant =
         "Le montant ne peux pas être inférieur au minimum légal (smic horaire * 12, soit 110 euros)";
     }
 
     //validation obligatoire du spectacle
-    if (!spectacle.trim()) {
+    if (!spectacleId) {
       foundErrors.spectacle = "Un spectacle doit être choisi";
     }
 
@@ -85,27 +88,24 @@ export default function PageCachets() {
 
     if (editId !== null) {
       //edition cachet
+      // On est sûr que membreId et spectacleId ne sont pas null grâce à la validation au-dessus
       setCachets(
-        cachets.map((c) => (c.id === editId ? { ...c, membre, date, montant, spectacle, note } : c))
+        cachets.map((c) =>
+          c.id === editId
+            ? { ...c, membreId: membreId!, spectacleId: spectacleId!, date, montant, note }
+            : c
+        )
       );
       setEditId(null);
     } else {
-      //ajout cachet
-      const nouveauCachet: Cachet = {
-        id: Date.now(),
-        membre,
-        date,
-        montant,
-        spectacle,
-        note,
-      };
-      setCachets([...cachets, nouveauCachet]);
+      //ajout cachet - à implémenter avec une action serveur
+      console.log("Création cachet:", { membreId, date, montant, spectacleId, note });
     }
 
-    setMembre("");
+    setMembreId(null);
     setDate("");
-    setMontant(110);
-    setSpectacle("");
+    setMontant("");
+    setSpectacleId(null);
     setNote("");
   }
 
@@ -116,27 +116,27 @@ export default function PageCachets() {
 
   function editerCachet(c: Cachet) {
     setEditId(c.id);
-    setMembre(c.membre);
+    setMembreId(c.membreId);
     setDate(c.date);
     setMontant(c.montant);
-    setSpectacle(c.spectacle);
+    setSpectacleId(c.spectacleId);
     setNote(c.note || "");
   }
 
   //filtrage par membre (prioritaire)
   const cachetsFiltresParMembre = filtreMembre
-    ? cachets.filter((c) => c.membre === filtreMembre)
+    ? cachets.filter((c) => c.membreId === filtreMembre)
     : cachets;
 
   //filtrage par spectacle (agit uniquement sur cachets de membre x)
   const cachetsFiltres = filtreSpectacle
-    ? cachetsFiltresParMembre.filter((c) => c.spectacle === filtreSpectacle)
+    ? cachetsFiltresParMembre.filter((c) => c.spectacleId === filtreSpectacle)
     : cachetsFiltresParMembre;
 
   //filtrage par date (décroissant) ou montant (décroissant), (agit uniquement sur cachets de membre x)
   const cachetsTries = [...cachetsFiltres].sort((a, b) => {
     if (tri === "date") return b.date.localeCompare(a.date);
-    if (tri === "montant") return b.montant - a.montant;
+    if (tri === "montant") return Number(b.montant) - Number(a.montant);
     return 0;
   });
 
@@ -157,16 +157,18 @@ export default function PageCachets() {
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
               id="membre"
-              value={membre}
-              onChange={(e) => setMembre(e.target.value)}
+              value={membreId?.toString() || ""}
+              onChange={(e) => setMembreId(Number(e.target.value))}
             >
               <option value=""> Choisir un membre équipe </option>
-              {MEMBRES_TROUPE.map((membre) => (
-                <option key={membre.value} value={membre.value}>
-                  {" "}
-                  {membre.label}{" "}
-                </option>
-              ))}
+              {[...new Set(cachets.map((c) => c.membreId))].map((id) => {
+                const cachet = cachets.find((c) => c.membreId === id);
+                return (
+                  <option key={id} value={id}>
+                    {cachet?.membre.user.prenom} {cachet?.membre.user.nom}
+                  </option>
+                );
+              })}
             </select>
           </div>
 
@@ -194,7 +196,7 @@ export default function PageCachets() {
               type="number"
               min={110}
               value={montant}
-              onChange={(e) => setMontant(Number(e.target.value))}
+              onChange={(e) => setMontant(e.target.value)}
             />
           </div>
           <div>
@@ -206,16 +208,18 @@ export default function PageCachets() {
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
               id="spectacle"
-              value={spectacle}
-              onChange={(e) => setSpectacle(e.target.value)}
+              value={spectacleId?.toString() || ""}
+              onChange={(e) => setSpectacleId(Number(e.target.value))}
             >
               <option value=""> Choisir un spectacle </option>
-              {NOM_SPECTACLE.map((spectacle) => (
-                <option key={spectacle.value} value={spectacle.value}>
-                  {" "}
-                  {spectacle.label}{" "}
-                </option>
-              ))}
+              {[...new Set(cachets.map((c) => c.spectacleId))].map((id) => {
+                const cachet = cachets.find((c) => c.spectacleId === id);
+                return (
+                  <option key={id} value={id}>
+                    {cachet?.spectacle.titre}
+                  </option>
+                );
+              })}
             </select>
           </div>
           <div>
@@ -241,9 +245,10 @@ export default function PageCachets() {
               type="button"
               onClick={() => {
                 setEditId(null);
-                setMembre("");
-                setMontant(110);
-                setSpectacle("");
+                setMembreId(null);
+                setDate("");
+                setMontant("");
+                setSpectacleId(null);
                 setNote("");
                 setErrors({});
               }}
@@ -264,15 +269,18 @@ export default function PageCachets() {
             <label>Filtrer par membre</label>
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
-              value={filtreMembre}
-              onChange={(e) => setFiltreMembre(e.target.value)}
+              value={filtreMembre?.toString() || ""}
+              onChange={(e) => setFiltreMembre(e.target.value ? Number(e.target.value) : null)}
             >
               <option value="">Tous les membres</option>
-              {MEMBRES_TROUPE.map((nom) => (
-                <option key={nom.value} value={nom.value}>
-                  {nom.label}
-                </option>
-              ))}
+              {[...new Set(cachets.map((c) => c.membreId))].map((id) => {
+                const cachet = cachets.find((c) => c.membreId === id);
+                return (
+                  <option key={id} value={id}>
+                    {cachet?.membre.user.prenom} {cachet?.membre.user.nom}
+                  </option>
+                );
+              })}
             </select>
           </div>
 
@@ -280,15 +288,18 @@ export default function PageCachets() {
             <label>Filtrer par spectacle</label>
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
-              value={filtreSpectacle}
-              onChange={(e) => setFiltreSpectacle(e.target.value)}
+              value={filtreSpectacle?.toString() || ""}
+              onChange={(e) => setFiltreSpectacle(e.target.value ? Number(e.target.value) : null)}
             >
               <option value="">Tous</option>
-              {NOM_SPECTACLE.map((spectacle) => (
-                <option key={spectacle.value} value={spectacle.value}>
-                  {spectacle.label}
-                </option>
-              ))}
+              {[...new Set(cachets.map((c) => c.spectacleId))].map((id) => {
+                const cachet = cachets.find((c) => c.spectacleId === id);
+                return (
+                  <option key={id} value={id}>
+                    {cachet?.spectacle.titre}
+                  </option>
+                );
+              })}
             </select>
           </div>
 
@@ -324,13 +335,11 @@ export default function PageCachets() {
               {cachetsTries.map((c) => (
                 <Table.Row key={c.id}>
                   <Table.Cell>
-                    {MEMBRES_TROUPE.find((m) => m.value === c.membre)?.label ?? c.membre}
+                    {c.membre.user.prenom} {c.membre.user.nom}
                   </Table.Cell>
                   <Table.Cell>{new Date(c.date).toLocaleDateString("fr-FR")}</Table.Cell>
-                  <Table.Cell>{c.montant} €</Table.Cell>
-                  <Table.Cell>
-                    {NOM_SPECTACLE.find((s) => s.value === c.spectacle)?.label ?? c.spectacle}
-                  </Table.Cell>
+                  <Table.Cell>{c.montant}</Table.Cell>
+                  <Table.Cell>{c.spectacle.titre}</Table.Cell>
                   <Table.Cell>{c.note || "-"}</Table.Cell>
                   <Table.Cell>
                     <Button
