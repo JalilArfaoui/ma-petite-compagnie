@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Modal, Button, Select, Badge, Switch, Text, Input, Alert, Link } from "@/components/ui";
+import { Modal, Button, Select, Badge, Switch, Text, Input, Alert, Link, toaster } from "@/components/ui";
 import { FaPlus, FaTimes, FaInfoCircle } from "react-icons/fa";
 
 /**
@@ -78,6 +78,17 @@ export function ModalAjoutRapide({
 
   const handleRemoveSpectacle = (val: string) => {
     setSelectedSpectacles(selectedSpectacles.filter((s) => s !== val));
+  };
+
+  const handleTypeRecetteChange = (type: "facture" | "financement") => {
+    if (isEdition) {
+      toaster.error({
+        title: "Modification impossible",
+        description: "Le type d'une recette ne peut pas être modifié en édition.",
+      });
+      return;
+    }
+    setTypeRecette(type);
   };
 
   const resetFormulaire = () => {
@@ -166,23 +177,25 @@ export function ModalAjoutRapide({
               <div className="flex bg-slate-100 p-1 rounded-lg">
                 <button
                   type="button"
-                  onClick={() => setTypeRecette("financement")}
+                  onClick={() => handleTypeRecetteChange("financement")}
+                  aria-disabled={isEdition}
                   className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all cursor-pointer ${
                     typeRecette === "financement"
                       ? "bg-white shadow-sm text-gray-900"
                       : "text-gray-500 hover:text-gray-700"
-                  }`}
+                  } ${isEdition ? "opacity-50 cursor-not-allowed hover:text-gray-500" : ""}`}
                 >
                   Subvention
                 </button>
                 <button
                   type="button"
-                  onClick={() => setTypeRecette("facture")}
+                  onClick={() => handleTypeRecetteChange("facture")}
+                  aria-disabled={isEdition}
                   className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all cursor-pointer ${
                     typeRecette === "facture"
                       ? "bg-white shadow-sm text-gray-900"
                       : "text-gray-500 hover:text-gray-700"
-                  }`}
+                  } ${isEdition ? "opacity-50 cursor-not-allowed hover:text-gray-500" : ""}`}
                 >
                   Facture
                 </button>

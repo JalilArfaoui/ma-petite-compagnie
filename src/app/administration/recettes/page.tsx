@@ -148,12 +148,16 @@ export default function RecettesPage() {
                 key={item.id}
                 item={item}
                 onValider={validerRecette}
-                onEdit={(id, e) => {
-                  e.stopPropagation();
-                  const cible = recettes.find((r) => r.id === id);
-                  if (!cible) return;
-                  setRecetteEnEdition(cible);
-                }}
+                onEdit={
+                  item.type === "facture"
+                    ? undefined
+                    : (id, e) => {
+                        e.stopPropagation();
+                        const cible = recettes.find((r) => r.id === id);
+                        if (!cible) return;
+                        setRecetteEnEdition(cible);
+                      }
+                }
                 onDelete={(id, e) => {
                   e.stopPropagation();
                   const cible = recettes.find((r) => r.id === id);
