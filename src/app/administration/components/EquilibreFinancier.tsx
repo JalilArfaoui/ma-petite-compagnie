@@ -49,7 +49,7 @@ export function EquilibreFinancier({ spectacles }: { spectacles: SpectacleEquili
         ))}
       </FadeContainer>
 
-      <VoirToutLink />
+      <VoirToutLink href="/administration" />
     </Card>
   );
 }

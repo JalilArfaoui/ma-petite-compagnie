@@ -96,7 +96,7 @@ export function RecettesSection({
         )}
       </FadeContainer>
 
-      <VoirToutLink />
+      <VoirToutLink href="/administration/recettes" />
     </Card>
   );
 }

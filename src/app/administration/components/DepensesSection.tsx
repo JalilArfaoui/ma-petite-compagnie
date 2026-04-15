@@ -68,7 +68,7 @@ export function DepensesSection({
         )}
       </FadeContainer>
 
-      <VoirToutLink />
+      <VoirToutLink href="/administration/depenses" />
     </Card>
   );
 }

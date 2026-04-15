@@ -1,7 +1,7 @@
 "use client";
 
 import { Text, Badge, Tooltip, Card, Link, Alert } from "@/components/ui";
-import { FaCheck, FaInfoCircle } from "react-icons/fa";
+import { FaCheck, FaInfoCircle, FaPen, FaTrash } from "react-icons/fa";
 import { formatDateFr, formatMontant } from "../utils";
 import { Recette, Depense } from "./types";
 
@@ -38,11 +38,11 @@ export function FadeContainer({ children }: { children: React.ReactNode }) {
 }
 
 // bouton "voir tout" en bas des sections
-export function VoirToutLink() {
+export function VoirToutLink({ href, label = "Voir tout" }: { href: string; label?: string }) {
   return (
     <div className="text-center mt-4">
-      <Link href="#" className="text-sm font-semibold">
-        Voir tout
+      <Link href={href} className="text-sm font-semibold">
+        {label}
       </Link>
     </div>
   );
@@ -76,9 +76,13 @@ function isRecetteType(item: Recette | Depense): item is Recette {
 export function ItemFinancierCard({
   item,
   onValider,
+  onEdit,
+  onDelete,
 }: {
   item: Recette | Depense;
   onValider?: (id: string, e: React.MouseEvent) => void;
+  onEdit?: (id: string, e: React.MouseEvent) => void;
+  onDelete?: (id: string, e: React.MouseEvent) => void;
 }) {
   const isRecette = isRecetteType(item);
   const recette = isRecette ? item : null;
@@ -136,6 +140,32 @@ export function ItemFinancierCard({
                       title="Valider"
                     >
                       <FaCheck size={10} />
+                    </button>
+                  </Tooltip>
+                )}
+              </div>
+            )}
+            {(onEdit || onDelete) && (
+              <div className="flex items-center gap-2">
+                {onEdit && (
+                  <Tooltip label="Modifier" delayDuration={0}>
+                    <button
+                      onClick={(e) => onEdit(item.id, e)}
+                      className="text-blue-700 hover:bg-blue-50 p-1 rounded-full bg-white border border-gray-100 shadow-sm cursor-pointer transition-colors"
+                      title="Modifier"
+                    >
+                      <FaPen size={10} />
+                    </button>
+                  </Tooltip>
+                )}
+                {onDelete && (
+                  <Tooltip label="Supprimer" delayDuration={0}>
+                    <button
+                      onClick={(e) => onDelete(item.id, e)}
+                      className="text-red-600 hover:bg-red-50 p-1 rounded-full bg-white border border-gray-100 shadow-sm cursor-pointer transition-colors"
+                      title="Supprimer"
+                    >
+                      <FaTrash size={10} />
                     </button>
                   </Tooltip>
                 )}

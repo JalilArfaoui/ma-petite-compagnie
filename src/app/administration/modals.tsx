@@ -10,6 +10,7 @@ import { FaPlus, FaTimes, FaInfoCircle } from "react-icons/fa";
  * pour garantir que les informations saisies sont correctement transmises et typées.
  */
 export type DonneesAjoutFinancier = {
+  id?: string;
   nom: string;
   montant: number;
   date: string;
@@ -23,24 +24,51 @@ export type DonneesAjoutFinancier = {
 export function ModalAjoutRapide({
   typeSection,
   onAdd,
+  onSubmit,
   spectacles,
+  mode = "create",
+  initialData,
+  trigger,
+  open: controlledOpen,
+  onOpenChange,
+  hideTrigger = false,
 }: {
   typeSection: "Recette" | "Dépense";
-  onAdd: (data: DonneesAjoutFinancier) => void;
+  onAdd?: (data: DonneesAjoutFinancier) => void;
+  onSubmit?: (data: DonneesAjoutFinancier) => void;
   spectacles: string[];
+  mode?: "create" | "edit";
+  initialData?: DonneesAjoutFinancier;
+  trigger?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  hideTrigger?: boolean;
 }) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen ?? internalOpen;
 
   // Champs communs
-  const [nom, setNom] = useState("");
-  const [montant, setMontant] = useState("");
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
-  const [fichier, setFichier] = useState<string>("");
-  const [selectedSpectacles, setSelectedSpectacles] = useState<string[]>([]);
+  const [nom, setNom] = useState(initialData?.nom ?? "");
+  const [montant, setMontant] = useState(initialData?.montant?.toString() ?? "");
+  const [date, setDate] = useState(initialData?.date ?? new Date().toISOString().split("T")[0]);
+  const [fichier, setFichier] = useState<string>(initialData?.fichier ?? "");
+  const [selectedSpectacles, setSelectedSpectacles] = useState<string[]>(initialData?.spectacles ?? []);
 
   // Champs spécifiques aux Recettes
-  const [typeRecette, setTypeRecette] = useState<"facture" | "financement">("financement"); // subvention par défaut
-  const [estPaye, setEstPaye] = useState(false);
+  const [typeRecette, setTypeRecette] = useState<"facture" | "financement">(
+    initialData?.type ?? "financement"
+  ); // subvention par défaut
+  const [estPaye, setEstPaye] = useState(initialData?.statut === "paye");
+
+  const callback = onSubmit ?? onAdd;
+  const isEdition = mode === "edit";
+  const setOpen = (value: boolean) => {
+    if (onOpenChange) {
+      onOpenChange(value);
+      return;
+    }
+    setInternalOpen(value);
+  };
 
   const handleAddSpectacle = (val: string) => {
     if (!selectedSpectacles.includes(val)) {
@@ -63,9 +91,10 @@ export function ModalAjoutRapide({
   };
 
   const handleSubmit = () => {
-    if (!nom || !montant || !date) return;
+    if (!nom || !montant || !date || !callback) return;
 
     const payload: DonneesAjoutFinancier = {
+      ...(initialData?.id ? { id: initialData.id } : {}),
       nom,
       montant: Number(montant),
       date,
@@ -81,7 +110,7 @@ export function ModalAjoutRapide({
       payload.statut = estPaye ? "paye" : "en_attente";
     }
 
-    onAdd(payload);
+    callback(payload);
 
     // Reset
     setOpen(false);
@@ -102,24 +131,32 @@ export function ModalAjoutRapide({
       }}
     >
       <Modal.Trigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 rounded-full bg-slate-100 hover:bg-slate-200 cursor-pointer"
-        >
-          <FaPlus size={12} className="text-slate-600" />
-        </Button>
+        {!hideTrigger ? (
+          trigger ?? (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 rounded-full bg-slate-100 hover:bg-slate-200 cursor-pointer"
+            >
+              <FaPlus size={12} className="text-slate-600" />
+            </Button>
+          )
+        ) : (
+          <span className="hidden" />
+        )}
       </Modal.Trigger>
       <Modal.Content
         size="md"
         className="flex flex-col inset-0 translate-x-0 translate-y-0 h-[100dvh] max-w-none sm:inset-auto sm:left-[50%] sm:top-[50%] sm:translate-x-[-50%] sm:translate-y-[-50%] sm:h-auto sm:max-h-[85dvh] sm:max-w-[640px]"
       >
         <Modal.Header className="shrink-0">
-          <Modal.Title>Ajouter une {typeSection.toLowerCase()}</Modal.Title>
+          <Modal.Title>{isEdition ? "Modifier" : "Ajouter"} une {typeSection.toLowerCase()}</Modal.Title>
           <Modal.Description>
-            {typeSection === "Recette"
-              ? "Saisissez les informations de la nouvelle recette."
-              : "Remplissez les informations de votre dépense."}
+            {isEdition
+              ? `Mettez à jour les informations de ${typeSection === "Recette" ? "la recette" : "la dépense"}.`
+              : typeSection === "Recette"
+                ? "Saisissez les informations de la nouvelle recette."
+                : "Remplissez les informations de votre dépense."}
           </Modal.Description>
         </Modal.Header>
         <Modal.Body className="flex flex-col gap-5 pt-2 flex-1 min-h-0 overflow-y-auto">
@@ -293,7 +330,9 @@ export function ModalAjoutRapide({
             Annuler
           </Button>
           <Button variant="solid" onClick={handleSubmit} disabled={!nom || !montant || !date}>
-            Ajouter {typeSection === "Recette" ? "la recette" : "la dépense"}
+            {isEdition
+              ? `Enregistrer ${typeSection === "Recette" ? "la recette" : "la dépense"}`
+              : `Ajouter ${typeSection === "Recette" ? "la recette" : "la dépense"}`}
           </Button>
         </Modal.Footer>
       </Modal.Content>
