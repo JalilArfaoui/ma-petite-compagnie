@@ -31,8 +31,8 @@ describe("Test des pages pour le contact", () => {
     expect(await screen.getByDisplayValue("prenom.nom@mail.fr")).toBeTruthy();
     expect(await screen.getByDisplayValue("0011223344")).toBeTruthy();
     expect(await screen.getByDisplayValue("PARTENAIRE")).toBeTruthy();
-    expect(await screen.getByDisplayValue("null")).toBeTruthy();
-    expect(await screen.getByDisplayValue("null")).toBeTruthy();
-    expect(await screen.getByDisplayValue("null")).toBeTruthy();
+    expect(await screen.getByDisplayValue("Paris")).toBeTruthy();
+    expect(await screen.getByDisplayValue("Rue quelque chose")).toBeTruthy();
+    expect(await screen.getByDisplayValue("Client très important")).toBeTruthy();
   });
 });
