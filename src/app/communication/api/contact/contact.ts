@@ -1,8 +1,9 @@
 "use server";
-import { Contact } from "@prisma/client";
+import { Contact, ListeContact } from "@prisma/client";
 export type ContactInformation = Omit<Contact, "id" | "date_creation">;
 import { prisma } from "@/lib/prisma";
-import { resultOf, validerContact } from "../../utils/helper";
+import { Result, resultOf, validerContact } from "../../utils/helper";
+import { getListes } from "./liste";
 export async function contactAvecMemeEmail(email: string) {
   const contact = await prisma.contact.findFirst({ where: { email: email } });
   return contact ?? false;
@@ -100,7 +101,47 @@ export async function supprimerContactsAvecEmail(email: string) {
     return resultOf(false, "Le contact n'a pas pu être supprimé", null);
   }
 }
+export type ContactWithListes = Contact & {
+  listes: string[];
+};
 
+export async function getContactsWithListes(
+  paginationTaille: number = 10,
+  page: number = 1
+): Promise<Result<null> | Result<ContactWithListes[]>> {
+  const contacts = await listerContacts(paginationTaille, page);
+  async function transformContactsToContactsWithListes(contact: Contact) {
+    console.log("Listes");
+    const resultat = await getListes(contact.id);
+    console.log(resultat.donnee);
+    console.log(Array.isArray(resultat.donnee));
+    if (resultat.succes) {
+      if (Array.isArray(resultat.donnee)) {
+        console.log("Map listes");
+        return resultat.donnee.map((liste) => liste.nom);
+      }
+    }
+    return [];
+  }
+  if (contacts.succes) {
+    const result: ContactWithListes[] = await Promise.all(
+      contacts.donnee?.map(async (contact) => {
+        return {
+          ...contact,
+          listes: await transformContactsToContactsWithListes(contact),
+        };
+      }) ?? []
+    );
+    return resultOf(
+      true,
+      "",
+
+      result ?? []
+    );
+  } else {
+    return resultOf(false, contacts.message, null);
+  }
+}
 export async function trouverParIdContact(id: number) {
   const contact = await prisma.contact.findUnique({ where: { id: id } });
   if (!contact) {

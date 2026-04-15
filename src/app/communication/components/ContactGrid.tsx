@@ -1,6 +1,8 @@
 import { Button, Table } from "@/components/ui";
-import { Contact } from "@prisma/client";
+import { ListeContact } from "@prisma/client";
 import Link from "next/link";
+import { useState } from "react";
+import { ContactWithListes } from "../api/contact/contact";
 
 export function ContactGrid({
   contact,
@@ -8,11 +10,22 @@ export function ContactGrid({
   onDelete,
   className = "",
 }: {
-  contact: Contact;
-  onSelect: (contact: Contact) => void;
-  onDelete: (contact: Contact) => void;
+  contact: ContactWithListes;
+  onSelect: (contact: ContactWithListes) => void;
+  onDelete: (contact: ContactWithListes) => void;
   className: string;
 }) {
+  function afficherListe(listes: string[]) {
+    if (listes) {
+      return listes.map((liste, i) => {
+        return (
+          <div className="m-1 bg-primary text-white rounded-full text-center" key={i}>
+            {liste}
+          </div>
+        );
+      });
+    }
+  }
   return (
     <Table.Row onClick={() => onSelect(contact)} className={"active:bg-gray-100 " + className}>
       <Table.Cell className="text-[8px] md:text-[12px] lg:text-[1rem]">{contact.nom}</Table.Cell>
@@ -21,6 +34,9 @@ export function ContactGrid({
         {contact.email}
       </Table.Cell>
       <Table.Cell className="text-[8px] md:text-[12px] lg:text-[1rem]">{contact.tel}</Table.Cell>
+      <Table.Cell className="text-[8px] md:text-[12px] lg:text-[1rem]">
+        {afficherListe(contact.listes)}
+      </Table.Cell>
       <Table.Cell className="text-[8px] md:text-[12px] lg:text-[1rem]">{contact.ville}</Table.Cell>
       <Table.Cell className="max-w-76 text-[8px] md:text-[12px] lg:text-[1rem] text-pretty wrap-break-word break-all">
         {contact.lieu}
