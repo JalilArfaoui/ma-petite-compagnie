@@ -1,7 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { Modal, Button, Select, Badge, Switch, Text, Input, Alert, Link, toaster } from "@/components/ui";
+import {
+  Modal,
+  Button,
+  Select,
+  Badge,
+  Switch,
+  Text,
+  Input,
+  Alert,
+  Link,
+  toaster,
+} from "@/components/ui";
 import { FaPlus, FaTimes, FaInfoCircle } from "react-icons/fa";
 
 /**
@@ -52,7 +63,9 @@ export function ModalAjoutRapide({
   const [montant, setMontant] = useState(initialData?.montant?.toString() ?? "");
   const [date, setDate] = useState(initialData?.date ?? new Date().toISOString().split("T")[0]);
   const [fichier, setFichier] = useState<string>(initialData?.fichier ?? "");
-  const [selectedSpectacles, setSelectedSpectacles] = useState<string[]>(initialData?.spectacles ?? []);
+  const [selectedSpectacles, setSelectedSpectacles] = useState<string[]>(
+    initialData?.spectacles ?? []
+  );
 
   // Champs spécifiques aux Recettes
   const [typeRecette, setTypeRecette] = useState<"facture" | "financement">(
@@ -143,7 +156,7 @@ export function ModalAjoutRapide({
     >
       <Modal.Trigger asChild>
         {!hideTrigger ? (
-          trigger ?? (
+          (trigger ?? (
             <Button
               variant="ghost"
               size="icon"
@@ -151,7 +164,7 @@ export function ModalAjoutRapide({
             >
               <FaPlus size={12} className="text-slate-600" />
             </Button>
-          )
+          ))
         ) : (
           <span className="hidden" />
         )}
@@ -161,7 +174,9 @@ export function ModalAjoutRapide({
         className="flex flex-col inset-0 translate-x-0 translate-y-0 h-[100dvh] max-w-none sm:inset-auto sm:left-[50%] sm:top-[50%] sm:translate-x-[-50%] sm:translate-y-[-50%] sm:h-auto sm:max-h-[85dvh] sm:max-w-[640px]"
       >
         <Modal.Header className="shrink-0">
-          <Modal.Title>{isEdition ? "Modifier" : "Ajouter"} une {typeSection.toLowerCase()}</Modal.Title>
+          <Modal.Title>
+            {isEdition ? "Modifier" : "Ajouter"} une {typeSection.toLowerCase()}
+          </Modal.Title>
           <Modal.Description>
             {isEdition
               ? `Mettez à jour les informations de ${typeSection === "Recette" ? "la recette" : "la dépense"}.`

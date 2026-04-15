@@ -68,9 +68,9 @@ export default function PageAdministration() {
           />
           <IndicateurCle
             titre="Gestion des cachets"
-              valeur="5"
-              sousTexte="cachets en attente"
-              href="/administration/gestion-cachets"
+            valeur="5"
+            sousTexte="cachets en attente"
+            href="/administration/gestion-cachets"
           />
         </SimpleGrid>
 

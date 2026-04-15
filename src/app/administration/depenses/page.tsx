@@ -29,7 +29,9 @@ export default function DepensesPage() {
   const totalDepenses = depenses.reduce((acc, d) => acc + d.montant, 0);
 
   const depensesTriees = useMemo(() => {
-    return [...depenses].sort((a, b) => new Date(b.date || "").getTime() - new Date(a.date || "").getTime());
+    return [...depenses].sort(
+      (a, b) => new Date(b.date || "").getTime() - new Date(a.date || "").getTime()
+    );
   }, [depenses]);
 
   // TODO(BDD): brancher ce handler sur une mutation serveur.
@@ -132,7 +134,9 @@ export default function DepensesPage() {
               />
             ))}
             {depensesTriees.length === 0 && (
-              <div className="text-sm text-center py-4 text-text-muted italic">Aucune dépense trouvée.</div>
+              <div className="text-sm text-center py-4 text-text-muted italic">
+                Aucune dépense trouvée.
+              </div>
             )}
           </div>
         </Card>
@@ -180,7 +184,11 @@ export default function DepensesPage() {
             <Button variant="ghost" onClick={() => setDepenseASupprimer(null)}>
               Annuler
             </Button>
-            <Button variant="solid" className="bg-red-600 hover:bg-red-700" onClick={handleDeleteDepense}>
+            <Button
+              variant="solid"
+              className="bg-red-600 hover:bg-red-700"
+              onClick={handleDeleteDepense}
+            >
               Supprimer
             </Button>
           </Modal.Footer>

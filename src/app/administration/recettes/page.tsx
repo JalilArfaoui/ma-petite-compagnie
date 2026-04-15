@@ -135,7 +135,10 @@ export default function RecettesPage() {
             <Checkbox checked={showFactures} onChange={(e) => setShowFactures(e.target.checked)}>
               Factures
             </Checkbox>
-            <Checkbox checked={showSubventions} onChange={(e) => setShowSubventions(e.target.checked)}>
+            <Checkbox
+              checked={showSubventions}
+              onChange={(e) => setShowSubventions(e.target.checked)}
+            >
               Subventions
             </Checkbox>
           </div>
@@ -217,7 +220,11 @@ export default function RecettesPage() {
             <Button variant="ghost" onClick={() => setRecetteASupprimer(null)}>
               Annuler
             </Button>
-            <Button variant="solid" className="bg-red-600 hover:bg-red-700" onClick={handleDeleteRecette}>
+            <Button
+              variant="solid"
+              className="bg-red-600 hover:bg-red-700"
+              onClick={handleDeleteRecette}
+            >
               Supprimer
             </Button>
           </Modal.Footer>
