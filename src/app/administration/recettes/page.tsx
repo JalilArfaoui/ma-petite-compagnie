@@ -90,10 +90,7 @@ export default function RecettesPage() {
       <Checkbox checked={showFactures} onChange={(e) => setShowFactures(e.target.checked)}>
         Factures
       </Checkbox>
-      <Checkbox
-        checked={showSubventions}
-        onChange={(e) => setShowSubventions(e.target.checked)}
-      >
+      <Checkbox checked={showSubventions} onChange={(e) => setShowSubventions(e.target.checked)}>
         Subventions
       </Checkbox>
     </div>
