@@ -26,26 +26,34 @@ export default function DepensesPage() {
 
   const handleAddDepense = (data: DonneesAjoutFinancier) => {
     // TODO(BDD): Envoyer les données à la base de données via une mutation (ex: prisma.depense.create)
-    handleAdd(data, (d) => ({
-      id: `d-temp-${Date.now()}`,
-      nom: d.nom,
-      date: d.date,
-      montant: d.montant,
-      spectacles: d.spectacles || [],
-      fichier: d.fichier,
-    }));
+    handleAdd(
+      data,
+      (d) => ({
+        id: `d-temp-${Date.now()}`,
+        nom: d.nom,
+        date: d.date,
+        montant: d.montant,
+        spectacles: d.spectacles || [],
+        fichier: d.fichier,
+      }),
+      "Dépense ajoutée"
+    );
   };
 
   const handleEditDepense = (data: DonneesAjoutFinancier) => {
     // TODO(BDD): Mettre à jour les données en base de données (ex: prisma.depense.update)
-    handleEdit(data, (d) => ({
-      id: d.id as string,
-      nom: d.nom,
-      montant: d.montant,
-      date: d.date,
-      spectacles: d.spectacles || [],
-      fichier: d.fichier,
-    }));
+    handleEdit(
+      data,
+      (d) => ({
+        id: d.id as string,
+        nom: d.nom,
+        montant: d.montant,
+        date: d.date,
+        spectacles: d.spectacles || [],
+        fichier: d.fichier,
+      }),
+      "Dépense modifiée"
+    );
   };
 
   const editInitialData = depenseEnEdition
@@ -75,7 +83,7 @@ export default function DepensesPage() {
       onEditSubmit={handleEditDepense}
       onEditClose={() => setDepenseEnEdition(null)}
       deleteItemName={depenseASupprimer?.nom || null}
-      onDeleteSubmit={handleDelete}
+      onDeleteSubmit={() => handleDelete("Dépense supprimée")}
       onDeleteClose={() => setDepenseASupprimer(null)}
     >
       {depensesTries.map((item) => (

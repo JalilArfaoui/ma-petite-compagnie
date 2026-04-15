@@ -33,9 +33,11 @@ export function IndicateurCle({
   const content = (
     <Card
       title={titre}
-      role="button"
-      tabIndex={0}
-      className="h-full bg-white cursor-pointer transition-all duration-200 hover:shadow-lg hover:translate-y-[-2px] active:scale-[0.98] group border border-transparent hover:border-primary-light/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light"
+      role={href ? undefined : "button"}
+      tabIndex={href ? undefined : 0}
+      className={`h-full bg-white transition-all duration-200 group border border-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light ${
+        href ? "hover:shadow-lg hover:translate-y-[-2px] active:scale-[0.98]" : "cursor-default"
+      }`}
     >
       <div className="flex items-baseline gap-2">
         <Text className="text-4xl text-gray-900">{renderValeur()}</Text>
@@ -46,7 +48,15 @@ export function IndicateurCle({
 
   if (href) {
     return (
-      <Link href={href} className="no-underline block h-full">
+      <Link
+        href={href}
+        className="no-underline block h-full cursor-pointer"
+        onClick={(e) => {
+          if (href === "#") {
+            e.preventDefault();
+          }
+        }}
+      >
         {content}
       </Link>
     );

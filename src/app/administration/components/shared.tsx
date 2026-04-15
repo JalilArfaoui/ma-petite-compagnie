@@ -1,6 +1,7 @@
 "use client";
 
 import { Text, Badge, Tooltip, Card, Link, Alert, Button } from "@/components/ui";
+import { useRouter } from "next/navigation";
 import { FaArrowLeft, FaCheck, FaInfoCircle, FaPen, FaTrash } from "react-icons/fa";
 import { formatDateFr, formatMontant } from "../utils";
 import { Recette, Depense } from "./types";
@@ -28,17 +29,18 @@ export function NoteInfo({
 }
 
 export function BoutonRetourAdministration() {
+  const router = useRouter();
+
   return (
-    <Link href="/administration" className="block w-fit mb-8 group">
-      <Button
-        variant="solid"
-        size="sm"
-        className="rounded-full px-4 py-2 hover:scale-105 transition-transform shadow-sm"
-        icon={<FaArrowLeft size={14} />}
-      >
-        Administration
-      </Button>
-    </Link>
+    <Button
+      variant="solid"
+      size="sm"
+      className="mb-8 hover:scale-105 transition-transform"
+      icon={<FaArrowLeft size={14} />}
+      onClick={() => router.push("/administration")}
+    >
+      Retour à la gestion administrative
+    </Button>
   );
 }
 

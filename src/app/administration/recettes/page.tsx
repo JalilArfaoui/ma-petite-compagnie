@@ -36,30 +36,38 @@ export default function RecettesPage() {
 
   const handleAddRecette = (data: DonneesAjoutFinancier) => {
     // TODO(BDD): Envoyer les données à la base de données via une mutation (ex: prisma.recette.create)
-    handleAdd(data, (d) => ({
-      id: `r-temp-${Date.now()}`,
-      nom: d.nom,
-      montant: d.montant,
-      date: d.date,
-      type: d.type ?? "facture",
-      statut: d.statut ?? "en_attente",
-      spectacles: d.spectacles || [],
-      fichier: d.fichier,
-    }));
+    handleAdd(
+      data,
+      (d) => ({
+        id: `r-temp-${Date.now()}`,
+        nom: d.nom,
+        montant: d.montant,
+        date: d.date,
+        type: d.type ?? "facture",
+        statut: d.statut ?? "en_attente",
+        spectacles: d.spectacles || [],
+        fichier: d.fichier,
+      }),
+      "Recette ajoutée"
+    );
   };
 
   const handleEditRecette = (data: DonneesAjoutFinancier) => {
     // TODO(BDD): Mettre à jour les données en base de données (ex: prisma.recette.update)
-    handleEdit(data, (d) => ({
-      id: d.id as string,
-      nom: d.nom,
-      montant: d.montant,
-      date: d.date,
-      spectacles: d.spectacles || [],
-      fichier: d.fichier,
-      type: d.type ?? "facture",
-      statut: d.statut ?? "en_attente",
-    }));
+    handleEdit(
+      data,
+      (d) => ({
+        id: d.id as string,
+        nom: d.nom,
+        montant: d.montant,
+        date: d.date,
+        spectacles: d.spectacles || [],
+        fichier: d.fichier,
+        type: d.type ?? "facture",
+        statut: d.statut ?? "en_attente",
+      }),
+      "Recette modifiée"
+    );
   };
 
   const validerRecette = (id: string, e: React.MouseEvent) => {
@@ -113,7 +121,7 @@ export default function RecettesPage() {
       onEditSubmit={handleEditRecette}
       onEditClose={() => setRecetteEnEdition(null)}
       deleteItemName={recetteASupprimer?.nom || null}
-      onDeleteSubmit={handleDelete}
+      onDeleteSubmit={() => handleDelete("Recette supprimée")}
       onDeleteClose={() => setRecetteASupprimer(null)}
     >
       {recettesFiltrees.map((item) => (
@@ -123,6 +131,8 @@ export default function RecettesPage() {
           showSpectaclesInline={true}
           onValider={validerRecette}
           onEdit={
+            // Les factures sont gérées via le générateur dédié (/administration/factures)
+            // On n'autorise pas leur modification depuis ce formulaire générique
             item.type === "facture"
               ? undefined
               : (id, e) => {

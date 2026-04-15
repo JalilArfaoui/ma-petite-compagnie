@@ -91,6 +91,8 @@ export function ModalAjoutRapide({
   };
 
   const handleTypeRecetteChange = (type: "facture" | "financement") => {
+    // Note: En mode édition, les boutons d'UI sont désactivés pour empêcher le changement.
+    // Ce guard est une sécurité supplémentaire pour la logique métier.
     if (isEdition) {
       toaster.error({
         title: "Modification impossible",

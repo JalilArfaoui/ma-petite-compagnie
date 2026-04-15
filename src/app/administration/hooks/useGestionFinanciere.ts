@@ -17,26 +17,40 @@ export function useGestionFinanciere<
     );
   }, [items]);
 
-  const handleAdd = (data: DonneesAjoutFinancier, mapping: (d: DonneesAjoutFinancier) => T) => {
+  const handleAdd = (
+    data: DonneesAjoutFinancier,
+    mapping: (d: DonneesAjoutFinancier) => T,
+    successMessage?: string
+  ) => {
     const nouvelItem = mapping(data);
     setItems((prev) => [nouvelItem, ...prev]);
-    toaster.success({ title: `${nomType} ajouté${nomType.endsWith("e") ? "e" : ""}` });
+    toaster.success({
+      title: successMessage || `${nomType} ajouté${nomType.endsWith("e") ? "e" : ""}`,
+    });
   };
 
-  const handleEdit = (data: DonneesAjoutFinancier, mapping: (d: DonneesAjoutFinancier) => T) => {
+  const handleEdit = (
+    data: DonneesAjoutFinancier,
+    mapping: (d: DonneesAjoutFinancier) => T,
+    successMessage?: string
+  ) => {
     if (!data.id) return;
 
     setItems((prev) => prev.map((item) => (item.id === data.id ? mapping(data) : item)));
     setItemEnEdition(null);
-    toaster.success({ title: `${nomType} modifié${nomType.endsWith("e") ? "e" : ""}` });
+    toaster.success({
+      title: successMessage || `${nomType} modifié${nomType.endsWith("e") ? "e" : ""}`,
+    });
   };
 
-  const handleDelete = () => {
+  const handleDelete = (successMessage?: string) => {
     if (!itemASupprimer) return;
     // TODO(BDD): Supprimer l'item en base de données (ex: prisma.depense.delete)
     setItems((prev) => prev.filter((item) => item.id !== itemASupprimer.id));
     setItemASupprimer(null);
-    toaster.success({ title: `${nomType} supprimé${nomType.endsWith("e") ? "e" : ""}` });
+    toaster.success({
+      title: successMessage || `${nomType} supprimé${nomType.endsWith("e") ? "e" : ""}`,
+    });
   };
 
   return {
