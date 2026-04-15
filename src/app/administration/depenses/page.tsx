@@ -16,7 +16,7 @@ import {
 import { ModalAjoutRapide, DonneesAjoutFinancier } from "../modals";
 import { DEPENSES_DATA, SPECTACLES_DATA } from "../test_data";
 import { formatMontant } from "../utils";
-import { ItemFinancierCard, NoteInfo } from "../components/shared";
+import { ItemFinancierCard, NoteInfo, BoutonRetourAdministration } from "../components/shared";
 import { Depense } from "../components/types";
 
 export default function DepensesPage() {
@@ -81,10 +81,8 @@ export default function DepensesPage() {
     <div className="min-h-screen bg-[#fffbef] font-sans pb-20 relative">
       <Toaster />
       <Container maxW="max-w-6xl" className="mx-auto pt-16 px-4">
+        <BoutonRetourAdministration />
         <Stack className="mb-8">
-          <Link href="/administration" className="text-sm font-semibold w-fit">
-            Retour à l&apos;administration
-          </Link>
           <Heading as="h3" className="text-primary mb-2">
             Dépenses
           </Heading>

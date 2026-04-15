@@ -1,7 +1,7 @@
 "use client";
 
-import { Text, Badge, Tooltip, Card, Link, Alert } from "@/components/ui";
-import { FaCheck, FaInfoCircle, FaPen, FaTrash } from "react-icons/fa";
+import { Text, Badge, Tooltip, Card, Link, Alert, Button } from "@/components/ui";
+import { FaArrowLeft, FaCheck, FaInfoCircle, FaPen, FaTrash } from "react-icons/fa";
 import { formatDateFr, formatMontant } from "../utils";
 import { Recette, Depense } from "./types";
 
@@ -24,6 +24,21 @@ export function NoteInfo({
         {children}
       </Alert.Description>
     </Alert>
+  );
+}
+
+export function BoutonRetourAdministration() {
+  return (
+    <Link href="/administration" className="block w-fit mb-8 group">
+      <Button
+        variant="solid"
+        size="sm"
+        className="rounded-full px-4 py-2 hover:scale-105 transition-transform shadow-sm"
+        icon={<FaArrowLeft size={14} />}
+      >
+        Administration
+      </Button>
+    </Link>
   );
 }
 
