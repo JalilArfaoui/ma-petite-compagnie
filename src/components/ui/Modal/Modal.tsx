@@ -32,12 +32,12 @@ const modalContentVariants = cva(
   {
     variants: {
       size: {
-        xs: "max-w-[320px] max-h-[100vh] overflow-scroll",
-        sm: "max-w-[480px] max-h-[100vh] overflow-scroll",
-        md: "max-w-[640px] max-h-[100vh] overflow-scroll",
-        lg: "max-w-[800px] max-h-[100vh] overflow-scroll",
-        xl: "max-w-[1024px] max-h-[100vh] overflow-scroll",
-        full: "max-w-none w-[95vw] max-h-[95vh] overflow-scroll",
+        xs: "max-w-[320px] max-h-[100vh] overflow-auto",
+        sm: "max-w-[480px] max-h-[100vh] overflow-auto",
+        md: "max-w-[640px] max-h-[100vh] overflow-auto",
+        lg: "max-w-[800px] max-h-[100vh] overflow-auto",
+        xl: "max-w-[1024px] max-h-[100vh] overflow-auto",
+        full: "max-w-none w-[95vw] max-h-[95vh] overflow-auto",
       },
     },
     defaultVariants: {
