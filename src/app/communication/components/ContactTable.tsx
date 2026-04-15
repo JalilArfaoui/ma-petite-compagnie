@@ -1,15 +1,21 @@
 import { useEffect, useState } from "react";
-import { listerContacts, supprimerContact } from "../api/contact/contact";
+import {
+  ContactWithListes,
+  getContactsWithListes,
+  listerContacts,
+  supprimerContact,
+} from "../api/contact/contact";
 import { Box, Button, Stack, Table, Text, Toaster, toaster } from "@/components/ui";
 import { Contact } from "@prisma/client";
 import { ContactGrid } from "./ContactGrid";
+import { CreateListe } from "./CreateListe";
 
 export function ContactTable() {
-  const [contacts, setContacts] = useState<Contact[]>([]);
-  const [contactsSelectionne, setContactsSelectionne] = useState<Contact[]>([]);
+  const [contacts, setContacts] = useState<ContactWithListes[]>([]);
+  const [contactsSelectionne, setContactsSelectionne] = useState<ContactWithListes[]>([]);
   useEffect(() => {
     async function loadContact() {
-      const resultat = await listerContacts(30, 1);
+      const resultat = await getContactsWithListes(30, 1);
       if (resultat.succes) {
         setContacts(resultat.donnee ?? []);
       } else {
@@ -43,7 +49,7 @@ export function ContactTable() {
     });
     deselectAll();
   }
-  function updateSelected(contact: Contact) {
+  function updateSelected(contact: ContactWithListes) {
     setContactsSelectionne((prev) => {
       if (prev.includes(contact)) {
         return prev.filter((c) => c !== contact);
@@ -81,6 +87,10 @@ export function ContactTable() {
           >
             Supprimer
           </Button>
+          <CreateListe
+            disabled={contactsSelectionne.length <= 0}
+            getContacts={() => contactsSelectionne}
+          ></CreateListe>
           {contactsSelectionne.length == 0 ? (
             <Button variant="outline" size={"sm"} onClick={() => selectAll()}>
               Tout sélectionner
@@ -100,6 +110,7 @@ export function ContactTable() {
               <Table.Cell className=" text-[10px] md:text-[16px]">Prénom</Table.Cell>
               <Table.Cell className="text-[10px] md:text-[16px]">Email</Table.Cell>
               <Table.Cell className=" text-[10px] md:text-[16px]">Téléphone</Table.Cell>
+              <Table.Cell className=" text-[10px] md:text-[16px]">Listes</Table.Cell>
               <Table.Cell className=" text-[10px] md:text-[16px]">Ville</Table.Cell>
               <Table.Cell className=" text-[10px] md:text-[16px]">Lieu</Table.Cell>
               <Table.Cell className="text-[10px] md:text-[16px] max-w-75">Notes</Table.Cell>
