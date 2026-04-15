@@ -16,8 +16,6 @@ function transformerFormDataContact(FormData: FormData): ContactInformation {
     notes: FormData.get("notes")?.toString() ?? null,
     ville: FormData.get("ville")?.toString() ?? null,
     lieu: FormData.get("lieu")?.toString() ?? null,
-    
-
   };
 }
 export async function creerContactAction(FormData: FormData) {
