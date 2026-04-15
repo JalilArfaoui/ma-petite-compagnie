@@ -1,4 +1,5 @@
-import { type BadgeProps } from "@/components/ui";
+// administration/utils.ts : fichier contenant des fonctions utilitaires
+// pour la section administration
 
 /**
  * Formate une date ISO (YYYY-MM-DD) en format lisible : "le 27 janvier 2026".
@@ -22,53 +23,12 @@ export const formatMontant = (montant: number, showSign: boolean = false) => {
   const formatted = new Intl.NumberFormat("fr-FR", {
     style: "currency",
     currency: "EUR",
-    maximumFractionDigits: 0,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(Math.abs(montant));
 
   if (showSign) {
     return montant >= 0 ? `+${formatted}` : `-${formatted}`;
   }
   return montant < 0 ? `-${formatted}` : formatted;
-};
-
-/**
- * Transforme un identifiant de statut technique en libellé lisible.
- * @param statut La clé du statut (ex: "non_paye").
- * @returns Le texte à afficher (ex: "Non payé").
- */
-export const formatStatut = (statut: string) => {
-  switch (statut) {
-    case "recue":
-      return "Reçue";
-    case "recu":
-      return "Reçu";
-    case "paye":
-      return "Payé";
-    case "non_paye":
-      return "Non payé";
-    case "en_attente":
-      return "En attente";
-    default:
-      return statut;
-  }
-};
-
-/**
- * Détermine la couleur du badge en fonction du statut.
- * @param statut Le statut technique.
- * @returns La variante de couleur pour le composant Badge.
- */
-export const getCouleurStatut = (statut: string): BadgeProps["variant"] => {
-  switch (statut) {
-    case "recue":
-    case "recu":
-    case "paye":
-      return "green";
-    case "non_paye":
-      return "red";
-    case "en_attente":
-      return "yellow";
-    default:
-      return "gray";
-  }
 };

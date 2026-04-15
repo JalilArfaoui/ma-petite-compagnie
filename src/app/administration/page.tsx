@@ -1,27 +1,41 @@
-import { Heading, Container, Stack, Text } from "@/components/ui";
-import { FaBars } from "react-icons/fa";
+"use client";
+
+import { useState } from "react";
+import { Heading, Container, Stack, Text, SimpleGrid, Toaster } from "@/components/ui";
 import {
   IndicateurCle,
-  FacturesAvenir,
+  RecettesSection,
   EquilibreFinancier,
-  FinancementsSubventions,
+  DepensesSection,
+  Recette,
+  Depense,
 } from "./components";
 import { formatMontant } from "./utils";
-import { FACTURES_DATA, PAIEMENTS_DATA, SPECTACLES_DATA, FINANCEMENTS_DATA } from "./test_data";
+import { RECETTES_DATA, DEPENSES_DATA, SPECTACLES_DATA } from "./test_data";
 
 // --- Page Principale ---
 
 export default function PageAdministration() {
+  const [recettes, setRecettes] = useState<Recette[]>(RECETTES_DATA);
+  const [depenses, setDepenses] = useState<Depense[]>(DEPENSES_DATA);
+
+  const totalRecettes = recettes.reduce((acc, r) => acc + r.montant, 0);
+  const totalDepenses = depenses.reduce((acc, d) => acc + d.montant, 0);
+
+  // La Trésorerie est calculée uniquement sur la base des données (fictives pour le moment) :
+  // Recettes réellement encaissées (avec le statut "paye") - Dépenses
+  const totalPaye = recettes
+    .filter((r) => r.statut === "paye")
+    .reduce((acc, r) => acc + r.montant, 0);
+  const tresorerieActuelle = totalPaye - totalDepenses;
+
+  const nomsSpectacles = SPECTACLES_DATA.map((s) => s.nom);
+
   return (
     <div className="min-h-screen bg-[#fffbef] font-sans pb-20 relative">
-      {/* Bouton de menu déroulant en haut à gauche */}
-      {/* Simule un bouton (code mort) avant que le groupe SOCLE implémente la sidebar dépliable */}
-      <div className="absolute top-6 left-6 flex items-center gap-2 cursor-pointer text-gray-600 hover:text-primary transition-colors">
-        <FaBars className="text-xl" />
-      </div>
-
+      <Toaster />
       <Container maxW="max-w-6xl" className="mx-auto pt-16 px-4">
-        {/* En-tête de la page */}
+        {/* en tete de la page */}
         <Stack className="mb-10">
           <Heading as="h3" className="text-primary mb-2">
             Administration & finances
@@ -32,25 +46,43 @@ export default function PageAdministration() {
           <Text className="text-gray-600 text-xl mt-2">Vue d&apos;ensemble financière</Text>
         </Stack>
 
-        {/* Ligne des cartes indicateurs clés */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 flex-nowrap mb-12">
-          <IndicateurCle titre="Trésorerie actuelle" valeur={formatMontant(12540)} sousTexte="" />
-          <IndicateurCle titre="Factures" valeur={formatMontant(320)} sousTexte="attendus" />
+        {/* cards indicateurs clés */}
+        <SimpleGrid gap={4} className="grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mb-12">
+          <IndicateurCle
+            titre="Trésorerie actuelle"
+            valeur={formatMontant(tresorerieActuelle)}
+            sousTexte=""
+          />
+          <IndicateurCle
+            titre="Recettes"
+            valeur={formatMontant(totalRecettes)}
+            sousTexte="réalisées"
+          />
+          <IndicateurCle
+            titre="Dépenses"
+            valeur={formatMontant(totalDepenses)}
+            sousTexte="payées"
+          />
           <IndicateurCle titre="Spectacles en cours" valeur="5" sousTexte="spectacles actifs" />
-          <IndicateurCle titre="Financements" valeur="4" sousTexte="dossiers en attente" />
-        </div>
+        </SimpleGrid>
 
-        {/* Section principale avec les 3 colonnes */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr_1fr] gap-6 items-start">
-          <FacturesAvenir
-            factures={FACTURES_DATA}
-            paiements={PAIEMENTS_DATA}
-            totalFactures={1050}
-            totalPaiements={-528}
+        {/* section principale avec les 3 colonnes */}
+        <SimpleGrid
+          gap={6}
+          className="grid-cols-1 lg:grid-cols-[1.1fr_1.5fr_1.1fr] items-start min-w-0"
+        >
+          <RecettesSection
+            recettes={recettes}
+            setRecettes={setRecettes}
+            spectacles={nomsSpectacles}
           />
           <EquilibreFinancier spectacles={SPECTACLES_DATA} />
-          <FinancementsSubventions financements={FINANCEMENTS_DATA} />
-        </div>
+          <DepensesSection
+            depenses={depenses}
+            setDepenses={setDepenses}
+            spectacles={nomsSpectacles}
+          />
+        </SimpleGrid>
       </Container>
     </div>
   );
