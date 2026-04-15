@@ -49,7 +49,7 @@ interface EventCalendarProps {
   onEventClick?: (event: EvenementBuiltInt) => void;
 }
 
-const WEEKDAYS = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+const WEEKDAYS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 const MONTHS = [
   "Janvier",
   "Fevrier",
@@ -88,7 +88,8 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }: EventC
   useEffect(() => {
     const arr: CalendarDay[] = [];
 
-    const firstDayOfMonth = new Date(year, month - 1, 1).getDay();
+    // JS Date#getDay => 0=Sunday ... 6=Saturday; we convert to Monday-first index (0=Monday).
+    const firstDayOfMonth = (new Date(year, month - 1, 1).getDay() + 6) % 7;
     const daysInPrevMonth = new Date(year, month - 1, 0).getDate();
     const prevMonth = month === 1 ? 12 : month - 1;
     const prevYear = month === 1 ? year - 1 : year;
@@ -118,8 +119,8 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }: EventC
     }
 
     // Previous month days
-    for (let i = firstDayOfMonth - 2; i >= 0; i--) {
-      const day = daysInPrevMonth - i;
+    for (let i = firstDayOfMonth; i > 0; i--) {
+      const day = daysInPrevMonth - i + 1;
       arr.push({
         day,
         month: prevMonth,

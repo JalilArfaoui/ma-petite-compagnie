@@ -117,7 +117,7 @@ body {
 .days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 1px;
+  gap: 0;
   height: 100%;
   position: relative;
   .calendar-day {
@@ -143,8 +143,9 @@ body {
 }
 
 .weekdays-container {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  width: 100%;
   .weekday-header {
     background: #f8f9fa;
     padding: 12px 8px;
@@ -158,7 +159,7 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.5px;
     height: 50px;
-    width: 100%;
+    width: auto;
   }
 }
 .calendar-content {
