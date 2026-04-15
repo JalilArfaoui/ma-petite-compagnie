@@ -34,7 +34,6 @@ export type DonneesAjoutFinancier = {
 // Modal pour ajout rapide -> fake pour le moment (non connecté à la bdd)
 export function ModalAjoutRapide({
   typeSection,
-  onAdd,
   onSubmit,
   spectacles,
   mode = "create",
@@ -45,7 +44,6 @@ export function ModalAjoutRapide({
   hideTrigger = false,
 }: {
   typeSection: "Recette" | "Dépense";
-  onAdd?: (data: DonneesAjoutFinancier) => void;
   onSubmit?: (data: DonneesAjoutFinancier) => void;
   spectacles: string[];
   mode?: "create" | "edit";
@@ -73,7 +71,6 @@ export function ModalAjoutRapide({
   ); // subvention par défaut
   const [estPaye, setEstPaye] = useState(initialData?.statut === "paye");
 
-  const callback = onSubmit ?? onAdd;
   const isEdition = mode === "edit";
   const setOpen = (value: boolean) => {
     if (onOpenChange) {
@@ -115,7 +112,7 @@ export function ModalAjoutRapide({
   };
 
   const handleSubmit = () => {
-    if (!nom || !montant || !date || !callback) return;
+    if (!nom || !montant || !date || !onSubmit) return;
 
     const payload: DonneesAjoutFinancier = {
       ...(initialData?.id ? { id: initialData.id } : {}),
@@ -134,7 +131,7 @@ export function ModalAjoutRapide({
       payload.statut = estPaye ? "paye" : "en_attente";
     }
 
-    callback(payload);
+    onSubmit(payload);
 
     // Reset
     setOpen(false);
@@ -154,9 +151,9 @@ export function ModalAjoutRapide({
         else setOpen(true);
       }}
     >
-      <Modal.Trigger asChild>
-        {!hideTrigger ? (
-          (trigger ?? (
+      {!hideTrigger && (
+        <Modal.Trigger asChild>
+          {trigger ?? (
             <Button
               variant="ghost"
               size="icon"
@@ -164,11 +161,9 @@ export function ModalAjoutRapide({
             >
               <FaPlus size={12} className="text-slate-600" />
             </Button>
-          ))
-        ) : (
-          <span className="hidden" />
-        )}
-      </Modal.Trigger>
+          )}
+        </Modal.Trigger>
+      )}
       <Modal.Content
         size="md"
         className="flex flex-col inset-0 translate-x-0 translate-y-0 h-[100dvh] max-w-none sm:inset-auto sm:left-[50%] sm:top-[50%] sm:translate-x-[-50%] sm:translate-y-[-50%] sm:h-auto sm:max-h-[85dvh] sm:max-w-[640px]"
@@ -193,24 +188,24 @@ export function ModalAjoutRapide({
                 <button
                   type="button"
                   onClick={() => handleTypeRecetteChange("financement")}
-                  aria-disabled={isEdition}
-                  className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all cursor-pointer ${
+                  disabled={isEdition}
+                  className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all ${
                     typeRecette === "financement"
                       ? "bg-white shadow-sm text-gray-900"
                       : "text-gray-500 hover:text-gray-700"
-                  } ${isEdition ? "opacity-50 cursor-not-allowed hover:text-gray-500" : ""}`}
+                  } ${isEdition ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
                 >
                   Subvention
                 </button>
                 <button
                   type="button"
                   onClick={() => handleTypeRecetteChange("facture")}
-                  aria-disabled={isEdition}
-                  className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all cursor-pointer ${
+                  disabled={isEdition}
+                  className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all ${
                     typeRecette === "facture"
                       ? "bg-white shadow-sm text-gray-900"
                       : "text-gray-500 hover:text-gray-700"
-                  } ${isEdition ? "opacity-50 cursor-not-allowed hover:text-gray-500" : ""}`}
+                  } ${isEdition ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
                 >
                   Facture
                 </button>

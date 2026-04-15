@@ -133,9 +133,9 @@ export function ItemFinancierCard({
           )}
           {showSpectaclesInline && item.spectacles && item.spectacles.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-1.5">
-              {item.spectacles.map((s, idx) => (
+              {item.spectacles.map((s) => (
                 <Badge
-                  key={idx}
+                  key={s}
                   variant="outline"
                   className="text-[9px] px-1.5 py-0 bg-gray-50 text-gray-600 border-gray-200"
                 >

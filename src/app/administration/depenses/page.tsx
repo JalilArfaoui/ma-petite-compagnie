@@ -6,7 +6,6 @@ import {
   Card,
   Container,
   Heading,
-  Link,
   Modal,
   Stack,
   Text,
@@ -104,7 +103,7 @@ export default function DepensesPage() {
             <div className="flex-shrink-0">
               <ModalAjoutRapide
                 typeSection="Dépense"
-                onAdd={handleAddDepense}
+                onSubmit={handleAddDepense}
                 spectacles={nomsSpectacles}
               />
             </div>

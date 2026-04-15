@@ -49,7 +49,7 @@ export function DepensesSection({
         <div className="flex-shrink-0">
           <ModalAjoutRapide
             typeSection="Dépense"
-            onAdd={handleAddDepense}
+            onSubmit={handleAddDepense}
             spectacles={spectacles}
           />
         </div>

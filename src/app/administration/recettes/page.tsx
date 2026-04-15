@@ -7,7 +7,6 @@ import {
   Checkbox,
   Container,
   Heading,
-  Link,
   Modal,
   Stack,
   Text,
@@ -121,7 +120,7 @@ export default function RecettesPage() {
             <div className="flex-shrink-0">
               <ModalAjoutRapide
                 typeSection="Recette"
-                onAdd={handleAddRecette}
+                onSubmit={handleAddRecette}
                 spectacles={nomsSpectacles}
               />
             </div>
