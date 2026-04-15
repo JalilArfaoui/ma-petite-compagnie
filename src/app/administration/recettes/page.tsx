@@ -18,72 +18,56 @@ import { RECETTES_DATA, SPECTACLES_DATA } from "../test_data";
 import { formatMontant } from "../utils";
 import { ItemFinancierCard, NoteInfo, BoutonRetourAdministration } from "../components/shared";
 import { Recette } from "../components/types";
+import { useGestionFinanciere } from "../hooks/useGestionFinanciere";
 
 export default function RecettesPage() {
-  // TODO(BDD): remplacer cette source locale par une récupération serveur (API/DB).
-  const [recettes, setRecettes] = useState<Recette[]>(RECETTES_DATA);
+  const {
+    items: recettes,
+    setItems: setRecettes,
+    itemsTries: recettesTriees,
+    total: totalRecettes,
+    itemEnEdition: recetteEnEdition,
+    setItemEnEdition: setRecetteEnEdition,
+    itemASupprimer: recetteASupprimer,
+    setItemASupprimer: setRecetteASupprimer,
+    handleAdd,
+    handleEdit,
+    handleDelete,
+  } = useGestionFinanciere<Recette>(RECETTES_DATA, "recette");
+
   const [showFactures, setShowFactures] = useState(true);
   const [showSubventions, setShowSubventions] = useState(true);
-  const [recetteEnEdition, setRecetteEnEdition] = useState<Recette | null>(null);
-  const [recetteASupprimer, setRecetteASupprimer] = useState<Recette | null>(null);
 
   const nomsSpectacles = SPECTACLES_DATA.map((s) => s.nom);
-  const totalRecettes = recettes.reduce((acc, r) => acc + r.montant, 0);
 
   const recettesFiltrees = useMemo(() => {
-    return [...recettes]
-      .filter((r) => (r.type === "facture" ? showFactures : showSubventions))
-      .sort((a, b) => new Date(b.date || "").getTime() - new Date(a.date || "").getTime());
-  }, [recettes, showFactures, showSubventions]);
+    return recettesTriees.filter((r) => (r.type === "facture" ? showFactures : showSubventions));
+  }, [recettesTriees, showFactures, showSubventions]);
 
-  // TODO(BDD): brancher ce handler sur une mutation serveur.
   const handleAddRecette = (data: DonneesAjoutFinancier) => {
-    const nouvelle: Recette = {
+    handleAdd(data, (d) => ({
       id: `r-temp-${Date.now()}`,
-      nom: data.nom,
-      montant: data.montant,
-      date: data.date,
-      type: data.type ?? "facture",
-      statut: data.statut ?? "en_attente",
-      spectacles: data.spectacles || [],
-      fichier: data.fichier,
-    };
-
-    setRecettes((prev) => [nouvelle, ...prev]);
-    toaster.success({ title: "Recette ajoutée" });
+      nom: d.nom,
+      montant: d.montant,
+      date: d.date,
+      type: d.type ?? "facture",
+      statut: d.statut ?? "en_attente",
+      spectacles: d.spectacles || [],
+      fichier: d.fichier,
+    }));
   };
 
-  // TODO(BDD): brancher ce handler sur une mutation serveur.
   const handleEditRecette = (data: DonneesAjoutFinancier) => {
-    if (!data.id) return;
-
-    setRecettes((prev) =>
-      prev.map((r) =>
-        r.id === data.id
-          ? {
-              ...r,
-              nom: data.nom,
-              montant: data.montant,
-              date: data.date,
-              spectacles: data.spectacles || [],
-              fichier: data.fichier,
-              type: data.type ?? "facture",
-              statut: data.statut ?? "en_attente",
-            }
-          : r
-      )
-    );
-
-    setRecetteEnEdition(null);
-    toaster.success({ title: "Recette modifiée" });
-  };
-
-  // TODO(BDD): brancher ce handler sur une mutation serveur.
-  const handleDeleteRecette = () => {
-    if (!recetteASupprimer) return;
-    setRecettes((prev) => prev.filter((r) => r.id !== recetteASupprimer.id));
-    setRecetteASupprimer(null);
-    toaster.success({ title: "Recette supprimée" });
+    handleEdit(data, (d) => ({
+      id: d.id as string,
+      nom: d.nom,
+      montant: d.montant,
+      date: d.date,
+      spectacles: d.spectacles || [],
+      fichier: d.fichier,
+      type: d.type ?? "facture",
+      statut: d.statut ?? "en_attente",
+    }));
   };
 
   const validerRecette = (id: string, e: React.MouseEvent) => {
@@ -220,11 +204,7 @@ export default function RecettesPage() {
             <Button variant="ghost" onClick={() => setRecetteASupprimer(null)}>
               Annuler
             </Button>
-            <Button
-              variant="solid"
-              className="bg-red-600 hover:bg-red-700"
-              onClick={handleDeleteRecette}
-            >
+            <Button variant="solid" className="bg-red-600 hover:bg-red-700" onClick={handleDelete}>
               Supprimer
             </Button>
           </Modal.Footer>

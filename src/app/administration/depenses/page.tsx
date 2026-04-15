@@ -1,81 +1,49 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import {
-  Button,
-  Card,
-  Container,
-  Heading,
-  Modal,
-  Stack,
-  Text,
-  Toaster,
-  toaster,
-} from "@/components/ui";
+import { Button, Card, Container, Heading, Modal, Stack, Text, Toaster } from "@/components/ui";
 import { ModalAjoutRapide, DonneesAjoutFinancier } from "../modals";
 import { DEPENSES_DATA, SPECTACLES_DATA } from "../test_data";
 import { formatMontant } from "../utils";
 import { ItemFinancierCard, NoteInfo, BoutonRetourAdministration } from "../components/shared";
 import { Depense } from "../components/types";
+import { useGestionFinanciere } from "../hooks/useGestionFinanciere";
 
 export default function DepensesPage() {
-  // TODO(BDD): remplacer cette source locale par une récupération serveur (API/DB).
-  const [depenses, setDepenses] = useState<Depense[]>(DEPENSES_DATA);
-  const [depenseEnEdition, setDepenseEnEdition] = useState<Depense | null>(null);
-  const [depenseASupprimer, setDepenseASupprimer] = useState<Depense | null>(null);
+  const {
+    items: depenses,
+    itemsTries: depensesTries,
+    total: totalDepenses,
+    itemEnEdition: depenseEnEdition,
+    setItemEnEdition: setDepenseEnEdition,
+    itemASupprimer: depenseASupprimer,
+    setItemASupprimer: setDepenseASupprimer,
+    handleAdd,
+    handleEdit,
+    handleDelete,
+  } = useGestionFinanciere<Depense>(DEPENSES_DATA, "dépense");
 
   const nomsSpectacles = SPECTACLES_DATA.map((s) => s.nom);
-  const totalDepenses = depenses.reduce((acc, d) => acc + d.montant, 0);
 
-  const depensesTriees = useMemo(() => {
-    return [...depenses].sort(
-      (a, b) => new Date(b.date || "").getTime() - new Date(a.date || "").getTime()
-    );
-  }, [depenses]);
-
-  // TODO(BDD): brancher ce handler sur une mutation serveur.
   const handleAddDepense = (data: DonneesAjoutFinancier) => {
-    const nouvelleDepense: Depense = {
+    handleAdd(data, (d) => ({
       id: `d-temp-${Date.now()}`,
-      nom: data.nom,
-      date: data.date,
-      montant: data.montant,
-      spectacles: data.spectacles || [],
-      fichier: data.fichier,
-    };
-    setDepenses((prev) => [nouvelleDepense, ...prev]);
-    toaster.success({ title: "Dépense ajoutée" });
+      nom: d.nom,
+      date: d.date,
+      montant: d.montant,
+      spectacles: d.spectacles || [],
+      fichier: d.fichier,
+    }));
   };
 
-  // TODO(BDD): brancher ce handler sur une mutation serveur.
   const handleEditDepense = (data: DonneesAjoutFinancier) => {
-    if (!data.id) return;
-
-    setDepenses((prev) =>
-      prev.map((d) =>
-        d.id === data.id
-          ? {
-              ...d,
-              nom: data.nom,
-              montant: data.montant,
-              date: data.date,
-              spectacles: data.spectacles || [],
-              fichier: data.fichier,
-            }
-          : d
-      )
-    );
-
-    setDepenseEnEdition(null);
-    toaster.success({ title: "Dépense modifiée" });
-  };
-
-  // TODO(BDD): brancher ce handler sur une mutation serveur.
-  const handleDeleteDepense = () => {
-    if (!depenseASupprimer) return;
-    setDepenses((prev) => prev.filter((d) => d.id !== depenseASupprimer.id));
-    setDepenseASupprimer(null);
-    toaster.success({ title: "Dépense supprimée" });
+    handleEdit(data, (d) => ({
+      id: d.id as string,
+      nom: d.nom,
+      montant: d.montant,
+      date: d.date,
+      spectacles: d.spectacles || [],
+      fichier: d.fichier,
+    }));
   };
 
   return (
@@ -114,7 +82,7 @@ export default function DepensesPage() {
           </NoteInfo>
 
           <div className="flex flex-col gap-3">
-            {depensesTriees.map((item) => (
+            {depensesTries.map((item) => (
               <ItemFinancierCard
                 key={item.id}
                 item={item}
@@ -133,7 +101,7 @@ export default function DepensesPage() {
                 }}
               />
             ))}
-            {depensesTriees.length === 0 && (
+            {depensesTries.length === 0 && (
               <div className="text-sm text-center py-4 text-text-muted italic">
                 Aucune dépense trouvée.
               </div>
@@ -184,11 +152,7 @@ export default function DepensesPage() {
             <Button variant="ghost" onClick={() => setDepenseASupprimer(null)}>
               Annuler
             </Button>
-            <Button
-              variant="solid"
-              className="bg-red-600 hover:bg-red-700"
-              onClick={handleDeleteDepense}
-            >
+            <Button variant="solid" className="bg-red-600 hover:bg-red-700" onClick={handleDelete}>
               Supprimer
             </Button>
           </Modal.Footer>
