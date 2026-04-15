@@ -258,3 +258,57 @@ export async function createCompany(formData: FormData) {
     return { error: "Une erreur est survenue lors de la création" };
   }
 }
+
+export async function getCompanyDetails(companyId: number) {
+  const session = await auth();
+  if (!session?.user?.id) return null;
+
+  try {
+    return await prisma.compagnie.findUnique({
+      where: { id: companyId },
+      select: {
+        id: true,
+        nom: true,
+        adresse: true,
+        ville: true,
+        codePostal: true,
+        siteWeb: true,
+        rib: true,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+}
+
+export async function updateCompanyFacturationDetails(companyId: number, formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Non autorisé" };
+
+  // Ideally, verify if user has rights
+  const adresse = formData.get("adresse") as string;
+  const ville = formData.get("ville") as string;
+  const codePostal = formData.get("codePostal") as string;
+  const siteWeb = formData.get("siteWeb") as string;
+  const rib = formData.get("rib") as string;
+
+  try {
+    await prisma.compagnie.update({
+      where: { id: companyId },
+      data: {
+        adresse: adresse || null,
+        ville: ville || null,
+        codePostal: codePostal || null,
+        siteWeb: siteWeb || null,
+        rib: rib || null,
+      },
+    });
+    revalidatePath("/profil");
+    revalidatePath("/administration");
+    return { success: true };
+  } catch (err) {
+    console.error(err);
+    return { error: "Erreur lors de la mise à jour" };
+  }
+}

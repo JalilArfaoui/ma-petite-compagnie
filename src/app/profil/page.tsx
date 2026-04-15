@@ -17,17 +17,25 @@ import { LuUser, LuMail, LuPlus, LuCheck, LuSettings } from "react-icons/lu";
 import { FaTheaterMasks } from "react-icons/fa";
 import Link from "next/link";
 import { useState } from "react";
+import { CompanyFacturationForm } from "./CompanyFacturationForm";
 
 export default function ProfilePage() {
-  const { data: session, update } = useSession();
+  const { data: session, status, update } = useSession();
   const [isUpdating, setIsUpdating] = useState<number | null>(null);
 
-  if (!session) {
+  if (status === "loading") {
     return (
       <Container className="py-20 text-center">
         <Text>Chargement...</Text>
       </Container>
     );
+  }
+
+  if (status === "unauthenticated" || !session) {
+    if (typeof window !== "undefined") {
+      window.location.href = "/login";
+    }
+    return null;
   }
 
   const user = session.user;
@@ -176,6 +184,13 @@ export default function ProfilePage() {
             </Stack>
           </Card>
         </SimpleGrid>
+
+        {/* Facturation Form for Active Company */}
+        {activeCompanyId && (
+          <Box className="lg:w-1/2">
+            <CompanyFacturationForm companyId={activeCompanyId} />
+          </Box>
+        )}
       </Stack>
     </Container>
   );
