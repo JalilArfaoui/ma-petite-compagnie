@@ -12,6 +12,15 @@ export async function getOneByNom(nomListe: string) {
     return resultOf(false, "Impossible de récupérer les listes par nom", null);
   }
 }
+export async function getMany() {
+  try {
+    const resultat = await prisma.listeContact.findMany();
+    return resultOf(true, "", resultat);
+  } catch (error: unknown) {
+    console.log(error);
+    return resultOf(false, "Impossible de récupérer les listes par nom", null);
+  }
+}
 export async function createListe(nomListe: string, contacts: Contact[]) {
   try {
     let resultat = null;
