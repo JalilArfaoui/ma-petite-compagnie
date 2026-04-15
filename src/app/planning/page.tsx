@@ -88,6 +88,24 @@ export default function PlanningPage() {
             dateDebut: 1737464400000 + yearInMS, // Jan 21, 2026 13:00:00
             dateFin: 1737482400000 + yearInMS, // Jan 21, 2026 18:00:00
           },
+          {
+            id: 10,
+            nom: "Architecture Review Session",
+            compagnieId: 109,
+            lieuId: 209,
+            categorieId: 3,
+            dateDebut: 1737468000000 + yearInMS, // Jan 21, 2026 14:00:00
+            dateFin: 1737478800000 + yearInMS, // Jan 21, 2026 17:00:00
+          },
+          {
+            id: 11,
+            nom: "Night Deployment Window",
+            compagnieId: 110,
+            lieuId: 210,
+            categorieId: 1,
+            dateDebut: 1737673200000 + yearInMS, // Jan 23, 2026 22:00:00
+            dateFin: 1737684000000 + yearInMS, // Jan 24, 2026 01:00:00
+          },
         ]}
       />
     </div>

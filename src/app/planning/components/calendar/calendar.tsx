@@ -77,7 +77,7 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }: EventC
   const isEventOnDay = (event: EvenementBuiltInt, dayTimestamp: number): boolean => {
     const dayStart = new Date(dayTimestamp).setHours(0, 0, 0, 0);
     const dayEnd = new Date(dayTimestamp).setHours(23, 59, 59, 999);
-    return event.dateDebut <= dayEnd && event.dateFin >= dayStart;
+    return event.dateDebut <= dayEnd && event.dateFin > dayStart;
   };
 
   const getEventsForDay = (day: number, month: number, year: number): EvenementBuiltInt[] => {
@@ -198,17 +198,23 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }: EventC
   const ref = React.useRef<HTMLDivElement>(null);
   const [globalSlotsHeight, setGlobalSlotsHeight] = useState(0);
 
-  useEffect(() => {
-    if (ref.current) {
-      setGlobalSlotsHeight(ref.current.clientHeight / 24);
+  const measureSlotHeight = () => {
+    if (!ref.current) return;
+    const firstSlot = ref.current.querySelector<HTMLElement>(".time-slot");
+    if (firstSlot) {
+      setGlobalSlotsHeight(firstSlot.getBoundingClientRect().height);
+      return;
     }
+    setGlobalSlotsHeight(ref.current.clientHeight / 24);
+  };
+
+  useEffect(() => {
+    measureSlotHeight();
   }, [viewType]);
 
   useEffect(() => {
     const handleResize = () => {
-      if (ref.current) {
-        setGlobalSlotsHeight(ref.current.clientHeight / 24);
-      }
+      measureSlotHeight();
     };
 
     window.addEventListener("resize", handleResize);
@@ -236,9 +242,6 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }: EventC
           <Heading as="h1" className="month-year">
             {MONTHS[month - 1]} {year}
           </Heading>
-          {/* <Button variant="outline" onClick={goToToday}>
-            <Heading as="h5"> Aujourd'hui</Heading>
-          </Button> */}
         </div>
 
         <div className="buttons-container">

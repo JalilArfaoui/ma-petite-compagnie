@@ -22,24 +22,43 @@ export default function MonthlyTile({
   viewType: "monthly" | "weekly";
   slotHeight?: number;
 }) {
+  const formatEventRange = (event: EvenementBuiltInt) => {
+    const start = new Date(event.dateDebut);
+    const end = new Date(event.dateFin);
+    const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate()).getTime();
+    const endDay = new Date(end.getFullYear(), end.getMonth(), end.getDate()).getTime();
+    const dayDiff = Math.max(Math.round((endDay - startDay) / (24 * 60 * 60 * 1000)), 0);
+
+    const hourLabel = (date: Date) => {
+      const hours = date.getHours();
+      const minutes = date.getMinutes();
+      if (minutes === 0) return `${hours}h`;
+      return `${hours}h${String(minutes).padStart(2, "0")}`;
+    };
+
+    const overlapSuffix = viewType === "weekly" && dayDiff > 0 ? ` +${dayDiff}` : "";
+    return `${hourLabel(start)} - ${hourLabel(end)}${overlapSuffix}`;
+  };
+
   const weeklyEvents: PositionedEvent[] =
     viewType === "weekly"
       ? (() => {
-          const toMinutes = (timestamp: number) => {
-            const date = new Date(timestamp);
-            return date.getHours() * 60 + date.getMinutes();
-          };
+          const dayStart = new Date(calDay.year, calDay.month - 1, calDay.day).getTime();
+          const dayEnd = dayStart + 24 * 60 * 60 * 1000;
 
           const baseEvents = calDay.events
             .map((event) => {
-              const start = toMinutes(event.dateDebut);
-              const end = toMinutes(event.dateFin);
+              const visibleStartTs = Math.max(event.dateDebut, dayStart);
+              const visibleEndTs = Math.min(event.dateFin, dayEnd);
+              const start = Math.floor((visibleStartTs - dayStart) / (60 * 1000));
+              const end = Math.ceil((visibleEndTs - dayStart) / (60 * 1000));
               return {
                 event,
                 startMinutes: start,
-                endMinutes: Math.max(end, start + 15),
+                endMinutes: end,
               };
             })
+            .filter((item) => item.endMinutes > item.startMinutes)
             .sort((a, b) => a.startMinutes - b.startMinutes || a.endMinutes - b.endMinutes);
 
           const positioned: PositionedEvent[] = [];
@@ -122,11 +141,11 @@ export default function MonthlyTile({
                 position: viewType === "weekly" ? "absolute" : "relative",
                 top:
                   viewType === "weekly"
-                    ? `calc(50px + ${(topInMinutes / 60) * (slotHeight || 35.6)}px)`
+                    ? `${(topInMinutes / 60) * (slotHeight || 35.6)}px`
                     : "auto",
                 height:
                   viewType === "weekly"
-                    ? `${Math.max((durationInMinutes / 60) * (slotHeight || 35.6), 22)}px`
+                    ? `${(durationInMinutes / 60) * (slotHeight || 35.6)}px`
                     : "auto",
                 left: viewType === "weekly" ? `calc(${leftPercent}% + 4px)` : undefined,
                 right: viewType === "weekly" ? "auto" : undefined,
@@ -136,15 +155,7 @@ export default function MonthlyTile({
               <span className="event-dot" aria-hidden="true" />
               <span className="event-content">
                 <span className="event-time">
-                  {new Date(event.dateDebut).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}{" "}
-                  -{" "}
-                  {new Date(event.dateFin).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
+                  {formatEventRange(event)}
                 </span>
                 <span className="event-name">{event.nom}</span>
               </span>

@@ -301,9 +301,9 @@ body {
 }
 
 .calendar-day.today .day-number {
-  background: rgba(59, 130, 246, 0.7);
+  background: RGB(208, 0, 57);
   color: white;
-  border-radius: 50%;
+  border-radius: 10px;
   width: 28px;
   height: 28px;
   display: flex;
@@ -442,17 +442,17 @@ body {
   gap: 10px;
 }
 
-.create-event-box {
-  border: 2px dashed #d1d5db;
-  border-radius: 8px;
-  padding: 20px;
-  text-align: center;
-  color: #6b7280;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  max-height: 90vh;
-  background-color: white;
-}
+// .create-event-box {
+//   border: 2px dashed #d1d5db;
+//   border-radius: 8px;
+//   padding: 20px;
+//   text-align: center;
+//   color: #6b7280;
+//   cursor: pointer;
+//   transition: background-color 0.2s ease;
+//   max-height: 90vh;
+//   background-color: white;
+// }
 
 /* Responsive design */
 @media (max-width: 1024px) {
