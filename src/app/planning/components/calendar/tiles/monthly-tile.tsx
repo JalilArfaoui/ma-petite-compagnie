@@ -25,7 +25,7 @@ export default function MonthlyTile({
       <div className="day-number">{calDay.day}</div>
 
       <div className="events-container">
-        {calDay.events.slice(0, 3).map((event) => {
+        {calDay.events.map((event) => {
           const hourStart = new Date(event.dateDebut).getHours();
           const hourEnd = new Date(event.dateFin).getHours();
           return (
@@ -48,24 +48,24 @@ export default function MonthlyTile({
                     : "auto",
               }}
             >
-              <span className="event-time">
-                {new Date(event.dateDebut).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}{" "}
-                -{" "}
-                {new Date(event.dateFin).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
+              <span className="event-dot" aria-hidden="true" />
+              <span className="event-content">
+                <span className="event-time">
+                  {new Date(event.dateDebut).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}{" "}
+                  -{" "}
+                  {new Date(event.dateFin).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
+                <span className="event-name">{event.nom}</span>
               </span>
-              <span className="event-name">{event.nom}</span>
             </div>
           );
         })}
-        {calDay.events.length > 3 && (
-          <div className="more-events">+{calDay.events.length - 3} more</div>
-        )}
       </div>
     </div>
   );

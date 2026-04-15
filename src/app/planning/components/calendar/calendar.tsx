@@ -143,10 +143,10 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }: EventC
       });
     }
 
-    // Next month days
+    // Next month days: only fill the last visible week (do not force a 6th row).
     const nextMonth = month === 12 ? 1 : month + 1;
     const nextYear = month === 12 ? year + 1 : year;
-    const remainingDays = 42 - arr.length;
+    const remainingDays = (7 - (arr.length % 7)) % 7;
 
     for (let i = 1; i <= remainingDays; i++) {
       arr.push({
@@ -287,7 +287,7 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }: EventC
               ))}
             </div>
 
-            <div className="days">
+            <div className={`days ${viewType}`}>
               {viewType === "weekly" &&
                 Array.from({ length: 24 }, (_, i) => (
                   <div
