@@ -40,7 +40,6 @@ export default function Home() {
           <Text>Lorem ipsum dolor sit amet consectetur adipisicing elit.</Text>
         </Box>
 
-        
         {/* ======== Icônes ========================================= */}
 
         <Box>
@@ -79,8 +78,7 @@ export default function Home() {
               </Card>
             </div>
 
-            
-        {/* ======== Titres ========================================= */}
+            {/* ======== Titres ========================================= */}
             <div>
               <Heading as="h3" className="mb-6 pb-2 border-b">
                 Headings
@@ -107,7 +105,6 @@ export default function Home() {
           </div>
         </Box>
 
-        
         {/* ======== Cards ========================================= */}
 
         <Box>
@@ -149,7 +146,6 @@ export default function Home() {
           </div>
         </Box>
 
-        
         {/* ======== Boutons et liens ========================================= */}
 
         <Box>
@@ -194,7 +190,6 @@ export default function Home() {
           </div>
         </Box>
 
-        
         {/* ======== Inputs ========================================= */}
 
         <Box>
@@ -268,7 +263,6 @@ export default function Home() {
           </Stack>
         </Box>
 
-        
         {/* ======== Badges et toasts ========================================= */}
 
         <Box>
@@ -370,8 +364,7 @@ export default function Home() {
               </Card.Body>
             </Card>
 
-            
-        {/* ======== Tables ========================================= */}
+            {/* ======== Tables ========================================= */}
 
             <Card title="Table">
               <Card.Body>
