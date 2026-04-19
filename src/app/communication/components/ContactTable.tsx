@@ -20,26 +20,15 @@ export function ContactTable({
 }) {
   const [contacts, setContacts] = useState<ContactWithListes[]>([]);
   const [contactsSelectionne, setContactsSelectionne] = useState<ContactWithListes[]>([]);
-  async function loadContacts() {
-    const resultat = await listerContactsAvecListes(30, 1);
-    if (resultat.succes) {
-      setContacts(resultat.donnee ?? []);
-    } else {
-      toaster.create({ description: resultat.message, type: "error" });
-    }
+  async function loadContact() {
+    setContacts((await getContacts()) ?? []);
   }
   useEffect(() => {
-    async function loadContacts() {
-      const resultat = await listerContactsAvecListes(30, 1);
-      if (resultat.succes) {
-        setContacts(resultat.donnee ?? []);
-      } else {
-        toaster.create({ description: resultat.message, type: "error" });
-      }
+    async function loadContact() {
+      setContacts((await getContacts()) ?? []);
     }
-    loadContacts();
-  }, []);
-  loadContacts();
+    loadContact();
+  }, [keyReload, getContacts]);
   async function associerListe(listes: ListeContact[]) {
     const resultats = await Promise.all(
       listes.map((liste) => creerListe(liste.nom, contactsSelectionne))
