@@ -123,6 +123,21 @@ export async function listerContactsAvecListes(
   });
   return resultOf(true, "", contacts);
 }
+export async function getContactInListe(
+  liste: ListeContact
+): Promise<Result<null> | Result<ContactWithListes[]>> {
+  const contacts = await prisma.contact.findMany({
+    where: { listeContacts: { some: { id: liste.id } } },
+  });
+  const contactsWithListes = contacts.map((contact) => {
+    return { ...contact, listes: [] };
+  });
+  if (!contacts) {
+    return resultOf(false, "Le contact n'existe pas.", null);
+  }
+  return resultOf(true, "", contactsWithListes);
+}
+
 export async function trouverParIdContact(id: number) {
   const contact = await prisma.contact.findUnique({ where: { id: id } });
   if (!contact) {

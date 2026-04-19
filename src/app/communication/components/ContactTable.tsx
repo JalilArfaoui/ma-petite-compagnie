@@ -11,7 +11,13 @@ import { CreateListe } from "./CreateListe";
 import { GetListe } from "./GetListe";
 import { creerListe } from "../api/contact/liste";
 
-export function ContactTable() {
+export function ContactTable({
+  getContacts,
+  keyReload,
+}: {
+  getContacts: () => Promise<ContactWithListes[] | null>;
+  keyReload: number;
+}) {
   const [contacts, setContacts] = useState<ContactWithListes[]>([]);
   const [contactsSelectionne, setContactsSelectionne] = useState<ContactWithListes[]>([]);
   async function loadContacts() {
