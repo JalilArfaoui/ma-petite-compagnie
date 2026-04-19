@@ -1,5 +1,5 @@
 "use server";
-import { Contact } from "@prisma/client";
+import { Contact, ListeContact } from "@prisma/client";
 export type ContactInformation = Omit<Contact, "id" | "date_creation">;
 import { prisma } from "@/lib/prisma";
 import { Result, resultOf, validerContact } from "../../utils/helper";
