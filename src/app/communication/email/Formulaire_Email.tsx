@@ -1,48 +1,42 @@
 "use client";
 
-import { useState, FormEvent } from "react";
-import { Box, Input, Stack, Button } from "@/components/ui";
-import { Filtre_Email } from "./Filtre_Email";
-import { envoyer_Email } from "./Action/EnvoieEmail";
+import { useState } from "react";
+import { Contact } from "@prisma/client";
+import { envoyer_Email_Brevo } from "./Action/EnvoieEmail";
 
-export function Formulaire_Email() {
-  const [sujet, setSujet] = useState("");
-  const [message, setMessage] = useState("");
-  const [filtres, setFiltres] = useState({});
+import { Box, Button, Input, Textarea, Stack } from "@/components/ui";
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault();
+export function Formulaire_Email({getContacts} : {getContacts : () => Promise<Contact[]>;}) {
+  const [objet, set_Objet] = useState("");
+  const [msg, set_Msg] = useState("");
 
-    await envoyer_Email({
-      sujet,
-      message,
-      filtres,
+  async function envoyer() {
+    const contacts = await getContacts();
+
+    const res = await envoyer_Email_Brevo({
+      contact: contacts,
+      object: objet,
+      msg,
     });
+
+    if (res.resultat) {
+      alert(res.cpt_envoi + " mail envoyé");
+    } else {
+      alert("er : " + JSON.stringify(res.er || res.message));
+    }
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Stack>
+    <Box className="max-w-xl mx-auto p-6">
+      <Stack gap="4">
         <Box>
-          Sujet :
-          <Input
-            value={sujet}
-            onChange={(e) => setSujet(e.target.value)}
-          />
+          <Input value={objet} onChange={(e) => set_Objet(e.target.value)}/>
         </Box>
-
         <Box>
-          Message :
-          <Input
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-          />
+          <Textarea placeholder="message (ex: Bonjour {{prenom}} {{nom}} {{email}} ...)" value={msg} onChange={(e) => set_Msg(e.target.value)}/>
         </Box>
-
-        <Filtre_Email setFiltres={setFiltres} />
-
-        <Button type="submit">Envoyer</Button>
+        <Button onClick={envoyer}>Envoyer</Button>
       </Stack>
-    </form>
+    </Box>
   );
 }

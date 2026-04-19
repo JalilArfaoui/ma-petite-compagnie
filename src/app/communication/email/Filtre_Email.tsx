@@ -3,39 +3,40 @@
 import { Box, Input, Stack } from "@/components/ui";
 
 export function Filtre_Email({
-  setFiltres,
+  set_Ville,
+  set_Role,
+  set_Nom,
+  set_Prenom,
 }: {
-  setFiltres: (filtres: any) => void;
+  set_Ville: (v: string) => void;
+  set_Role: (v: string) => void;
+  set_Nom: (v: string) => void;
+  set_Prenom: (v: string) => void;
 }) {
-  function handleChange(e: any) {
-    setFiltres((prev: any) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  }
-
   return (
     <Box>
       <Stack>
-        <Box>
-          Age min :
-          <Input name="age_min" onChange={handleChange} />
-        </Box>
-
-        <Box>
-          Age max :
-          <Input name="age_max" onChange={handleChange} />
-        </Box>
 
         <Box>
           Ville :
-          <Input name="ville" onChange={handleChange} />
+          <Input onChange={(e) => set_Ville(e.target.value)} />
         </Box>
 
         <Box>
           Role :
-          <Input name="role" onChange={handleChange} />
+          <Input onChange={(e) => set_Role(e.target.value)} />
         </Box>
+
+        <Box>
+          Nom :
+          <Input onChange={(e) => set_Nom(e.target.value)} />
+        </Box>
+
+        <Box>
+          Prenom :
+          <Input onChange={(e) => set_Prenom(e.target.value)} />
+        </Box>
+
       </Stack>
     </Box>
   );

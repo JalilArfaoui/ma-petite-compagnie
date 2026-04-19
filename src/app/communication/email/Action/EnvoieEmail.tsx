@@ -1,47 +1,60 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
 import { BrevoClient } from "@getbrevo/brevo";
+import { Contact } from "@prisma/client";
 
-export async function envoyer_Email({
-  sujet,
-  message,
-  filtres,
-}: any) {
+async function envoyer_tous_contact(
+  contact: Contact[],
+  msg: string,
+  object: string,
+  client: BrevoClient
+) {
+  let cpt = 0;
+
+  for (const c of contact) {
+    if (!c.email) continue;
+
+    const msg_perso_prenom = msg.replace("{{prenom}}", c.prenom);
+    const msg_perso_nom = msg_perso_prenom.replace("{{nom}}", c.nom);
+    const msg_perso_email = msg_perso_nom.replace("{{email}}", c.email);
+
+    await client.transactionalEmails.sendTransacEmail({
+      sender: {
+        name: "Ma compagnie",
+        email: "communication@ma-petite-compagnie.fr",
+      },
+      to: [{ email: c.email }],
+      subject: object,
+      htmlContent: msg_perso_email,
+    });
+    cpt=cpt+1;
+  }
+  return cpt;
+}
+
+export async function envoyer_Email_Brevo({
+  contact,
+  object,
+  msg,
+}: {
+  contact: Contact[];
+  object: string;
+  msg: string;
+}) {
   const client = new BrevoClient({
     apiKey: process.env.BREVO_API_KEY || "",
   });
 
-  const contacts = await prisma.contact.findMany({
-    where: {
-      ville: filtres.ville || undefined,
-      role: filtres.role || undefined,
-    },
-  });
+  try {
+    const cpt_envoi = await envoyer_tous_contact(contact, msg, object, client);
 
-  for (const contact of contacts) {
-    if (!contact.email) continue;
-
-    
-    const message_perso = message.replace(
-      "{{prenom}}",
-      contact.prenom || ""
-    );
-
-    try {
-      await client.transactionalEmails.sendTransacEmail({
-        sender: {
-          name: "Ma compagnie",
-          email: "test@test.com",
-        },
-        to: [{ email: contact.email }],
-        subject: sujet,
-        htmlContent: message_perso,
-      });
-    } catch (err) {
-      console.error("erreur envoie mail", err);
+    if (cpt_envoi === 0) {
+      return { resultat: false, message: "0 contact avec email" };
     }
-  }
 
-  return { success: true };
+    return { resultat: true, cpt_envoi};
+  } catch (er) {
+    console.error("er de Brevo : ", er);
+    return { resultat: false, er };
+  }
 }
