@@ -1,6 +1,6 @@
-import { toaster, Modal, Button, Input, Toaster, Text, Select } from "@/components/ui";
-import { Contact, ListeContact } from "@prisma/client";
-import { createListe, getListes, getMany } from "../api/contact/liste";
+import { toaster, Modal, Button, Toaster, Select } from "@/components/ui";
+import { ListeContact } from "@prisma/client";
+import { getMany } from "../api/contact/liste";
 import { useEffect, useRef, useState } from "react";
 
 export function GetListe({

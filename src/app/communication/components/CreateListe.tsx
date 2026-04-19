@@ -35,7 +35,7 @@ export function CreateListe({
       </Modal.Trigger>
       <Modal.Content>
         <Modal.Header>
-          <Modal.Title>Créer une liste</Modal.Title>
+          <Modal.Title>Créer ou associer une liste</Modal.Title>
           <Modal.Description>Créer la liste</Modal.Description>
         </Modal.Header>
 
