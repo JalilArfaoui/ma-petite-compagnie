@@ -5,7 +5,17 @@ import { toaster, Toaster } from "@/components/ui/Toast/toaster";
 import { ContactTable } from "./components/ContactTable";
 import { CSVContactImport } from "./components/CSVContactImport";
 import { csvToContacts } from "./action/CSVToContacts";
+import { getContactsWithListes } from "./api/contact/contact";
 export default function ContactPage() {
+  async function loadContacts() {
+    const resultat = await getContactsWithListes(30, 1);
+    if (resultat.succes) {
+      return resultat.donnee;
+    } else {
+      toaster.create({ description: resultat.message, type: "error" });
+      return [];
+    }
+  }
   async function onCSVRead(donnees: Record<string, string>[]) {
     const resultats = await csvToContacts(donnees);
     console.log("On csv Read");
@@ -53,10 +63,11 @@ export default function ContactPage() {
             <Text className="text-white">+ Créer un contact</Text>
           </Button>
         </Link>
+        <Link href="./communication/liste">Affichage par liste</Link>
       </Stack>
 
       <Box className="md:w-full lg:w-[90%] mx-auto   ">
-        <ContactTable />
+        <ContactTable keyReload={0} getContacts={() => loadContacts()} />
       </Box>
     </Box>
   );
