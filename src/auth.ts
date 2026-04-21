@@ -56,7 +56,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             });
             if (membership) {
               token.activeCompanyId = membership.compagnieId;
-              token.rights = membership;
+              token.rights = {
+                droitAccesDetailsCompagnie: membership.droitAccesDetailsCompagnie,
+                droitModificationCompagnie: membership.droitModificationCompagnie,
+                droitSuppressionCompagnie: membership.droitSuppressionCompagnie,
+                droitAjoutMembre: membership.droitAjoutMembre,
+                droitSuppressionMembre: membership.droitSuppressionMembre,
+                droitGestionDroitsMembres: membership.droitGestionDroitsMembres,
+                droitAccesPlanning: membership.droitAccesPlanning,
+                droitGestionPlanning: membership.droitGestionPlanning,
+              };
             }
           }
         }

@@ -4,10 +4,11 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 import type { CompanyMember } from "@prisma/client";
+import type { CompanyRights } from "@/types/next-auth";
 
 type ActionError = { error: string };
 
-async function requireRight<K extends keyof CompanyMember>(
+async function requireRight<K extends keyof CompanyRights>(
   userId: number,
   compagnieId: number,
   right: K
