@@ -12,21 +12,15 @@ import {
   Flex,
   Box,
   SimpleGrid,
-  Input,
 } from "@/components/ui";
-import { LuUser, LuBuilding, LuMail, LuPlus, LuCheck, LuPencil, LuTrash2, LuX } from "react-icons/lu";
+import { LuUser, LuMail, LuPlus, LuCheck, LuSettings } from "react-icons/lu";
+import { FaTheaterMasks } from "react-icons/fa";
 import Link from "next/link";
 import { useState } from "react";
-import { updateCompany, deleteCompany } from "@/app/(auth)/company-actions";
 
 export default function ProfilePage() {
   const { data: session, update } = useSession();
   const [isUpdating, setIsUpdating] = useState<number | null>(null);
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [editName, setEditName] = useState("");
-  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
-  const [actionError, setActionError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!session) {
     return (
@@ -47,56 +41,9 @@ export default function ProfilePage() {
     setIsUpdating(null);
   };
 
-  const handleStartEdit = (id: number, currentName: string) => {
-    setEditingId(id);
-    setEditName(currentName);
-    setActionError(null);
-    setConfirmDeleteId(null);
-  };
-
-  const handleCancelEdit = () => {
-    setEditingId(null);
-    setEditName("");
-    setActionError(null);
-  };
-
-  const handleSaveEdit = async (id: number) => {
-    setIsSubmitting(true);
-    setActionError(null);
-    const formData = new FormData();
-    formData.set("id", String(id));
-    formData.set("nom", editName);
-    const result = await updateCompany(formData);
-    setIsSubmitting(false);
-    if ("error" in result) {
-      setActionError(result.error ?? null);
-    } else {
-      setEditingId(null);
-      // Déclenche un refresh de session pour récupérer le nouveau nom
-      await update({});
-    }
-  };
-
-  const handleDelete = async (id: number) => {
-    setIsSubmitting(true);
-    setActionError(null);
-    const formData = new FormData();
-    formData.set("id", String(id));
-    const result = await deleteCompany(formData);
-    setIsSubmitting(false);
-    if ("error" in result) {
-      setActionError(result.error ?? null);
-    } else {
-      setConfirmDeleteId(null);
-      // Reset activeCompanyId → la session auto-sélectionnera la première compagnie restante
-      await update({ activeCompanyId: null });
-    }
-  };
-
   return (
     <Container className="py-12 max-w-5xl">
       <Stack gap={10}>
-        {/* Header Section */}
         <Box>
           <Heading as="h3" className="font-serif mb-2">
             Mon Profil
@@ -107,7 +54,7 @@ export default function ProfilePage() {
         </Box>
 
         <SimpleGrid columns={{ base: 1, lg: 2 }} gap={8}>
-          {/* Personal Info Card */}
+          {/* Personal Info */}
           <Card className="p-8 border-black/5 shadow-sm bg-white">
             <Stack gap={6}>
               <Flex align="center" gap={4}>
@@ -116,7 +63,6 @@ export default function ProfilePage() {
                 </div>
                 <Heading as="h4">Informations personnelles</Heading>
               </Flex>
-
               <Stack gap={4}>
                 <Box>
                   <Text className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">
@@ -126,7 +72,6 @@ export default function ProfilePage() {
                     {user.prenom} {user.nom}
                   </Text>
                 </Box>
-
                 <Box>
                   <Text className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">
                     Adresse Email
@@ -140,13 +85,13 @@ export default function ProfilePage() {
             </Stack>
           </Card>
 
-          {/* Companies Card */}
+          {/* Companies */}
           <Card className="p-8 border-black/5 shadow-sm bg-white">
             <Stack gap={6}>
               <Flex align="center" justify="between">
                 <Flex align="center" gap={4}>
                   <div className="p-3 bg-primary/10 text-primary rounded-xl">
-                    <LuBuilding size={24} />
+                    <FaTheaterMasks size={24} />
                   </div>
                   <Heading as="h4">Mes Compagnies</Heading>
                 </Flex>
@@ -161,8 +106,6 @@ export default function ProfilePage() {
                 {companies.length > 0 ? (
                   companies.map((company) => {
                     const isActive = activeCompanyId === company.id;
-                    const isEditing = editingId === company.id;
-                    const isConfirmingDelete = confirmDeleteId === company.id;
 
                     return (
                       <Box
@@ -173,117 +116,47 @@ export default function ProfilePage() {
                             : "border-slate-100 bg-slate-50/50 hover:bg-slate-50"
                         }`}
                       >
-                        {isEditing ? (
-                          <Stack gap={2}>
-                            <Input
-                              value={editName}
-                              onChange={(e) => setEditName(e.target.value)}
-                              className="text-sm"
-                              autoFocus
-                            />
-                            {actionError && (
-                              <Text className="text-xs text-red-500">{actionError}</Text>
+                        <Flex align="center" justify="between">
+                          <Stack gap={1}>
+                            <Text className="font-bold text-slate-900">{company.nom}</Text>
+                            {isActive && (
+                              <Badge variant="blue" className="w-fit text-[10px]">
+                                Active
+                              </Badge>
                             )}
-                            <Flex gap={2}>
-                              <Button
-                                size="sm"
-                                onClick={() => handleSaveEdit(company.id)}
-                                disabled={isSubmitting || editName.length < 2}
-                                className="flex-1"
-                              >
-                                {isSubmitting ? "..." : "Enregistrer"}
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={handleCancelEdit}
-                                disabled={isSubmitting}
-                                icon={<LuX />}
-                              />
-                            </Flex>
                           </Stack>
-                        ) : isConfirmingDelete ? (
-                          <Stack gap={2}>
-                            <Text className="text-sm font-medium text-slate-700">
-                              Supprimer &laquo;{company.nom}&raquo; ?
-                            </Text>
-                            <Text className="text-xs text-slate-500">
-                              Cette action est irréversible.
-                            </Text>
-                            {actionError && (
-                              <Text className="text-xs text-red-500">{actionError}</Text>
-                            )}
-                            <Flex gap={2}>
-                              <Button
-                                size="sm"
-                                className="flex-1 bg-red-600 hover:bg-red-700 text-white"
-                                onClick={() => handleDelete(company.id)}
-                                disabled={isSubmitting}
-                              >
-                                {isSubmitting ? "..." : "Confirmer la suppression"}
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => { setConfirmDeleteId(null); setActionError(null); }}
-                                disabled={isSubmitting}
-                                icon={<LuX />}
-                              />
-                            </Flex>
-                          </Stack>
-                        ) : (
-                          /* Normal display */
-                          <Flex align="center" justify="between">
-                            <Stack gap={1}>
-                              <Text className="font-bold text-slate-900">{company.nom}</Text>
-                              {isActive && (
-                                <Badge variant="blue" className="w-fit text-[10px]">
-                                  Active
-                                </Badge>
-                              )}
-                            </Stack>
 
-                            <Flex align="center" gap={1}>
-                              {isActive && rights?.droitModificationCompagnie && (
+                          <Flex align="center" gap={1}>
+                            {isActive && rights?.droitAccesDetailsCompagnie && (
+                              <Link href={`/compagnie/${company.id}`}>
                                 <Button
                                   size="sm"
                                   variant="ghost"
-                                  onClick={() => handleStartEdit(company.id, company.nom)}
                                   className="hover:bg-primary/10 hover:text-primary transition-colors"
-                                  icon={<LuPencil size={14} />}
+                                  icon={<LuSettings size={14} />}
                                 />
-                              )}
+                              </Link>
+                            )}
 
-                              {isActive && rights?.droitSuppressionCompagnie && (
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => { setConfirmDeleteId(company.id); setActionError(null); }}
-                                  className="hover:bg-red-50 hover:text-red-600 transition-colors"
-                                  icon={<LuTrash2 size={14} />}
-                                />
-                              )}
+                            {isActive && !rights?.droitAccesDetailsCompagnie && (
+                              <div className="bg-primary text-white p-1 rounded-full">
+                                <LuCheck size={14} />
+                              </div>
+                            )}
 
-                              {!isActive && (
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => handleSwitchCompany(company.id)}
-                                  disabled={isUpdating !== null}
-                                  className="hover:bg-primary/10 hover:text-primary transition-colors font-medium text-xs"
-                                >
-                                  {isUpdating === company.id ? "..." : "Basculer"}
-                                </Button>
-                              )}
-
-                              {isActive && !rights?.droitModificationCompagnie && !rights?.droitSuppressionCompagnie && (
-                                <div className="bg-primary text-white p-1 rounded-full">
-                                  <LuCheck size={14} />
-                                </div>
-                              )}
-                            </Flex>
+                            {!isActive && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => handleSwitchCompany(company.id)}
+                                disabled={isUpdating !== null}
+                                className="hover:bg-primary/10 hover:text-primary transition-colors font-medium text-xs"
+                              >
+                                {isUpdating === company.id ? "..." : "Basculer"}
+                              </Button>
+                            )}
                           </Flex>
-                        )}
+                        </Flex>
                       </Box>
                     );
                   })

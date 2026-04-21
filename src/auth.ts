@@ -90,14 +90,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
           if (!token.activeCompanyId && memberships.length > 0) {
             session.activeCompanyId = memberships[0].compagnieId;
+            const m0 = memberships[0];
+            const hasAnyActionRight =
+              m0.droitModificationCompagnie ||
+              m0.droitSuppressionCompagnie ||
+              m0.droitAjoutMembre ||
+              m0.droitSuppressionMembre ||
+              m0.droitGestionDroitsMembres ||
+              m0.droitAccesPlanning ||
+              m0.droitGestionPlanning;
             session.rights = {
-              droitModificationCompagnie: memberships[0].droitModificationCompagnie,
-              droitSuppressionCompagnie: memberships[0].droitSuppressionCompagnie,
-              droitAjoutMembre: memberships[0].droitAjoutMembre,
-              droitSuppressionMembre: memberships[0].droitSuppressionMembre,
-              droitGestionDroitsMembres: memberships[0].droitGestionDroitsMembres,
-              droitAccesPlanning: memberships[0].droitAccesPlanning,
-              droitGestionPlanning: memberships[0].droitGestionPlanning,
+              droitAccesDetailsCompagnie: m0.droitAccesDetailsCompagnie || hasAnyActionRight,
+              droitModificationCompagnie: m0.droitModificationCompagnie,
+              droitSuppressionCompagnie: m0.droitSuppressionCompagnie,
+              droitAjoutMembre: m0.droitAjoutMembre,
+              droitSuppressionMembre: m0.droitSuppressionMembre,
+              droitGestionDroitsMembres: m0.droitGestionDroitsMembres,
+              droitAccesPlanning: m0.droitAccesPlanning,
+              droitGestionPlanning: m0.droitGestionPlanning,
             };
           } else {
             session.activeCompanyId = token.activeCompanyId as number | null | undefined;
