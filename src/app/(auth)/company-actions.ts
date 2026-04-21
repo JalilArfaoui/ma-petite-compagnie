@@ -17,7 +17,7 @@ export async function updateCompany(formData: FormData) {
     where: { userId_compagnieId: { userId: Number(session.user.id), compagnieId: id } },
   });
 
-  if (!member?.droitModificationInfos) return { error: "Vous n'avez pas les droits nécessaires" };
+  if (!member?.droitModificationCompagnie) return { error: "Vous n'avez pas les droits nécessaires" };
 
   try {
     const company = await prisma.compagnie.update({ where: { id }, data: { nom } });
@@ -38,7 +38,7 @@ export async function deleteCompany(formData: FormData) {
     where: { userId_compagnieId: { userId: Number(session.user.id), compagnieId: id } },
   });
 
-  if (!member?.droitDestruction) return { error: "Vous n'avez pas les droits nécessaires" };
+  if (!member?.droitSuppressionCompagnie) return { error: "Vous n'avez pas les droits nécessaires" };
 
   try {
     await prisma.compagnie.delete({ where: { id } });
@@ -68,9 +68,11 @@ export async function createCompany(formData: FormData) {
           create: {
             userId: Number(session.user.id),
             // Default rights for creator
-            droitDestruction: true,
-            droitModificationInfos: true,
-            droitGestionUtilisateurs: true,
+            droitSuppressionCompagnie: true,
+            droitModificationCompagnie: true,
+            droitAjoutMembre: true,
+            droitSuppressionMembre: true,
+            droitGestionDroitsMembres: true,
             droitAccesPlanning: true,
             droitGestionPlanning: true,
           },
