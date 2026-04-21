@@ -49,7 +49,9 @@ export default function CompagnieDetailClient({
 
         <Stack gap={4}>
           <Flex align="center" gap={3}>
-            <Heading as="h3" className="font-serif">Membres</Heading>
+            <Heading as="h3" className="font-serif">
+              Membres
+            </Heading>
             <Badge variant="blue">{compagnie.membres.length}</Badge>
           </Flex>
 
