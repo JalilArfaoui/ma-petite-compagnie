@@ -79,7 +79,7 @@ model CompanyMember {
   userId      Int
   user        User     @relation(fields: [userId], references: [id])
   compagnieId Int
-  compagnie   Compagnie @relation(fields: [compagnieId], references: [id])
+  compagnie   Compagnie @relation(fields: [compagnieId], references: [id], onDelete: Cascade)
 
   droitModificationCompagnie Boolean @default(false)
   droitSuppressionCompagnie  Boolean @default(false)

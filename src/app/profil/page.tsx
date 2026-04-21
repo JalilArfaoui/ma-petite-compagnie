@@ -86,7 +86,6 @@ export default function ProfilePage() {
     setIsSubmitting(false);
     if ("error" in result) {
       setActionError(result.error ?? null);
-      setConfirmDeleteId(null);
     } else {
       setConfirmDeleteId(null);
       // Reset activeCompanyId → la session auto-sélectionnera la première compagnie restante
