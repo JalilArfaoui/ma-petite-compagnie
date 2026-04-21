@@ -108,10 +108,10 @@ membres: {
 },
 ```
 
-**6. Page de gestion** — ajouter le label dans `RIGHTS_LABELS` dans `src/app/compagnie/[id]/CompagnieDetailClient.tsx` :
+**6. Page de gestion** — ajouter le label dans `RIGHTS_LABELS` dans `src/app/compagnie/[id]/types.ts` :
 
 ```ts
-const RIGHTS_LABELS = [
+export const RIGHTS_LABELS = [
   // ...
   { key: "droitXxx", label: "Description du droit" },
 ];
