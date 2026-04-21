@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import CompagnieDetailClient from "./CompagnieDetailClient";
+import { RIGHTS_LABELS } from "./types";
 
 export const dynamic = "force-dynamic";
 
@@ -31,17 +32,7 @@ export default async function CompagnieDetailPage({ params }: { params: Promise<
   const currentMember = compagnie.membres.find((m) => m.userId === userId);
   if (!currentMember) redirect("/profil");
 
-  const hasAccess =
-    currentMember.droitAccesDetailsCompagnie ||
-    currentMember.droitModificationCompagnie ||
-    currentMember.droitSuppressionCompagnie ||
-    currentMember.droitAjoutMembre ||
-    currentMember.droitSuppressionMembre ||
-    currentMember.droitGestionDroitsMembres ||
-    currentMember.droitAccesPlanning ||
-    currentMember.droitGestionPlanning;
-
-  if (!hasAccess) redirect("/profil");
+  if (!RIGHTS_LABELS.some(({ key }) => currentMember[key])) redirect("/profil");
 
   return (
     <CompagnieDetailClient
