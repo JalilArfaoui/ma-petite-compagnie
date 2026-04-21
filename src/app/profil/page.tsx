@@ -127,7 +127,7 @@ export default function ProfilePage() {
                           </Stack>
 
                           <Flex align="center" gap={1}>
-                            {isActive && rights?.droitAccesDetailsCompagnie && (
+                            {isActive && rights && Object.values(rights).some(Boolean) && (
                               <Link href={`/compagnie/${company.id}`}>
                                 <Button
                                   size="sm"
@@ -138,7 +138,7 @@ export default function ProfilePage() {
                               </Link>
                             )}
 
-                            {isActive && !rights?.droitAccesDetailsCompagnie && (
+                            {isActive && !(rights && Object.values(rights).some(Boolean)) && (
                               <div className="bg-primary text-white p-1 rounded-full">
                                 <LuCheck size={14} />
                               </div>

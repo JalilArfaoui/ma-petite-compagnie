@@ -3,6 +3,25 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
+import type { CompanyMember } from "@prisma/client";
+
+type ActionError = { error: string };
+
+async function requireRight<K extends keyof CompanyMember>(
+  userId: number,
+  compagnieId: number,
+  right: K
+): Promise<CompanyMember | ActionError> {
+  const member = await prisma.companyMember.findUnique({
+    where: { userId_compagnieId: { userId, compagnieId } },
+  });
+  if (!member?.[right]) return { error: "Vous n'avez pas les droits nécessaires" };
+  return member;
+}
+
+function isError(value: CompanyMember | ActionError): value is ActionError {
+  return "error" in value;
+}
 
 export async function addMemberByEmail(formData: FormData) {
   const session = await auth();
@@ -13,25 +32,21 @@ export async function addMemberByEmail(formData: FormData) {
 
   if (!email) return { error: "Adresse email requise" };
 
-  const member = await prisma.companyMember.findUnique({
-    where: { userId_compagnieId: { userId: Number(session.user.id), compagnieId } },
-  });
-
-  if (!member?.droitAjoutMembre) return { error: "Vous n'avez pas les droits nécessaires" };
-
-  const userToAdd = await prisma.user.findUnique({ where: { email } });
-  if (!userToAdd) return { error: "Aucun compte trouvé avec cette adresse email" };
-
-  if (userToAdd.id === Number(session.user.id)) return { error: "Vous êtes déjà membre de cette compagnie" };
-
-  const existing = await prisma.companyMember.findUnique({
-    where: { userId_compagnieId: { userId: userToAdd.id, compagnieId } },
-  });
-  if (existing) return { error: "Cet utilisateur est déjà membre de cette compagnie" };
-
-  const canSetRights = member.droitGestionDroitsMembres;
-
   try {
+    const memberOrError = await requireRight(Number(session.user.id), compagnieId, "droitAjoutMembre");
+    if (isError(memberOrError)) return memberOrError;
+
+    const userToAdd = await prisma.user.findUnique({ where: { email } });
+    if (!userToAdd) return { error: "Aucun compte trouvé avec cette adresse email" };
+    if (userToAdd.id === Number(session.user.id)) return { error: "Vous êtes déjà membre de cette compagnie" };
+
+    const existing = await prisma.companyMember.findUnique({
+      where: { userId_compagnieId: { userId: userToAdd.id, compagnieId } },
+    });
+    if (existing) return { error: "Cet utilisateur est déjà membre de cette compagnie" };
+
+    const canSetRights = memberOrError.droitGestionDroitsMembres;
+
     await prisma.companyMember.create({
       data: {
         userId: userToAdd.id,
@@ -64,13 +79,10 @@ export async function updateCompany(formData: FormData) {
 
   if (!nom || nom.length < 2) return { error: "Le nom est trop court" };
 
-  const member = await prisma.companyMember.findUnique({
-    where: { userId_compagnieId: { userId: Number(session.user.id), compagnieId: id } },
-  });
-
-  if (!member?.droitModificationCompagnie) return { error: "Vous n'avez pas les droits nécessaires" };
-
   try {
+    const memberOrError = await requireRight(Number(session.user.id), id, "droitModificationCompagnie");
+    if (isError(memberOrError)) return memberOrError;
+
     const company = await prisma.compagnie.update({ where: { id }, data: { nom } });
     revalidatePath("/profil");
     return { success: true, company };
@@ -85,13 +97,10 @@ export async function deleteCompany(formData: FormData) {
 
   const id = Number(formData.get("id"));
 
-  const member = await prisma.companyMember.findUnique({
-    where: { userId_compagnieId: { userId: Number(session.user.id), compagnieId: id } },
-  });
-
-  if (!member?.droitSuppressionCompagnie) return { error: "Vous n'avez pas les droits nécessaires" };
-
   try {
+    const memberOrError = await requireRight(Number(session.user.id), id, "droitSuppressionCompagnie");
+    if (isError(memberOrError)) return memberOrError;
+
     await prisma.compagnie.delete({ where: { id } });
     revalidatePath("/profil");
     return { success: true };
@@ -107,17 +116,14 @@ export async function removeMember(formData: FormData) {
   const compagnieId = Number(formData.get("compagnieId"));
   const memberId = Number(formData.get("memberId"));
 
-  const currentMember = await prisma.companyMember.findUnique({
-    where: { userId_compagnieId: { userId: Number(session.user.id), compagnieId } },
-  });
-
-  if (!currentMember?.droitSuppressionMembre) return { error: "Vous n'avez pas les droits nécessaires" };
-
-  const target = await prisma.companyMember.findUnique({ where: { id: memberId } });
-  if (!target || target.compagnieId !== compagnieId) return { error: "Membre introuvable" };
-  if (target.userId === Number(session.user.id)) return { error: "Vous ne pouvez pas vous retirer vous-même" };
-
   try {
+    const memberOrError = await requireRight(Number(session.user.id), compagnieId, "droitSuppressionMembre");
+    if (isError(memberOrError)) return memberOrError;
+
+    const target = await prisma.companyMember.findUnique({ where: { id: memberId } });
+    if (!target || target.compagnieId !== compagnieId) return { error: "Membre introuvable" };
+    if (target.userId === Number(session.user.id)) return { error: "Vous ne pouvez pas vous retirer vous-même" };
+
     await prisma.companyMember.delete({ where: { id: memberId } });
     revalidatePath(`/compagnie/${compagnieId}`);
     return { success: true };
@@ -133,16 +139,14 @@ export async function updateMemberRights(formData: FormData) {
   const compagnieId = Number(formData.get("compagnieId"));
   const memberId = Number(formData.get("memberId"));
 
-  const currentMember = await prisma.companyMember.findUnique({
-    where: { userId_compagnieId: { userId: Number(session.user.id), compagnieId } },
-  });
-
-  if (!currentMember?.droitGestionDroitsMembres) return { error: "Vous n'avez pas les droits nécessaires" };
-
-  const target = await prisma.companyMember.findUnique({ where: { id: memberId } });
-  if (!target || target.compagnieId !== compagnieId) return { error: "Membre introuvable" };
-
   try {
+    const memberOrError = await requireRight(Number(session.user.id), compagnieId, "droitGestionDroitsMembres");
+    if (isError(memberOrError)) return memberOrError;
+
+    const target = await prisma.companyMember.findUnique({ where: { id: memberId } });
+    if (!target || target.compagnieId !== compagnieId) return { error: "Membre introuvable" };
+    if (target.userId === Number(session.user.id)) return { error: "Vous ne pouvez pas modifier vos propres droits" };
+
     await prisma.companyMember.update({
       where: { id: memberId },
       data: {
@@ -158,22 +162,17 @@ export async function updateMemberRights(formData: FormData) {
     });
     revalidatePath(`/compagnie/${compagnieId}`);
     return { success: true };
-  } catch (error) {
-    console.error("[updateMemberRights]", error);
+  } catch {
     return { error: "Erreur lors de la mise à jour des droits" };
   }
 }
 
 export async function createCompany(formData: FormData) {
   const session = await auth();
-  if (!session?.user?.id) {
-    return { error: "Vous devez être connecté" };
-  }
+  if (!session?.user?.id) return { error: "Vous devez être connecté" };
 
   const nom = formData.get("nom") as string;
-  if (!nom || nom.length < 2) {
-    return { error: "Le nom de la compagnie est trop court" };
-  }
+  if (!nom || nom.length < 2) return { error: "Le nom de la compagnie est trop court" };
 
   try {
     const company = await prisma.compagnie.create({
@@ -182,7 +181,6 @@ export async function createCompany(formData: FormData) {
         membres: {
           create: {
             userId: Number(session.user.id),
-            // Default rights for creator
             droitAccesDetailsCompagnie: true,
             droitSuppressionCompagnie: true,
             droitModificationCompagnie: true,
@@ -195,11 +193,9 @@ export async function createCompany(formData: FormData) {
         },
       },
     });
-
     revalidatePath("/");
     return { success: true, company };
-  } catch (error) {
-    console.error("Erreur création compagnie:", error);
+  } catch {
     return { error: "Une erreur est survenue lors de la création" };
   }
 }

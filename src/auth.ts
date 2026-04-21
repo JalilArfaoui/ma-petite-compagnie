@@ -91,16 +91,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           if (!token.activeCompanyId && memberships.length > 0) {
             session.activeCompanyId = memberships[0].compagnieId;
             const m0 = memberships[0];
-            const hasAnyActionRight =
-              m0.droitModificationCompagnie ||
-              m0.droitSuppressionCompagnie ||
-              m0.droitAjoutMembre ||
-              m0.droitSuppressionMembre ||
-              m0.droitGestionDroitsMembres ||
-              m0.droitAccesPlanning ||
-              m0.droitGestionPlanning;
             session.rights = {
-              droitAccesDetailsCompagnie: m0.droitAccesDetailsCompagnie || hasAnyActionRight,
+              droitAccesDetailsCompagnie: m0.droitAccesDetailsCompagnie,
               droitModificationCompagnie: m0.droitModificationCompagnie,
               droitSuppressionCompagnie: m0.droitSuppressionCompagnie,
               droitAjoutMembre: m0.droitAjoutMembre,
