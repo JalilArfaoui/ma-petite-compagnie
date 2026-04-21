@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Badge, Button, Container, Logo, Text, Select } from "@/components/ui";
-import { LuLogIn, LuLogOut, LuBuilding, LuRepeat, LuUser, LuMenu, LuX } from "react-icons/lu";
+import { LuLogIn, LuLogOut, LuRepeat, LuUser, LuMenu, LuX } from "react-icons/lu";
+import { FaTheaterMasks } from "react-icons/fa";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 
@@ -89,7 +90,7 @@ export const Header = () => {
                         <Button
                           variant="solid"
                           size="sm"
-                          icon={<LuBuilding />}
+                          icon={<FaTheaterMasks />}
                           className="bg-primary hover:bg-primary/90"
                         >
                           Créer une compagnie
