@@ -101,6 +101,16 @@ export default function CompagnieDetailClient({
   const [addError, setAddError] = useState<string | null>(null);
   const [addSuccess, setAddSuccess] = useState<string | null>(null);
   const [addSubmitting, setAddSubmitting] = useState(false);
+  const [newMemberRights, setNewMemberRights] = useState<MemberRights>({
+    droitAccesDetailsCompagnie: false,
+    droitModificationCompagnie: false,
+    droitSuppressionCompagnie: false,
+    droitAjoutMembre: false,
+    droitSuppressionMembre: false,
+    droitGestionDroitsMembres: false,
+    droitAccesPlanning: false,
+    droitGestionPlanning: false,
+  });
 
   // --- Remove member ---
   const [removingId, setRemovingId] = useState<number | null>(null);
@@ -160,6 +170,7 @@ export default function CompagnieDetailClient({
     const fd = new FormData();
     fd.set("compagnieId", String(compagnie.id));
     fd.set("email", addEmail);
+    Object.entries(newMemberRights).forEach(([k, v]) => fd.set(k, String(v)));
     const result = await addMemberByEmail(fd);
     setAddSubmitting(false);
     if ("error" in result) {
@@ -167,6 +178,16 @@ export default function CompagnieDetailClient({
     } else {
       setAddSuccess(`${result.nom} a été ajouté à la compagnie.`);
       setAddEmail("");
+      setNewMemberRights({
+        droitAccesDetailsCompagnie: false,
+        droitModificationCompagnie: false,
+        droitSuppressionCompagnie: false,
+        droitAjoutMembre: false,
+        droitSuppressionMembre: false,
+        droitGestionDroitsMembres: false,
+        droitAccesPlanning: false,
+        droitGestionPlanning: false,
+      });
       router.refresh();
     }
   };
@@ -352,6 +373,32 @@ export default function CompagnieDetailClient({
                   {addSubmitting ? "..." : "Ajouter"}
                 </Button>
               </Flex>
+
+              {rights.droitGestionDroitsMembres && (
+                <Box className="border-t border-slate-100 pt-4">
+                  <Flex align="center" gap={2} className="mb-3">
+                    <LuShield size={13} className="text-slate-400" />
+                    <Text className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                      Droits accordés
+                    </Text>
+                  </Flex>
+                  <Stack gap={2}>
+                    {RIGHTS_LABELS.map(({ key, label }) => (
+                      <Flex key={key} align="center" gap={2}>
+                        <Text className="text-sm text-slate-600 shrink-0">{label}</Text>
+                        <div className="flex-1 border-b border-dotted border-slate-300 mb-0.5" />
+                        <Switch
+                          checked={newMemberRights[key]}
+                          onChange={(e) =>
+                            setNewMemberRights((prev) => ({ ...prev, [key]: e.target.checked }))
+                          }
+                        />
+                      </Flex>
+                    ))}
+                  </Stack>
+                </Box>
+              )}
+
               {addError && <Text className="text-sm text-red-500">{addError}</Text>}
               {addSuccess && (
                 <Flex align="center" gap={2} className="text-green-600">
@@ -438,8 +485,9 @@ export default function CompagnieDetailClient({
                         </Flex>
                         <Stack gap={2}>
                           {RIGHTS_LABELS.map(({ key, label }) => (
-                            <Flex key={key} align="center" justify="between">
-                              <Text className="text-sm text-slate-600">{label}</Text>
+                            <Flex key={key} align="center" gap={2}>
+                              <Text className="text-sm text-slate-600 shrink-0">{label}</Text>
+                              <div className="flex-1 border-b border-dotted border-slate-300 mb-0.5" />
                               <Switch
                                 checked={memberRights[key]}
                                 disabled={isSaving}

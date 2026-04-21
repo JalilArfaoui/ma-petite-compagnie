@@ -29,11 +29,26 @@ export async function addMemberByEmail(formData: FormData) {
   });
   if (existing) return { error: "Cet utilisateur est déjà membre de cette compagnie" };
 
+  const canSetRights = member.droitGestionDroitsMembres;
+
   try {
     await prisma.companyMember.create({
-      data: { userId: userToAdd.id, compagnieId },
+      data: {
+        userId: userToAdd.id,
+        compagnieId,
+        ...(canSetRights && {
+          droitAccesDetailsCompagnie: formData.get("droitAccesDetailsCompagnie") === "true",
+          droitModificationCompagnie: formData.get("droitModificationCompagnie") === "true",
+          droitSuppressionCompagnie: formData.get("droitSuppressionCompagnie") === "true",
+          droitAjoutMembre: formData.get("droitAjoutMembre") === "true",
+          droitSuppressionMembre: formData.get("droitSuppressionMembre") === "true",
+          droitGestionDroitsMembres: formData.get("droitGestionDroitsMembres") === "true",
+          droitAccesPlanning: formData.get("droitAccesPlanning") === "true",
+          droitGestionPlanning: formData.get("droitGestionPlanning") === "true",
+        }),
+      },
     });
-    revalidatePath("/profil");
+    revalidatePath(`/compagnie/${compagnieId}`);
     return { success: true, nom: `${userToAdd.prenom ?? ""} ${userToAdd.nom ?? ""}`.trim() || email };
   } catch {
     return { error: "Erreur lors de l'ajout du membre" };
