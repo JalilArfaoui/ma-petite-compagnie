@@ -7,7 +7,9 @@ import { removeMember, updateMemberRights } from "@/app/(auth)/company-actions";
 import { RIGHTS_LABELS, type Member, type MemberRights } from "./types";
 
 function getInitials(user: Member["user"]) {
-  return `${user.prenom?.[0] ?? ""}${user.nom?.[0] ?? ""}`.toUpperCase() || user.email[0].toUpperCase();
+  return (
+    `${user.prenom?.[0] ?? ""}${user.nom?.[0] ?? ""}`.toUpperCase() || user.email[0].toUpperCase()
+  );
 }
 
 function getDisplayName(user: Member["user"]) {
@@ -37,7 +39,8 @@ export function CarteMembre({
   const [removeError, setRemoveError] = useState<string | null>(null);
 
   const memberRights: MemberRights =
-    localRights ?? (Object.fromEntries(RIGHTS_LABELS.map(({ key }) => [key, member[key]])) as MemberRights);
+    localRights ??
+    (Object.fromEntries(RIGHTS_LABELS.map(({ key }) => [key, member[key]])) as MemberRights);
 
   const handleToggleRight = async (rightKey: keyof MemberRights, value: boolean) => {
     const previousRights = memberRights;
@@ -84,16 +87,28 @@ export function CarteMembre({
             </div>
             <Box className="min-w-0">
               <Flex align="center" gap={2}>
-                <Text className="font-semibold text-slate-900 truncate">{getDisplayName(member.user)}</Text>
-                {isSelf && <Badge variant="blue" className="text-[10px] shrink-0">Vous</Badge>}
+                <Text className="font-semibold text-slate-900 truncate">
+                  {getDisplayName(member.user)}
+                </Text>
+                {isSelf && (
+                  <Badge variant="blue" className="text-[10px] shrink-0">
+                    Vous
+                  </Badge>
+                )}
               </Flex>
               <Text className="text-xs text-slate-400 truncate">{member.user.email}</Text>
             </Box>
           </Flex>
 
           {canRemove && !isSelf && (
-            <Button size="sm" variant="ghost" onClick={handleRemove} disabled={isRemoving}
-              className="hover:bg-red-50 hover:text-red-600 shrink-0" icon={<LuUserMinus size={14} />} />
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={handleRemove}
+              disabled={isRemoving}
+              className="hover:bg-red-50 hover:text-red-600 shrink-0"
+              icon={<LuUserMinus size={14} />}
+            />
           )}
         </Flex>
 
@@ -103,7 +118,9 @@ export function CarteMembre({
           <Box className="border-t border-slate-100 pt-4">
             <Flex align="center" gap={2} className="mb-3">
               <LuShield size={13} className="text-slate-400" />
-              <Text className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Droits</Text>
+              <Text className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                Droits
+              </Text>
               {isSaving && <Text className="text-xs text-slate-400 ml-auto">Enregistrement…</Text>}
               {rightsError && <Text className="text-xs text-red-500 ml-auto">{rightsError}</Text>}
             </Flex>

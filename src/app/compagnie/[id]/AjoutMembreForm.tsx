@@ -56,7 +56,11 @@ export function AjoutMembreForm({
             type="email"
             placeholder="adresse@email.com"
             value={email}
-            onChange={(e) => { setEmail(e.target.value); setError(null); setSuccess(null); }}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setError(null);
+              setSuccess(null);
+            }}
             className="flex-1"
             onKeyDown={(e) => e.key === "Enter" && email && handleSubmit()}
           />
@@ -80,7 +84,9 @@ export function AjoutMembreForm({
                   <div className="flex-1 border-b border-dotted border-slate-300 mb-0.5" />
                   <Switch
                     checked={newMemberRights[key]}
-                    onChange={(e) => setNewMemberRights((prev) => ({ ...prev, [key]: e.target.checked }))}
+                    onChange={(e) =>
+                      setNewMemberRights((prev) => ({ ...prev, [key]: e.target.checked }))
+                    }
                   />
                 </Flex>
               ))}

@@ -76,26 +76,53 @@ export function CompagnieHeader({
               />
               {nameError && <Text className="text-xs text-red-500">{nameError}</Text>}
               <Flex gap={2}>
-                <Button size="sm" onClick={handleSaveName} disabled={nameSubmitting || editValue.length < 2}>
+                <Button
+                  size="sm"
+                  onClick={handleSaveName}
+                  disabled={nameSubmitting || editValue.length < 2}
+                >
                   {nameSubmitting ? "..." : "Enregistrer"}
                 </Button>
-                <Button size="sm" variant="ghost" onClick={() => { setEditing(false); setNameError(null); }} icon={<LuX />} />
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => {
+                    setEditing(false);
+                    setNameError(null);
+                  }}
+                  icon={<LuX />}
+                />
               </Flex>
             </Stack>
           ) : (
-            <Heading as="h3" className="font-serif truncate">{nom}</Heading>
+            <Heading as="h3" className="font-serif truncate">
+              {nom}
+            </Heading>
           )}
         </Flex>
 
         {!editing && (
           <Flex gap={2} className="shrink-0">
             {canEdit && (
-              <Button size="sm" variant="ghost" onClick={() => { setEditing(true); setEditValue(nom); }}
-                className="hover:bg-primary/10 hover:text-primary" icon={<LuPencil size={14} />} />
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => {
+                  setEditing(true);
+                  setEditValue(nom);
+                }}
+                className="hover:bg-primary/10 hover:text-primary"
+                icon={<LuPencil size={14} />}
+              />
             )}
             {canDelete && !confirmDelete && (
-              <Button size="sm" variant="ghost" onClick={() => setConfirmDelete(true)}
-                className="hover:bg-red-50 hover:text-red-600" icon={<LuTrash2 size={14} />} />
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => setConfirmDelete(true)}
+                className="hover:bg-red-50 hover:text-red-600"
+                icon={<LuTrash2 size={14} />}
+              />
             )}
           </Flex>
         )}
@@ -109,11 +136,23 @@ export function CompagnieHeader({
             </Text>
             {deleteError && <Text className="text-xs text-red-600">{deleteError}</Text>}
             <Flex gap={2}>
-              <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white"
-                onClick={handleDelete} disabled={deleteSubmitting}>
+              <Button
+                size="sm"
+                className="bg-red-600 hover:bg-red-700 text-white"
+                onClick={handleDelete}
+                disabled={deleteSubmitting}
+              >
                 {deleteSubmitting ? "..." : "Confirmer la suppression"}
               </Button>
-              <Button size="sm" variant="ghost" onClick={() => { setConfirmDelete(false); setDeleteError(null); }} icon={<LuX />} />
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => {
+                  setConfirmDelete(false);
+                  setDeleteError(null);
+                }}
+                icon={<LuX />}
+              />
             </Flex>
           </Stack>
         </Box>
