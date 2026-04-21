@@ -58,14 +58,27 @@ export async function addMemberByEmail(formData: FormData) {
         userId: userToAdd.id,
         compagnieId,
         ...(canSetRights && {
-          droitAccesDetailsCompagnie: memberOrError.droitAccesDetailsCompagnie && formData.get("droitAccesDetailsCompagnie") === "true",
-          droitModificationCompagnie: memberOrError.droitModificationCompagnie && formData.get("droitModificationCompagnie") === "true",
-          droitSuppressionCompagnie: memberOrError.droitSuppressionCompagnie && formData.get("droitSuppressionCompagnie") === "true",
-          droitAjoutMembre: memberOrError.droitAjoutMembre && formData.get("droitAjoutMembre") === "true",
-          droitSuppressionMembre: memberOrError.droitSuppressionMembre && formData.get("droitSuppressionMembre") === "true",
-          droitGestionDroitsMembres: memberOrError.droitGestionDroitsMembres && formData.get("droitGestionDroitsMembres") === "true",
-          droitAccesPlanning: memberOrError.droitAccesPlanning && formData.get("droitAccesPlanning") === "true",
-          droitGestionPlanning: memberOrError.droitGestionPlanning && formData.get("droitGestionPlanning") === "true",
+          droitAccesDetailsCompagnie:
+            memberOrError.droitAccesDetailsCompagnie &&
+            formData.get("droitAccesDetailsCompagnie") === "true",
+          droitModificationCompagnie:
+            memberOrError.droitModificationCompagnie &&
+            formData.get("droitModificationCompagnie") === "true",
+          droitSuppressionCompagnie:
+            memberOrError.droitSuppressionCompagnie &&
+            formData.get("droitSuppressionCompagnie") === "true",
+          droitAjoutMembre:
+            memberOrError.droitAjoutMembre && formData.get("droitAjoutMembre") === "true",
+          droitSuppressionMembre:
+            memberOrError.droitSuppressionMembre &&
+            formData.get("droitSuppressionMembre") === "true",
+          droitGestionDroitsMembres:
+            memberOrError.droitGestionDroitsMembres &&
+            formData.get("droitGestionDroitsMembres") === "true",
+          droitAccesPlanning:
+            memberOrError.droitAccesPlanning && formData.get("droitAccesPlanning") === "true",
+          droitGestionPlanning:
+            memberOrError.droitGestionPlanning && formData.get("droitGestionPlanning") === "true",
         }),
       },
     });
@@ -177,14 +190,26 @@ export async function updateMemberRights(formData: FormData) {
     await prisma.companyMember.update({
       where: { id: memberId },
       data: {
-        droitAccesDetailsCompagnie: memberOrError.droitAccesDetailsCompagnie && formData.get("droitAccesDetailsCompagnie") === "true",
-        droitModificationCompagnie: memberOrError.droitModificationCompagnie && formData.get("droitModificationCompagnie") === "true",
-        droitSuppressionCompagnie: memberOrError.droitSuppressionCompagnie && formData.get("droitSuppressionCompagnie") === "true",
-        droitAjoutMembre: memberOrError.droitAjoutMembre && formData.get("droitAjoutMembre") === "true",
-        droitSuppressionMembre: memberOrError.droitSuppressionMembre && formData.get("droitSuppressionMembre") === "true",
-        droitGestionDroitsMembres: memberOrError.droitGestionDroitsMembres && formData.get("droitGestionDroitsMembres") === "true",
-        droitAccesPlanning: memberOrError.droitAccesPlanning && formData.get("droitAccesPlanning") === "true",
-        droitGestionPlanning: memberOrError.droitGestionPlanning && formData.get("droitGestionPlanning") === "true",
+        droitAccesDetailsCompagnie:
+          memberOrError.droitAccesDetailsCompagnie &&
+          formData.get("droitAccesDetailsCompagnie") === "true",
+        droitModificationCompagnie:
+          memberOrError.droitModificationCompagnie &&
+          formData.get("droitModificationCompagnie") === "true",
+        droitSuppressionCompagnie:
+          memberOrError.droitSuppressionCompagnie &&
+          formData.get("droitSuppressionCompagnie") === "true",
+        droitAjoutMembre:
+          memberOrError.droitAjoutMembre && formData.get("droitAjoutMembre") === "true",
+        droitSuppressionMembre:
+          memberOrError.droitSuppressionMembre && formData.get("droitSuppressionMembre") === "true",
+        droitGestionDroitsMembres:
+          memberOrError.droitGestionDroitsMembres &&
+          formData.get("droitGestionDroitsMembres") === "true",
+        droitAccesPlanning:
+          memberOrError.droitAccesPlanning && formData.get("droitAccesPlanning") === "true",
+        droitGestionPlanning:
+          memberOrError.droitGestionPlanning && formData.get("droitGestionPlanning") === "true",
       },
     });
     revalidatePath(`/compagnie/${compagnieId}`);
