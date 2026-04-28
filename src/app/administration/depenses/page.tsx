@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getOperations, getNomsSpectacles } from "../finance-actions";
 import DepensesClient from "./DepensesClient";
 
