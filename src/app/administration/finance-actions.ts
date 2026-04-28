@@ -32,7 +32,7 @@ export async function getOperations(type: TypeOperation, compagnieId: number = 1
     nom: op.nom,
     montant: op.montant,
     date: op.date.toISOString().split("T")[0],
-    type: (op.categorie ?? "facture") as any,
+    type: (op.categorie ?? "facture") as "facture" | "financement",
     typeOp: op.type, // RECETTE ou DEPENSE
     statut: (op.statut ?? "en_attente") as "en_attente" | "paye",
     source: op.source,

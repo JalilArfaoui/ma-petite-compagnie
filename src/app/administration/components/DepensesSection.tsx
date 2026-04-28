@@ -5,7 +5,7 @@ import { Card, toaster } from "@/components/ui";
 import { formatMontant } from "../utils";
 import { ModalAjoutRapide, DonneesAjoutFinancier } from "../modals";
 import { Depense } from "./types";
-import { NoteInfo, FadeContainer, ItemFinancierCard, VoirToutLink } from "./shared";
+import { FadeContainer, ItemFinancierCard, VoirToutLink } from "./shared";
 import { creerOperation } from "../finance-actions";
 import { buildDepenseLocale, buildDepensePayload } from "../finance-helpers";
 
@@ -18,7 +18,7 @@ export function DepensesSection({
   setDepenses: React.Dispatch<React.SetStateAction<Depense[]>>;
   spectacles: string[];
 }) {
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   const totalDepenses = depenses.reduce((acc, d) => acc + d.montant, 0);
 

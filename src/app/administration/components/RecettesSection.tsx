@@ -18,7 +18,7 @@ export function RecettesSection({
   setRecettes: React.Dispatch<React.SetStateAction<Recette[]>>;
   spectacles: string[];
 }) {
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   const validerRecette = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();

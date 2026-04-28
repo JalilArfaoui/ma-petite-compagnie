@@ -25,7 +25,7 @@ export default function DepensesClient({
   initialDepenses: DepenseFromServer[];
   nomsSpectacles: string[];
 }) {
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   const {
     items: depenses,

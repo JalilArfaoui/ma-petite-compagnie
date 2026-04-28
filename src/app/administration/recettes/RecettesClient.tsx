@@ -33,7 +33,7 @@ export default function RecettesClient({
   initialRecettes: RecetteFromServer[];
   nomsSpectacles: string[];
 }) {
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   const {
     items: recettes,

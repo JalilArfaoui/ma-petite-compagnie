@@ -4,7 +4,8 @@ import { Text, Badge, Tooltip, Card, Link, Alert, Button } from "@/components/ui
 import { useRouter } from "next/navigation";
 import { FaArrowLeft, FaCheck, FaInfoCircle, FaPen, FaTrash, FaUndo } from "react-icons/fa";
 import { formatDateFr, formatMontant } from "../utils";
-import { Recette, Depense } from "./types";
+// Suppression des imports inutilisés car nous définissons une interface locale pour le composant ItemFinancierCard
+// import { Recette, Depense } from "./types";
 
 export function NoteInfo({
   children,
@@ -85,6 +86,18 @@ export function BarreBudget({
   );
 }
 
+interface ItemFinancier {
+  id: string;
+  nom: string;
+  montant: number;
+  date?: string;
+  type?: "facture" | "financement";
+  typeOp?: "RECETTE" | "DEPENSE";
+  statut?: "en_attente" | "paye";
+  spectacles?: string[];
+  fichier?: string;
+}
+
 export function ItemFinancierCard({
   item,
   onValider,
@@ -92,7 +105,7 @@ export function ItemFinancierCard({
   onDelete,
   showSpectaclesInline = false,
 }: {
-  item: any;
+  item: ItemFinancier;
   onValider?: (id: string, e: React.MouseEvent) => void;
   onEdit?: (id: string, e: React.MouseEvent) => void;
   onDelete?: (id: string, e: React.MouseEvent) => void;
