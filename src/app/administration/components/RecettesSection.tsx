@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useTransition } from "react";
 import { Card, toaster } from "@/components/ui";
 import { formatMontant } from "../utils";
 import { ModalAjoutRapide, DonneesAjoutFinancier } from "../modals";
 import { Recette } from "./types";
 import { NoteInfo, FadeContainer, ItemFinancierCard, VoirToutLink } from "./shared";
+import { validerOperation, creerOperation } from "../finance-actions";
+import { buildRecetteLocale, buildRecettePayload } from "../finance-helpers";
 
 export function RecettesSection({
   recettes,
@@ -16,6 +18,8 @@ export function RecettesSection({
   setRecettes: React.Dispatch<React.SetStateAction<Recette[]>>;
   spectacles: string[];
 }) {
+  const [isPending, startTransition] = useTransition();
+
   const validerRecette = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setRecettes((prev) => prev.map((r) => (r.id === id ? { ...r, statut: "paye" as const } : r)));
@@ -23,31 +27,29 @@ export function RecettesSection({
       title: "Recette validée",
       description: "Le statut a été mis à jour avec succès.",
     });
+
+    startTransition(async () => {
+      await validerOperation(Number(id));
+    });
   };
 
   const totalRecettes = recettes.reduce((acc, r) => acc + r.montant, 0);
 
-  // Trier par date décroissante
-  const recettesFiltrees = [...recettes].sort(
-    (a, b) => new Date(b.date || "").getTime() - new Date(a.date || "").getTime()
-  );
+  const recettesFiltrees = useMemo(() => {
+    return [...recettes].sort(
+      (a, b) => new Date(b.date || "").getTime() - new Date(a.date || "").getTime()
+    );
+  }, [recettes]);
 
-  // Limiter l'affichage
   const recettesAffichees = recettesFiltrees.slice(0, 5);
 
   const handleAddRecette = (data: DonneesAjoutFinancier) => {
-    const nouvelle: Recette = {
-      id: `r-temp-${Date.now()}`,
-      nom: data.nom,
-      montant: data.montant,
-      date: data.date,
-      type: data.type ?? "facture",
-      statut: data.statut ?? "en_attente",
-      spectacles: data.spectacles || [],
-      fichier: data.fichier,
-    };
-    setRecettes([nouvelle, ...recettes]);
+    setRecettes([buildRecetteLocale(data), ...recettes]);
     toaster.success({ title: "Recette ajoutée" });
+
+    startTransition(async () => {
+      await creerOperation(buildRecettePayload(data));
+    });
   };
 
   return (

@@ -1,10 +1,13 @@
 "use client";
 
+import { useTransition } from "react";
 import { Card, toaster } from "@/components/ui";
 import { formatMontant } from "../utils";
 import { ModalAjoutRapide, DonneesAjoutFinancier } from "../modals";
 import { Depense } from "./types";
 import { NoteInfo, FadeContainer, ItemFinancierCard, VoirToutLink } from "./shared";
+import { creerOperation } from "../finance-actions";
+import { buildDepenseLocale, buildDepensePayload } from "../finance-helpers";
 
 export function DepensesSection({
   depenses,
@@ -15,6 +18,8 @@ export function DepensesSection({
   setDepenses: React.Dispatch<React.SetStateAction<Depense[]>>;
   spectacles: string[];
 }) {
+  const [isPending, startTransition] = useTransition();
+
   const totalDepenses = depenses.reduce((acc, d) => acc + d.montant, 0);
 
   const depensesAffichees = [...depenses]
@@ -22,18 +27,14 @@ export function DepensesSection({
     .slice(0, 5);
 
   const handleAddDepense = (data: DonneesAjoutFinancier) => {
-    const nouvelleDepense: Depense = {
-      id: `d-temp-${Date.now()}`, // dépenses temporaires (non connecté à la bdd encore)
-      nom: data.nom,
-      date: data.date,
-      montant: data.montant,
-      spectacles: data.spectacles || [],
-      fichier: data.fichier,
-    };
-    setDepenses([nouvelleDepense, ...depenses]);
+    setDepenses([buildDepenseLocale(data), ...depenses]);
     toaster.success({
       title: "Dépense ajoutée",
       description: "La dépense a été directement comptabilisée comme payée.",
+    });
+
+    startTransition(async () => {
+      await creerOperation(buildDepensePayload(data));
     });
   };
 
