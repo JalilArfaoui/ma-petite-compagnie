@@ -30,34 +30,32 @@ export default function ContactPage() {
     }
   }
   return (
-    <Box className=" py-5 flex-col items-center gap-4">
+    <Box className=" py-5 px-3 flex-col items-center gap-4">
       <Toaster />
-
+      <Stack className="gap-5 items-center mb-3" justify="center" direction="row">
+        <Heading as="h3">Page de contact</Heading>
+      </Stack>
       <Stack
-        className="gap-5 items-center w-full justify-between  mb-10 z-10 bg-white"
+        className="gap-5 items-center w-full  mb-10 z-10 bg-white"
         direction="row"
+        justify="end"
       >
-        <Stack className="gap-5 items-center" direction="row">
-          <Heading as="h3">Page de contact </Heading>
-        </Stack>
-        <Stack className="gap-5 items-center w-fit" direction="row" justify="end">
-          <CSVContactImport
-            attributs={{
-              attributsObligatoire: ["Nom", "Prénom"],
-              attributsOptionnels: ["Email", "Notes", "Téléphone", "Ville", "Adresse"],
-            }}
-            nomObjet="Contact"
-            onCSVRead={onCSVRead}
-          ></CSVContactImport>
-          <Link href="./communication/contact">
-            <Button size={"sm"} className=" scale-0.9">
-              <Text className="text-white">+ Créer un contact</Text>
-            </Button>
-          </Link>
-        </Stack>
+        <CSVContactImport
+          attributs={{
+            attributsObligatoire: ["Nom", "Prénom"],
+            attributsOptionnels: ["Email", "Notes", "Téléphone", "Ville", "Adresse"],
+          }}
+          nomObjet="Contact"
+          onCSVRead={onCSVRead}
+        ></CSVContactImport>
+        <Link href="./communication/contact">
+          <Button size={"sm"} className=" scale-0.9">
+            <Text className="text-white">+ Créer un contact</Text>
+          </Button>
+        </Link>
       </Stack>
 
-      <Box className="md:w-full lg:w-[75%] mx-auto  ">
+      <Box className="md:w-full lg:w-[90%] mx-auto   ">
         <ContactTable />
       </Box>
     </Box>

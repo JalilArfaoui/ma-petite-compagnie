@@ -15,6 +15,9 @@ function toContactInformation(donnees: Record<string, string>): ContactInformati
     email: donnees.Email,
     tel: donnees.Téléphone,
     role: null,
+    notes: donnees.Notes,
+    ville: donnees.Ville,
+    lieu: donnees.Adresse,
   };
 }
 export async function csvToContacts(donnees: Record<string, string>[]) {
