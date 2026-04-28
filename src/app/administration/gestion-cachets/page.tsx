@@ -4,8 +4,6 @@ import { Button, Card, Table, Heading } from "@/components/ui";
 import { useState, useEffect } from "react";
 import { getCachets } from "./actions";
 
-//dois corriger bug symbole € ne s'affichant pas si modification d'un cachet
-
 //seule la note est optionnelle, toutes les autres clés sont obligatoires donc pas de null permis
 type Cachet = {
   id: number;
@@ -28,7 +26,7 @@ export default function PageCachets() {
   const [editId, setEditId] = useState<number | null>(null);
   const [filtreMembre, setFiltreMembre] = useState<number | null>(null);
   const [filtreSpectacle, setFiltreSpectacle] = useState<number | null>(null);
-  const [tri, setTri] = useState<"date" | "montant">("date");
+  const [tri, setTri] = useState<"datecroissante" | "datedecroissante" | "montantcroissant" | "montantdecroissante">("datecroissante");
   const [errors, setErrors] = useState<{ [key: string]: string }>({}); //stocker une erreur par champ
 
   useEffect(() => {
@@ -92,7 +90,7 @@ export default function PageCachets() {
       setCachets(
         cachets.map((c) =>
           c.id === editId
-            ? { ...c, membreId: membreId!, spectacleId: spectacleId!, date, montant, note }
+            ? { ...c, membreId: membreId!, spectacleId: spectacleId!, date, montant: `${montant} €`, note }
             : c
         )
       );
@@ -118,7 +116,7 @@ export default function PageCachets() {
     setEditId(c.id);
     setMembreId(c.membreId);
     setDate(c.date);
-    setMontant(c.montant);
+    setMontant(c.montant.replace(/[^\d.,-]/g, ''));
     setSpectacleId(c.spectacleId);
     setNote(c.note || "");
   }
@@ -133,16 +131,29 @@ export default function PageCachets() {
     ? cachetsFiltresParMembre.filter((c) => c.spectacleId === filtreSpectacle)
     : cachetsFiltresParMembre;
 
-  //filtrage par date (décroissant) ou montant (décroissant), (agit uniquement sur cachets de membre x)
+  //filtrage par date ou montant avec direction croissante/décroissante
   const cachetsTries = [...cachetsFiltres].sort((a, b) => {
-    if (tri === "date") return b.date.localeCompare(a.date);
-    if (tri === "montant") return Number(b.montant) - Number(a.montant);
+    if (tri === "datecroissante") return a.date.localeCompare(b.date);
+    if (tri === "datedecroissante") return b.date.localeCompare(a.date);
+    if (tri === "montantcroissant") {
+      const aNum = parseFloat(a.montant.replace(/[^\d.,-]/g, '').replace(',', '.'));
+      const bNum = parseFloat(b.montant.replace(/[^\d.,-]/g, '').replace(',', '.'));
+      return aNum - bNum;
+    }
+    if (tri === "montantdecroissante") {
+      const aNum = parseFloat(a.montant.replace(/[^\d.,-]/g, '').replace(',', '.'));
+      const bNum = parseFloat(b.montant.replace(/[^\d.,-]/g, '').replace(',', '.'));
+      return bNum - aNum;
+    }
     return 0;
   });
 
+
+
+
   return (
     <main>
-      <Heading as="h3" className="font-extrabold mb-4 pt-6 text-center">
+      <Heading as="h2" className="font-extrabold mb-4 pt-6 text-center">
         Gestion des cachets
       </Heading>
 
@@ -196,6 +207,7 @@ export default function PageCachets() {
               type="number"
               min={110}
               value={montant}
+              placeholder="110"
               onChange={(e) => setMontant(e.target.value)}
             />
           </div>
@@ -304,14 +316,26 @@ export default function PageCachets() {
           </div>
 
           <div className="flex flex-col gap-1">
-            <label>Trier par</label>
+            <label>Trier par date</label>
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
-              value={tri}
-              onChange={(e) => setTri(e.target.value as "date" | "montant")}
+              value={tri.startsWith("date") ? tri : "datecroissante"}
+              onChange={(e) => setTri(e.target.value as "datecroissante" | "datedecroissante")}
             >
-              <option value="date">Date</option>
-              <option value="montant">Montant de cachets</option>
+              <option value="datecroissante">Date croissante</option>
+              <option value="datedecroissante">Date decroissante</option>
+            </select>
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label>Trier par montant</label>
+            <select
+              className="p-2 border border-slate-300 rounded-md w-full"
+              value={tri.startsWith("montant") ? tri : "montantcroissant"}
+              onChange={(e) => setTri(e.target.value as "montantcroissant" | "montantdecroissante")}
+            >
+              <option value="montantcroissant">Montant croissant</option>
+              <option value="montantdecroissante">Montant decroissant</option>
             </select>
           </div>
         </div>
@@ -327,7 +351,8 @@ export default function PageCachets() {
                 <Table.Header>Montant</Table.Header>
                 <Table.Header>Spectacle</Table.Header>
                 <Table.Header>Note</Table.Header>
-                <Table.Header></Table.Header>
+                <Table.Header>Modifier cachet</Table.Header>
+                <Table.Header>Supprimer cachet</Table.Header>
               </Table.Row>
             </Table.Head>
 
@@ -348,18 +373,19 @@ export default function PageCachets() {
                       onClick={() => editerCachet(c)}
                       aria-label="Modifier cachet"
                     >
-                      Modifier
-                    </Button>
-
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => supprimerCachet(c.id)}
-                      aria-label="Supprimer cachet"
-                    >
-                      Supprimer
+                      ✏️ Modifier
                     </Button>
                   </Table.Cell>
+                    <Table.Cell>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => supprimerCachet(c.id)}
+                        aria-label="Supprimer cachet"
+                      >
+                        🗑️ Supprimer
+                      </Button>
+                    </Table.Cell>
                 </Table.Row>
               ))}
             </Table.Body>

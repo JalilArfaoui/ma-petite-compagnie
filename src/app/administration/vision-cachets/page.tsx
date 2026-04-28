@@ -51,23 +51,31 @@ export default function VisionCachetsPage() {
         result.sort((a, b) => b.date.localeCompare(a.date));
         break;
       case "montantCroissant":
-        result.sort((a, b) => Number(a.montant) - Number(b.montant));
+        result.sort((a, b) => {
+          const aNum = parseFloat(a.montant.replace(/[^\d.,-]/g, '').replace(',', '.'));
+          const bNum = parseFloat(b.montant.replace(/[^\d.,-]/g, '').replace(',', '.'));
+          return aNum - bNum;
+        });
         break;
       case "montantDecroissant":
-        result.sort((a, b) => Number(b.montant) - Number(a.montant));
+        result.sort((a, b) => {
+          const aNum = parseFloat(a.montant.replace(/[^\d.,-]/g, '').replace(',', '.'));
+          const bNum = parseFloat(b.montant.replace(/[^\d.,-]/g, '').replace(',', '.'));
+          return bNum - aNum;
+        });
         break;
     }
 
     return result;
-  }, [spectacleFilter, sortBy]);
+  }, [spectacleFilter, sortBy, cachets]);
 
   return (
     <div>
-      <Heading as="h3" className="font-extrabold mb-4 pt-6 text-center">
+      <Heading as="h2" className="font-extrabold mb-4 pt-6 text-center">
         Liste des cachets
       </Heading>
 
-      <div className="mx-auto max-w-4xl bg-hover p-5 border-none shadow-sm transition-shadow flex flex-col gap-5">
+      <div className="mx-auto max-w-4xl rounded-[20px] bg-hover p-[20px] border-none shadow-sm transition-shadow flex flex-col gap-[20px]">
         <Heading as="h4" className="font-semibold">
           Filtrer par spectacle
         </Heading>
@@ -111,22 +119,20 @@ export default function VisionCachetsPage() {
               <Table.Head>
                 <Table.Row>
                   <Table.Header>Numero</Table.Header>
-                  <Table.Header>Membre</Table.Header>
                   <Table.Header>Date</Table.Header>
                   <Table.Header>Montant</Table.Header>
                   <Table.Header>Spectacle</Table.Header>
+                  <Table.Header>Note</Table.Header>
                 </Table.Row>
               </Table.Head>
               <Table.Body>
                 {filteredAndSorted.map((cachet) => (
                   <Table.Row key={cachet.id}>
                     <Table.Cell>{cachet.id}</Table.Cell>
-                    <Table.Cell>
-                      {cachet.membre.user.prenom} {cachet.membre.user.nom}
-                    </Table.Cell>
                     <Table.Cell>{new Date(cachet.date).toLocaleDateString("fr-FR")}</Table.Cell>
                     <Table.Cell>{cachet.montant}</Table.Cell>
                     <Table.Cell>{cachet.spectacle.titre}</Table.Cell>
+                    <Table.Cell>{cachet.note}</Table.Cell>
                   </Table.Row>
                 ))}
               </Table.Body>
