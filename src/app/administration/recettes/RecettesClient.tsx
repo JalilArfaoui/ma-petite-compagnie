@@ -8,12 +8,12 @@ import { Recette } from "../components/types";
 import { useGestionFinanciere } from "../hooks/useGestionFinanciere";
 import { PageGestionFinanciere } from "../components/PageGestionFinanciere";
 import {
+  toggleStatutOperation,
   creerOperation,
   modifierOperation,
   supprimerOperation,
-  validerOperation,
 } from "../finance-actions";
-import { buildRecetteLocale, buildRecettePayload } from "../finance-helpers";
+import { buildRecetteLocale, buildRecettePayload, getNouveauStatut } from "../finance-helpers";
 
 type RecetteFromServer = {
   id: string;
@@ -76,14 +76,21 @@ export default function RecettesClient({
 
   const validerRecette = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    setRecettes((prev) => prev.map((r) => (r.id === id ? { ...r, statut: "paye" } : r)));
+
+    const recetteCible = recettes.find((r) => r.id === id);
+    if (!recetteCible) return;
+
+    const nouveauStatut = getNouveauStatut(recetteCible.statut);
+
+    setRecettes((prev) => prev.map((r) => (r.id === id ? { ...r, statut: nouveauStatut } : r)));
+
     toaster.success({
-      title: "Recette validée",
+      title: nouveauStatut === "paye" ? "Recette validée" : "Recette dévalidée",
       description: "Le statut a été mis à jour avec succès.",
     });
 
     startTransition(async () => {
-      await validerOperation(Number(id));
+      await toggleStatutOperation(Number(id), recetteCible.statut);
     });
   };
 
@@ -149,7 +156,6 @@ export default function RecettesClient({
           showSpectaclesInline={true}
           onValider={validerRecette}
           onEdit={
-            // Les factures générées par l'outil ne sont pas éditables ici
             item.type === "facture"
               ? undefined
               : (id, e) => {

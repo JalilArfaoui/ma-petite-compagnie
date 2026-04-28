@@ -64,3 +64,7 @@ export function buildDepensePayload(data: DonneesAjoutFinancier, id?: number): O
     fichier: data.fichier,
   };
 }
+
+export function getNouveauStatut(actuel: string): "paye" | "en_attente" {
+  return actuel === "paye" ? "en_attente" : "paye";
+}

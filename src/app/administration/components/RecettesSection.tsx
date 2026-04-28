@@ -5,9 +5,9 @@ import { Card, toaster } from "@/components/ui";
 import { formatMontant } from "../utils";
 import { ModalAjoutRapide, DonneesAjoutFinancier } from "../modals";
 import { Recette } from "./types";
-import { NoteInfo, FadeContainer, ItemFinancierCard, VoirToutLink } from "./shared";
-import { validerOperation, creerOperation } from "../finance-actions";
-import { buildRecetteLocale, buildRecettePayload } from "../finance-helpers";
+import { FadeContainer, ItemFinancierCard, VoirToutLink } from "./shared";
+import { toggleStatutOperation, creerOperation } from "../finance-actions";
+import { buildRecetteLocale, buildRecettePayload, getNouveauStatut } from "../finance-helpers";
 
 export function RecettesSection({
   recettes,
@@ -22,14 +22,21 @@ export function RecettesSection({
 
   const validerRecette = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    setRecettes((prev) => prev.map((r) => (r.id === id ? { ...r, statut: "paye" as const } : r)));
+
+    const recetteCible = recettes.find((r) => r.id === id);
+    if (!recetteCible) return;
+
+    const nouveauStatut = getNouveauStatut(recetteCible.statut);
+
+    setRecettes((prev) => prev.map((r) => (r.id === id ? { ...r, statut: nouveauStatut } : r)));
+
     toaster.success({
-      title: "Recette validée",
+      title: nouveauStatut === "paye" ? "Recette validée" : "Recette dévalidée",
       description: "Le statut a été mis à jour avec succès.",
     });
 
     startTransition(async () => {
-      await validerOperation(Number(id));
+      await toggleStatutOperation(Number(id), recetteCible.statut);
     });
   };
 

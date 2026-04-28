@@ -2,7 +2,7 @@
 
 import { Text, Badge, Tooltip, Card, Link, Alert, Button } from "@/components/ui";
 import { useRouter } from "next/navigation";
-import { FaArrowLeft, FaCheck, FaInfoCircle, FaPen, FaTrash } from "react-icons/fa";
+import { FaArrowLeft, FaCheck, FaInfoCircle, FaPen, FaTrash, FaUndo } from "react-icons/fa";
 import { formatDateFr, formatMontant } from "../utils";
 import { Recette, Depense } from "./types";
 
@@ -158,14 +158,21 @@ export function ItemFinancierCard({
               >
                 {isEnAttente ? "En attente" : "Payé"}
               </Badge>
-              {isEnAttente && onValider && (
-                <Tooltip label="Valider" delayDuration={0}>
+              {onValider && (
+                <Tooltip
+                  label={isEnAttente ? "Valider" : "Marquer comme en attente"}
+                  delayDuration={0}
+                >
                   <button
                     onClick={(e) => onValider(item.id, e)}
-                    className="text-green-600 hover:bg-green-50 p-1 rounded-full bg-white border border-gray-100 shadow-sm cursor-pointer transition-colors"
-                    title="Valider"
+                    className={`${
+                      isEnAttente
+                        ? "text-green-600 hover:bg-green-50"
+                        : "text-gray-400 hover:bg-gray-100"
+                    } p-1 rounded-full bg-white border border-gray-100 shadow-sm cursor-pointer transition-colors`}
+                    title={isEnAttente ? "Valider" : "Annuler la validation"}
                   >
-                    <FaCheck size={10} />
+                    {isEnAttente ? <FaCheck size={10} /> : <FaUndo size={10} />}
                   </button>
                 </Tooltip>
               )}

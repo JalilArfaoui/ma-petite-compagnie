@@ -127,12 +127,14 @@ export async function supprimerOperation(id: number) {
   revalidatePath("/administration/depenses");
 }
 
-// ─── Validation (passer le statut à "paye") ───
+// ─── Validation (basculer entre "paye" et "en_attente") ───
 
-export async function validerOperation(id: number) {
+export async function toggleStatutOperation(id: number, actuel: string) {
+  const nouveauStatut = actuel === "paye" ? "en_attente" : "paye";
+
   await prisma.operationFinanciere.update({
     where: { id },
-    data: { statut: "paye" },
+    data: { statut: nouveauStatut },
   });
 
   revalidatePath("/administration");
