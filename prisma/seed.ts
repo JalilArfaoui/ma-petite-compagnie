@@ -1,5 +1,15 @@
 import "dotenv/config";
-import { PrismaClient } from "@prisma/client";
+import {
+  PrismaClient,
+  Compagnie,
+  CategorieObjet,
+  TypeObjet,
+  Objet,
+  Lieu,
+  Spectacle,
+  Representation,
+  OperationFinanciere,
+} from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 
@@ -17,7 +27,7 @@ async function main() {
     { nom: "Compagnie des Arts Vivants" },
   ];
 
-  const compagnies = [];
+  const compagnies: Compagnie[] = [];
   for (const c of compagniesData) {
     const existing = await prisma.compagnie.findFirst({ where: { nom: c.nom } });
     if (existing) {
@@ -42,7 +52,7 @@ async function main() {
     "Textile",
   ];
 
-  const categories = [];
+  const categories: CategorieObjet[] = [];
   for (const nom of categoriesData) {
     const existing = await prisma.categorieObjet.findFirst({ where: { nom } });
     if (existing) {
@@ -77,7 +87,7 @@ async function main() {
     { nom: "Câble XLR 10m", categorieId: categories[3].id },
   ];
 
-  const typesObjets = [];
+  const typesObjets: TypeObjet[] = [];
   for (const t of typesObjetsData) {
     const existing = await prisma.typeObjet.findFirst({ where: { nom: t.nom } });
     if (existing) {
@@ -89,7 +99,6 @@ async function main() {
   console.log(`✅ ${typesObjets.length} types d'objets`);
 
   // --- Objets  ---
-  const etatValues = ["NEUF", "ABIME", "CASSE"] as const;
 
   const objetsData = [
     // Chaises en bois - 4 exemplaires
@@ -286,7 +295,7 @@ async function main() {
   await prisma.reservationObjet.deleteMany({});
   await prisma.objet.deleteMany({});
 
-  const objets = [];
+  const objets: Objet[] = [];
   for (const o of objetsData) {
     objets.push(await prisma.objet.create({ data: o }));
   }
@@ -314,7 +323,7 @@ async function main() {
     },
   ];
 
-  const lieux = [];
+  const lieux: Lieu[] = [];
   for (const l of lieuxData) {
     const existing = await prisma.lieu.findFirst({ where: { libelle: l.libelle } });
     if (existing) {
@@ -357,7 +366,7 @@ async function main() {
     },
   ];
 
-  const spectacles = [];
+  const spectacles: Spectacle[] = [];
   for (const s of spectaclesData) {
     const existing = await prisma.spectacle.findFirst({ where: { titre: s.titre } });
     if (existing) {
@@ -376,7 +385,7 @@ async function main() {
     { date: new Date("2026-06-01T21:00:00"), spectacleId: spectacles[2].id, lieuId: lieux[2].id },
   ];
 
-  const representations = [];
+  const representations: Representation[] = [];
   for (const r of repsData) {
     const existing = await prisma.representation.findFirst({
       where: { date: r.date, spectacleId: r.spectacleId },
@@ -506,7 +515,7 @@ async function main() {
     },
   ];
 
-  const operations = [];
+  const operations: OperationFinanciere[] = [];
   for (const op of operationsData) {
     const { spectacles: spectacleTitres, ...opData } = op;
     const spectacleConnections = spectacleTitres
