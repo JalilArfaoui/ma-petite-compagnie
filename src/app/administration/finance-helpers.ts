@@ -22,6 +22,7 @@ export function buildRecetteLocale(data: DonneesAjoutFinancier): Recette {
     statut: data.statut ?? "en_attente",
     spectacles: data.spectacles || [],
     fichier: data.fichier,
+    typeOp: "RECETTE" as const,
   };
 }
 
@@ -33,6 +34,7 @@ export function buildDepenseLocale(data: DonneesAjoutFinancier): Depense {
     date: data.date,
     spectacles: data.spectacles || [],
     fichier: data.fichier,
+    typeOp: "DEPENSE" as const,
   };
 }
 
