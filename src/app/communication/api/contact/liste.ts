@@ -26,7 +26,7 @@ export async function creerListe(nomListe: string, contacts: Contact[]) {
     let resultat = null;
     const liste = await trouverListeParNom(nomListe);
     if (liste.succes && liste.donnee !== null) {
-      resultat = prisma.listeContact.update({
+      resultat = await prisma.listeContact.update({
         where: { id: liste.donnee.id },
         data: {
           contacts: {
