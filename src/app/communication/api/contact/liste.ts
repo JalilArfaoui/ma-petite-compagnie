@@ -8,7 +8,7 @@ export async function trouverListeParNom(nomListe: string) {
     const resultat = await prisma.listeContact.findFirst({ where: { nom: nomListe } });
     return resultOf(true, "", resultat);
   } catch (error: unknown) {
-    console.log(error);
+    console.error(error);
     return resultOf(false, "Impossible de récupérer les listes par nom", null);
   }
 }

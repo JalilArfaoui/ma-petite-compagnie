@@ -33,16 +33,13 @@ export async function creerContact(contact: ContactInformation) {
 }
 
 export async function listerContacts(paginationTaille: number = 10, page: number = 1) {
-  if (paginationTaille < 1 || page < 1) {
-    paginationTaille = 10;
-    page = 1;
-  }
-
-  const skip = paginationTaille * (page - 1);
+  let skip;
+  ({ skip, paginationTaille } = resolvePagination(paginationTaille, page));
   try {
     const contacts = await prisma.contact.findMany({ skip, take: paginationTaille });
     return resultOf(true, "", contacts);
   } catch (error) {
+    console.error(error);
     return resultOf(false, "Erreur lors de la récupération des contacts", null);
   }
 }
@@ -74,6 +71,7 @@ export async function modifierContact(contactId: number, nouveauContact: Contact
     });
     return resultOf(true, "", contactModifie);
   } catch (error) {
+    console.error(error);
     return resultOf(false, "Le contact n'existe pas ou n'a pas pu être modifié.", null);
   }
 }
@@ -82,6 +80,7 @@ export async function supprimerContact(id: number) {
   try {
     return await resultOf(true, "", prisma.contact.delete({ where: { id: id } }));
   } catch (error) {
+    console.error(error);
     return resultOf(false, "Le contact n'a pas pu être supprimé", null);
   }
 }
@@ -90,6 +89,7 @@ export async function supprimerContactAvecNom(nom: string) {
   try {
     return await resultOf(true, "", prisma.contact.deleteMany({ where: { nom: nom } }));
   } catch (error) {
+    console.error(error);
     return resultOf(false, "Le contact n'a pas pu être supprimé", null);
   }
 }
@@ -97,6 +97,7 @@ export async function supprimerContactsAvecEmail(email: string) {
   try {
     return await resultOf(true, "", prisma.contact.deleteMany({ where: { email: email } }));
   } catch (error) {
+    console.error(error);
     return resultOf(false, "Le contact n'a pas pu être supprimé", null);
   }
 }
@@ -110,36 +111,50 @@ export async function listerContactsAvecListes(
   paginationTaille: number = 10,
   page: number = 1
 ): Promise<Result<null> | Result<ContactWithListes[]>> {
+  try {
+    let skip;
+    ({ skip, paginationTaille } = resolvePagination(paginationTaille, page));
+    const contacts = await prisma.contact.findMany({
+      take: paginationTaille,
+      skip: skip,
+      include: { listeContacts: true },
+    });
+    return resultOf(true, "", contacts);
+  } catch (error) {
+    console.error(error);
+    return resultOf(false, "Impossible de récuperer les contacts de la liste", null);
+  }
+}
+function resolvePagination(paginationTaille: number, page: number) {
   if (paginationTaille < 1 || page < 1) {
     paginationTaille = 10;
     page = 1;
   }
 
   const skip = paginationTaille * (page - 1);
-  const contacts = await prisma.contact.findMany({
-    take: paginationTaille,
-    skip: skip,
-    include: { listeContacts: true },
-  });
-  return resultOf(true, "", contacts);
+  return { skip, paginationTaille };
 }
+
 export async function listerContactsDansListe(
   liste: ListeContact,
   paginationTaille: number = 10,
   page: number = 1
 ): Promise<Result<null> | Result<ContactWithListes[]>> {
-  const skip = paginationTaille * (page - 1);
-  const contacts = await prisma.contact.findMany({
-    where: { listeContacts: { some: { id: liste.id } } },
-    take: paginationTaille,
-    skip: skip,
-    include: { listeContacts: true },
-  });
+  try {
+    let skip;
+    ({ skip, paginationTaille } = resolvePagination(paginationTaille, page));
+    const contacts = await prisma.contact.findMany({
+      where: { listeContacts: { some: { id: liste.id } } },
+      take: paginationTaille,
+      skip: skip,
+      include: { listeContacts: true },
+    });
 
-  if (!contacts) {
-    return resultOf(false, "Le contact n'existe pas.", null);
+    return resultOf(true, "", contacts);
+  } catch (error) {
+    console.error(error);
+    return resultOf(false, "Impossible de récuperer les contacts de la liste", null);
   }
-  return resultOf(true, "", contacts);
 }
 
 export async function trouverParIdContact(id: number) {

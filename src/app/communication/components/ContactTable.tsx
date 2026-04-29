@@ -32,7 +32,6 @@ export function ContactTable({
 
   function changerPage(page: number) {
     setPage(page);
-    loadContact();
   }
   async function associerListe(listes: ListeContact[]) {
     const resultats = await Promise.all(

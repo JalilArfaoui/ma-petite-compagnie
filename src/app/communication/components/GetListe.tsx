@@ -46,7 +46,11 @@ export function GetListe({
 
         <Modal.Body>
           <Toaster></Toaster>
-          <Select onValueChange={(value) => setListesSelectionnees([listes[Number(value)]])}>
+          <Select
+            onValueChange={(value) =>
+              setListesSelectionnees([listes.find((l) => l.id === Number(value))!])
+            }
+          >
             <Select.Trigger>
               <Select.Value></Select.Value>
             </Select.Trigger>
@@ -54,7 +58,7 @@ export function GetListe({
               <Select.Group defaultValue={"Aucune sélection"}>
                 {listes.map((liste, i) => {
                   return (
-                    <Select.Item key={liste.id} value={"" + i}>
+                    <Select.Item key={liste.id} value={"" + liste.id}>
                       {liste.nom}
                     </Select.Item>
                   );
