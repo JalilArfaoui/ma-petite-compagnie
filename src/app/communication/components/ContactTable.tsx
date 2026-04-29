@@ -5,7 +5,7 @@ import { Contact, ListeContact } from "@prisma/client";
 import { ContactGrid } from "./ContactGrid";
 import { CreateListe } from "./CreateListe";
 import { GetListe } from "./GetListe";
-import { creerListe } from "../api/contact/liste";
+import { creerListe, supprimerContactDeListe } from "../api/contact/liste";
 
 export function ContactTable({
   getContacts,
@@ -18,6 +18,21 @@ export function ContactTable({
   const paginationTaille = 30;
   const [contacts, setContacts] = useState<ContactWithListes[]>([]);
   const [contactsSelectionne, setContactsSelectionne] = useState<ContactWithListes[]>([]);
+
+  function deleteListeFromContact(contact: ContactWithListes, listeIndex: number) {
+    supprimerContactDeListe(contact, contact.listeContacts[listeIndex].nom);
+    setContacts((prev) =>
+      prev.map((c) => {
+        if (c === contact) {
+          return {
+            ...c,
+            listes: c.listeContacts.filter((_, i) => i !== listeIndex),
+          };
+        }
+        return c;
+      })
+    );
+  }
   async function loadContact() {
     const resultat = await getContacts(paginationTaille, page);
     setContacts(resultat ?? []);
@@ -161,6 +176,7 @@ export function ContactTable({
                   onDelete={supprimerUnContact}
                   contact={contact}
                   onSelect={updateSelected}
+                  onListeElementDeleted={deleteListeFromContact}
                   className={contactsSelectionne.includes(contact) ? "bg-gray-100" : ""}
                 />
               );

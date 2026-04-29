@@ -1,4 +1,4 @@
-import { Button, Table } from "@/components/ui";
+import { Box, Button, Stack, Table } from "@/components/ui";
 import Link from "next/link";
 import { ContactWithListes } from "../api/contact/contact";
 import { ListeContact } from "@prisma/client";
@@ -7,28 +7,39 @@ export function ContactGrid({
   contact,
   onSelect,
   onDelete,
+  onListeElementDeleted,
   className = "",
 }: {
   contact: ContactWithListes;
   onSelect: (contact: ContactWithListes) => void;
   onDelete: (contact: ContactWithListes) => void;
+  onListeElementDeleted: (contact: ContactWithListes, listeIndex: number) => void;
   className: string;
 }) {
   function afficherListe(listes: ListeContact[]) {
-    return listes.map((liste) => {
+    return listes.map((liste, i) => {
       return (
         <div className="m-1 bg-primary text-white rounded-full text-center" key={liste.id}>
-          {liste.nom}
+          <Stack direction="row" justify="start">
+            <Button onClick={() => onListeElementDeleted(contact, i)} size="icon" className="h-5">
+              X
+            </Button>
+
+            <Stack direction="row" justify="center" className="w-full">
+              {liste.nom}
+            </Stack>
+          </Stack>
         </div>
       );
     });
   }
+
   return (
     <Table.Row onClick={() => onSelect(contact)} className={"active:bg-gray-100 " + className}>
-      <Table.Cell className="text-[8px] md:text-[12px] lg:text-[1rem] max-w-40 text-pretty wrap-break-word break-all">
+      <Table.Cell className="text-[8px] md:text-[12px] lg:text-[1rem] text-pretty wrap-break-word break-all">
         {contact.nom}
       </Table.Cell>
-      <Table.Cell className="text-[8px] md:text-[12px] lg:text-[1rem] max-w-40 text-pretty wrap-break-word break-all">
+      <Table.Cell className=" max-w-80  text-[8px] md:text-[12px] lg:text-[1rem] text-pretty wrap-break-word break-all">
         {contact.prenom}
       </Table.Cell>
       <Table.Cell className="text-[8px] md:text-[12px] lg:text-[1rem]  max-w-40 text-pretty wrap-break-word break-all">
