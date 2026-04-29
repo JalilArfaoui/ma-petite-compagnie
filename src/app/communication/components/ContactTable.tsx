@@ -46,7 +46,7 @@ export function ContactTable({
       const erreur = resultats.find((r) => !r.succes);
       toaster.create({ type: "error", title: erreur?.message });
     }
-    loadContacts();
+    loadContact();
     setContactsSelectionne([]);
   }
 
