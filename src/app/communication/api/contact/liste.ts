@@ -17,7 +17,7 @@ export async function trouverBeaucoup() {
     const resultat = await prisma.listeContact.findMany();
     return resultOf(true, "", resultat);
   } catch (error: unknown) {
-    console.log(error);
+    console.error(error);
     return resultOf(false, "Impossible de récupérer les listes", null);
   }
 }
@@ -50,7 +50,7 @@ export async function creerListe(nomListe: string, contacts: Contact[]) {
     }
     return resultOf(true, "", resultat);
   } catch (error: unknown) {
-    console.log(error);
+    console.error(error);
     return resultOf(false, "Une erreur est survenue lors de la création de la liste", null);
   }
 }
@@ -62,7 +62,7 @@ export async function trouverListesAvecIdContact(id: number) {
     });
     return resultOf(true, "", resultat);
   } catch (error: unknown) {
-    console.log(error);
+    console.error(error);
     return resultOf(false, "Une erreur est survenue lors de l'obtention d'une liste", null);
   }
 }
