@@ -5,7 +5,7 @@ import { Contact, ListeContact } from "@prisma/client";
 import { ContactGrid } from "./ContactGrid";
 import { CreateListe } from "./CreateListe";
 import { GetListe } from "./GetListe";
-import { creerListe } from "../api/contact/liste";
+import { creerListe, trouverListes } from "../api/contact/liste";
 
 export function ContactTable({
   getContacts,
@@ -14,18 +14,43 @@ export function ContactTable({
   getContacts: (paginationTaille: number, page: number) => Promise<ContactWithListes[] | null>;
   keyReload: number;
 }) {
+  const [listes, setListes] = useState<ListeContact[]>([]);
   const [page, setPage] = useState(1);
   const paginationTaille = 30;
   const [contacts, setContacts] = useState<ContactWithListes[]>([]);
   const [contactsSelectionne, setContactsSelectionne] = useState<ContactWithListes[]>([]);
+
+  useEffect(() => {
+    async function loadContact() {
+      const resultat = await trouverListes();
+      if (resultat.succes) {
+        setListes(resultat.donnee ?? []);
+      } else {
+        toaster.create({ description: resultat.message, type: "error" });
+      }
+    }
+    loadContact();
+  }, []);
+  /** Usecallback ne permet pas d'appeler ce code dans useeffect */
   async function loadContact() {
     const resultat = await getContacts(paginationTaille, page);
     setContacts(resultat ?? []);
+    loadListes();
+  }
+  /** Usecallback ne permet pas d'appeler ce code dans useeffect */
+  async function loadListes() {
+    const resultat = await trouverListes();
+    if (resultat.succes) {
+      setListes(resultat.donnee ?? []);
+    } else {
+      toaster.create({ description: resultat.message, type: "error" });
+    }
   }
   useEffect(() => {
     async function loadContact() {
       const resultat = await getContacts(paginationTaille, page);
       setContacts(resultat ?? []);
+      loadListes();
     }
     loadContact();
   }, [keyReload, page, getContacts]);
@@ -118,6 +143,7 @@ export function ContactTable({
             Supprimer
           </Button>
           <GetListe
+            listes={listes}
             disabled={contactsSelectionne.length <= 0}
             onGetListe={(a) => associerListe(a)}
           ></GetListe>

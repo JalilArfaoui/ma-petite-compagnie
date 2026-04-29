@@ -6,13 +6,14 @@ import { useEffect, useRef, useState } from "react";
 
 export function GetListe({
   disabled = false,
+  listes,
   onGetListe,
 }: {
   disabled: boolean;
+  listes: ListeContact[];
   onGetListe: (listes: ListeContact[]) => void;
 }) {
   const close = useRef<HTMLButtonElement>(null);
-  const [listes, setListes] = useState<ListeContact[]>([]);
   const [listesSelectionnees, setListesSelectionnees] = useState<ListeContact[]>([]);
   async function confirmer(listes: ListeContact[]) {
     if (listesSelectionnees.length !== 0) {
@@ -20,17 +21,6 @@ export function GetListe({
       close.current?.click();
     }
   }
-  useEffect(() => {
-    async function loadContact() {
-      const resultat = await trouverListes();
-      if (resultat.succes) {
-        setListes(resultat.donnee ?? []);
-      } else {
-        toaster.create({ description: resultat.message, type: "error" });
-      }
-    }
-    loadContact();
-  }, []);
   return (
     <Modal>
       <Modal.Trigger asChild>
