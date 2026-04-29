@@ -43,8 +43,11 @@ export default function ContactPage() {
     <Box className=" py-5 px-3 flex-col items-center gap-4">
       <Toaster />
       <Stack className="gap-5 items-center mb-3" justify="center" direction="row">
-        <Heading as="h3">Page de contact</Heading>
+        <Heading as="h3">Communication</Heading>
       </Stack>
+      <Heading className="center text-center" as="h4">
+        Gérer vos contacts
+      </Heading>
       <Stack
         className="gap-5 items-center w-full  mb-10 z-10 bg-white"
         direction="row"
@@ -65,7 +68,6 @@ export default function ContactPage() {
         </Link>
         <Link href="./communication/liste">Affichage par liste</Link>
       </Stack>
-
       <Box className="md:w-full lg:w-[90%] mx-auto   ">
         <ContactTable keyReload={0} getContacts={() => loadContacts()} />
       </Box>
