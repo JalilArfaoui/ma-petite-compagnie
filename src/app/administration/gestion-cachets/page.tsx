@@ -1,8 +1,18 @@
 "use client";
 
+//demander à générer une dizaine de tables Cachet bdd, pour les tests
+
 import { Button, Card, Table, Heading } from "@/components/ui";
 import { useState, useEffect } from "react";
-import { getCachets } from "./actions";
+import { Prisma } from "@prisma/client";
+import {
+  getCachets,
+  createCachet,
+  updateCachet,
+  deleteCachet,
+  getAllMembers,
+  getAllSpectacles,
+} from "./actions";
 
 //seule la note est optionnelle, toutes les autres clés sont obligatoires donc pas de null permis
 type Cachet = {
@@ -16,8 +26,25 @@ type Cachet = {
   note?: string | null;
 };
 
+//type pour représenter le Cachet retourné par Prisma avant transformation
+//cela permet d'éviter l'erreur pointé par lint à la ligne: (function formatCachetFromDB(data: CachetWithRelations): Cachet {)
+type CachetWithRelations = Prisma.CachetGetPayload<{
+  include: {
+    spectacle: true;
+    membre: {
+      include: {
+        user: true;
+      };
+    };
+  };
+}>;
+
 export default function PageCachets() {
   const [cachets, setCachets] = useState<Cachet[]>([]);
+  const [membres, setMembres] = useState<
+    Array<{ id: number; user: { nom: string | null; prenom: string | null } }>
+  >([]);
+  const [spectacles, setSpectacles] = useState<Array<{ id: number; titre: string }>>([]);
   const [membreId, setMembreId] = useState<number | null>(null);
   const [date, setDate] = useState("");
   const [montant, setMontant] = useState("");
@@ -26,18 +53,43 @@ export default function PageCachets() {
   const [editId, setEditId] = useState<number | null>(null);
   const [filtreMembre, setFiltreMembre] = useState<number | null>(null);
   const [filtreSpectacle, setFiltreSpectacle] = useState<number | null>(null);
-  const [tri, setTri] = useState<"datecroissante" | "datedecroissante" | "montantcroissant" | "montantdecroissante">("datecroissante");
+  const [tri, setTri] = useState<
+    "datecroissante" | "datedecroissante" | "montantcroissant" | "montantdecroissante"
+  >("datecroissante");
   const [errors, setErrors] = useState<{ [key: string]: string }>({}); //stocker une erreur par champ
+  const [isLoading, setIsLoading] = useState(false); //état pour désactiver le bouton pendant l'envoi (sécurité)
+
+  //fonction helper pour transformer les données de Prisma au format du state local
+  function formatCachetFromDB(data: CachetWithRelations): Cachet {
+    // supprime le symbole € si déjà présent, afin d'éviter d'avoir des doublons lors de l'affichage
+    const montantNettoye = data.montant.replace(/[^\d.,-]/g, "").trim();
+
+    return {
+      ...data,
+      date: typeof data.date === "string" ? data.date : data.date.toISOString().split("T")[0],
+      montant: `${montantNettoye} €`,
+    };
+  }
 
   useEffect(() => {
+    // Charge tous les cachets
     getCachets().then((cachets) => {
-      const cachetFormatted = cachets.map((c) => ({
-        ...c,
-        //convertit date de type Date en date de type string
-        //simplement parce que je prefère utiliser string plutôt que Date pour la clé date
-        date: typeof c.date === "string" ? c.date : c.date.toISOString().split("T")[0],
-      }));
+      const cachetFormatted = cachets.map((c) => formatCachetFromDB(c));
       setCachets(cachetFormatted);
+    });
+
+    // Charge tous les membres (pour l'input de selection des membres)
+    getAllMembers().then((result) => {
+      if (result.success && result.data) {
+        setMembres(result.data);
+      }
+    });
+
+    // Charge tous les spectacles (pour l'input de selection des spectacles)
+    getAllSpectacles().then((result) => {
+      if (result.success && result.data) {
+        setSpectacles(result.data);
+      }
     });
   }, []);
 
@@ -84,39 +136,76 @@ export default function PageCachets() {
       return;
     }
 
-    if (editId !== null) {
-      //edition cachet
-      // On est sûr que membreId et spectacleId ne sont pas null grâce à la validation au-dessus
-      setCachets(
-        cachets.map((c) =>
-          c.id === editId
-            ? { ...c, membreId: membreId!, spectacleId: spectacleId!, date, montant: `${montant} €`, note }
-            : c
-        )
-      );
-      setEditId(null);
-    } else {
-      //ajout cachet - à implémenter avec une action serveur
-      console.log("Création cachet:", { membreId, date, montant, spectacleId, note });
-    }
+    //lance l'opération asynchrone avec la BDD
+    setIsLoading(true);
 
+    if (editId !== null) {
+      updateCachet(editId, {
+        //on est sur que membreId et spectacleId ne sont pas null grâce à la validation au-dessus
+        membreId: membreId!,
+        date,
+        montant,
+        spectacleId: spectacleId!,
+        note,
+      }).then((result) => {
+        if (result.success && result.data) {
+          // Met à jour le cachet dans la liste locale
+          setCachets(cachets.map((c) => (c.id === editId ? formatCachetFromDB(result.data) : c)));
+          setEditId(null);
+          resetFormulaire();
+        } else {
+          setErrors({ submit: result.error || "Erreur lors de la mise à jour" });
+        }
+        setIsLoading(false);
+      });
+    } else {
+      createCachet({
+        membreId: membreId!,
+        date,
+        montant,
+        spectacleId: spectacleId!,
+        note,
+      }).then((result) => {
+        if (result.success && result.data) {
+          // Ajoute le nouveau cachet à la liste locale
+          setCachets([...cachets, formatCachetFromDB(result.data)]);
+          resetFormulaire();
+        } else {
+          setErrors({ submit: result.error || "Erreur lors de la création" });
+        }
+        setIsLoading(false);
+      });
+    }
+  }
+
+  function resetFormulaire() {
     setMembreId(null);
     setDate("");
     setMontant("");
     setSpectacleId(null);
     setNote("");
+    setErrors({});
   }
 
   function supprimerCachet(id: number) {
-    setCachets(cachets.filter((c) => c.id !== id));
-    if (editId === id) setEditId(null);
+    setIsLoading(true);
+    deleteCachet(id).then((result) => {
+      if (result.success) {
+        //supprime le cachet de la liste locale
+        setCachets(cachets.filter((c) => c.id !== id));
+        if (editId === id) setEditId(null);
+      } else {
+        setErrors({ submit: result.error || "Erreur lors de la suppression" });
+      }
+      setIsLoading(false);
+    });
   }
 
   function editerCachet(c: Cachet) {
     setEditId(c.id);
     setMembreId(c.membreId);
     setDate(c.date);
-    setMontant(c.montant.replace(/[^\d.,-]/g, ''));
+    setMontant(c.montant.replace(/[^\d.,-]/g, ""));
     setSpectacleId(c.spectacleId);
     setNote(c.note || "");
   }
@@ -136,20 +225,17 @@ export default function PageCachets() {
     if (tri === "datecroissante") return a.date.localeCompare(b.date);
     if (tri === "datedecroissante") return b.date.localeCompare(a.date);
     if (tri === "montantcroissant") {
-      const aNum = parseFloat(a.montant.replace(/[^\d.,-]/g, '').replace(',', '.'));
-      const bNum = parseFloat(b.montant.replace(/[^\d.,-]/g, '').replace(',', '.'));
+      const aNum = parseFloat(a.montant.replace(/[^\d.,-]/g, "").replace(",", "."));
+      const bNum = parseFloat(b.montant.replace(/[^\d.,-]/g, "").replace(",", "."));
       return aNum - bNum;
     }
     if (tri === "montantdecroissante") {
-      const aNum = parseFloat(a.montant.replace(/[^\d.,-]/g, '').replace(',', '.'));
-      const bNum = parseFloat(b.montant.replace(/[^\d.,-]/g, '').replace(',', '.'));
+      const aNum = parseFloat(a.montant.replace(/[^\d.,-]/g, "").replace(",", "."));
+      const bNum = parseFloat(b.montant.replace(/[^\d.,-]/g, "").replace(",", "."));
       return bNum - aNum;
     }
     return 0;
   });
-
-
-
 
   return (
     <main>
@@ -159,6 +245,7 @@ export default function PageCachets() {
 
       <form onSubmit={ajouterCachet}>
         <div className="mx-auto max-w-4xl rounded-[20px] bg-hover p-[20px] border-none shadow-sm transition-shadow flex flex-col gap-[20px]">
+          {errors.submit && <p className="text-red-600 text-sm font-semibold">{errors.submit}</p>}
           <div>
             <Heading as="h4" className="font-semibold">
               Membre équipe
@@ -170,16 +257,14 @@ export default function PageCachets() {
               id="membre"
               value={membreId?.toString() || ""}
               onChange={(e) => setMembreId(Number(e.target.value))}
+              disabled={isLoading}
             >
               <option value=""> Choisir un membre équipe </option>
-              {[...new Set(cachets.map((c) => c.membreId))].map((id) => {
-                const cachet = cachets.find((c) => c.membreId === id);
-                return (
-                  <option key={id} value={id}>
-                    {cachet?.membre.user.prenom} {cachet?.membre.user.nom}
-                  </option>
-                );
-              })}
+              {membres.map((membre) => (
+                <option key={membre.id} value={membre.id}>
+                  {membre.user.prenom} {membre.user.nom}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -194,6 +279,7 @@ export default function PageCachets() {
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
+              disabled={isLoading}
             />
           </div>
           <div>
@@ -209,6 +295,7 @@ export default function PageCachets() {
               value={montant}
               placeholder="110"
               onChange={(e) => setMontant(e.target.value)}
+              disabled={isLoading}
             />
           </div>
           <div>
@@ -222,16 +309,14 @@ export default function PageCachets() {
               id="spectacle"
               value={spectacleId?.toString() || ""}
               onChange={(e) => setSpectacleId(Number(e.target.value))}
+              disabled={isLoading}
             >
               <option value=""> Choisir un spectacle </option>
-              {[...new Set(cachets.map((c) => c.spectacleId))].map((id) => {
-                const cachet = cachets.find((c) => c.spectacleId === id);
-                return (
-                  <option key={id} value={id}>
-                    {cachet?.spectacle.titre}
-                  </option>
-                );
-              })}
+              {spectacles.map((spectacle) => (
+                <option key={spectacle.id} value={spectacle.id}>
+                  {spectacle.titre}
+                </option>
+              ))}
             </select>
           </div>
           <div>
@@ -245,10 +330,11 @@ export default function PageCachets() {
               value={note}
               maxLength={120}
               onChange={(e) => setNote(e.target.value)}
+              disabled={isLoading}
             />
           </div>
-          <Button variant="solid" size="default" type="submit">
-            {editId !== null ? "Mettre à jour" : "Ajouter"}
+          <Button variant="solid" size="default" type="submit" disabled={isLoading}>
+            {isLoading ? "Envoi en cours..." : editId !== null ? "Mettre à jour" : "Ajouter"}
           </Button>
           {editId !== null && (
             <Button
@@ -256,14 +342,10 @@ export default function PageCachets() {
               size="default"
               type="button"
               onClick={() => {
+                resetFormulaire();
                 setEditId(null);
-                setMembreId(null);
-                setDate("");
-                setMontant("");
-                setSpectacleId(null);
-                setNote("");
-                setErrors({});
               }}
+              disabled={isLoading}
             >
               Annuler
             </Button>
@@ -285,14 +367,11 @@ export default function PageCachets() {
               onChange={(e) => setFiltreMembre(e.target.value ? Number(e.target.value) : null)}
             >
               <option value="">Tous les membres</option>
-              {[...new Set(cachets.map((c) => c.membreId))].map((id) => {
-                const cachet = cachets.find((c) => c.membreId === id);
-                return (
-                  <option key={id} value={id}>
-                    {cachet?.membre.user.prenom} {cachet?.membre.user.nom}
-                  </option>
-                );
-              })}
+              {membres.map((membre) => (
+                <option key={membre.id} value={membre.id}>
+                  {membre.user.prenom} {membre.user.nom}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -304,14 +383,11 @@ export default function PageCachets() {
               onChange={(e) => setFiltreSpectacle(e.target.value ? Number(e.target.value) : null)}
             >
               <option value="">Tous</option>
-              {[...new Set(cachets.map((c) => c.spectacleId))].map((id) => {
-                const cachet = cachets.find((c) => c.spectacleId === id);
-                return (
-                  <option key={id} value={id}>
-                    {cachet?.spectacle.titre}
-                  </option>
-                );
-              })}
+              {spectacles.map((spectacle) => (
+                <option key={spectacle.id} value={spectacle.id}>
+                  {spectacle.titre}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -372,20 +448,22 @@ export default function PageCachets() {
                       size="sm"
                       onClick={() => editerCachet(c)}
                       aria-label="Modifier cachet"
+                      disabled={isLoading}
                     >
                       ✏️ Modifier
                     </Button>
                   </Table.Cell>
-                    <Table.Cell>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => supprimerCachet(c.id)}
-                        aria-label="Supprimer cachet"
-                      >
-                        🗑️ Supprimer
-                      </Button>
-                    </Table.Cell>
+                  <Table.Cell>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => supprimerCachet(c.id)}
+                      aria-label="Supprimer cachet"
+                      disabled={isLoading}
+                    >
+                      🗑️ Supprimer
+                    </Button>
+                  </Table.Cell>
                 </Table.Row>
               ))}
             </Table.Body>

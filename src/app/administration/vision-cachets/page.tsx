@@ -25,13 +25,13 @@ export default function VisionCachetsPage() {
 
   useEffect(() => {
     getCachets().then((cachets) => {
-      const cachetFormatted = cachets.map((c) => ({
+      const cachetFormate = cachets.map((c) => ({
         ...c,
         //convertit date de type Date en date de type string
         //simplement parce que je prefère utiliser string plutôt que Date pour la clé date
         date: typeof c.date === "string" ? c.date : c.date.toISOString().split("T")[0],
       }));
-      setCachets(cachetFormatted);
+      setCachets(cachetFormate);
     });
   }, []);
 
@@ -52,15 +52,15 @@ export default function VisionCachetsPage() {
         break;
       case "montantCroissant":
         result.sort((a, b) => {
-          const aNum = parseFloat(a.montant.replace(/[^\d.,-]/g, '').replace(',', '.'));
-          const bNum = parseFloat(b.montant.replace(/[^\d.,-]/g, '').replace(',', '.'));
+          const aNum = parseFloat(a.montant.replace(/[^\d.,-]/g, "").replace(",", "."));
+          const bNum = parseFloat(b.montant.replace(/[^\d.,-]/g, "").replace(",", "."));
           return aNum - bNum;
         });
         break;
       case "montantDecroissant":
         result.sort((a, b) => {
-          const aNum = parseFloat(a.montant.replace(/[^\d.,-]/g, '').replace(',', '.'));
-          const bNum = parseFloat(b.montant.replace(/[^\d.,-]/g, '').replace(',', '.'));
+          const aNum = parseFloat(a.montant.replace(/[^\d.,-]/g, "").replace(",", "."));
+          const bNum = parseFloat(b.montant.replace(/[^\d.,-]/g, "").replace(",", "."));
           return bNum - aNum;
         });
         break;
@@ -130,7 +130,7 @@ export default function VisionCachetsPage() {
                   <Table.Row key={cachet.id}>
                     <Table.Cell>{cachet.id}</Table.Cell>
                     <Table.Cell>{new Date(cachet.date).toLocaleDateString("fr-FR")}</Table.Cell>
-                    <Table.Cell>{cachet.montant}</Table.Cell>
+                    <Table.Cell>{cachet.montant} €</Table.Cell>
                     <Table.Cell>{cachet.spectacle.titre}</Table.Cell>
                     <Table.Cell>{cachet.note}</Table.Cell>
                   </Table.Row>
