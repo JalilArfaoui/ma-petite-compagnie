@@ -56,7 +56,7 @@ export function GetListe({
             </Select.Trigger>
             <Select.Content>
               <Select.Group defaultValue={"Aucune sélection"}>
-                {listes.map((liste, i) => {
+                {listes.map((liste) => {
                   return (
                     <Select.Item key={liste.id} value={"" + liste.id}>
                       {liste.nom}
