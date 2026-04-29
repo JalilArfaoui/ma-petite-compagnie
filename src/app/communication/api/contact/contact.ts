@@ -105,7 +105,7 @@ export type ContactWithListes = Contact & {
   listes: string[];
 };
 
-export async function ListerContactsAvecListes(
+export async function listerContactsAvecListes(
   paginationTaille: number = 10,
   page: number = 1
 ): Promise<Result<null> | Result<ContactWithListes[]>> {
