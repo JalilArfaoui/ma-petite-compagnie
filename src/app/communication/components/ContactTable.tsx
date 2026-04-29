@@ -14,7 +14,7 @@ import { creerListe } from "../api/contact/liste";
 export function ContactTable() {
   const [contacts, setContacts] = useState<ContactWithListes[]>([]);
   const [contactsSelectionne, setContactsSelectionne] = useState<ContactWithListes[]>([]);
-  async function loadContact() {
+  async function loadContacts() {
     const resultat = await listerContactsAvecListes(30, 1);
     if (resultat.succes) {
       setContacts(resultat.donnee ?? []);
@@ -23,7 +23,7 @@ export function ContactTable() {
     }
   }
   useEffect(() => {
-    async function loadContact() {
+    async function loadContacts() {
       const resultat = await listerContactsAvecListes(30, 1);
       if (resultat.succes) {
         setContacts(resultat.donnee ?? []);
@@ -31,40 +31,23 @@ export function ContactTable() {
         toaster.create({ description: resultat.message, type: "error" });
       }
     }
-    loadContact();
+    loadContacts();
   }, []);
+  loadContacts();
   async function associerListe(listes: ListeContact[]) {
     const resultats = await Promise.all(
       listes.map((liste) => creerListe(liste.nom, contactsSelectionne))
     );
     const toutesReussies = resultats.every((r) => r.succes);
     if (toutesReussies) {
-      toaster.success({ title: "Les contacts ont bien été associés à la liste" });
+      toaster.create({ type: "success", title: "Les contacts ont bien été associés à la liste" });
       // mise à jour de l'état ici
     } else {
       const erreur = resultats.find((r) => !r.succes);
-      toaster.error({ title: erreur?.message });
+      toaster.create({ type: "error", title: erreur?.message });
     }
-    setContacts((prev) => {
-      return prev.map((contact) => {
-        if (contactsSelectionne.includes(contact)) {
-          return {
-            ...contact,
-            listes: [...new Set([...contact.listeContacts, ...listes.map((liste) => liste.nom)])],
-          };
-        } else {
-          return contact;
-        }
-      });
-    });
-    setContactsSelectionne(
-      contactsSelectionne.map((contact) => {
-        return {
-          ...contact,
-          listes: [...contact.listeContacts, ...listes.map((liste) => liste.nom)],
-        };
-      })
-    );
+    loadContacts();
+    setContactsSelectionne([]);
   }
 
   async function supprimerUnContact(contact: Contact) {
@@ -113,7 +96,7 @@ export function ContactTable() {
     });
   }
   return (
-    <Box className="">
+    <Box>
       <Toaster />
       <Stack direction="row" gap={2} className="justify-between">
         <Stack direction="row" gap={2} className="items-end" justify="start">
@@ -140,7 +123,7 @@ export function ContactTable() {
             onGetListe={(a) => associerListe(a)}
           ></GetListe>
           <CreateListe
-            onCreatedListe={() => loadContact()}
+            onCreatedListe={() => loadContacts()}
             disabled={contactsSelectionne.length <= 0}
             getContacts={() => contactsSelectionne}
           ></CreateListe>

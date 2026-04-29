@@ -1,9 +1,8 @@
 "use server";
-import { Contact, ListeContact } from "@prisma/client";
+import { Contact } from "@prisma/client";
 export type ContactInformation = Omit<Contact, "id" | "date_creation">;
 import { prisma } from "@/lib/prisma";
 import { Result, resultOf, validerContact } from "../../utils/helper";
-import { trouverListesAvecIdContact } from "./liste";
 export async function contactAvecMemeEmail(email: string) {
   const contact = await prisma.contact.findFirst({ where: { email: email } });
   return contact ?? false;
@@ -28,7 +27,7 @@ export async function creerContact(contact: ContactInformation) {
     });
     return resultOf(true, "", nouveauContact);
   } catch (error: unknown) {
-    console.log(error);
+    console.error(error);
     return resultOf(false, "Une erreur est survenue lors de la création du contact", null);
   }
 }
