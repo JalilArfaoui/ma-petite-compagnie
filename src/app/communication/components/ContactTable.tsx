@@ -1,9 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  ContactWithListes,
-  listerContactsAvecListes,
-  supprimerContact,
-} from "../api/contact/contact";
+import { ContactWithListes, supprimerContact } from "../api/contact/contact";
 import { Box, Button, Stack, Table, Text, Toaster, toaster } from "@/components/ui";
 import { Contact, ListeContact } from "@prisma/client";
 import { ContactGrid } from "./ContactGrid";
@@ -15,20 +11,29 @@ export function ContactTable({
   getContacts,
   keyReload,
 }: {
-  getContacts: () => Promise<ContactWithListes[] | null>;
+  getContacts: (paginationTaille: number, page: number) => Promise<ContactWithListes[] | null>;
   keyReload: number;
 }) {
+  const [page, setPage] = useState(1);
+  const paginationTaille = 30;
   const [contacts, setContacts] = useState<ContactWithListes[]>([]);
   const [contactsSelectionne, setContactsSelectionne] = useState<ContactWithListes[]>([]);
   async function loadContact() {
-    setContacts((await getContacts()) ?? []);
+    const resultat = await getContacts(paginationTaille, page);
+    setContacts(resultat ?? []);
   }
   useEffect(() => {
     async function loadContact() {
-      setContacts((await getContacts()) ?? []);
+      const resultat = await getContacts(paginationTaille, page);
+      setContacts(resultat ?? []);
     }
     loadContact();
-  }, [keyReload, getContacts]);
+  }, [keyReload, page, getContacts]);
+
+  function changerPage(page: number) {
+    setPage(page);
+    loadContact();
+  }
   async function associerListe(listes: ListeContact[]) {
     const resultats = await Promise.all(
       listes.map((liste) => creerListe(liste.nom, contactsSelectionne))
@@ -163,6 +168,20 @@ export function ContactTable({
             })}
           </Table.Body>
         </Table>
+        <Stack className="p-4" direction="row" justify="center">
+          {page > 1 && (
+            <Button onClick={() => changerPage(page - 1)} className="p-1" size={"sm"}>
+              Page précedente
+            </Button>
+          )}
+
+          <Text className="p-1 font-bold">{page}</Text>
+          {contacts.length == paginationTaille && (
+            <Button onClick={() => changerPage(page + 1)} className="p-1" size={"sm"}>
+              Page suivante
+            </Button>
+          )}
+        </Stack>
       </div>
     </Box>
   );

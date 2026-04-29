@@ -7,8 +7,8 @@ import { CSVContactImport } from "./components/CSVContactImport";
 import { csvToContacts } from "./action/CSVToContacts";
 import { listerContactsAvecListes } from "./api/contact/contact";
 export default function ContactPage() {
-  async function loadContacts() {
-    const resultat = await listerContactsAvecListes(30, 1);
+  async function loadContacts(pagination = 30, page = 1) {
+    const resultat = await listerContactsAvecListes(pagination, page);
     if (resultat.succes) {
       return resultat.donnee;
     } else {
@@ -69,7 +69,10 @@ export default function ContactPage() {
         <Link href="./communication/liste">Affichage par liste</Link>
       </Stack>
       <Box className="md:w-full lg:w-[90%] mx-auto   ">
-        <ContactTable keyReload={0} getContacts={() => loadContacts()} />
+        <ContactTable
+          keyReload={0}
+          getContacts={(pagination, page) => loadContacts(pagination, page)}
+        />
       </Box>
     </Box>
   );
