@@ -41,15 +41,19 @@ export default function AffichageListeContacts() {
     <Box className=" py-5 px-3 flex-col items-center gap-4">
       <Toaster />
       <Text className="h-fit font-bold text-2xl">Listes : </Text>
-      <Select onValueChange={(value) => setListesSelectionnees([listes[Number(value)]])}>
+      <Select
+        onValueChange={(value) =>
+          setListesSelectionnees([listes.find((l) => l.id === Number(value))!])
+        }
+      >
         <Select.Trigger>
           <Select.Value></Select.Value>
         </Select.Trigger>
         <Select.Content>
           <Select.Group defaultValue={"Aucune sélection"}>
-            {listes.map((liste, i) => {
+            {listes.map((liste) => {
               return (
-                <Select.Item key={i} value={"" + i}>
+                <Select.Item key={liste.id} value={"" + liste.id}>
                   {liste.nom}
                 </Select.Item>
               );

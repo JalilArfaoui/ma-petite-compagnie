@@ -15,15 +15,13 @@ export function ContactGrid({
   className: string;
 }) {
   function afficherListe(listes: ListeContact[]) {
-    if (listes) {
-      return listes.map((liste) => {
-        return (
-          <div className="m-1 bg-primary text-white rounded-full text-center" key={liste.id}>
-            {liste.nom}
-          </div>
-        );
-      });
-    }
+    return listes.map((liste) => {
+      return (
+        <div className="m-1 bg-primary text-white rounded-full text-center" key={liste.id}>
+          {liste.nom}
+        </div>
+      );
+    });
   }
   return (
     <Table.Row onClick={() => onSelect(contact)} className={"active:bg-gray-100 " + className}>
