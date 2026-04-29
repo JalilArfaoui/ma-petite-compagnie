@@ -123,7 +123,7 @@ export async function listerContactsAvecListes(
   });
   return resultOf(true, "", contacts);
 }
-export async function getContactInListe(
+export async function listerContactsDansListe(
   liste: ListeContact
 ): Promise<Result<null> | Result<ContactWithListes[]>> {
   const contacts = await prisma.contact.findMany({
