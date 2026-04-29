@@ -12,9 +12,15 @@ export async function trouverListeParNom(nomListe: string) {
     return resultOf(false, "Impossible de récupérer les listes par nom", null);
   }
 }
-export async function trouverBeaucoup() {
+export async function trouverListes(paginationTaille: number = 10, page: number = 1) {
+  if (paginationTaille < 1 || page < 1) {
+    paginationTaille = 10;
+    page = 1;
+  }
+
+  const skip = paginationTaille * (page - 1);
   try {
-    const resultat = await prisma.listeContact.findMany();
+    const resultat = await prisma.listeContact.findMany({ skip, take: paginationTaille });
     return resultOf(true, "", resultat);
   } catch (error: unknown) {
     console.error(error);
