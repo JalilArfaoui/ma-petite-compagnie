@@ -5,10 +5,10 @@ import { toaster, Toaster } from "@/components/ui/Toast/toaster";
 import { ContactTable } from "./components/ContactTable";
 import { CSVContactImport } from "./components/CSVContactImport";
 import { csvToContacts } from "./action/CSVToContacts";
-import { getContactsWithListes } from "./api/contact/contact";
+import { listerContactsAvecListes } from "./api/contact/contact";
 export default function ContactPage() {
   async function loadContacts() {
-    const resultat = await getContactsWithListes(30, 1);
+    const resultat = await listerContactsAvecListes(30, 1);
     if (resultat.succes) {
       return resultat.donnee;
     } else {

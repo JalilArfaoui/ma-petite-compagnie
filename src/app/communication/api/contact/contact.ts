@@ -124,18 +124,22 @@ export async function listerContactsAvecListes(
   return resultOf(true, "", contacts);
 }
 export async function listerContactsDansListe(
-  liste: ListeContact
+  liste: ListeContact,
+  paginationTaille: number = 10,
+  page: number = 1
 ): Promise<Result<null> | Result<ContactWithListes[]>> {
+  const skip = paginationTaille * (page - 1);
   const contacts = await prisma.contact.findMany({
     where: { listeContacts: { some: { id: liste.id } } },
+    take: paginationTaille,
+    skip: skip,
+    include: { listeContacts: true },
   });
-  const contactsWithListes = contacts.map((contact) => {
-    return { ...contact, listes: [] };
-  });
+
   if (!contacts) {
     return resultOf(false, "Le contact n'existe pas.", null);
   }
-  return resultOf(true, "", contactsWithListes);
+  return resultOf(true, "", contacts);
 }
 
 export async function trouverParIdContact(id: number) {

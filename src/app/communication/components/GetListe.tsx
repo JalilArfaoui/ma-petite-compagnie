@@ -1,7 +1,7 @@
 "use client";
 import { toaster, Modal, Button, Toaster, Select } from "@/components/ui";
 import { ListeContact } from "@prisma/client";
-import { trouverBeaucoup } from "../api/contact/liste";
+import { trouverListes } from "../api/contact/liste";
 import { useEffect, useRef, useState } from "react";
 
 export function GetListe({
@@ -22,7 +22,7 @@ export function GetListe({
   }
   useEffect(() => {
     async function loadContact() {
-      const resultat = await trouverBeaucoup();
+      const resultat = await trouverListes();
       if (resultat.succes) {
         setListes(resultat.donnee ?? []);
       } else {
