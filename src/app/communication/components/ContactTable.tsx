@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   ContactWithListes,
-  ListerContactsAvecListes,
+  listerContactsAvecListes,
   supprimerContact,
 } from "../api/contact/contact";
 import { Box, Button, Stack, Table, Text, Toaster, toaster } from "@/components/ui";
@@ -15,7 +15,7 @@ export function ContactTable() {
   const [contacts, setContacts] = useState<ContactWithListes[]>([]);
   const [contactsSelectionne, setContactsSelectionne] = useState<ContactWithListes[]>([]);
   async function loadContact() {
-    const resultat = await ListerContactsAvecListes(30, 1);
+    const resultat = await listerContactsAvecListes(30, 1);
     if (resultat.succes) {
       setContacts(resultat.donnee ?? []);
     } else {
@@ -24,7 +24,7 @@ export function ContactTable() {
   }
   useEffect(() => {
     async function loadContact() {
-      const resultat = await ListerContactsAvecListes(30, 1);
+      const resultat = await listerContactsAvecListes(30, 1);
       if (resultat.succes) {
         setContacts(resultat.donnee ?? []);
       } else {
