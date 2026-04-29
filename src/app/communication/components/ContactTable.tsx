@@ -20,24 +20,12 @@ export function ContactTable({
   const [contacts, setContacts] = useState<ContactWithListes[]>([]);
   const [contactsSelectionne, setContactsSelectionne] = useState<ContactWithListes[]>([]);
 
-  useEffect(() => {
-    async function loadContact() {
-      const resultat = await trouverListes();
-      if (resultat.succes) {
-        setListes(resultat.donnee ?? []);
-      } else {
-        toaster.create({ description: resultat.message, type: "error" });
-      }
-    }
-    loadContact();
-  }, []);
-  /** Usecallback ne permet pas d'appeler ce code dans useeffect */
   async function loadContact() {
     const resultat = await getContacts(paginationTaille, page);
     setContacts(resultat ?? []);
     loadListes();
   }
-  /** Usecallback ne permet pas d'appeler ce code dans useeffect */
+  /** Use callback ne */
   async function loadListes() {
     const resultat = await trouverListes();
     if (resultat.succes) {
@@ -50,11 +38,21 @@ export function ContactTable({
     async function loadContact() {
       const resultat = await getContacts(paginationTaille, page);
       setContacts(resultat ?? []);
-      loadListes();
     }
     loadContact();
   }, [keyReload, page, getContacts]);
 
+  useEffect(() => {
+    async function loadListes() {
+      const resultat = await trouverListes();
+      if (resultat.succes) {
+        setListes(resultat.donnee ?? []);
+      } else {
+        toaster.create({ description: resultat.message, type: "error" });
+      }
+    }
+    loadListes();
+  }, []);
   function changerPage(page: number) {
     setPage(page);
   }
