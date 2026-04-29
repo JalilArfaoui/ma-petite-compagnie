@@ -1,17 +1,21 @@
 import { useEffect, useState } from "react";
-import { ContactWithListes, getContactsWithListes, supprimerContact } from "../api/contact/contact";
+import {
+  ContactWithListes,
+  ListerContactsAvecListes,
+  supprimerContact,
+} from "../api/contact/contact";
 import { Box, Button, Stack, Table, Text, Toaster, toaster } from "@/components/ui";
 import { Contact, ListeContact } from "@prisma/client";
 import { ContactGrid } from "./ContactGrid";
 import { CreateListe } from "./CreateListe";
 import { GetListe } from "./GetListe";
-import { createListe } from "../api/contact/liste";
+import { creerListe } from "../api/contact/liste";
 
 export function ContactTable() {
   const [contacts, setContacts] = useState<ContactWithListes[]>([]);
   const [contactsSelectionne, setContactsSelectionne] = useState<ContactWithListes[]>([]);
   async function loadContact() {
-    const resultat = await getContactsWithListes(30, 1);
+    const resultat = await ListerContactsAvecListes(30, 1);
     if (resultat.succes) {
       setContacts(resultat.donnee ?? []);
     } else {
@@ -20,7 +24,7 @@ export function ContactTable() {
   }
   useEffect(() => {
     async function loadContact() {
-      const resultat = await getContactsWithListes(30, 1);
+      const resultat = await ListerContactsAvecListes(30, 1);
       if (resultat.succes) {
         setContacts(resultat.donnee ?? []);
       } else {
@@ -30,15 +34,17 @@ export function ContactTable() {
     loadContact();
   }, []);
   async function associerListe(listes: ListeContact[]) {
-    listes.forEach(async (liste) => {
-      const title = liste.nom;
-      const resultat = await createListe(title, contactsSelectionne);
-      if (resultat.succes) {
-        toaster.success({ title: "Les contacts séléctionnées ont bien été associés à la liste" });
-      } else {
-        toaster.error({ title: resultat.message });
-      }
-    });
+    const resultats = await Promise.all(
+      listes.map((liste) => creerListe(liste.nom, contactsSelectionne))
+    );
+    const toutesReussies = resultats.every((r) => r.succes);
+    if (toutesReussies) {
+      toaster.success({ title: "Les contacts ont bien été associés à la liste" });
+      // mise à jour de l'état ici
+    } else {
+      const erreur = resultats.find((r) => !r.succes);
+      toaster.error({ title: erreur?.message });
+    }
     setContacts((prev) => {
       return prev.map((contact) => {
         if (contactsSelectionne.includes(contact)) {

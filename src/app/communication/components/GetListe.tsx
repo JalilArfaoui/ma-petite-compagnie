@@ -1,6 +1,7 @@
+"use client";
 import { toaster, Modal, Button, Toaster, Select } from "@/components/ui";
 import { ListeContact } from "@prisma/client";
-import { getMany } from "../api/contact/liste";
+import { trouverBeaucoup } from "../api/contact/liste";
 import { useEffect, useRef, useState } from "react";
 
 export function GetListe({
@@ -21,7 +22,7 @@ export function GetListe({
   }
   useEffect(() => {
     async function loadContact() {
-      const resultat = await getMany();
+      const resultat = await trouverBeaucoup();
       if (resultat.succes) {
         setListes(resultat.donnee ?? []);
       } else {
@@ -53,7 +54,7 @@ export function GetListe({
               <Select.Group defaultValue={"Aucune sélection"}>
                 {listes.map((liste, i) => {
                   return (
-                    <Select.Item key={i} value={"" + i}>
+                    <Select.Item key={liste.id} value={"" + i}>
                       {liste.nom}
                     </Select.Item>
                   );
