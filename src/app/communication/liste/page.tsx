@@ -2,7 +2,7 @@
 import { Box, Select, Text, Toaster, toaster } from "@/components/ui";
 import { ListeContact } from "@prisma/client";
 import { useEffect, useState } from "react";
-import { ContactWithListes, getContactInListe } from "../api/contact/contact";
+import { ContactWithListes, listerContactsDansListe } from "../api/contact/contact";
 import { ContactTable } from "../components/ContactTable";
 import { getMany } from "../api/contact/liste";
 
@@ -26,7 +26,7 @@ export default function AffichageListeContacts() {
       return [];
     } else {
       const liste = listesSelectionnees[0];
-      const contacts = await getContactInListe(liste);
+      const contacts = await listerContactsDansListe(liste);
       if (contacts && contacts.succes) {
         return contacts.donnee;
       } else {
