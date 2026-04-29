@@ -50,7 +50,7 @@ export function ContactTable() {
         if (contactsSelectionne.includes(contact)) {
           return {
             ...contact,
-            listes: [...new Set([...contact.listes, ...listes.map((liste) => liste.nom)])],
+            listes: [...new Set([...contact.listeContacts, ...listes.map((liste) => liste.nom)])],
           };
         } else {
           return contact;
@@ -59,7 +59,10 @@ export function ContactTable() {
     });
     setContactsSelectionne(
       contactsSelectionne.map((contact) => {
-        return { ...contact, listes: [...contact.listes, ...listes.map((liste) => liste.nom)] };
+        return {
+          ...contact,
+          listes: [...contact.listeContacts, ...listes.map((liste) => liste.nom)],
+        };
       })
     );
   }

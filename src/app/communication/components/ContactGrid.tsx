@@ -1,6 +1,7 @@
 import { Button, Table } from "@/components/ui";
 import Link from "next/link";
 import { ContactWithListes } from "../api/contact/contact";
+import { ListeContact } from "@prisma/client";
 
 export function ContactGrid({
   contact,
@@ -13,12 +14,12 @@ export function ContactGrid({
   onDelete: (contact: ContactWithListes) => void;
   className: string;
 }) {
-  function afficherListe(listes: string[]) {
+  function afficherListe(listes: ListeContact[]) {
     if (listes) {
       return listes.map((liste, i) => {
         return (
-          <div className="m-1 bg-primary text-white rounded-full text-center" key={liste}>
-            {liste}
+          <div className="m-1 bg-primary text-white rounded-full text-center" key={liste.id}>
+            {liste.nom}
           </div>
         );
       });
@@ -33,7 +34,7 @@ export function ContactGrid({
       </Table.Cell>
       <Table.Cell className="text-[8px] md:text-[12px] lg:text-[1rem]">{contact.tel}</Table.Cell>
       <Table.Cell className="text-[8px] md:text-[12px] lg:text-[1rem]">
-        {afficherListe(contact.listes)}
+        {afficherListe(contact.listeContacts)}
       </Table.Cell>
       <Table.Cell className="text-[8px] md:text-[12px] lg:text-[1rem]">{contact.ville}</Table.Cell>
       <Table.Cell className="max-w-76 text-[8px] md:text-[12px] lg:text-[1rem] text-pretty wrap-break-word break-all">

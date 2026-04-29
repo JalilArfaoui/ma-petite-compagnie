@@ -102,45 +102,27 @@ export async function supprimerContactsAvecEmail(email: string) {
   }
 }
 export type ContactWithListes = Contact & {
-  listes: string[];
+  listeContacts: {
+    id: number;
+    nom: string;
+  }[];
 };
-
 export async function listerContactsAvecListes(
   paginationTaille: number = 10,
   page: number = 1
 ): Promise<Result<null> | Result<ContactWithListes[]>> {
-  const contacts = await listerContacts(paginationTaille, page);
-  async function transformerContactsAContactsAvecListes(contact: Contact) {
-    console.log("Listes");
-    const resultat = await trouverListesAvecIdContact(contact.id);
-    console.log(resultat.donnee);
-    console.log(Array.isArray(resultat.donnee));
-    if (resultat.succes) {
-      if (Array.isArray(resultat.donnee)) {
-        console.log("Map listes");
-        return resultat.donnee.map((liste) => liste.nom);
-      }
-    }
-    return [];
+  if (paginationTaille < 1 || page < 1) {
+    paginationTaille = 10;
+    page = 1;
   }
-  if (contacts.succes) {
-    const result: ContactWithListes[] = await Promise.all(
-      contacts.donnee?.map(async (contact) => {
-        return {
-          ...contact,
-          listes: await transformerContactsAContactsAvecListes(contact),
-        };
-      }) ?? []
-    );
-    return resultOf(
-      true,
-      "",
 
-      result ?? []
-    );
-  } else {
-    return resultOf(false, contacts.message, null);
-  }
+  const skip = paginationTaille * (page - 1);
+  const contacts = await prisma.contact.findMany({
+    take: paginationTaille,
+    skip: skip,
+    include: { listeContacts: true },
+  });
+  return resultOf(true, "", contacts);
 }
 export async function trouverParIdContact(id: number) {
   const contact = await prisma.contact.findUnique({ where: { id: id } });
