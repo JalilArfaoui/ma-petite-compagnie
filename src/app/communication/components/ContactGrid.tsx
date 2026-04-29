@@ -17,7 +17,7 @@ export function ContactGrid({
     if (listes) {
       return listes.map((liste, i) => {
         return (
-          <div className="m-1 bg-primary text-white rounded-full text-center" key={i}>
+          <div className="m-1 bg-primary text-white rounded-full text-center" key={liste}>
             {liste}
           </div>
         );

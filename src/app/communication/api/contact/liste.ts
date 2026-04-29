@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { Contact } from "@prisma/client";
 import { resultOf } from "../../utils/helper";
 
-export async function getOneByNom(nomListe: string) {
+export async function trouverListeParNom(nomListe: string) {
   try {
     const resultat = await prisma.listeContact.findFirst({ where: { nom: nomListe } });
     return resultOf(true, "", resultat);
@@ -12,19 +12,19 @@ export async function getOneByNom(nomListe: string) {
     return resultOf(false, "Impossible de récupérer les listes par nom", null);
   }
 }
-export async function getMany() {
+export async function trouverBeaucoup() {
   try {
     const resultat = await prisma.listeContact.findMany();
     return resultOf(true, "", resultat);
   } catch (error: unknown) {
     console.log(error);
-    return resultOf(false, "Impossible de récupérer les listes par nom", null);
+    return resultOf(false, "Impossible de récupérer les listes", null);
   }
 }
-export async function createListe(nomListe: string, contacts: Contact[]) {
+export async function creerListe(nomListe: string, contacts: Contact[]) {
   try {
     let resultat = null;
-    const liste = await getOneByNom(nomListe);
+    const liste = await trouverListeParNom(nomListe);
     if (liste.succes && liste.donnee !== null) {
       resultat = prisma.listeContact.update({
         where: { id: liste.donnee.id },
@@ -37,7 +37,7 @@ export async function createListe(nomListe: string, contacts: Contact[]) {
         },
       });
     } else {
-      resultat = prisma.listeContact.create({
+      resultat = await prisma.listeContact.create({
         data: {
           nom: nomListe,
           contacts: {
@@ -55,7 +55,7 @@ export async function createListe(nomListe: string, contacts: Contact[]) {
   }
 }
 
-export async function getListes(id: number) {
+export async function trouverListesAvecIdContact(id: number) {
   try {
     const resultat = await prisma.listeContact.findMany({
       where: { contacts: { some: { id: id } } },

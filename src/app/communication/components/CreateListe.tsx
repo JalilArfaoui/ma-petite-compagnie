@@ -2,7 +2,7 @@
 import { Button, Input, Modal, Text, toaster, Toaster } from "@/components/ui";
 import { Contact } from "@prisma/client";
 import { useRef, useState } from "react";
-import { createListe } from "../api/contact/liste";
+import { creerListe } from "../api/contact/liste";
 
 export function CreateListe({
   disabled,
@@ -17,7 +17,7 @@ export function CreateListe({
   const [title, setTitle] = useState("");
   const [contacts, setContacts] = useState<Contact[]>([]);
   async function creer() {
-    const resultat = await createListe(title, contacts);
+    const resultat = await creerListe(title, contacts);
     if (resultat.succes) {
       toaster.success({ title: "Succès de la création de la liste" });
     } else {

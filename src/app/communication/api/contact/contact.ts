@@ -3,7 +3,7 @@ import { Contact, ListeContact } from "@prisma/client";
 export type ContactInformation = Omit<Contact, "id" | "date_creation">;
 import { prisma } from "@/lib/prisma";
 import { Result, resultOf, validerContact } from "../../utils/helper";
-import { getListes } from "./liste";
+import { trouverListesAvecIdContact } from "./liste";
 export async function contactAvecMemeEmail(email: string) {
   const contact = await prisma.contact.findFirst({ where: { email: email } });
   return contact ?? false;
@@ -105,14 +105,14 @@ export type ContactWithListes = Contact & {
   listes: string[];
 };
 
-export async function getContactsWithListes(
+export async function ListerContactsAvecListes(
   paginationTaille: number = 10,
   page: number = 1
 ): Promise<Result<null> | Result<ContactWithListes[]>> {
   const contacts = await listerContacts(paginationTaille, page);
-  async function transformContactsToContactsWithListes(contact: Contact) {
+  async function transformerContactsAContactsAvecListes(contact: Contact) {
     console.log("Listes");
-    const resultat = await getListes(contact.id);
+    const resultat = await trouverListesAvecIdContact(contact.id);
     console.log(resultat.donnee);
     console.log(Array.isArray(resultat.donnee));
     if (resultat.succes) {
@@ -128,7 +128,7 @@ export async function getContactsWithListes(
       contacts.donnee?.map(async (contact) => {
         return {
           ...contact,
-          listes: await transformContactsToContactsWithListes(contact),
+          listes: await transformerContactsAContactsAvecListes(contact),
         };
       }) ?? []
     );
