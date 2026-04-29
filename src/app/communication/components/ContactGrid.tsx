@@ -27,8 +27,12 @@ export function ContactGrid({
   }
   return (
     <Table.Row onClick={() => onSelect(contact)} className={"active:bg-gray-100 " + className}>
-      <Table.Cell className="text-[8px] md:text-[12px] lg:text-[1rem]">{contact.nom}</Table.Cell>
-      <Table.Cell className="text-[8px] md:text-[12px] lg:text-[1rem]">{contact.prenom}</Table.Cell>
+      <Table.Cell className="text-[8px] md:text-[12px] lg:text-[1rem] max-w-40 text-pretty wrap-break-word break-all">
+        {contact.nom}
+      </Table.Cell>
+      <Table.Cell className="text-[8px] md:text-[12px] lg:text-[1rem] max-w-40 text-pretty wrap-break-word break-all">
+        {contact.prenom}
+      </Table.Cell>
       <Table.Cell className="text-[8px] md:text-[12px] lg:text-[1rem]  max-w-40 text-pretty wrap-break-word break-all">
         {contact.email}
       </Table.Cell>
