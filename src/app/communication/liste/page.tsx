@@ -4,7 +4,7 @@ import { ListeContact } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { ContactWithListes, listerContactsDansListe } from "../api/contact/contact";
 import { ContactTable } from "../components/ContactTable";
-import { getMany } from "../api/contact/liste";
+import { trouverListes } from "../api/contact/liste";
 
 export default function AffichageListeContacts() {
   const [listes, setListes] = useState<ListeContact[]>([]);
@@ -12,7 +12,7 @@ export default function AffichageListeContacts() {
 
   useEffect(() => {
     async function loadListeContact() {
-      const resultat = await getMany();
+      const resultat = await trouverListes();
       if (resultat.succes) {
         setListes(resultat.donnee ?? []);
       } else {
@@ -21,12 +21,15 @@ export default function AffichageListeContacts() {
     }
     loadListeContact();
   }, []);
-  async function loadContactFromListe(): Promise<ContactWithListes[] | null> {
+  async function loadContactFromListe(
+    pagination = 30,
+    page = 1
+  ): Promise<ContactWithListes[] | null> {
     if (listesSelectionnees.length == 0) {
       return [];
     } else {
       const liste = listesSelectionnees[0];
-      const contacts = await listerContactsDansListe(liste);
+      const contacts = await listerContactsDansListe(liste, pagination, page);
       if (contacts && contacts.succes) {
         return contacts.donnee;
       } else {
@@ -56,7 +59,7 @@ export default function AffichageListeContacts() {
       </Select>
       <ContactTable
         keyReload={listesSelectionnees[0]?.id ?? -1}
-        getContacts={() => loadContactFromListe()}
+        getContacts={(pagination, page) => loadContactFromListe(pagination, page)}
       ></ContactTable>
     </Box>
   );
