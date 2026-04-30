@@ -1,14 +1,31 @@
 GROUPE 1 - Production
-POTIGNON, SENEGAS, ATTEIRAC
+
+- Mickaël POTIGNON
+- Anna SENEGAS
+- Adrien ATTEIRAC
 
 GROUPE 2 - Planning
-FAUSSURIER, LABASTE, FAGONDE, LAURENT, MOUGEL
+
+- Matéo FAUSSURIER
+- Dorian LABASTE - @D0lab
+- Romain FAGONDE - @rom1-dev
+- Matys LAURENT - @SyMat12
+- David MOUGEL - @naflouille
 
 GROUPE 3 - Administration & finances
-AJAS, BRUGEROLLE, PINTO
+
+- Léo AJAS - @leoajs
+- Alexandre BRUGEROLLE - @AlexandreB-cmyk
+- Florian PINTO
 
 GROUPE 4 - Communication & Relations
-YUKSEL, CLUZEL, BONDUELLE
+
+- Ciran YUKSEL
+- Enzo CLUZEL - @enzo2900
+- Simon BONDUELLE
 
 GROUPE 5 - Socle applicatif & UX
-SHULDIESHOV, SOLEIL, FIJALKOW
+
+- Illia SHULDIESHOV
+- Aurélien SOLEIL - @aurellsoleil
+- Samuel FIJALKOW
