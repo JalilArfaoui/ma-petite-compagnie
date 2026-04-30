@@ -1,5 +1,5 @@
 "use client";
-import { Heading, Link, Box } from "@/components/ui";
+import { Heading, Link, Box, Button } from "@/components/ui";
 import ContactDetails from "../components/contactDetails";
 import { creerContactAction } from "../action/contactFormAction";
 
@@ -26,8 +26,12 @@ export function ContactCreation() {
       <Box textAlign={"center"}>
         <Heading as={"h3"}>Création d&rsquo;un contact</Heading>
       </Box>
-      <Box>
-        <Link href={"./"}>Retour</Link>
+      <Box className="p-3">
+        <Link href={"./"}>
+          <Button size={"sm"} variant={"link"}>
+            Retour
+          </Button>
+        </Link>
       </Box>
 
       <ContactDetails onSubmitted={onSubmit} contactDonnee={null}></ContactDetails>

@@ -1,4 +1,4 @@
-import { Card, Stack, Heading, SimpleGrid, Text, Box } from "@/components/ui";
+import { Card, Stack, Heading, Text, Box } from "@/components/ui";
 import { Contact } from "@prisma/client";
 export function ContactCard({
   contact,
