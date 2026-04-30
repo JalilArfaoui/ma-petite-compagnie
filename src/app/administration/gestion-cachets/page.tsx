@@ -61,13 +61,13 @@ export default function PageCachets() {
 
   //fonction helper pour transformer les données de Prisma au format du state local
   function formatCachetFromDB(data: CachetWithRelations): Cachet {
-    // supprime le symbole € si déjà présent, afin d'éviter d'avoir des doublons lors de l'affichage
+    // supprime le symbole € si déjà présent
     const montantNettoye = data.montant.replace(/[^\d.,-]/g, "").trim();
 
     return {
       ...data,
       date: typeof data.date === "string" ? data.date : data.date.toISOString().split("T")[0],
-      montant: `${montantNettoye} €`,
+      montant: montantNettoye,
     };
   }
 
@@ -439,7 +439,7 @@ export default function PageCachets() {
                     {c.membre.user.prenom} {c.membre.user.nom}
                   </Table.Cell>
                   <Table.Cell>{new Date(c.date).toLocaleDateString("fr-FR")}</Table.Cell>
-                  <Table.Cell>{c.montant}</Table.Cell>
+                  <Table.Cell>{c.montant} €</Table.Cell>
                   <Table.Cell>{c.spectacle.titre}</Table.Cell>
                   <Table.Cell>{c.note || "-"}</Table.Cell>
                   <Table.Cell>
