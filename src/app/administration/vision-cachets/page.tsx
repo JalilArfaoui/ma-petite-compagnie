@@ -132,7 +132,7 @@ export default function VisionCachetsPage() {
                     <Table.Cell>{new Date(cachet.date).toLocaleDateString("fr-FR")}</Table.Cell>
                     <Table.Cell>{cachet.montant} €</Table.Cell>
                     <Table.Cell>{cachet.spectacle.titre}</Table.Cell>
-                    <Table.Cell>{cachet.note}</Table.Cell>
+                    <Table.Cell>{cachet.note || "-"}</Table.Cell>
                   </Table.Row>
                 ))}
               </Table.Body>

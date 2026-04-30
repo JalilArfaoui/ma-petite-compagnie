@@ -532,8 +532,6 @@ async function main() {
     },
   ];
 
-  await prisma.cachet.deleteMany({});
-
   for (const c of cachetData) {
     const existing = await prisma.cachet.findFirst({
       where: {

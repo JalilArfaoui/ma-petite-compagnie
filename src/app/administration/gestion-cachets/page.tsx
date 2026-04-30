@@ -1,7 +1,5 @@
 "use client";
 
-//demander à générer une dizaine de tables Cachet bdd, pour les tests
-
 import { Button, Card, Table, Heading } from "@/components/ui";
 import { useState, useEffect } from "react";
 import { Prisma } from "@prisma/client";
@@ -53,9 +51,9 @@ export default function PageCachets() {
   const [editId, setEditId] = useState<number | null>(null);
   const [filtreMembre, setFiltreMembre] = useState<number | null>(null);
   const [filtreSpectacle, setFiltreSpectacle] = useState<number | null>(null);
-  const [tri, setTri] = useState<
-    "datecroissante" | "datedecroissante" | "montantcroissant" | "montantdecroissante"
-  >("datecroissante");
+  const [sortBy, setSortBy] = useState<
+    "none" | "dateCroissante" | "dateDecroissante" | "montantCroissant" | "montantDecroissant"
+  >("none");
   const [errors, setErrors] = useState<{ [key: string]: string }>({}); //stocker une erreur par champ
   const [isLoading, setIsLoading] = useState(false); //état pour désactiver le bouton pendant l'envoi (sécurité)
 
@@ -222,19 +220,22 @@ export default function PageCachets() {
 
   //filtrage par date ou montant avec direction croissante/décroissante
   const cachetsTries = [...cachetsFiltres].sort((a, b) => {
-    if (tri === "datecroissante") return a.date.localeCompare(b.date);
-    if (tri === "datedecroissante") return b.date.localeCompare(a.date);
-    if (tri === "montantcroissant") {
-      const aNum = parseFloat(a.montant.replace(/[^\d.,-]/g, "").replace(",", "."));
-      const bNum = parseFloat(b.montant.replace(/[^\d.,-]/g, "").replace(",", "."));
-      return aNum - bNum;
+    switch (sortBy) {
+      case "dateCroissante":
+        return a.date.localeCompare(b.date);
+      case "dateDecroissante":
+        return b.date.localeCompare(a.date);
+      case "montantCroissant":
+        const aNum1 = parseFloat(a.montant.replace(/[^\d.,-]/g, "").replace(",", "."));
+        const bNum1 = parseFloat(b.montant.replace(/[^\d.,-]/g, "").replace(",", "."));
+        return aNum1 - bNum1;
+      case "montantDecroissant":
+        const aNum2 = parseFloat(a.montant.replace(/[^\d.,-]/g, "").replace(",", "."));
+        const bNum2 = parseFloat(b.montant.replace(/[^\d.,-]/g, "").replace(",", "."));
+        return bNum2 - aNum2;
+      default:
+        return 0;
     }
-    if (tri === "montantdecroissante") {
-      const aNum = parseFloat(a.montant.replace(/[^\d.,-]/g, "").replace(",", "."));
-      const bNum = parseFloat(b.montant.replace(/[^\d.,-]/g, "").replace(",", "."));
-      return bNum - aNum;
-    }
-    return 0;
   });
 
   return (
@@ -392,26 +393,17 @@ export default function PageCachets() {
           </div>
 
           <div className="flex flex-col gap-1">
-            <label>Trier par date</label>
+            <label>Options de triage</label>
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
-              value={tri.startsWith("date") ? tri : "datecroissante"}
-              onChange={(e) => setTri(e.target.value as "datecroissante" | "datedecroissante")}
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
             >
-              <option value="datecroissante">Date croissante</option>
-              <option value="datedecroissante">Date decroissante</option>
-            </select>
-          </div>
-
-          <div className="flex flex-col gap-1">
-            <label>Trier par montant</label>
-            <select
-              className="p-2 border border-slate-300 rounded-md w-full"
-              value={tri.startsWith("montant") ? tri : "montantcroissant"}
-              onChange={(e) => setTri(e.target.value as "montantcroissant" | "montantdecroissante")}
-            >
-              <option value="montantcroissant">Montant croissant</option>
-              <option value="montantdecroissante">Montant decroissant</option>
+              <option value="none">Aucun tri</option>
+              <option value="dateCroissante">Date croissante</option>
+              <option value="dateDecroissante">Date décroissante</option>
+              <option value="montantCroissant">Montant croissant</option>
+              <option value="montantDecroissant">Montant décroissant</option>
             </select>
           </div>
         </div>

@@ -98,6 +98,27 @@ enum Role {
   PARTENAIRE 
 }
 
+model ListeContact {
+  id Int @id @default(autoincrement())
+  nom String @unique
+  contacts Contact[] 
+}
+
+model Contact {
+  id    Int     @id @default(autoincrement())
+  nom String 
+  prenom String
+  role    Role?
+  email String? @unique
+  tel String?
+
+  notes String?
+  ville String?
+  lieu String?
+  date_creation DateTime @default(now())
+  listeContacts ListeContact[]
+}
+
 // partie groupe production
 
 enum StatutSpectacle {
