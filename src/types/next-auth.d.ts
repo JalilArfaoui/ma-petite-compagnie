@@ -1,9 +1,12 @@
 import NextAuth, { type DefaultSession } from "next-auth";
 
 export type CompanyRights = {
-  droitDestruction: boolean;
-  droitModificationInfos: boolean;
-  droitGestionUtilisateurs: boolean;
+  droitAccesDetailsCompagnie: boolean;
+  droitModificationCompagnie: boolean;
+  droitSuppressionCompagnie: boolean;
+  droitAjoutMembre: boolean;
+  droitSuppressionMembre: boolean;
+  droitGestionDroitsMembres: boolean;
   droitAccesPlanning: boolean;
   droitGestionPlanning: boolean;
 };
