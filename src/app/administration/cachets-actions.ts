@@ -44,8 +44,7 @@ async function validerCachetDataAction(data: {
 export async function getCachetsAction() {
   const session = await auth();
   if (!session) return { success: false as const, error: "Non autorisé" };
-
-  try {
+  
   try {
     const cachets = await prisma.cachet.findMany({
       include: {
