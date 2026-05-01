@@ -98,7 +98,7 @@ export default function VisionCachetsPage() {
         </select>
 
         <Heading as="h4" className="font-semibold">
-          Options de triage
+          Options de tri
         </Heading>
         <select
           value={sortBy}
