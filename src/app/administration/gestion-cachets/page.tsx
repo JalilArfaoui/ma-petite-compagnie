@@ -321,7 +321,7 @@ export default function PageCachets() {
               className="p-2 border border-slate-300 rounded-md w-full"
               id="spectacle"
               value={spectacleId?.toString() || ""}
-              onChange={(e) => setSpectacleId(Number(e.target.value))}
+              onChange={(e) => setSpectacleId(e.target.value ? Number(e.target.value) : null)}
               disabled={isLoading}
             >
               <option value=""> Choisir un spectacle </option>
