@@ -13,7 +13,8 @@ import {
   Box,
   SimpleGrid,
 } from "@/components/ui";
-import { LuUser, LuBuilding, LuMail, LuPlus, LuCheck } from "react-icons/lu";
+import { LuUser, LuMail, LuPlus, LuCheck, LuSettings } from "react-icons/lu";
+import { FaTheaterMasks } from "react-icons/fa";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -32,6 +33,7 @@ export default function ProfilePage() {
   const user = session.user;
   const companies = session.companies || [];
   const activeCompanyId = session.activeCompanyId;
+  const rights = session.rights;
 
   const handleSwitchCompany = async (companyId: number) => {
     setIsUpdating(companyId);
@@ -42,7 +44,6 @@ export default function ProfilePage() {
   return (
     <Container className="py-12 max-w-5xl">
       <Stack gap={10}>
-        {/* Header Section */}
         <Box>
           <Heading as="h3" className="font-serif mb-2">
             Mon Profil
@@ -53,7 +54,7 @@ export default function ProfilePage() {
         </Box>
 
         <SimpleGrid columns={{ base: 1, lg: 2 }} gap={8}>
-          {/* Personal Info Card */}
+          {/* Personal Info */}
           <Card className="p-8 border-black/5 shadow-sm bg-white">
             <Stack gap={6}>
               <Flex align="center" gap={4}>
@@ -62,7 +63,6 @@ export default function ProfilePage() {
                 </div>
                 <Heading as="h4">Informations personnelles</Heading>
               </Flex>
-
               <Stack gap={4}>
                 <Box>
                   <Text className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">
@@ -72,7 +72,6 @@ export default function ProfilePage() {
                     {user.prenom} {user.nom}
                   </Text>
                 </Box>
-
                 <Box>
                   <Text className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">
                     Adresse Email
@@ -86,13 +85,13 @@ export default function ProfilePage() {
             </Stack>
           </Card>
 
-          {/* Companies Card */}
+          {/* Companies */}
           <Card className="p-8 border-black/5 shadow-sm bg-white">
             <Stack gap={6}>
               <Flex align="center" justify="between">
                 <Flex align="center" gap={4}>
                   <div className="p-3 bg-primary/10 text-primary rounded-xl">
-                    <LuBuilding size={24} />
+                    <FaTheaterMasks size={24} />
                   </div>
                   <Heading as="h4">Mes Compagnies</Heading>
                 </Flex>
@@ -105,45 +104,62 @@ export default function ProfilePage() {
 
               <Stack gap={3}>
                 {companies.length > 0 ? (
-                  companies.map((company) => (
-                    <Flex
-                      key={company.id}
-                      align="center"
-                      justify="between"
-                      className={`p-4 rounded-xl border transition-all ${
-                        activeCompanyId === company.id
-                          ? "border-primary bg-primary/5 shadow-sm"
-                          : "border-slate-100 bg-slate-50/50 hover:bg-slate-50"
-                      }`}
-                    >
-                      <Stack gap={1}>
-                        <Text className="font-bold text-slate-900">{company.nom}</Text>
-                        {activeCompanyId === company.id && (
-                          <Badge variant="blue" className="w-fit text-[10px]">
-                            Active
-                          </Badge>
-                        )}
-                      </Stack>
+                  companies.map((company) => {
+                    const isActive = activeCompanyId === company.id;
 
-                      {activeCompanyId !== company.id && (
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => handleSwitchCompany(company.id)}
-                          disabled={isUpdating !== null}
-                          className="hover:bg-primary/10 hover:text-primary transition-colors font-medium text-xs"
-                        >
-                          {isUpdating === company.id ? "..." : "Basculer"}
-                        </Button>
-                      )}
+                    return (
+                      <Box
+                        key={company.id}
+                        className={`p-4 rounded-xl border transition-all ${
+                          isActive
+                            ? "border-primary bg-primary/5 shadow-sm"
+                            : "border-slate-100 bg-slate-50/50 hover:bg-slate-50"
+                        }`}
+                      >
+                        <Flex align="center" justify="between">
+                          <Stack gap={1}>
+                            <Text className="font-bold text-slate-900">{company.nom}</Text>
+                            {isActive && (
+                              <Badge variant="blue" className="w-fit text-[10px]">
+                                Active
+                              </Badge>
+                            )}
+                          </Stack>
 
-                      {activeCompanyId === company.id && (
-                        <div className="bg-primary text-white p-1 rounded-full">
-                          <LuCheck size={14} />
-                        </div>
-                      )}
-                    </Flex>
-                  ))
+                          <Flex align="center" gap={1}>
+                            {isActive && rights && Object.values(rights).some(Boolean) && (
+                              <Link href={`/compagnie/${company.id}`}>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="hover:bg-primary/10 hover:text-primary transition-colors"
+                                  icon={<LuSettings size={14} />}
+                                />
+                              </Link>
+                            )}
+
+                            {isActive && !(rights && Object.values(rights).some(Boolean)) && (
+                              <div className="bg-primary text-white p-1 rounded-full">
+                                <LuCheck size={14} />
+                              </div>
+                            )}
+
+                            {!isActive && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => handleSwitchCompany(company.id)}
+                                disabled={isUpdating !== null}
+                                className="hover:bg-primary/10 hover:text-primary transition-colors font-medium text-xs"
+                              >
+                                {isUpdating === company.id ? "..." : "Basculer"}
+                              </Button>
+                            )}
+                          </Flex>
+                        </Flex>
+                      </Box>
+                    );
+                  })
                 ) : (
                   <Box className="py-8 text-center bg-slate-50 rounded-xl border border-dashed border-slate-200">
                     <Text className="text-slate-400 italic mb-4">

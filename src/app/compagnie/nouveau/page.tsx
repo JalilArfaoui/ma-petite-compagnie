@@ -5,7 +5,8 @@ import { Button, Input, Text, Stack, Heading, Container, Card } from "@/componen
 import { createCompany } from "@/app/(auth)/company-actions";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { LuArrowLeft, LuBuilding } from "react-icons/lu";
+import { LuArrowLeft } from "react-icons/lu";
+import { FaTheaterMasks } from "react-icons/fa";
 import Link from "next/link";
 
 export default function CreateCompanyPage() {
@@ -47,7 +48,7 @@ export default function CreateCompanyPage() {
         <Stack gap={6}>
           <div className="flex items-center gap-4">
             <div className="p-3 bg-primary/10 text-primary rounded-xl">
-              <LuBuilding size={24} />
+              <FaTheaterMasks size={24} />
             </div>
             <div>
               <Heading as="h3" className="font-serif">
