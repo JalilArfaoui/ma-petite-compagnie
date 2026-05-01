@@ -79,10 +79,10 @@ export default function PageCachets() {
           setErrors({ global: result.error || "Une erreur est survenue" });
         }
       })
-      .catch(() => setIsLoading(false)) //pour éviter blocage formulaire si erreur réseau
       .catch((error) => {
         console.error("Erreur non gérée:", error);
         setErrors({ global: "Une erreur inattendue s'est produite" });
+        setIsLoading(false);
       });
 
     getAllMembresAction()
