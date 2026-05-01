@@ -204,7 +204,7 @@ export async function getAllMembresAction() {
 export async function getAllSpectaclesAction() {
   const session = await auth();
   if (!session) return { success: false, error: "Non autorisé" };
-  
+
   try {
     const spectacles = await prisma.spectacle.findMany({
       orderBy: { titre: "asc" },
