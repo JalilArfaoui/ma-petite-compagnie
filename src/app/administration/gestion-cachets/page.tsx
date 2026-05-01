@@ -233,7 +233,7 @@ export default function PageCachets() {
       case "montantCroissant":
         return a.montant - b.montant;
       case "montantDecroissant":
-        return a.montant - b.montant;
+        return b.montant - a.montant;
       default:
         return 0;
     }
