@@ -2,8 +2,8 @@
 
 import { prisma } from "@/lib/prisma";
 
-export const MONTANT_CACHET_MINIMUM_LEGAL = 110;
-export const NOTE_NB_MAX_CARACS = 120;
+const MONTANT_CACHET_MINIMUM_LEGAL = 110;
+const NOTE_NB_MAX_CARACS = 120;
 
 //fonction helper pour valider les données d'un cachet
 async function validerCachetDataAction(data: {

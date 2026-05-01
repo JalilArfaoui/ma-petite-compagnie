@@ -10,8 +10,6 @@ import {
   supprimerCachetAction,
   getAllMembresAction,
   getAllSpectaclesAction,
-  MONTANT_CACHET_MINIMUM_LEGAL,
-  NOTE_NB_MAX_CARACS,
 } from "../cachets-actions";
 
 //seule la note est optionnelle, toutes les autres clés sont obligatoires donc pas de null permis
@@ -40,6 +38,9 @@ type CachetAvecRelations = Prisma.CachetGetPayload<{
 }>;
 
 export default function PageCachets() {
+  const MONTANT_CACHET_MINIMUM_LEGAL = 110;
+  const NOTE_NB_MAX_CARACS = 120;
+
   const [cachets, setCachets] = useState<Cachet[]>([]);
   const [membres, setMembres] = useState<
     Array<{ id: number; user: { nom: string | null; prenom: string | null } }>
@@ -47,7 +48,7 @@ export default function PageCachets() {
   const [spectacles, setSpectacles] = useState<Array<{ id: number; titre: string }>>([]);
   const [membreId, setMembreId] = useState<number | null>(null);
   const [date, setDate] = useState("");
-  const [montant, setMontant] = useState<number>(0);
+  const [montant, setMontant] = useState<number | null>(null);
   const [spectacleId, setSpectacleId] = useState<number | null>(null);
   const [note, setNote] = useState("");
   const [editId, setEditId] = useState<number | null>(null);
@@ -146,7 +147,7 @@ export default function PageCachets() {
         //on est sur que membreId et spectacleId ne sont pas null grâce à la validation au-dessus
         membreId: membreId!,
         date,
-        montant,
+        montant: montant!,
         spectacleId: spectacleId!,
         note,
       }).then((result) => {
@@ -164,7 +165,7 @@ export default function PageCachets() {
       creerCachetAction({
         membreId: membreId!,
         date,
-        montant,
+        montant: montant!,
         spectacleId: spectacleId!,
         note,
       }).then((result) => {
@@ -182,8 +183,8 @@ export default function PageCachets() {
 
   function resetFormulaire() {
     setMembreId(null);
-    setMontant(MONTANT_CACHET_MINIMUM_LEGAL);
-    setMontant(0);
+    setDate("");
+    setMontant(null);
     setSpectacleId(null);
     setNote("");
     setErrors({});
