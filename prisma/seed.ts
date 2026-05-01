@@ -2,7 +2,7 @@ import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
-import bcryptjs from "bcryptjs"
+import bcryptjs from "bcryptjs";
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const adapter = new PrismaPg(pool);
@@ -407,12 +407,42 @@ async function main() {
 
   // -- Utilisateurs (Membres) --
   const usersData = [
-    { email: "jean.dupont@theatre.fr", password: await bcryptjs.hash("password", 10), nom: "Dupont", prenom: "Jean" },
-    { email: "marie.martin@theatre.fr", password: await bcryptjs.hash("password", 10), nom: "Martin", prenom: "Marie" },
-    { email: "pierre.bernard@theatre.fr", password: await bcryptjs.hash("password", 10), nom: "Bernard", prenom: "Pierre" },
-    { email: "sophie.leclerc@theatre.fr", password: await bcryptjs.hash("password", 10), nom: "Leclerc", prenom: "Sophie" },
-    { email: "thomas.gaston@theatre.fr", password: await bcryptjs.hash("password", 10), nom: "Gaston", prenom: "Thomas" },
-    { email: "claire.laurent@theatre.fr", password: await bcryptjs.hash("password", 10), nom: "Laurent", prenom: "Claire" },
+    {
+      email: "jean.dupont@theatre.fr",
+      password: await bcryptjs.hash("password", 10),
+      nom: "Dupont",
+      prenom: "Jean",
+    },
+    {
+      email: "marie.martin@theatre.fr",
+      password: await bcryptjs.hash("password", 10),
+      nom: "Martin",
+      prenom: "Marie",
+    },
+    {
+      email: "pierre.bernard@theatre.fr",
+      password: await bcryptjs.hash("password", 10),
+      nom: "Bernard",
+      prenom: "Pierre",
+    },
+    {
+      email: "sophie.leclerc@theatre.fr",
+      password: await bcryptjs.hash("password", 10),
+      nom: "Leclerc",
+      prenom: "Sophie",
+    },
+    {
+      email: "thomas.gaston@theatre.fr",
+      password: await bcryptjs.hash("password", 10),
+      nom: "Gaston",
+      prenom: "Thomas",
+    },
+    {
+      email: "claire.laurent@theatre.fr",
+      password: await bcryptjs.hash("password", 10),
+      nom: "Laurent",
+      prenom: "Claire",
+    },
   ];
 
   const users = [];

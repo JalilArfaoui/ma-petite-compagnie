@@ -2,8 +2,8 @@
 
 import { prisma } from "@/lib/prisma";
 
-const MONTANT_CACHET_MINIMUM_LEGAL = 110;
-const NOTE_NB_MAX_CARACS = 120;
+export const MONTANT_CACHET_MINIMUM_LEGAL = 110;
+export const NOTE_NB_MAX_CARACS = 120;
 
 //fonction helper pour valider les données d'un cachet
 async function validerCachetDataAction(data: {
@@ -117,14 +117,14 @@ export async function mettreAJourCachetAction(
     return { success: false, error: validation.error };
   }
 
-  const cachetExistant = await prisma.cachet.findUnique({
-    where: { id },
-  });
-  if (!cachetExistant) {
-    return { success: false, error: "Le cachet spécifié n'existe pas" };
-  }
-
   try {
+    const cachetExistant = await prisma.cachet.findUnique({
+      where: { id },
+    });
+    if (!cachetExistant) {
+      return { success: false, error: "Le cachet spécifié n'existe pas" };
+    }
+
     const cachetMisAJour = await prisma.cachet.update({
       where: { id },
       data: {
