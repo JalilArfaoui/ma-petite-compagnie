@@ -184,6 +184,9 @@ export async function supprimerCachetAction(id: number) {
 
 //pour l'input de selection des membres
 export async function getAllMembresAction() {
+  const session = await auth();
+  if (!session) return { success: false, error: "Non autorisé" };
+
   try {
     const membres = await prisma.companyMember.findMany({
       include: {
@@ -199,6 +202,9 @@ export async function getAllMembresAction() {
 
 //pour l'input de selection des spectacles
 export async function getAllSpectaclesAction() {
+  const session = await auth();
+  if (!session) return { success: false, error: "Non autorisé" };
+  
   try {
     const spectacles = await prisma.spectacle.findMany({
       orderBy: { titre: "asc" },
