@@ -2,7 +2,7 @@
 
 import { Card, Table, Heading } from "@/components/ui";
 import { useState, useEffect, useMemo } from "react";
-import { getCachets } from "./actions";
+import { getCachetsAction } from "./actions";
 
 //seule la note est optionnelle, toutes les autres clés sont obligatoires donc pas de null permis
 type Cachet = {
@@ -24,15 +24,23 @@ export default function VisionCachetsPage() {
   >("none"); //pour avoir un seul tri actif à la fois
 
   useEffect(() => {
-    getCachets().then((cachets) => {
-      const cachetFormate = cachets.map((c) => ({
-        ...c,
-        //convertit date de type Date en date de type string
-        //simplement parce que je prefère utiliser string plutôt que Date pour la clé date
-        date: typeof c.date === "string" ? c.date : c.date.toISOString().split("T")[0],
-      }));
-      setCachets(cachetFormate);
-    });
+    getCachetsAction()
+      .then((result) => {
+        if (result.success && result.data) {
+          const cachetFormate = result.data.map((c) => ({
+            ...c,
+            //convertit date de type Date en date de type string
+            //simplement parce que je prefère utiliser string plutôt que Date pour la clé date
+            date: typeof c.date === "string" ? c.date : c.date.toISOString().split("T")[0],
+          }));
+          setCachets(cachetFormate);
+        } else if (!result.success) {
+          console.error(result.error);
+        }
+      })
+      .catch((error) => {
+        console.error("Erreur non gérée:", error);
+      });
   }, []);
 
   //filtrage + tri

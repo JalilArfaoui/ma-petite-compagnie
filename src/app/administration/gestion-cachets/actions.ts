@@ -2,28 +2,87 @@
 
 import { prisma } from "@/lib/prisma";
 
-export async function getCachets() {
-  return await prisma.cachet.findMany({
-    include: {
-      spectacle: true,
-      membre: {
-        include: {
-          user: true,
-        },
-      },
-    },
+//fonction helper pour valider les données d'un cachet
+async function validerCachetDataAction(data: {
+  membreId: number;
+  date: string;
+  montant: string;
+  spectacleId: number;
+  note?: string;
+}): Promise<{ valid: boolean; error?: string }> {
+  if (!Number.isInteger(data.membreId) || data.membreId <= 0) {
+    return { valid: false, error: "L'identifiant du membre est invalide" };
+  }
+
+  const membre = await prisma.companyMember.findUnique({
+    where: { id: data.membreId },
   });
+  if (!membre) {
+    return { valid: false, error: "Le membre spécifié n'existe pas" };
+  }
+
+  if (!Number.isInteger(data.spectacleId) || data.spectacleId <= 0) {
+    return { valid: false, error: "L'identifiant du spectacle est invalide" };
+  }
+
+  const spectacle = await prisma.spectacle.findUnique({
+    where: { id: data.spectacleId },
+  });
+  if (!spectacle) {
+    return { valid: false, error: "Le spectacle spécifié n'existe pas" };
+  }
+
+  const dateObj = new Date(data.date);
+  if (isNaN(dateObj.getTime())) {
+    return { valid: false, error: "La date est invalide" };
+  }
+
+  const montantNum = parseFloat(data.montant.replace(/[^\d.,-]/g, "").replace(",", "."));
+  if (isNaN(montantNum) || montantNum < 110) {
+    return { valid: false, error: "Le montant doit être un nombre >= 110" };
+  }
+
+  if (data.note && data.note.length > 120) {
+    return { valid: false, error: "La note ne peut pas dépasser 120 caractères" };
+  }
+
+  return { valid: true };
 }
 
-export async function createCachet(data: {
+export async function getCachetsAction() {
+  try {
+    const cachets = await prisma.cachet.findMany({
+      include: {
+        spectacle: true,
+        membre: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    });
+    return { success: true, data: cachets };
+  } catch (error) {
+    console.error("Erreur lors de la récupération des cachets:", error);
+    return { success: false, error: "Impossible de récupérer les cachets" };
+  }
+}
+
+export async function creerCachetAction(data: {
   membreId: number;
   date: string;
   montant: string;
   spectacleId: number;
   note?: string;
 }) {
+  //validation côté serveur
+  const validation = await validerCachetDataAction(data);
+  if (!validation.valid) {
+    return { success: false, error: validation.error };
+  }
+
   try {
-    const newCachet = await prisma.cachet.create({
+    const nouvCachet = await prisma.cachet.create({
       data: {
         membreId: data.membreId,
         date: new Date(data.date),
@@ -41,14 +100,14 @@ export async function createCachet(data: {
       },
     });
 
-    return { success: true, data: newCachet };
+    return { success: true, data: nouvCachet };
   } catch (error) {
     console.error("Erreur lors de la création du cachet:", error);
     return { success: false, error: "Impossible de créer le cachet" };
   }
 }
 
-export async function updateCachet(
+export async function mettreAJourCachetAction(
   id: number,
   data: {
     membreId: number;
@@ -58,8 +117,24 @@ export async function updateCachet(
     note?: string;
   }
 ) {
+  if (!Number.isInteger(id) || id <= 0) {
+    return { success: false, error: "L'identifiant du cachet est invalide" };
+  }
+
+  const validation = await validerCachetDataAction(data);
+  if (!validation.valid) {
+    return { success: false, error: validation.error };
+  }
+
+  const cachetExistant = await prisma.cachet.findUnique({
+    where: { id },
+  });
+  if (!cachetExistant) {
+    return { success: false, error: "Le cachet spécifié n'existe pas" };
+  }
+
   try {
-    const updatedCachet = await prisma.cachet.update({
+    const cachetMisAJour = await prisma.cachet.update({
       where: { id },
       data: {
         membreId: data.membreId,
@@ -78,14 +153,18 @@ export async function updateCachet(
       },
     });
 
-    return { success: true, data: updatedCachet };
+    return { success: true, data: cachetMisAJour };
   } catch (error) {
     console.error("Erreur lors de la mise à jour du cachet:", error);
     return { success: false, error: "Impossible de mettre à jour le cachet" };
   }
 }
 
-export async function deleteCachet(id: number) {
+export async function supprimerCachetAction(id: number) {
+  if (!Number.isInteger(id) || id <= 0) {
+    return { success: false, error: "L'identifiant du cachet est invalide" };
+  }
+
   try {
     await prisma.cachet.delete({
       where: { id },
@@ -98,23 +177,23 @@ export async function deleteCachet(id: number) {
   }
 }
 
-// Récupère tous les membres (pour l'input de selection des membres)
-export async function getAllMembers() {
+//pour l'input de selection des membres
+export async function getAllMembresAction() {
   try {
-    const members = await prisma.companyMember.findMany({
+    const membres = await prisma.companyMember.findMany({
       include: {
         user: true,
       },
     });
-    return { success: true, data: members };
+    return { success: true, data: membres };
   } catch (error) {
     console.error("Erreur lors de la récupération des membres:", error);
     return { success: false, error: "Impossible de récupérer les membres" };
   }
 }
 
-// Récupère tous les spectacles (pour l'input de selection des spectacles)
-export async function getAllSpectacles() {
+//pour l'input de selection des spectacles
+export async function getAllSpectaclesAction() {
   try {
     const spectacles = await prisma.spectacle.findMany({
       orderBy: { titre: "asc" },

@@ -4,12 +4,12 @@ import { Button, Card, Table, Heading } from "@/components/ui";
 import { useState, useEffect } from "react";
 import { Prisma } from "@prisma/client";
 import {
-  getCachets,
-  createCachet,
-  updateCachet,
-  deleteCachet,
-  getAllMembers,
-  getAllSpectacles,
+  getCachetsAction,
+  creerCachetAction,
+  mettreAJourCachetAction,
+  supprimerCachetAction,
+  getAllMembresAction,
+  getAllSpectaclesAction,
 } from "./actions";
 
 //seule la note est optionnelle, toutes les autres clés sont obligatoires donc pas de null permis
@@ -26,7 +26,7 @@ type Cachet = {
 
 //type pour représenter le Cachet retourné par Prisma avant transformation
 //cela permet d'éviter l'erreur pointé par lint à la ligne: (function formatCachetFromDB(data: CachetWithRelations): Cachet {)
-type CachetWithRelations = Prisma.CachetGetPayload<{
+type CachetAvecRelations = Prisma.CachetGetPayload<{
   include: {
     spectacle: true;
     membre: {
@@ -58,8 +58,8 @@ export default function PageCachets() {
   const [isLoading, setIsLoading] = useState(false); //état pour désactiver le bouton pendant l'envoi (sécurité)
 
   //fonction helper pour transformer les données de Prisma au format du state local
-  function formatCachetFromDB(data: CachetWithRelations): Cachet {
-    // supprime le symbole € si déjà présent
+  function formateCachet(data: CachetAvecRelations): Cachet {
+    //supprime le symbole € si déjà présent
     const montantNettoye = data.montant.replace(/[^\d.,-]/g, "").trim();
 
     return {
@@ -70,21 +70,28 @@ export default function PageCachets() {
   }
 
   useEffect(() => {
-    // Charge tous les cachets
-    getCachets().then((cachets) => {
-      const cachetFormatted = cachets.map((c) => formatCachetFromDB(c));
-      setCachets(cachetFormatted);
-    });
+    getCachetsAction()
+      .then((result) => {
+        if (result.success && result.data) {
+          const cachetFormattes = result.data.map((c) => formateCachet(c));
+          setCachets(cachetFormattes);
+        } else if (!result.success) {
+          console.error(result.error);
+          setErrors({ global: result.error || "Une erreur est survenue" });
+        }
+      })
+      .catch((error) => {
+        console.error("Erreur non gérée:", error);
+        setErrors({ global: "Une erreur inattendue s'est produite" });
+      });
 
-    // Charge tous les membres (pour l'input de selection des membres)
-    getAllMembers().then((result) => {
+    getAllMembresAction().then((result) => {
       if (result.success && result.data) {
         setMembres(result.data);
       }
     });
 
-    // Charge tous les spectacles (pour l'input de selection des spectacles)
-    getAllSpectacles().then((result) => {
+    getAllSpectaclesAction().then((result) => {
       if (result.success && result.data) {
         setSpectacles(result.data);
       }
@@ -138,7 +145,7 @@ export default function PageCachets() {
     setIsLoading(true);
 
     if (editId !== null) {
-      updateCachet(editId, {
+      mettreAJourCachetAction(editId, {
         //on est sur que membreId et spectacleId ne sont pas null grâce à la validation au-dessus
         membreId: membreId!,
         date,
@@ -147,8 +154,8 @@ export default function PageCachets() {
         note,
       }).then((result) => {
         if (result.success && result.data) {
-          // Met à jour le cachet dans la liste locale
-          setCachets(cachets.map((c) => (c.id === editId ? formatCachetFromDB(result.data) : c)));
+          //mets à jour le cachet dans la liste locale
+          setCachets(cachets.map((c) => (c.id === editId ? formateCachet(result.data) : c)));
           setEditId(null);
           resetFormulaire();
         } else {
@@ -157,7 +164,7 @@ export default function PageCachets() {
         setIsLoading(false);
       });
     } else {
-      createCachet({
+      creerCachetAction({
         membreId: membreId!,
         date,
         montant,
@@ -165,8 +172,8 @@ export default function PageCachets() {
         note,
       }).then((result) => {
         if (result.success && result.data) {
-          // Ajoute le nouveau cachet à la liste locale
-          setCachets([...cachets, formatCachetFromDB(result.data)]);
+          //ajoute le nouveau cachet à la liste locale
+          setCachets([...cachets, formateCachet(result.data)]);
           resetFormulaire();
         } else {
           setErrors({ submit: result.error || "Erreur lors de la création" });
@@ -187,7 +194,7 @@ export default function PageCachets() {
 
   function supprimerCachet(id: number) {
     setIsLoading(true);
-    deleteCachet(id).then((result) => {
+    supprimerCachetAction(id).then((result) => {
       if (result.success) {
         //supprime le cachet de la liste locale
         setCachets(cachets.filter((c) => c.id !== id));
