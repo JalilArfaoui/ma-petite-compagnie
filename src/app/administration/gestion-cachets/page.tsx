@@ -79,22 +79,27 @@ export default function PageCachets() {
           setErrors({ global: result.error || "Une erreur est survenue" });
         }
       })
+      .catch(() => setIsLoading(false)) //pour éviter blocage formulaire si erreur réseau
       .catch((error) => {
         console.error("Erreur non gérée:", error);
         setErrors({ global: "Une erreur inattendue s'est produite" });
       });
 
-    getAllMembresAction().then((result) => {
-      if (result.success && result.data) {
-        setMembres(result.data);
-      }
-    });
+    getAllMembresAction()
+      .then((result) => {
+        if (result.success && result.data) {
+          setMembres(result.data);
+        }
+      })
+      .catch(() => setIsLoading(false));
 
-    getAllSpectaclesAction().then((result) => {
-      if (result.success && result.data) {
-        setSpectacles(result.data);
-      }
-    });
+    getAllSpectaclesAction()
+      .then((result) => {
+        if (result.success && result.data) {
+          setSpectacles(result.data);
+        }
+      })
+      .catch(() => setIsLoading(false));
   }, []);
 
   function ajouterCachet(e: React.FormEvent<HTMLFormElement>) {
@@ -150,17 +155,19 @@ export default function PageCachets() {
         montant: montant!,
         spectacleId: spectacleId!,
         note,
-      }).then((result) => {
-        if (result.success && result.data) {
-          //mets à jour le cachet dans la liste locale
-          setCachets(cachets.map((c) => (c.id === editId ? formateCachet(result.data) : c)));
-          setEditId(null);
-          resetFormulaire();
-        } else {
-          setErrors({ submit: result.error || "Erreur lors de la mise à jour" });
-        }
-        setIsLoading(false);
-      });
+      })
+        .then((result) => {
+          if (result.success && result.data) {
+            //mets à jour le cachet dans la liste locale
+            setCachets(cachets.map((c) => (c.id === editId ? formateCachet(result.data) : c)));
+            setEditId(null);
+            resetFormulaire();
+          } else {
+            setErrors({ submit: result.error || "Erreur lors de la mise à jour" });
+          }
+          setIsLoading(false);
+        })
+        .catch(() => setIsLoading(false));
     } else {
       creerCachetAction({
         membreId: membreId!,
@@ -168,16 +175,18 @@ export default function PageCachets() {
         montant: montant!,
         spectacleId: spectacleId!,
         note,
-      }).then((result) => {
-        if (result.success && result.data) {
-          //ajoute le nouveau cachet à la liste locale
-          setCachets([...cachets, formateCachet(result.data)]);
-          resetFormulaire();
-        } else {
-          setErrors({ submit: result.error || "Erreur lors de la création" });
-        }
-        setIsLoading(false);
-      });
+      })
+        .then((result) => {
+          if (result.success && result.data) {
+            //ajoute le nouveau cachet à la liste locale
+            setCachets([...cachets, formateCachet(result.data)]);
+            resetFormulaire();
+          } else {
+            setErrors({ submit: result.error || "Erreur lors de la création" });
+          }
+          setIsLoading(false);
+        })
+        .catch(() => setIsLoading(false));
     }
   }
 
@@ -192,16 +201,18 @@ export default function PageCachets() {
 
   function supprimerCachet(id: number) {
     setIsLoading(true);
-    supprimerCachetAction(id).then((result) => {
-      if (result.success) {
-        //supprime le cachet de la liste locale
-        setCachets(cachets.filter((c) => c.id !== id));
-        if (editId === id) setEditId(null);
-      } else {
-        setErrors({ submit: result.error || "Erreur lors de la suppression" });
-      }
-      setIsLoading(false);
-    });
+    supprimerCachetAction(id)
+      .then((result) => {
+        if (result.success) {
+          //supprime le cachet de la liste locale
+          setCachets(cachets.filter((c) => c.id !== id));
+          if (editId === id) setEditId(null);
+        } else {
+          setErrors({ submit: result.error || "Erreur lors de la suppression" });
+        }
+        setIsLoading(false);
+      })
+      .catch(() => setIsLoading(false));
   }
 
   function editerCachet(c: Cachet) {
@@ -258,7 +269,7 @@ export default function PageCachets() {
               className="p-2 border border-slate-300 rounded-md w-full"
               id="membre"
               value={membreId?.toString() || ""}
-              onChange={(e) => setMembreId(Number(e.target.value))}
+              onChange={(e) => setMembreId(e.target.value ? Number(e.target.value) : null)}
               disabled={isLoading}
             >
               <option value=""> Choisir un membre équipe </option>

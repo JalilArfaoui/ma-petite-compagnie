@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/auth";
 
 const MONTANT_CACHET_MINIMUM_LEGAL = 110;
 const NOTE_NB_MAX_CARACS = 120;
@@ -66,6 +67,10 @@ export async function creerCachetAction(data: {
   spectacleId: number;
   note?: string;
 }) {
+  //authentification
+  const session = await auth();
+  if (!session) return { success: false, error: "Non autorisé" };
+
   //validation côté serveur
   const validation = await validerCachetDataAction(data);
   if (!validation.valid) {
@@ -108,6 +113,9 @@ export async function mettreAJourCachetAction(
     note?: string;
   }
 ) {
+  const session = await auth();
+  if (!session) return { success: false, error: "Non autorisé" };
+
   if (!Number.isInteger(id) || id <= 0) {
     return { success: false, error: "L'identifiant du cachet est invalide" };
   }
@@ -152,6 +160,9 @@ export async function mettreAJourCachetAction(
 }
 
 export async function supprimerCachetAction(id: number) {
+  const session = await auth();
+  if (!session) return { success: false, error: "Non autorisé" };
+
   if (!Number.isInteger(id) || id <= 0) {
     return { success: false, error: "L'identifiant du cachet est invalide" };
   }

@@ -18,7 +18,7 @@ type Cachet = {
 
 export default function VisionCachetsPage() {
   const [cachets, setCachets] = useState<Cachet[]>([]);
-  const [spectacleFilter, setSpectacleFilter] = useState<"tous" | string>("tous");
+  const [spectacleFilter, setSpectacleFilter] = useState<string>("tous");
   const [sortBy, setSortBy] = useState<
     "none" | "dateCroissante" | "dateDecroissante" | "montantCroissant" | "montantDecroissant"
   >("none"); //pour avoir un seul tri actif à la fois
