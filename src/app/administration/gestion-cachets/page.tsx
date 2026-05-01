@@ -10,7 +10,7 @@ import {
   supprimerCachetAction,
   getAllMembresAction,
   getAllSpectaclesAction,
-} from "./actions";
+} from "../cachets-actions";
 
 //seule la note est optionnelle, toutes les autres clés sont obligatoires donc pas de null permis
 type Cachet = {
@@ -18,7 +18,7 @@ type Cachet = {
   membreId: number;
   membre: { user: { nom: string | null; prenom: string | null } };
   date: string;
-  montant: string;
+  montant: number;
   spectacleId: number;
   spectacle: { titre: string };
   note?: string | null;
@@ -38,6 +38,9 @@ type CachetAvecRelations = Prisma.CachetGetPayload<{
 }>;
 
 export default function PageCachets() {
+  const MONTANT_CACHET_MINIMUM_LEGAL = 110;
+  const NOTE_NB_MAX_CARACS = 120;
+
   const [cachets, setCachets] = useState<Cachet[]>([]);
   const [membres, setMembres] = useState<
     Array<{ id: number; user: { nom: string | null; prenom: string | null } }>
@@ -45,7 +48,7 @@ export default function PageCachets() {
   const [spectacles, setSpectacles] = useState<Array<{ id: number; titre: string }>>([]);
   const [membreId, setMembreId] = useState<number | null>(null);
   const [date, setDate] = useState("");
-  const [montant, setMontant] = useState("");
+  const [montant, setMontant] = useState<number>(0);
   const [spectacleId, setSpectacleId] = useState<number | null>(null);
   const [note, setNote] = useState("");
   const [editId, setEditId] = useState<number | null>(null);
@@ -59,13 +62,9 @@ export default function PageCachets() {
 
   //fonction helper pour transformer les données de Prisma au format du state local
   function formateCachet(data: CachetAvecRelations): Cachet {
-    //supprime le symbole € si déjà présent
-    const montantNettoye = data.montant.replace(/[^\d.,-]/g, "").trim();
-
     return {
       ...data,
       date: typeof data.date === "string" ? data.date : data.date.toISOString().split("T")[0],
-      montant: montantNettoye,
     };
   }
 
@@ -119,9 +118,8 @@ export default function PageCachets() {
     }
 
     //pas forcement nécéssaire puisque déjà géré dans le code de l'input, mais mieux vaut être prévoyant
-    if (Number(montant) < 110) {
-      foundErrors.montant =
-        "Le montant ne peux pas être inférieur au minimum légal (smic horaire * 12, soit 110 euros)";
+    if (Number(montant) < MONTANT_CACHET_MINIMUM_LEGAL) {
+      foundErrors.montant = `Le montant ne peux pas être inférieur au minimum légal (smic horaire * 12, soit ${MONTANT_CACHET_MINIMUM_LEGAL} euros)`;
     }
 
     //validation obligatoire du spectacle
@@ -130,8 +128,8 @@ export default function PageCachets() {
     }
 
     //pas forcement nécéssaire puisque déjà géré dans le code de l'input, mais mieux vaut être prévoyant
-    if (note.length > 120) {
-      foundErrors.note = "La note ne peut pas dépasser 120 caractères";
+    if (note.length > NOTE_NB_MAX_CARACS) {
+      foundErrors.note = `La note ne peut pas dépasser ${NOTE_NB_MAX_CARACS} caractères`;
     }
 
     setErrors(foundErrors);
@@ -186,7 +184,7 @@ export default function PageCachets() {
   function resetFormulaire() {
     setMembreId(null);
     setDate("");
-    setMontant("");
+    setMontant(0);
     setSpectacleId(null);
     setNote("");
     setErrors({});
@@ -210,7 +208,7 @@ export default function PageCachets() {
     setEditId(c.id);
     setMembreId(c.membreId);
     setDate(c.date);
-    setMontant(c.montant.replace(/[^\d.,-]/g, ""));
+    setMontant(c.montant);
     setSpectacleId(c.spectacleId);
     setNote(c.note || "");
   }
@@ -233,13 +231,9 @@ export default function PageCachets() {
       case "dateDecroissante":
         return b.date.localeCompare(a.date);
       case "montantCroissant":
-        const aNum1 = parseFloat(a.montant.replace(/[^\d.,-]/g, "").replace(",", "."));
-        const bNum1 = parseFloat(b.montant.replace(/[^\d.,-]/g, "").replace(",", "."));
-        return aNum1 - bNum1;
+        return a.montant - b.montant;
       case "montantDecroissant":
-        const aNum2 = parseFloat(a.montant.replace(/[^\d.,-]/g, "").replace(",", "."));
-        const bNum2 = parseFloat(b.montant.replace(/[^\d.,-]/g, "").replace(",", "."));
-        return bNum2 - aNum2;
+        return a.montant - b.montant;
       default:
         return 0;
     }
@@ -299,10 +293,10 @@ export default function PageCachets() {
             <input
               className="flex w-full rounded-[12px] border border-border bg-white px-4 py-3 text-[1rem] text-text-primary font-serif placeholder:text-text-muted transition-all hover:border-border-hover hover:bg-bg-hover focus-visible:outline-none focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-60 disabled:bg-bg-disabled focus:border-primary focus:ring-1 focus:ring-primary"
               type="number"
-              min={110}
-              value={montant}
-              placeholder="110"
-              onChange={(e) => setMontant(e.target.value)}
+              min={MONTANT_CACHET_MINIMUM_LEGAL}
+              value={montant?.toString() || ""}
+              placeholder={`${MONTANT_CACHET_MINIMUM_LEGAL}`}
+              onChange={(e) => setMontant(Number(e.target.value))}
               disabled={isLoading}
             />
           </div>
@@ -336,7 +330,7 @@ export default function PageCachets() {
             <input
               className="flex w-full rounded-[12px] border border-border bg-white px-4 py-3 text-[1rem] text-text-primary font-serif placeholder:text-text-muted transition-all hover:border-border-hover hover:bg-bg-hover focus-visible:outline-none focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-60 disabled:bg-bg-disabled focus:border-primary focus:ring-1 focus:ring-primary"
               value={note}
-              maxLength={120}
+              maxLength={NOTE_NB_MAX_CARACS}
               onChange={(e) => setNote(e.target.value)}
               disabled={isLoading}
             />

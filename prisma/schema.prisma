@@ -236,7 +236,7 @@ model Cachet {
   date         DateTime @default(now())
   spectacleId  Int
   spectacle    Spectacle @relation(fields: [spectacleId], references: [id], onDelete: Cascade)
-  montant      String
+  montant      Int
   note         String?
 }
 

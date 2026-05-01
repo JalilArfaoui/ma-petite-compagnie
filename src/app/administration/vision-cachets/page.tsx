@@ -2,7 +2,7 @@
 
 import { Card, Table, Heading } from "@/components/ui";
 import { useState, useEffect, useMemo } from "react";
-import { getCachetsAction } from "./actions";
+import { getCachetsAction } from "../cachets-actions";
 
 //seule la note est optionnelle, toutes les autres clés sont obligatoires donc pas de null permis
 type Cachet = {
@@ -10,7 +10,7 @@ type Cachet = {
   membreId: number;
   membre: { user: { nom: string | null; prenom: string | null } };
   date: string;
-  montant: string;
+  montant: number;
   spectacleId: number;
   spectacle: { titre: string };
   note?: string | null;
@@ -60,16 +60,12 @@ export default function VisionCachetsPage() {
         break;
       case "montantCroissant":
         result.sort((a, b) => {
-          const aNum = parseFloat(a.montant.replace(/[^\d.,-]/g, "").replace(",", "."));
-          const bNum = parseFloat(b.montant.replace(/[^\d.,-]/g, "").replace(",", "."));
-          return aNum - bNum;
+          return a.montant - b.montant;
         });
         break;
       case "montantDecroissant":
         result.sort((a, b) => {
-          const aNum = parseFloat(a.montant.replace(/[^\d.,-]/g, "").replace(",", "."));
-          const bNum = parseFloat(b.montant.replace(/[^\d.,-]/g, "").replace(",", "."));
-          return bNum - aNum;
+          return b.montant - a.montant;
         });
         break;
     }

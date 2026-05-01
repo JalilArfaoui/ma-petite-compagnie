@@ -2,11 +2,14 @@
 
 import { prisma } from "@/lib/prisma";
 
+const MONTANT_CACHET_MINIMUM_LEGAL = 110;
+const NOTE_NB_MAX_CARACS = 120;
+
 //fonction helper pour valider les données d'un cachet
 async function validerCachetDataAction(data: {
   membreId: number;
   date: string;
-  montant: string;
+  montant: number;
   spectacleId: number;
   note?: string;
 }): Promise<{ valid: boolean; error?: string }> {
@@ -14,22 +17,8 @@ async function validerCachetDataAction(data: {
     return { valid: false, error: "L'identifiant du membre est invalide" };
   }
 
-  const membre = await prisma.companyMember.findUnique({
-    where: { id: data.membreId },
-  });
-  if (!membre) {
-    return { valid: false, error: "Le membre spécifié n'existe pas" };
-  }
-
   if (!Number.isInteger(data.spectacleId) || data.spectacleId <= 0) {
     return { valid: false, error: "L'identifiant du spectacle est invalide" };
-  }
-
-  const spectacle = await prisma.spectacle.findUnique({
-    where: { id: data.spectacleId },
-  });
-  if (!spectacle) {
-    return { valid: false, error: "Le spectacle spécifié n'existe pas" };
   }
 
   const dateObj = new Date(data.date);
@@ -37,13 +26,15 @@ async function validerCachetDataAction(data: {
     return { valid: false, error: "La date est invalide" };
   }
 
-  const montantNum = parseFloat(data.montant.replace(/[^\d.,-]/g, "").replace(",", "."));
-  if (isNaN(montantNum) || montantNum < 110) {
-    return { valid: false, error: "Le montant doit être un nombre >= 110" };
+  if (data.montant < MONTANT_CACHET_MINIMUM_LEGAL) {
+    return {
+      valid: false,
+      error: `Le montant doit être un nombre >= ${MONTANT_CACHET_MINIMUM_LEGAL}`,
+    };
   }
 
-  if (data.note && data.note.length > 120) {
-    return { valid: false, error: "La note ne peut pas dépasser 120 caractères" };
+  if (data.note && data.note.length > NOTE_NB_MAX_CARACS) {
+    return { valid: false, error: `La note ne peut pas dépasser ${NOTE_NB_MAX_CARACS} caractères` };
   }
 
   return { valid: true };
@@ -71,7 +62,7 @@ export async function getCachetsAction() {
 export async function creerCachetAction(data: {
   membreId: number;
   date: string;
-  montant: string;
+  montant: number;
   spectacleId: number;
   note?: string;
 }) {
@@ -112,7 +103,7 @@ export async function mettreAJourCachetAction(
   data: {
     membreId: number;
     date: string;
-    montant: string;
+    montant: number;
     spectacleId: number;
     note?: string;
   }
