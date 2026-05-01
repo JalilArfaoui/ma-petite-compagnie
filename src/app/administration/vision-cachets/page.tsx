@@ -48,7 +48,7 @@ export default function VisionCachetsPage() {
     let result = [...cachets];
 
     if (spectacleFilter !== "tous") {
-      result = result.filter((cachet) => cachet.spectacle.titre === spectacleFilter);
+      result = result.filter((cachet) => cachet.spectacleId === Number(spectacleFilter));
     }
 
     switch (sortBy) {
