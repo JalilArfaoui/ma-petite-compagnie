@@ -182,7 +182,7 @@ export default function PageCachets() {
 
   function resetFormulaire() {
     setMembreId(null);
-    setDate("");
+    setMontant(MONTANT_CACHET_MINIMUM_LEGAL);
     setMontant(0);
     setSpectacleId(null);
     setNote("");
