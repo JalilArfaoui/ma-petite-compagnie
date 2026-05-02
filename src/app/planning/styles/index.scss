@@ -36,6 +36,116 @@ body {
     display: flex;
     flex-direction: row;
     gap: 8px;
+    position: relative;
+  }
+
+  .view-toggle-button {
+    width: 92px;
+    justify-content: center;
+  }
+}
+
+.quick-calendar-wrapper {
+  position: relative;
+}
+
+.quick-calendar-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 290px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 12px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  .quick-calendar-top {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .quick-year-control input {
+    width: 78px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #ffffff;
+    padding: 5px 8px;
+    font-size: 12px;
+    color: #111827;
+  }
+
+  .quick-calendar-month-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #111827;
+  }
+
+  .quick-calendar-month-nav button {
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgb(208, 0, 57);
+    color: #ffffff;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .quick-calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+  }
+
+  .quick-calendar-weekdays span {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: #4b5563;
+    padding: 4px 0;
+  }
+
+  .quick-calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+  }
+
+  .quick-day {
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    height: 30px;
+    font-size: 13px;
+    color: #1f2937;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+  }
+
+  .quick-day:hover {
+    background: rgba(208, 0, 57, 0.1);
+  }
+
+  .quick-day.out-month {
+    color: #9ca3af;
+  }
+
+  .quick-day.selected-week {
+    background: rgba(208, 0, 57, 0.18);
+    color: rgb(111, 0, 31);
+    font-weight: 600;
   }
 }
 
