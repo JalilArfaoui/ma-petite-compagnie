@@ -50,6 +50,7 @@ interface EventCalendarProps {
 }
 
 const WEEKDAYS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
+const MINI_WEEKDAYS = ["Lu", "Ma", "Me", "Je", "Ve", "Sa", "Di"];
 const MONTHS = [
   "Janvier",
   "Fevrier",
@@ -69,6 +70,8 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }: EventC
   const [currentDate, setCurrentDate] = useState(new Date());
   const [calendarDays, setCalendarDays] = useState<CalendarDay[]>([]);
   const [viewType, setViewType] = useState<"monthly" | "weekly">("monthly");
+  const [isQuickCalendarOpen, setIsQuickCalendarOpen] = useState(false);
+  const [quickDate, setQuickDate] = useState(new Date());
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth() + 1; // 1-12
@@ -186,6 +189,58 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }: EventC
     setCurrentDate(new Date());
   };
 
+  const getStartOfWeek = (date: Date): Date => {
+    const monday = new Date(date);
+    monday.setHours(0, 0, 0, 0);
+    monday.setDate(date.getDate() - (date.getDay() === 0 ? 6 : date.getDay() - 1));
+    return monday;
+  };
+
+  const isSameWeekDate = (left: Date, right: Date): boolean => {
+    const leftWeek = getStartOfWeek(left);
+    const rightWeek = getStartOfWeek(right);
+    return (
+      leftWeek.getDate() === rightWeek.getDate() &&
+      leftWeek.getMonth() === rightWeek.getMonth() &&
+      leftWeek.getFullYear() === rightWeek.getFullYear()
+    );
+  };
+
+  const changeQuickMonth = (delta: number) => {
+    setQuickDate((prev) => new Date(prev.getFullYear(), prev.getMonth() + delta, 1));
+  };
+
+  const updateQuickYear = (value: string) => {
+    const parsedYear = Number(value);
+    if (Number.isNaN(parsedYear)) return;
+    const boundedYear = Math.min(2100, Math.max(1900, parsedYear));
+    setQuickDate((prev) => new Date(boundedYear, prev.getMonth(), 1));
+  };
+
+  const quickYear = quickDate.getFullYear();
+  const quickMonth = quickDate.getMonth();
+  const quickFirstDayOffset = (new Date(quickYear, quickMonth, 1).getDay() + 6) % 7;
+  const quickDaysInCurrentMonth = new Date(quickYear, quickMonth + 1, 0).getDate();
+  const quickDaysInPrevMonth = new Date(quickYear, quickMonth, 0).getDate();
+
+  const quickCalendarDays: Date[] = [];
+  for (let i = quickFirstDayOffset; i > 0; i--) {
+    quickCalendarDays.push(new Date(quickYear, quickMonth - 1, quickDaysInPrevMonth - i + 1));
+  }
+  for (let i = 1; i <= quickDaysInCurrentMonth; i++) {
+    quickCalendarDays.push(new Date(quickYear, quickMonth, i));
+  }
+  const remainingQuickDays = 42 - quickCalendarDays.length;
+  for (let i = 1; i <= remainingQuickDays; i++) {
+    quickCalendarDays.push(new Date(quickYear, quickMonth + 1, i));
+  }
+
+  const selectQuickDate = (selectedDate: Date) => {
+    setCurrentDate(getStartOfWeek(selectedDate));
+    setViewType("weekly");
+    setIsQuickCalendarOpen(false);
+  };
+
   const isToday = (day: CalendarDay): boolean => {
     const today = new Date();
     return (
@@ -223,6 +278,22 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }: EventC
     };
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!isQuickCalendarOpen) return;
+      if (!(event.target instanceof Node)) return;
+      const target = event.target as HTMLElement;
+      if (!target.closest(".quick-calendar-wrapper")) {
+        setIsQuickCalendarOpen(false);
+      }
+    };
+
+    window.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      window.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isQuickCalendarOpen]);
+
   return (
     <div className="event-calendar">
       <div className="calendar-header">
@@ -245,12 +316,85 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }: EventC
         </div>
 
         <div className="buttons-container">
+        <div className="quick-calendar-wrapper">
+            <Button
+              variant="outline"
+              aria-label="Ouvrir le mini calendrier"
+              onClick={() => {
+                setQuickDate(new Date(currentDate.getFullYear(), currentDate.getMonth(), 1));
+                setIsQuickCalendarOpen((prev) => !prev);
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="20px"
+                viewBox="0 -960 960 960"
+                width="20px"
+                fill="currentColor"
+              >
+                <path d="M200-80q-33 0-56.5-23.5T120-160v-600q0-33 23.5-56.5T200-840h80v-80h80v80h240v-80h80v80h80q33 0 56.5 23.5T840-760v600q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-120H200v120Zm0 0v-120 120Z" />
+              </svg>
+            </Button>
+            {isQuickCalendarOpen && (
+              <div className="quick-calendar-panel">
+                <div className="quick-calendar-top">
+                  <div className="quick-year-control">
+                    <input
+                      type="number"
+                      min={1900}
+                      max={2100}
+                      value={quickYear}
+                      onChange={(event) => updateQuickYear(event.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="quick-calendar-month-nav">
+                  <button type="button" onClick={() => changeQuickMonth(-1)} aria-label="Mois precedent">
+                    ‹
+                  </button>
+                  <span>
+                    {MONTHS[quickMonth]} {quickYear}
+                  </span>
+                  <button type="button" onClick={() => changeQuickMonth(1)} aria-label="Mois suivant">
+                    ›
+                  </button>
+                </div>
+
+                <div className="quick-calendar-weekdays">
+                  {MINI_WEEKDAYS.map((day) => (
+                    <span key={day}>{day}</span>
+                  ))}
+                </div>
+
+                <div className="quick-calendar-days">
+                  {quickCalendarDays.map((dayDate) => {
+                    const isOutMonth = dayDate.getMonth() !== quickMonth;
+                    const isSelectedWeek = isSameWeekDate(dayDate, currentDate);
+
+                    return (
+                      <button
+                        key={dayDate.toISOString()}
+                        type="button"
+                        className={`quick-day ${isOutMonth ? "out-month" : ""} ${isSelectedWeek ? "selected-week" : ""}`}
+                        onClick={() => selectQuickDate(dayDate)}
+                      >
+                        {dayDate.getDate()}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
           <Button
             variant="outline"
+            className="view-toggle-button"
             onClick={() => setViewType(viewType === "monthly" ? "weekly" : "monthly")}
           >
             {viewType === "monthly" ? "Semaine" : "Mois"}
           </Button>
+
           <Button variant="outline" onClick={goToToday}>
             Aujourd'hui
           </Button>
