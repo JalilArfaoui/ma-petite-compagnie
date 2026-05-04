@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
+import { updateRepresentation, deleteRepresentation, removeReservation } from "./actions";
+import { useOutsideClick } from "@/hooks/useOutsideClick";
 
 // ========== Types ==========
 
@@ -49,9 +51,6 @@ interface RepresentationsClientProps {
   representations: RepresentationData[];
   spectacles: SpectacleData[];
   lieux: LieuData[];
-  updateRepresentation: (formData: FormData) => Promise<void>;
-  deleteRepresentation: (formData: FormData) => Promise<void>;
-  removeReservation: (formData: FormData) => Promise<void>;
 }
 
 // ========== Helpers ==========
@@ -75,32 +74,12 @@ const etatLabels: Record<string, string> = {
 
 // ========== Reservation Popover ==========
 
-function ReservationPopover({
-  reservations,
-  removeReservation,
-}: {
-  reservations: ReservationData[];
-  removeReservation: (formData: FormData) => Promise<void>;
-}) {
+function ReservationPopover({ reservations }: { reservations: ReservationData[] }) {
   const [showPopover, setShowPopover] = useState(false);
   const popoverRef = useRef<HTMLDivElement>(null);
   const eyeRef = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
-    if (!showPopover) return;
-    const handler = (e: MouseEvent) => {
-      if (
-        popoverRef.current &&
-        !popoverRef.current.contains(e.target as Node) &&
-        eyeRef.current &&
-        !eyeRef.current.contains(e.target as Node)
-      ) {
-        setShowPopover(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [showPopover]);
+  useOutsideClick([popoverRef, eyeRef], () => setShowPopover(false), showPopover);
 
   return (
     <span className="relative inline-block">
@@ -183,9 +162,6 @@ export default function RepresentationsClient({
   representations,
   spectacles,
   lieux,
-  updateRepresentation,
-  deleteRepresentation,
-  removeReservation,
 }: RepresentationsClientProps) {
   return (
     <div className="max-w-7xl mx-auto px-4">
@@ -220,10 +196,7 @@ export default function RepresentationsClient({
                         📦 {r._count.reservations} réservation(s)
                       </span>
                       {r._count.reservations > 0 && (
-                        <ReservationPopover
-                          reservations={r.reservations}
-                          removeReservation={removeReservation}
-                        />
+                        <ReservationPopover reservations={r.reservations} />
                       )}
                     </div>
                   </div>

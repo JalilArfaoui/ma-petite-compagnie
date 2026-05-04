@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button/Button";
 import { SearchBar } from "@/components/ui/SearchBar/SearchBar";
 import { Checkbox } from "@/components/ui/Checkbox/Checkbox";
 import { Input } from "@/components/ui/Input/Input";
+import { useOutsideClick } from "@/hooks/useOutsideClick";
 import {
   createTypeObjet,
   updateTypeObjet,
@@ -199,22 +200,7 @@ function StockRow({ obj }: { obj: ObjetData }) {
     startTransition(() => deleteObjet(fd));
   };
 
-  // Close popover on outside click
-  useEffect(() => {
-    if (!showPopover) return;
-    const handler = (e: MouseEvent) => {
-      if (
-        popoverRef.current &&
-        !popoverRef.current.contains(e.target as Node) &&
-        eyeRef.current &&
-        !eyeRef.current.contains(e.target as Node)
-      ) {
-        setShowPopover(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [showPopover]);
+  useOutsideClick([popoverRef, eyeRef], () => setShowPopover(false), showPopover);
 
   const hasReservations = obj.reservations.length > 0;
 
