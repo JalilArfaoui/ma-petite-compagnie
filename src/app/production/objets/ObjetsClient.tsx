@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { useCallback, useMemo, useRef, useState, useTransition } from "react";
 import Image from "next/image";
 import { Card } from "@/components/ui/Card/Card";
 import { Badge } from "@/components/ui/Badge/Badge";
@@ -151,26 +151,29 @@ function StockRow({ obj }: { obj: ObjetData }) {
   const popoverRef = useRef<HTMLDivElement>(null);
   const eyeRef = useRef<HTMLButtonElement>(null);
 
-  const origEtat = useRef(obj.etat);
-  const origDispo = useRef(obj.estDisponible);
-  const origComment = useRef(obj.commentaire || "");
+  const [savedState, setSavedState] = useState({
+    etat: obj.etat,
+    dispo: obj.estDisponible,
+    comment: obj.commentaire || "",
+  });
 
-  // Sync when props change (after revalidation)
-  useEffect(() => {
+  if (
+    obj.etat !== savedState.etat ||
+    obj.estDisponible !== savedState.dispo ||
+    (obj.commentaire || "") !== savedState.comment
+  ) {
+    setSavedState({ etat: obj.etat, dispo: obj.estDisponible, comment: obj.commentaire || "" });
     setEtat(obj.etat);
     setEstDisponible(obj.estDisponible);
     setCommentaire(obj.commentaire || "");
-    origEtat.current = obj.etat;
-    origDispo.current = obj.estDisponible;
-    origComment.current = obj.commentaire || "";
-  }, [obj.etat, obj.estDisponible, obj.commentaire]);
+  }
 
   const save = useCallback(
     (newEtat: EtatObjet, newDispo: boolean, newComment: string) => {
       if (
-        newEtat === origEtat.current &&
-        newDispo === origDispo.current &&
-        newComment === origComment.current
+        newEtat === savedState.etat &&
+        newDispo === savedState.dispo &&
+        newComment === savedState.comment
       )
         return;
 
@@ -182,14 +185,12 @@ function StockRow({ obj }: { obj: ObjetData }) {
 
       startTransition(async () => {
         await updateObjet(fd);
-        origEtat.current = newEtat;
-        origDispo.current = newDispo;
-        origComment.current = newComment;
+        setSavedState({ etat: newEtat, dispo: newDispo, comment: newComment });
         setShowCheck(true);
         setTimeout(() => setShowCheck(false), 2000);
       });
     },
-    [obj.id]
+    [obj.id, savedState]
   );
 
   const handleDelete = () => {
