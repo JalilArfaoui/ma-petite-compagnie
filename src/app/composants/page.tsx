@@ -24,6 +24,7 @@ import {
   Toaster,
   toaster,
   Modal,
+  FileUpload,
 } from "@/components/ui";
 import { FaHome } from "react-icons/fa";
 
@@ -38,6 +39,8 @@ export default function Home() {
           </Heading>
           <Text>Lorem ipsum dolor sit amet consectetur adipisicing elit.</Text>
         </Box>
+
+        {/* ======== Icônes ========================================= */}
 
         <Box>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -74,6 +77,8 @@ export default function Home() {
                 </Card.Body>
               </Card>
             </div>
+
+            {/* ======== Titres ========================================= */}
             <div>
               <Heading as="h3" className="mb-6 pb-2 border-b">
                 Headings
@@ -99,6 +104,8 @@ export default function Home() {
             </div>
           </div>
         </Box>
+
+        {/* ======== Cards ========================================= */}
 
         <Box>
           <Heading as="h3" className="text-xl font-bold mb-6 pb-2 border-b">
@@ -139,9 +146,11 @@ export default function Home() {
           </div>
         </Box>
 
+        {/* ======== Boutons et liens ========================================= */}
+
         <Box>
           <Heading as="h3" className="text-xl font-bold mb-6 pb-2 border-b">
-            Actions & Navigation
+            Boutons et liens
           </Heading>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card title="Buttons">
@@ -180,6 +189,8 @@ export default function Home() {
             </Card>
           </div>
         </Box>
+
+        {/* ======== Inputs ========================================= */}
 
         <Box>
           <Heading as="h3" className="text-xl font-bold mb-6 pb-2 border-b">
@@ -251,6 +262,8 @@ export default function Home() {
             </Card>
           </Stack>
         </Box>
+
+        {/* ======== Badges et toasts ========================================= */}
 
         <Box>
           <Heading as="h3" className="text-xl font-bold mb-6 pb-2 border-b">
@@ -351,6 +364,8 @@ export default function Home() {
               </Card.Body>
             </Card>
 
+            {/* ======== Tables ========================================= */}
+
             <Card title="Table">
               <Card.Body>
                 <Table>
@@ -391,9 +406,41 @@ export default function Home() {
           </Stack>
         </Box>
 
+        {/* ======== File Upload ========================================= */}
+
         <Box>
           <Heading as="h3" className="text-xl font-bold mb-6 pb-2 border-b">
-            Modals
+            Upload
+          </Heading>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card title="FileUpload — zone seule">
+              <Card.Body>
+                <FileUpload
+                  accept=".pdf"
+                  dropLabel="Importer un PDF"
+                  onFileSelect={(file) => console.log(file.name)}
+                />
+              </Card.Body>
+            </Card>
+            <Card title="FileUpload — avec action">
+              <Card.Body>
+                <FileUpload
+                  accept=".pdf"
+                  dropLabel="Importer un PDF"
+                  actionLabel="Faites la vôtre"
+                  onFileSelect={(file) => console.log(file.name)}
+                  onAction={() => console.log("action")}
+                />
+              </Card.Body>
+            </Card>
+          </div>
+        </Box>
+
+        {/* ======== Modales ========================================= */}
+
+        <Box>
+          <Heading as="h3" className="text-xl font-bold mb-6 pb-2 border-b">
+            Modales
           </Heading>
           <div className="flex flex-wrap gap-4">
             <Modal>
