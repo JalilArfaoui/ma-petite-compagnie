@@ -19,7 +19,7 @@ export function ContactDetails({
   const [adresse, setAdresse] = useState(contactDonnee?.lieu ?? "");
   const [notes, setNotes] = useState(contactDonnee?.notes ?? "");
   return (
-    <Card className="">
+    <Card>
       <form action={onSubmitted}>
         <Stack gap={3} className="shadow-xl px-10 py-5 rounded-2xl">
           <Stack className="w-full h-full" direction="row" justify="evenly">
