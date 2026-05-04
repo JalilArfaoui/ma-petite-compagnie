@@ -42,7 +42,7 @@ export async function listerContacts(paginationTaille: number = 10, page: number
   try {
     const contacts = await prisma.contact.findMany({ skip, take: paginationTaille });
     return resultOf(true, "", contacts);
-  } catch (error) {
+  } catch {
     return resultOf(false, "Erreur lors de la récupération des contacts", null);
   }
 }
@@ -73,7 +73,7 @@ export async function modifierContact(contactId: number, nouveauContact: Contact
       data: { ...nouveauContact },
     });
     return resultOf(true, "", contactModifie);
-  } catch (error) {
+  } catch {
     return resultOf(false, "Le contact n'existe pas ou n'a pas pu être modifié.", null);
   }
 }
@@ -81,7 +81,7 @@ export async function modifierContact(contactId: number, nouveauContact: Contact
 export async function supprimerContact(id: number) {
   try {
     return await resultOf(true, "", prisma.contact.delete({ where: { id: id } }));
-  } catch (error) {
+  } catch {
     return resultOf(false, "Le contact n'a pas pu être supprimé", null);
   }
 }
@@ -89,14 +89,14 @@ export async function supprimerContact(id: number) {
 export async function supprimerContactAvecNom(nom: string) {
   try {
     return await resultOf(true, "", prisma.contact.deleteMany({ where: { nom: nom } }));
-  } catch (error) {
+  } catch {
     return resultOf(false, "Le contact n'a pas pu être supprimé", null);
   }
 }
 export async function supprimerContactsAvecEmail(email: string) {
   try {
     return await resultOf(true, "", prisma.contact.deleteMany({ where: { email: email } }));
-  } catch (error) {
+  } catch {
     return resultOf(false, "Le contact n'a pas pu être supprimé", null);
   }
 }

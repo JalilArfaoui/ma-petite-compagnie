@@ -89,8 +89,6 @@ async function main() {
   console.log(`✅ ${typesObjets.length} types d'objets`);
 
   // --- Objets  ---
-  const etatValues = ["NEUF", "ABIME", "CASSE"] as const;
-
   const objetsData = [
     // Chaises en bois - 4 exemplaires
     {
