@@ -53,7 +53,15 @@ interface EventCalendarProps {
   onEventClick?: (event: EvenementBuiltInt) => void;
 }
 
-const WEEKDAYS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
+const WEEKDAYS = [
+  { full: "Lundi", short: "Lun" },
+  { full: "Mardi", short: "Mar" },
+  { full: "Mercredi", short: "Mer" },
+  { full: "Jeudi", short: "Jeu" },
+  { full: "Vendredi", short: "Ven" },
+  { full: "Samedi", short: "Sam" },
+  { full: "Dimanche", short: "Dim" },
+];
 const MINI_WEEKDAYS = ["Lu", "Ma", "Me", "Je", "Ve", "Sa", "Di"];
 const MONTHS = [
   "Janvier",
@@ -301,18 +309,6 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }: EventC
   return (
     <div className="event-calendar">
       <div className="calendar-header">
-        <Button variant="solid" onClick={goToPreviousMonth} className="btn-test">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            height="24px"
-            viewBox="0 -960 960 960"
-            width="24px"
-            fill="#e3e3e3"
-          >
-            <path d="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z" />
-          </svg>
-        </Button>
-
         <div className="header-center">
           <Heading as="h1" className="month-year">
             {MONTHS[month - 1]} {year}
@@ -320,6 +316,18 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }: EventC
         </div>
 
         <div className="buttons-container">
+          <Button variant="solid" onClick={goToPreviousMonth} aria-label="Periode precedente">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24px"
+              viewBox="0 -960 960 960"
+              width="24px"
+              fill="#e3e3e3"
+            >
+              <path d="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z" />
+            </svg>
+          </Button>
+
           <div className="quick-calendar-wrapper">
             <Button
               variant="outline"
@@ -440,8 +448,9 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }: EventC
           <div className="calendar-grid">
             <div className="weekdays-container">
               {WEEKDAYS.map((day) => (
-                <div key={day} className="weekday-header">
-                  {day}
+                <div key={day.full} className="weekday-header">
+                  <span className="weekday-full">{day.full}</span>
+                  <span className="weekday-short">{day.short}</span>
                 </div>
               ))}
             </div>
