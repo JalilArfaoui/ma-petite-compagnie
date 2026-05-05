@@ -330,6 +330,7 @@ async function main() {
     {
       titre: "Le Songe d'une nuit d'été",
       type: "THEATRE" as const,
+      dure: 60,
       statut: "EN_TOURNEE" as const,
       compagnieId: compagnies[0].id,
       budget_initial: 15000,
@@ -337,6 +338,7 @@ async function main() {
     {
       titre: "Carmen revisitée",
       type: "DANSE" as const,
+      dure: 90,
       statut: "EN_REPETITION" as const,
       compagnieId: compagnies[0].id,
       budget_initial: 20000,
@@ -344,6 +346,7 @@ async function main() {
     {
       titre: "Pestacle",
       type: "MUSIQUE" as const,
+      dure: 120,
       statut: "EN_CREATION" as const,
       compagnieId: compagnies[0].id,
       budget_initial: 10000,
@@ -351,6 +354,7 @@ async function main() {
     {
       titre: "Lumière noire",
       type: "CIRQUE" as const,
+      dure: 60,
       statut: "EN_CREATION" as const,
       compagnieId: compagnies[2].id,
       budget_initial: 12000,
@@ -370,10 +374,34 @@ async function main() {
 
   // --- Représentations ---
   const repsData = [
-    { date: new Date("2026-04-15T20:00:00"), spectacleId: spectacles[0].id, lieuId: lieux[0].id },
-    { date: new Date("2026-04-22T20:00:00"), spectacleId: spectacles[0].id, lieuId: lieux[2].id },
-    { date: new Date("2026-05-10T19:30:00"), spectacleId: spectacles[1].id, lieuId: lieux[1].id },
-    { date: new Date("2026-06-01T21:00:00"), spectacleId: spectacles[2].id, lieuId: lieux[2].id },
+    {
+      date: new Date("2026-04-15T20:00:00"),
+      debutResa: new Date("2026-04-15T19:00:00"),
+      finResa: new Date("2026-04-15T22:00:00"),
+      spectacleId: spectacles[0].id,
+      lieuId: lieux[0].id,
+    },
+    {
+      date: new Date("2026-04-22T20:00:00"),
+      debutResa: new Date("2026-04-22T19:00:00"),
+      finResa: new Date("2026-04-22T22:00:00"),
+      spectacleId: spectacles[0].id,
+      lieuId: lieux[2].id,
+    },
+    {
+      date: new Date("2026-05-10T19:30:00"),
+      debutResa: new Date("2026-05-10T19:00:00"),
+      finResa: new Date("2026-05-10T21:30:00"),
+      spectacleId: spectacles[1].id,
+      lieuId: lieux[1].id,
+    },
+    {
+      date: new Date("2026-06-01T21:00:00"),
+      debutResa: new Date("2026-06-01T20:00:00"),
+      finResa: new Date("2026-06-02T00:00:00"),
+      spectacleId: spectacles[2].id,
+      lieuId: lieux[2].id,
+    },
   ];
 
   const representations = [];

@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
+import { refresh, revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import {
   Badge,
@@ -26,9 +26,13 @@ async function reserver(formData: FormData) {
   const date = new Date(formData.get("date") as string);
   const spectacleId = Number(formData.get("spectacleId"));
   const lieuId = Number(formData.get("lieuId"));
+  const deca_debut = Number(formData.get("decalage-debut"));
+  const deca_fin = Number(formData.get("decalage-fin"));
+  const debutResa = new Date(date.getTime() + deca_debut * 60000);
+  const finResa = new Date(date.getTime() + deca_fin * 60000);
 
   const rep = await prisma.representation.create({
-    data: { date, spectacleId, lieuId },
+    data: { debutResa, finResa, spectacleId, lieuId },
   });
 
   if (rep != null) {
@@ -48,6 +52,7 @@ async function reserver(formData: FormData) {
     await Promise.all(promises);
   }
 
+  revalidatePath(`/production/spectacles/${spectacleId}/reserver`);
   redirect(`/production/spectacles/${spectacleId}/reserver`);
 }
 
@@ -57,6 +62,12 @@ async function deleteRepresentation(formData: FormData) {
   const spectacleId = formData.get("spectacleId") as string;
 
   const representationId = Number(formData.get("representationId"));
+  console.log(representationId);
+  await prisma.representation.delete({
+    where: {
+      id: representationId,
+    },
+  });
 
   if (formData.has("date") && formData.has("lieuId")) {
     const date = formData.get("date") as string;
@@ -70,7 +81,7 @@ async function deleteRepresentation(formData: FormData) {
   }
 }
 
-async function getObjets(formData: FormData) {
+async function confirmDateLieu(formData: FormData) {
   "use server";
 
   const date = formData.get("date") as string;
@@ -88,9 +99,29 @@ async function getObjets(formData: FormData) {
 
 const formatDate = (date: Date) => {
   return new Intl.DateTimeFormat("fr-FR", {
-    dateStyle: "full",
+    dateStyle: "short",
     timeStyle: "short",
   }).format(date);
+};
+
+const formatDate2 = (date1: Date, date2: Date) => {
+  let d = new Intl.DateTimeFormat("fr-FR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    weekday: "long",
+  }).format(date1);
+  const h1 = new Intl.DateTimeFormat("fr-FR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date1);
+  const h2 = new Intl.DateTimeFormat("fr-FR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date2);
+
+  d = d + " de " + h1 + " à " + h2;
+  return d;
 };
 
 const formatDateInput = (date: Date) => {
@@ -110,9 +141,6 @@ export default async function ProductionPage({
   const { date: dateParam, lieu: lieuParam } = await searchParams;
   const laDate = dateParam ? (dateParam as string) : null;
   const leLieu = lieuParam ? (lieuParam as number) : null;
-  console.log(dateParam);
-  console.log(laDate);
-  console.log();
   const spectacle = await prisma.spectacle.findFirst({
     where: {
       id: Number(id),
@@ -140,7 +168,7 @@ export default async function ProductionPage({
     });
     if (laDate == null || leLieu == null) {
       return (
-        <div>
+        <div className="max-w-7xl mx-auto px-4">
           <a
             href={"."}
             className="text-sm text-slate-500 hover:text-[#D00039] font-serif mb-4 inline-flex items-center gap-1 cursor-pointer"
@@ -160,7 +188,7 @@ export default async function ProductionPage({
               créer une nouvelle representation de {spectacle.titre} :
             </Heading>
 
-            <form action={getObjets}>
+            <form action={confirmDateLieu}>
               <input name="spectacleId" type="hidden" value={id} />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -232,7 +260,13 @@ export default async function ProductionPage({
                     {/* Info */}
                     <div className="flex flex-col gap-2 text-sm">
                       <p>
-                        <strong>📅 Date:</strong> {formatDate(representation.date)}
+                        <strong>📅 Date:</strong>{" "}
+                        {representation.debutResa.getDate() === representation.finResa.getDate()
+                          ? formatDate2(representation.debutResa, representation.finResa)
+                          : "du " +
+                            formatDate(representation.debutResa) +
+                            " au " +
+                            formatDate(representation.finResa)}
                       </p>
                       <p>
                         <strong>📍 Adresse:</strong> {representation.lieu.adresse},{" "}
@@ -279,7 +313,8 @@ export default async function ProductionPage({
         </div>
       );
     } else {
-      const date = new Date(laDate);
+      const debut = new Date(Date.parse(laDate));
+      const fin = new Date(debut.getTime() + spectacle.dure * 60000);
       const req = await prisma.besoinSpectacle.findMany({
         include: {
           typeObjet: {
@@ -297,7 +332,50 @@ export default async function ProductionPage({
                   reservations: {
                     none: {
                       representation: {
-                        date: date,
+                        OR: [
+                          {
+                            AND: [
+                              {
+                                debutResa: {
+                                  gt: debut,
+                                },
+                              },
+                              {
+                                debutResa: {
+                                  lt: fin,
+                                },
+                              },
+                            ],
+                          },
+                          {
+                            AND: [
+                              {
+                                finResa: {
+                                  gt: debut,
+                                },
+                              },
+                              {
+                                finResa: {
+                                  lt: fin,
+                                },
+                              },
+                            ],
+                          },
+                          {
+                            AND: [
+                              {
+                                debutResa: {
+                                  lt: debut,
+                                },
+                              },
+                              {
+                                finResa: {
+                                  gt: fin,
+                                },
+                              },
+                            ],
+                          },
+                        ],
                       },
                     },
                   },
@@ -324,7 +402,7 @@ export default async function ProductionPage({
       });
 
       return (
-        <div>
+        <div className="max-w-7xl mx-auto px-4">
           <a
             href={"."}
             className="text-sm text-slate-500 hover:text-[#D00039] font-serif mb-4 inline-flex items-center gap-1 cursor-pointer"
@@ -345,7 +423,7 @@ export default async function ProductionPage({
               créer une nouvelle representation de {spectacle.titre} :
             </Heading>
 
-            <form action={getObjets}>
+            <form action={confirmDateLieu}>
               <input name="spectacleId" type="hidden" value={id} />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -389,6 +467,24 @@ export default async function ProductionPage({
             <form action={reserver}>
               <input name="date" hidden type="datetime-local" readOnly value={laDate} required />
 
+              <input
+                name="decalage-debut"
+                hidden
+                type="number"
+                readOnly
+                defaultValue={0}
+                required
+              />
+
+              <input
+                name="decalage-fin"
+                hidden
+                type="number"
+                readOnly
+                defaultValue={spectacle.dure}
+                required
+              />
+
               <input name="spectacleId" hidden type="number" readOnly defaultValue={id} required />
 
               <input name="lieuId" hidden type="number" readOnly defaultValue={leLieu} required />
@@ -399,17 +495,15 @@ export default async function ProductionPage({
                     key={categorie}
                     className="gap-3 p-3 rounded-[12px] bg-slate-50 border border-slate-200"
                   >
-                    <Heading as="h4" className="text-primary mb-2">
-                      {categorie}
-                    </Heading>
-                    <table style={{ width: "50%" }}>
+                    <Heading as="h4">{categorie}</Heading>
+                    <table style={{ width: "50%" }} className="border-spacing-10">
                       <tbody>
                         {besoins[categorie].map((besoin) => (
                           <tr key={besoin.id}>
-                            <td style={{ width: "50%" }}>
+                            <td style={{ width: "50%" }} className="p-1">
                               {besoin.typeObjet.nom} * {besoin.nb}
                             </td>
-                            <td style={{ width: "50%" }}>
+                            <td style={{ width: "50%" }} className="p-1">
                               {[
                                 ...Array(
                                   Math.min(besoin.nb, besoin.typeObjet.objets.length)
@@ -515,7 +609,13 @@ export default async function ProductionPage({
                     {/* Info */}
                     <div className="flex flex-col gap-2 text-sm">
                       <p>
-                        <strong>📅 Date:</strong> {formatDate(representation.date)}
+                        <strong>📅 Date:</strong>{" "}
+                        {representation.debutResa.getDate() === representation.finResa.getDate()
+                          ? formatDate2(representation.debutResa, representation.finResa)
+                          : "du " +
+                            formatDate(representation.debutResa) +
+                            " au " +
+                            formatDate(representation.finResa)}
                       </p>
                       <p>
                         <strong>📍 Adresse:</strong> {representation.lieu.adresse},{" "}
