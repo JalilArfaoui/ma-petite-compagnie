@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { TypeOperation } from "@prisma/client";
 import { getActiveAdministrationContext } from "./auth-helpers";
+import { SpectacleEquilibre } from "./components/types";
 
 // ─── Types pour les données transmises par les formulaires ───
 
@@ -57,6 +58,53 @@ export async function getNomsSpectacles() {
   return spectacles.map((s) => s.titre);
 }
 
+export async function getEquilibresSpectacles(): Promise<SpectacleEquilibre[]> {
+  const context = await getActiveAdministrationContext();
+  if (!context.ok) throw new Error(context.error);
+
+  const spectacles = await prisma.spectacle.findMany({
+    where: { compagnieId: context.compagnieId },
+    select: {
+      id: true,
+      titre: true,
+      budget_initial: true,
+      operations: {
+        select: {
+          montant: true,
+          type: true,
+          statut: true,
+        },
+      },
+    },
+    orderBy: { titre: "asc" },
+  });
+
+  return spectacles.map((spectacle) => {
+    const recettesPayees = spectacle.operations
+      .filter((op) => op.type === "RECETTE" && op.statut === "paye")
+      .reduce((total, op) => total + op.montant, 0);
+    const recettesEnAttente = spectacle.operations
+      .filter((op) => op.type === "RECETTE" && op.statut === "en_attente")
+      .reduce((total, op) => total + op.montant, 0);
+    const depenses = spectacle.operations
+      .filter((op) => op.type === "DEPENSE")
+      .reduce((total, op) => total + op.montant, 0);
+    const baseBudget = Math.max(spectacle.budget_initial + recettesPayees, 1);
+    const pourcentageConsomme = Math.min(Math.max((depenses / baseBudget) * 100, 0), 100);
+
+    return {
+      id: spectacle.id,
+      nom: spectacle.titre,
+      budgetInitial: spectacle.budget_initial,
+      recettesPayees,
+      recettesEnAttente,
+      depenses,
+      montant: spectacle.budget_initial + recettesPayees - depenses,
+      pourcentageConsomme,
+    };
+  });
+}
+
 // ─── Création ───
 
 export async function creerOperation(data: OperationFormData) {
@@ -92,6 +140,7 @@ export async function creerOperation(data: OperationFormData) {
   revalidatePath("/administration");
   revalidatePath("/administration/recettes");
   revalidatePath("/administration/depenses");
+  revalidatePath("/administration/equilibre-financier");
   return {
     success: true,
     operation: {
@@ -149,6 +198,7 @@ export async function modifierOperation(data: OperationFormData) {
   revalidatePath("/administration");
   revalidatePath("/administration/recettes");
   revalidatePath("/administration/depenses");
+  revalidatePath("/administration/equilibre-financier");
   return { success: true };
 }
 
@@ -171,6 +221,7 @@ export async function supprimerOperation(id: number) {
   revalidatePath("/administration");
   revalidatePath("/administration/recettes");
   revalidatePath("/administration/depenses");
+  revalidatePath("/administration/equilibre-financier");
   return { success: true };
 }
 
@@ -196,5 +247,6 @@ export async function toggleStatutOperation(id: number, actuel: string) {
   revalidatePath("/administration");
   revalidatePath("/administration/recettes");
   revalidatePath("/administration/depenses");
+  revalidatePath("/administration/equilibre-financier");
   return { success: true };
 }

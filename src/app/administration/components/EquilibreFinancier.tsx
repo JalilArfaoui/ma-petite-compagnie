@@ -17,7 +17,7 @@ export function EquilibreFinancier({ spectacles }: { spectacles: SpectacleEquili
       <FadeContainer>
         {spectacles.map((spec) => (
           <Card
-            key={spec.nom}
+            key={spec.id}
             className="p-4 bg-white !gap-0 shadow-sm border border-gray-100 mb-1"
           >
             <div className="grid grid-cols-1 sm:grid-cols-[1fr_120px_90px] items-start sm:items-center w-full gap-2 sm:gap-4">
@@ -47,7 +47,7 @@ export function EquilibreFinancier({ spectacles }: { spectacles: SpectacleEquili
         ))}
       </FadeContainer>
 
-      <VoirToutLink href="/administration" />
+      <VoirToutLink href="/administration/equilibre-financier" />
     </Card>
   );
 }
