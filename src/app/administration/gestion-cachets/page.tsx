@@ -1,18 +1,25 @@
 "use client";
 
-import { Button, Card, Table, Heading } from "@/components/ui";
-import { useState, useEffect } from "react";
-import { Prisma } from "@prisma/client";
-import {
-  getCachetsAction,
-  creerCachetAction,
-  mettreAJourCachetAction,
-  supprimerCachetAction,
-  getAllMembresAction,
-  getAllSpectaclesAction,
-} from "../cachets-actions";
+import { Button, Card, Table, Heading, Pagination } from "@/components/ui";
 
-//seule la note est optionnelle, toutes les autres clés sont obligatoires donc pas de null permis
+import { useState, useMemo } from "react";
+
+const PAGE_SIZE = 20;
+
+const NOM_SPECTACLE = [
+  { value: "romeoetjuliette", label: "Roméo et Juliette" },
+  { value: "hamlet", label: "Hamlet" },
+  { value: "leroilion", label: "Le Roi Lion" },
+] as const;
+
+const MEMBRES_TROUPE = [
+  { value: "alicedupont", label: "Alice Dupont" },
+  { value: "bernardmartin", label: "Bernard Martin" },
+  { value: "clairedurand", label: "Claire Durand" },
+  { value: "davidlefevre", label: "David Lefevre" },
+  { value: "emmamoreau", label: "Emma Moreau" },
+] as const;
+
 type Cachet = {
   id: number;
   membreId: number;
@@ -249,6 +256,17 @@ export default function PageCachets() {
         return 0;
     }
   });
+  const cachetsTries = useMemo(() => {
+    return [...cachetsFiltres].sort((a, b) => {
+      if (tri === "date") return b.date.localeCompare(a.date);
+      if (tri === "montant") return b.montant - a.montant;
+      return 0;
+    });
+  }, [cachetsFiltres, tri]);
+
+  const totalPages = Math.max(1, Math.ceil(cachetsTries.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages);
+  const cachetsPagines = cachetsTries.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
   return (
     <main>
@@ -378,6 +396,11 @@ export default function PageCachets() {
               className="p-2 border border-slate-300 rounded-md w-full"
               value={filtreMembre?.toString() || ""}
               onChange={(e) => setFiltreMembre(e.target.value ? Number(e.target.value) : null)}
+              value={filtreMembre}
+              onChange={(e) => {
+                setFiltreMembre(e.target.value);
+                setPage(1);
+              }}
             >
               <option value="">Tous les membres</option>
               {membres.map((membre) => (
@@ -394,6 +417,11 @@ export default function PageCachets() {
               className="p-2 border border-slate-300 rounded-md w-full"
               value={filtreSpectacle?.toString() || ""}
               onChange={(e) => setFiltreSpectacle(e.target.value ? Number(e.target.value) : null)}
+              value={filtreSpectacle}
+              onChange={(e) => {
+                setFiltreSpectacle(e.target.value);
+                setPage(1);
+              }}
             >
               <option value="">Tous</option>
               {spectacles.map((spectacle) => (
@@ -410,6 +438,11 @@ export default function PageCachets() {
               className="p-2 border border-slate-300 rounded-md w-full"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+              value={tri}
+              onChange={(e) => {
+                setTri(e.target.value as "date" | "montant");
+                setPage(1);
+              }}
             >
               <option value="none">Aucun tri</option>
               <option value="dateCroissante">Date croissante</option>
@@ -437,7 +470,7 @@ export default function PageCachets() {
             </Table.Head>
 
             <Table.Body>
-              {cachetsTries.map((c) => (
+              {cachetsPagines.map((c) => (
                 <Table.Row key={c.id}>
                   <Table.Cell>
                     {c.membre.user.prenom} {c.membre.user.nom}
@@ -474,6 +507,9 @@ export default function PageCachets() {
           </Table>
         </Card.Body>
       </Card>
+      {cachetsTries.length > PAGE_SIZE && (
+        <Pagination currentPage={safePage} totalPages={totalPages} onPageChange={setPage} />
+      )}
     </main>
   );
 }
