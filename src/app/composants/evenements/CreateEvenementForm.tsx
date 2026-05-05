@@ -57,7 +57,15 @@ export function CreateEvenementForm({
       }
       // Vérification console de la création (provisoire)
       const evenement:Evenement = result.evenement;
-      if (onSuccess) onSuccess(evenement);
+      if (onSuccess) {
+        setNom("");
+        setLieuId(0);
+        setDateDebut("");
+        setDateFin("");
+        setCategorieId(0);
+        alert("Evenement ajouté");
+        onSuccess(evenement);
+      }
   }
 
   return (
