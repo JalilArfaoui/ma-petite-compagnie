@@ -7,10 +7,12 @@ import { requireActiveCompanyAdministration } from "./auth-helpers";
 export default async function PageAdministration() {
   await requireActiveCompanyAdministration();
 
-  const recettes = await getOperations("RECETTE");
-  const depenses = await getOperations("DEPENSE");
-  const nomsSpectacles = await getNomsSpectacles();
-  const equilibresSpectacles = await getEquilibresSpectacles();
+  const [recettes, depenses, nomsSpectacles, equilibresSpectacles] = await Promise.all([
+    getOperations("RECETTE"),
+    getOperations("DEPENSE"),
+    getNomsSpectacles(),
+    getEquilibresSpectacles(),
+  ]);
 
   return (
     <AdminClient

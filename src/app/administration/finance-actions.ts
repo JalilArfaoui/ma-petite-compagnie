@@ -98,15 +98,19 @@ export async function getEquilibresSpectacles(): Promise<SpectacleEquilibre[]> {
   });
 
   return spectacles.map((spectacle) => {
-    const recettesPayees = spectacle.operations
-      .filter((op) => op.type === "RECETTE" && op.statut === "paye")
-      .reduce((total, op) => total + op.montant, 0);
-    const recettesEnAttente = spectacle.operations
-      .filter((op) => op.type === "RECETTE" && op.statut === "en_attente")
-      .reduce((total, op) => total + op.montant, 0);
-    const depenses = spectacle.operations
-      .filter((op) => op.type === "DEPENSE")
-      .reduce((total, op) => total + op.montant, 0);
+    const { recettesPayees, recettesEnAttente, depenses } = spectacle.operations.reduce(
+      (totaux, op) => {
+        if (op.type === "RECETTE" && op.statut === "paye") {
+          totaux.recettesPayees += op.montant;
+        } else if (op.type === "RECETTE" && op.statut === "en_attente") {
+          totaux.recettesEnAttente += op.montant;
+        } else if (op.type === "DEPENSE") {
+          totaux.depenses += op.montant;
+        }
+        return totaux;
+      },
+      { recettesPayees: 0, recettesEnAttente: 0, depenses: 0 }
+    );
     const baseBudget = spectacle.budget_initial + recettesPayees;
     const pourcentageConsomme = baseBudget <= 0 ? 0 : Math.min((depenses / baseBudget) * 100, 100);
 
@@ -143,21 +147,24 @@ export async function getTresorerieReelle(): Promise<TresorerieData> {
     orderBy: { date: "desc" },
   });
 
-  const mouvements = operations.map((op) => ({
-    id: op.id.toString(),
-    nom: op.nom,
-    date: op.date.toISOString().split("T")[0],
-    typeOp: op.type,
-    montant: op.type === "DEPENSE" ? -op.montant : op.montant,
-    spectacles: op.spectacles.map((s) => s.titre),
-  }));
+  let totalEncaisse = 0;
+  let totalDepense = 0;
+  const mouvements = operations.map((op) => {
+    if (op.type === "RECETTE") {
+      totalEncaisse += op.montant;
+    } else {
+      totalDepense += op.montant;
+    }
 
-  const totalEncaisse = operations
-    .filter((op) => op.type === "RECETTE")
-    .reduce((total, op) => total + op.montant, 0);
-  const totalDepense = operations
-    .filter((op) => op.type === "DEPENSE")
-    .reduce((total, op) => total + op.montant, 0);
+    return {
+      id: op.id.toString(),
+      nom: op.nom,
+      date: op.date.toISOString().split("T")[0],
+      typeOp: op.type,
+      montant: op.type === "DEPENSE" ? -op.montant : op.montant,
+      spectacles: op.spectacles.map((s) => s.titre),
+    };
+  });
 
   return {
     soldeActuel: totalEncaisse - totalDepense,

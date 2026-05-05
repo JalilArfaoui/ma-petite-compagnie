@@ -630,7 +630,7 @@ async function main() {
   }
   console.log(`✅ ${reservationsData.length} réservations d'objets`);
 
-  // --- Opérations financières (données issues de test_data.ts) ---
+  // --- Opérations financières ---
   // Nettoyage pour éviter les doublons
   await prisma.operationFinanciere.deleteMany({});
 

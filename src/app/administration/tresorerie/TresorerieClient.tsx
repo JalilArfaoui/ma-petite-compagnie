@@ -58,7 +58,7 @@ export default function TresorerieClient({ tresorerie }: { tresorerie: Tresoreri
               </h3>
               <Badge variant="gray" className="w-fit">
                 {tresorerie.nombreMouvements} mouvement
-                {tresorerie.nombreMouvements > 1 ? "s" : ""}
+                {tresorerie.nombreMouvements !== 1 ? "s" : ""}
               </Badge>
             </div>
             <NoteInfo className="mb-0">
