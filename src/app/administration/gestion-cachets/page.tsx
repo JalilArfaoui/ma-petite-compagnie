@@ -273,7 +273,10 @@ export default function PageCachets() {
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
               value={filtreMembre}
-              onChange={(e) => { setFiltreMembre(e.target.value); setPage(1); }}
+              onChange={(e) => {
+                setFiltreMembre(e.target.value);
+                setPage(1);
+              }}
             >
               <option value="">Tous les membres</option>
               {MEMBRES_TROUPE.map((nom) => (
@@ -289,7 +292,10 @@ export default function PageCachets() {
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
               value={filtreSpectacle}
-              onChange={(e) => { setFiltreSpectacle(e.target.value); setPage(1); }}
+              onChange={(e) => {
+                setFiltreSpectacle(e.target.value);
+                setPage(1);
+              }}
             >
               <option value="">Tous</option>
               {NOM_SPECTACLE.map((spectacle) => (
@@ -305,7 +311,10 @@ export default function PageCachets() {
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
               value={tri}
-              onChange={(e) => { setTri(e.target.value as "date" | "montant"); setPage(1); }}
+              onChange={(e) => {
+                setTri(e.target.value as "date" | "montant");
+                setPage(1);
+              }}
             >
               <option value="date">Date</option>
               <option value="montant">Montant de cachets</option>

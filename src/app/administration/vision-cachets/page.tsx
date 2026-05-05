@@ -74,7 +74,10 @@ export default function VisionCachetsPage() {
 
         <select
           value={spectacleFilter}
-          onChange={(e) => { setSpectacleFilter(e.target.value as "tous" | Spectacle); setPage(1); }}
+          onChange={(e) => {
+            setSpectacleFilter(e.target.value as "tous" | Spectacle);
+            setPage(1);
+          }}
           className="p-2 border border-slate-300 rounded-md w-full"
         >
           <option value="tous">Tous les spectacles</option>
@@ -90,7 +93,10 @@ export default function VisionCachetsPage() {
         </Heading>
         <select
           value={sortBy}
-          onChange={(e) => { setSortBy(e.target.value as typeof sortBy); setPage(1); }}
+          onChange={(e) => {
+            setSortBy(e.target.value as typeof sortBy);
+            setPage(1);
+          }}
           className="p-2 border border-slate-300 rounded-md w-full"
         >
           <option value="none">Aucun tri</option>
