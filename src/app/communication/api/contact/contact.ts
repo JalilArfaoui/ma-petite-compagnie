@@ -125,30 +125,6 @@ export async function listerContactsAvecListes(
     return resultOf(false, "Impossible de récuperer les contacts de la liste", null);
   }
 }
-function resolvePagination(paginationTaille: number, page: number) {
-  if (paginationTaille < 1 || page < 1) {
-    paginationTaille = 10;
-    page = 1;
-  }
-}
-export async function listerContactsDansListe(
-  liste: ListeContact,
-  paginationTaille: number = 10,
-  page: number = 1
-): Promise<Result<null> | Result<ContactWithListes[]>> {
-  try {
-    let skip;
-    ({ skip, paginationTaille } = resolvePagination(paginationTaille, page));
-    const contacts = await prisma.contact.findMany({
-      where: { listeContacts: { some: { id: liste.id } } },
-      take: paginationTaille,
-      skip: skip,
-      include: { listeContacts: true },
-    });
-
-  const skip = paginationTaille * (page - 1);
-  return { skip, paginationTaille };
-}
 
 export async function listerContactsDansListe(
   liste: ListeContact,

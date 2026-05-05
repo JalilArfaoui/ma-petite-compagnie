@@ -21,17 +21,7 @@ export function GetListe({
       close.current?.click();
     }
   }
-  useEffect(() => {
-    async function loadContact() {
-      const resultat = await trouverListes();
-      if (resultat.succes) {
-        setListes(resultat.donnee ?? []);
-      } else {
-        toaster.create({ description: resultat.message, type: "error" });
-      }
-    }
-    loadContact();
-  }, []);
+
   return (
     <Modal>
       <Modal.Trigger asChild>

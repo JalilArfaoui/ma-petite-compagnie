@@ -5,7 +5,7 @@ import { Contact, ListeContact } from "@prisma/client";
 import { ContactGrid } from "./ContactGrid";
 import { CreateListe } from "./CreateListe";
 import { GetListe } from "./GetListe";
-import { creerListe, supprimerContactDeListe } from "../api/contact/liste";
+import { creerListe, supprimerContactDeListe, trouverListes } from "../api/contact/liste";
 
 export function ContactTable({
   getContacts,
@@ -14,6 +14,7 @@ export function ContactTable({
   getContacts: (paginationTaille: number, page: number) => Promise<ContactWithListes[] | null>;
   keyReload: number;
 }) {
+  const [listes, setListes] = useState<ListeContact[]>([]);
   const [page, setPage] = useState(1);
   const paginationTaille = 30;
   const [contacts, setContacts] = useState<ContactWithListes[]>([]);
@@ -35,9 +36,31 @@ export function ContactTable({
     );
     console.log(contacts);
   }
+
+  async function loadListes() {
+    const resultat = await trouverListes();
+    if (resultat.succes) {
+      setListes(resultat.donnee ?? []);
+    } else {
+      toaster.create({ description: resultat.message, type: "error" });
+    }
+  }
+
+  useEffect(() => {
+    async function loadListes() {
+      const resultat = await trouverListes();
+      if (resultat.succes) {
+        setListes(resultat.donnee ?? []);
+      } else {
+        toaster.create({ description: resultat.message, type: "error" });
+      }
+    }
+    loadListes();
+  }, []);
   async function loadContacts() {
     const resultat = await getContacts(paginationTaille, page);
     setContacts(resultat ?? []);
+    loadListes();
   }
   useEffect(() => {
     async function loadContacts() {
