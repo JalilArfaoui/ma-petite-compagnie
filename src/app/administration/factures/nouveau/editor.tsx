@@ -18,6 +18,7 @@ import { Compagnie } from "@prisma/client";
 import { generateFacturePDF } from "@/lib/pdf/facture";
 import { creerFacture } from "@/app/actions/finance";
 import { LuPlus, LuTrash2, LuSave } from "react-icons/lu";
+import Link from "next/link";
 
 type LigneType = "PRESTATION" | "FRAIS" | "REDUCTION";
 
@@ -31,6 +32,7 @@ type LigneForm = {
 
 export function FactureEditor({ compagnie }: { compagnie: Compagnie }) {
   const [isPending, startTransition] = useTransition();
+  const [hasAttemptedSave, setHasAttemptedSave] = useState(false);
 
   // Form State
   const [dateEmission, setDateEmission] = useState<string>(new Date().toISOString().split("T")[0]);
@@ -38,6 +40,8 @@ export function FactureEditor({ compagnie }: { compagnie: Compagnie }) {
   const [lieu, setLieu] = useState<string>(compagnie.ville || "");
   const [clientNom, setClientNom] = useState<string>("");
   const [clientAdresse, setClientAdresse] = useState<string>("");
+  const [clientSiren, setClientSiren] = useState<string>("");
+  const [numeroManuel, setNumeroManuel] = useState<string>("");
 
   const [lignes, setLignes] = useState<LigneForm[]>([
     {
@@ -50,12 +54,13 @@ export function FactureEditor({ compagnie }: { compagnie: Compagnie }) {
   ]);
 
   const pdfData = {
-    numero: "BROUILLON",
+    numero: numeroManuel || "BROUILLON",
     dateEmission,
     dateEcheance: dateEcheance || "Non définie",
     lieuFacturation: lieu,
     clientNom,
     clientAdresse,
+    clientSiren,
     lignes,
     compagnie: {
       nom: compagnie.nom,
@@ -107,18 +112,21 @@ export function FactureEditor({ compagnie }: { compagnie: Compagnie }) {
   };
 
   const handleSubmit = async () => {
-    if (!clientNom || !dateEcheance) {
-      toast.error("Veuillez remplir le nom du client et la date d'échéance.");
+    setHasAttemptedSave(true);
+    if (!clientNom || !dateEcheance || !clientAdresse) {
+      toast.error("Veuillez remplir le nom du client, son adresse et la date d'échéance.");
       return;
     }
 
     startTransition(async () => {
       try {
         await creerFacture({
+          numero: numeroManuel || undefined,
           dateEcheance: new Date(dateEcheance),
           lieuFacturation: lieu,
           clientNom,
           clientAdresse,
+          clientSiren,
           lignes,
         });
         toast.success("Facture créée avec succès !");
@@ -143,7 +151,12 @@ export function FactureEditor({ compagnie }: { compagnie: Compagnie }) {
 
           <Card className="p-6">
             <Stack gap={4}>
-              <Heading as="h4" className="text-lg">Informations Générales</Heading>
+              <Flex justify="between" align="center">
+                <Heading as="h4" className="text-lg">Informations Générales</Heading>
+                <Link href="/profil" target="_blank" className="text-xs text-primary hover:underline">
+                  Modifier la compagnie
+                </Link>
+              </Flex>
               <SimpleGrid columns={2} gap={4}>
                 <Box>
                   <Text className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">
@@ -163,6 +176,7 @@ export function FactureEditor({ compagnie }: { compagnie: Compagnie }) {
                     type="date"
                     value={dateEcheance}
                     onChange={(e) => setDateEcheance(e.target.value)}
+                    className={hasAttemptedSave && !dateEcheance ? "border-red-500 focus:ring-red-500" : ""}
                     required
                   />
                 </Box>
@@ -176,6 +190,19 @@ export function FactureEditor({ compagnie }: { compagnie: Compagnie }) {
                   onChange={(e) => setLieu(e.target.value)}
                   placeholder={compagnie.ville || "Paris"}
                 />
+              </Box>
+              <Box className="mt-2 p-3 bg-amber-50 border border-amber-100 rounded-lg">
+                <Text className="text-xs font-bold text-amber-700 uppercase tracking-widest mb-1">
+                  Numéro de facture forcé
+                </Text>
+                <Input
+                  value={numeroManuel}
+                  onChange={(e) => setNumeroManuel(e.target.value)}
+                  placeholder="Ex: FACT-2026-050 (Laissez vide pour auto-générer)"
+                />
+                <Text className="text-xs text-amber-600 mt-1">
+                  ⚠️ Modifier manuellement le numéro peut créer des doublons ou des trous dans votre comptabilité. Laissez vide si vous n'êtes pas sûr.
+                </Text>
               </Box>
             </Stack>
           </Card>
@@ -191,16 +218,29 @@ export function FactureEditor({ compagnie }: { compagnie: Compagnie }) {
                   value={clientNom}
                   onChange={(e) => setClientNom(e.target.value)}
                   placeholder="Nom du client"
+                  className={hasAttemptedSave && !clientNom ? "border-red-500 focus:ring-red-500" : ""}
                 />
               </Box>
               <Box>
                 <Text className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">
-                  Adresse du client
+                  Adresse du client *
                 </Text>
                 <Input
                   value={clientAdresse}
                   onChange={(e) => setClientAdresse(e.target.value)}
                   placeholder="Adresse complète"
+                  className={hasAttemptedSave && !clientAdresse ? "border-red-500 focus:ring-red-500" : ""}
+                  required
+                />
+              </Box>
+              <Box>
+                <Text className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">
+                  SIREN ou N° TVA du client (Obligatoire pour les pros)
+                </Text>
+                <Input
+                  value={clientSiren}
+                  onChange={(e) => setClientSiren(e.target.value)}
+                  placeholder="123 456 789"
                 />
               </Box>
             </Stack>

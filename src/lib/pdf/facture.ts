@@ -36,6 +36,23 @@ export function generateFacturePDF(data: any): string {
     doc.text(`${data.compagnie.codePostal || ""} ${data.compagnie.ville || ""}`, 15, startY);
     startY += 5;
   }
+
+  // Légal compagnie
+  const legalParts = [];
+  if (data.compagnie.formeJuridique) legalParts.push(data.compagnie.formeJuridique);
+  if (data.compagnie.capitalSocial) legalParts.push(`Capital: ${data.compagnie.capitalSocial}€`);
+  if (data.compagnie.siren) legalParts.push(`SIREN: ${data.compagnie.siren}`);
+  if (data.compagnie.rcs) legalParts.push(`RCS: ${data.compagnie.rcs}`);
+  
+  if (legalParts.length > 0) {
+    doc.setFontSize(8);
+    doc.setTextColor(100, 100, 100);
+    doc.text(legalParts.join(" - "), 15, startY);
+    startY += 5;
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+  }
+
   if (data.compagnie.siteWeb) {
     doc.setTextColor(0, 0, 255);
     doc.text(data.compagnie.siteWeb, 15, startY);
@@ -51,9 +68,20 @@ export function generateFacturePDF(data: any): string {
   
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
-  if (data.clientAdresse) {
+  let clientY = 32;
+  if (!data.clientAdresse || data.clientAdresse.trim() === "") {
+    drawTextWithPlaceholder("", "Adresse du client", pageWidth - 15, clientY, { align: "right" });
+    clientY += 5;
+  } else {
     const lines = doc.splitTextToSize(data.clientAdresse, 60);
-    doc.text(lines, pageWidth - 15, 32, { align: "right" });
+    doc.text(lines, pageWidth - 15, clientY, { align: "right" });
+    clientY += lines.length * 5;
+  }
+  if (data.clientSiren) {
+    doc.setFontSize(9);
+    doc.setTextColor(100, 100, 100);
+    doc.text(`SIREN / TVA: ${data.clientSiren}`, pageWidth - 15, clientY, { align: "right" });
+    doc.setTextColor(0, 0, 0);
   }
 
   // Invoice Details
@@ -77,7 +105,24 @@ export function generateFacturePDF(data: any): string {
   if (data.lieuFacturation) {
     doc.text(`Lieu : ${data.lieuFacturation}`, 15, 73);
   }
-  doc.text(`Date d'échéance : ${formatDate(data.dateEcheance)}`, 15, 78);
+  
+  doc.text("Date d'échéance : ", 15, 78);
+  if (!data.dateEcheance || data.dateEcheance === "Non définie") {
+    drawTextWithPlaceholder("", "À définir", 46, 78);
+  } else {
+    doc.text(formatDate(data.dateEcheance), 46, 78);
+  }
+
+  let totalHT = 0;
+  let totalTVA = 0;
+
+  data.lignes.forEach((ligne: any) => {
+    const prixHT = ligne.quantite * ligne.prixUnitaireHT;
+    totalHT += prixHT;
+    totalTVA += prixHT * (ligne.tva / 100);
+  });
+
+  const hasTVA = totalTVA > 0;
 
   // Table Header
   doc.setFillColor(240, 240, 240);
@@ -85,10 +130,16 @@ export function generateFacturePDF(data: any): string {
   doc.setFontSize(9);
   doc.setFont("helvetica", "bold");
   doc.text("Désignation", 18, 91);
-  doc.text("Qté", 110, 91, { align: "right" });
-  doc.text("P.U. HT", 140, 91, { align: "right" });
-  doc.text("TVA", 160, 91, { align: "right" });
-  doc.text("Total HT", 192, 91, { align: "right" });
+  if (hasTVA) {
+    doc.text("Qté", 110, 91, { align: "right" });
+    doc.text("P.U. HT", 140, 91, { align: "right" });
+    doc.text("TVA", 160, 91, { align: "right" });
+    doc.text("Total HT", 192, 91, { align: "right" });
+  } else {
+    doc.text("Qté", 120, 91, { align: "right" });
+    doc.text("Prix unitaire", 155, 91, { align: "right" });
+    doc.text("Total", 192, 91, { align: "right" });
+  }
 
   doc.setDrawColor(200, 200, 200);
   doc.line(15, 95, pageWidth - 15, 95);
@@ -101,20 +152,20 @@ export function generateFacturePDF(data: any): string {
     return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(amount);
   };
 
-  let totalHT = 0;
-  let totalTVA = 0;
-
   data.lignes.forEach((ligne: any) => {
     const prixHT = ligne.quantite * ligne.prixUnitaireHT;
-    const tva = prixHT * (ligne.tva / 100);
-    totalHT += prixHT;
-    totalTVA += tva;
 
     drawTextWithPlaceholder(ligne.designation, "Désignation de la prestation", 18, tableY);
-    doc.text(ligne.quantite.toString(), 110, tableY, { align: "right" });
-    doc.text(formatCurrency(ligne.prixUnitaireHT), 140, tableY, { align: "right" });
-    doc.text(`${ligne.tva}%`, 160, tableY, { align: "right" });
-    doc.text(formatCurrency(prixHT), 192, tableY, { align: "right" });
+    if (hasTVA) {
+      doc.text(ligne.quantite.toString(), 110, tableY, { align: "right" });
+      doc.text(formatCurrency(ligne.prixUnitaireHT), 140, tableY, { align: "right" });
+      doc.text(`${ligne.tva}%`, 160, tableY, { align: "right" });
+      doc.text(formatCurrency(prixHT), 192, tableY, { align: "right" });
+    } else {
+      doc.text(ligne.quantite.toString(), 120, tableY, { align: "right" });
+      doc.text(formatCurrency(ligne.prixUnitaireHT), 155, tableY, { align: "right" });
+      doc.text(formatCurrency(prixHT), 192, tableY, { align: "right" });
+    }
     
     doc.line(15, tableY + 3, pageWidth - 15, tableY + 3);
     tableY += 10;
@@ -123,18 +174,31 @@ export function generateFacturePDF(data: any): string {
   const totalTTC = totalHT + totalTVA;
 
   // Totals
-  doc.setFillColor(250, 250, 250);
-  doc.rect(pageWidth - 80, tableY + 5, 65, 25, "F");
-  
-  doc.text("Total HT :", pageWidth - 75, tableY + 12);
-  doc.text(formatCurrency(totalHT), pageWidth - 20, tableY + 12, { align: "right" });
-  
-  doc.text("Total TVA :", pageWidth - 75, tableY + 18);
-  doc.text(formatCurrency(totalTVA), pageWidth - 20, tableY + 18, { align: "right" });
-  
-  doc.setFont("helvetica", "bold");
-  doc.text("Total TTC :", pageWidth - 75, tableY + 26);
-  doc.text(formatCurrency(totalTTC), pageWidth - 20, tableY + 26, { align: "right" });
+  if (totalTVA === 0) {
+    doc.setFillColor(250, 250, 250);
+    doc.rect(pageWidth - 80, tableY + 5, 65, 15, "F");
+    
+    doc.setFont("helvetica", "bold");
+    doc.text("Total à payer :", pageWidth - 75, tableY + 14);
+    doc.text(formatCurrency(totalTTC), pageWidth - 20, tableY + 14, { align: "right" });
+    
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.text("TVA non applicable, art. 293 B du CGI", 15, tableY + 10);
+  } else {
+    doc.setFillColor(250, 250, 250);
+    doc.rect(pageWidth - 80, tableY + 5, 65, 25, "F");
+    
+    doc.text("Total HT :", pageWidth - 75, tableY + 12);
+    doc.text(formatCurrency(totalHT), pageWidth - 20, tableY + 12, { align: "right" });
+    
+    doc.text("Total TVA :", pageWidth - 75, tableY + 18);
+    doc.text(formatCurrency(totalTVA), pageWidth - 20, tableY + 18, { align: "right" });
+    
+    doc.setFont("helvetica", "bold");
+    doc.text("Total TTC :", pageWidth - 75, tableY + 26);
+    doc.text(formatCurrency(totalTTC), pageWidth - 20, tableY + 26, { align: "right" });
+  }
 
   // Bank Info (RIB)
   if (data.compagnie.rib) {
@@ -144,6 +208,13 @@ export function generateFacturePDF(data: any): string {
     doc.setFont("helvetica", "normal");
     doc.text(data.compagnie.rib, 15, tableY + 50);
   }
+
+  // Legal Payment Info
+  doc.setFontSize(8);
+  doc.setTextColor(100, 100, 100);
+  doc.text("Escompte pour paiement anticipé : néant.", 15, tableY + 65);
+  doc.text("Taux des pénalités de retard : 3 fois le taux d'intérêt légal.", 15, tableY + 70);
+  doc.text("Indemnité forfaitaire pour frais de recouvrement en cas de retard de paiement : 40 €.", 15, tableY + 75);
 
   // Footer
   const pageHeight = doc.internal.pageSize.getHeight();

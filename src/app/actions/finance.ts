@@ -7,10 +7,12 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 
 export type CreateFactureData = {
+  numero?: string;
   dateEcheance: Date;
   lieuFacturation?: string;
   clientNom: string;
-  clientAdresse?: string;
+  clientAdresse: string;
+  clientSiren?: string;
   lignes: {
     designation: string;
     quantite: number;
@@ -46,23 +48,27 @@ export async function creerFacture(data: CreateFactureData) {
       orderBy: { numero: "desc" },
     });
 
-    let nextSeq = 1;
-    if (lastFacture) {
-      const parts = lastFacture.numero.split("-");
-      const lastSeq = parseInt(parts[parts.length - 1]);
-      if (!isNaN(lastSeq)) nextSeq = lastSeq + 1;
+    let finalNumero = data.numero?.trim();
+    if (!finalNumero) {
+      let nextSeq = 1;
+      if (lastFacture) {
+        const parts = lastFacture.numero.split("-");
+        const lastSeq = parseInt(parts[parts.length - 1]);
+        if (!isNaN(lastSeq)) nextSeq = lastSeq + 1;
+      }
+      finalNumero = `${prefix}${nextSeq.toString().padStart(4, "0")}`;
     }
 
-    const numero = `${prefix}${nextSeq.toString().padStart(4, "0")}`;
     const lieu = data.lieuFacturation?.trim() || compagnie.ville || "";
 
     return await tx.facture.create({
       data: {
-        numero,
+        numero: finalNumero,
         dateEcheance: data.dateEcheance,
         lieuFacturation: lieu,
         clientNom: data.clientNom,
         clientAdresse: data.clientAdresse,
+        clientSiren: data.clientSiren,
         compagnieId,
         lignes: {
           create: data.lignes.map((l) => ({

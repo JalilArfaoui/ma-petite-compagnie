@@ -274,6 +274,10 @@ export async function getCompanyDetails(companyId: number) {
         codePostal: true,
         siteWeb: true,
         rib: true,
+        siren: true,
+        rcs: true,
+        formeJuridique: true,
+        capitalSocial: true,
       },
     });
   } catch (err) {
@@ -292,6 +296,11 @@ export async function updateCompanyFacturationDetails(companyId: number, formDat
   const codePostal = formData.get("codePostal") as string;
   const siteWeb = formData.get("siteWeb") as string;
   const rib = formData.get("rib") as string;
+  const siren = formData.get("siren") as string;
+  const rcs = formData.get("rcs") as string;
+  const formeJuridique = formData.get("formeJuridique") as string;
+  const capitalSocialRaw = formData.get("capitalSocial") as string;
+  const capitalSocial = capitalSocialRaw ? parseFloat(capitalSocialRaw) : null;
 
   try {
     await prisma.compagnie.update({
@@ -302,6 +311,10 @@ export async function updateCompanyFacturationDetails(companyId: number, formDat
         codePostal: codePostal || null,
         siteWeb: siteWeb || null,
         rib: rib || null,
+        siren: siren || null,
+        rcs: rcs || null,
+        formeJuridique: formeJuridique || null,
+        capitalSocial: isNaN(capitalSocial as number) ? null : capitalSocial,
       },
     });
     revalidatePath("/profil");

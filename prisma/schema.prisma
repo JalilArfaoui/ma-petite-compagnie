@@ -35,6 +35,10 @@ model Compagnie {
   codePostal String?
   siteWeb String?
   rib     String?
+  siren   String?
+  rcs     String?
+  formeJuridique String?
+  capitalSocial  Float?
   
   membres CompanyMember[]
   evenements Evenement[]
@@ -282,6 +286,7 @@ model Facture {
 
   clientNom       String
   clientAdresse   String?
+  clientSiren     String?
 
   status          FactureStatus @default(BROUILLON)
 

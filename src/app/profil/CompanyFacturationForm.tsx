@@ -6,19 +6,27 @@ import { getCompanyDetails, updateCompanyFacturationDetails } from "@/app/(auth)
 import { toast } from "sonner";
 import { LuSave, LuRefreshCw } from "react-icons/lu";
 
-export function CompanyFacturationForm({ companyId }: { companyId: number }) {
+export function CompanyFacturationForm({ companyId, onSuccess }: { companyId: number, onSuccess?: () => void }) {
   const [data, setData] = useState<{
     adresse: string;
     ville: string;
     codePostal: string;
     siteWeb: string;
     rib: string;
+    siren: string;
+    rcs: string;
+    formeJuridique: string;
+    capitalSocial: string;
   }>({
     adresse: "",
     ville: "",
     codePostal: "",
     siteWeb: "",
     rib: "",
+    siren: "",
+    rcs: "",
+    formeJuridique: "Association",
+    capitalSocial: "",
   });
   const [loading, setLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
@@ -27,16 +35,23 @@ export function CompanyFacturationForm({ companyId }: { companyId: number }) {
     let active = true;
     setLoading(true);
     getCompanyDetails(companyId).then((comp) => {
-      if (active && comp) {
+      if (!active) return;
+      if (comp) {
         setData({
           adresse: comp.adresse || "",
           ville: comp.ville || "",
           codePostal: comp.codePostal || "",
           siteWeb: comp.siteWeb || "",
           rib: comp.rib || "",
+          siren: comp.siren || "",
+          rcs: comp.rcs || "",
+          formeJuridique: comp.formeJuridique || "Association",
+          capitalSocial: comp.capitalSocial !== null ? String(comp.capitalSocial) : "",
         });
-        setLoading(false);
+      } else {
+        toast.error("Impossible de charger les détails de la compagnie.");
       }
+      setLoading(false);
     });
     return () => {
       active = false;
@@ -52,12 +67,17 @@ export function CompanyFacturationForm({ companyId }: { companyId: number }) {
       formData.append("codePostal", data.codePostal);
       formData.append("siteWeb", data.siteWeb);
       formData.append("rib", data.rib);
+      formData.append("siren", data.siren);
+      formData.append("rcs", data.rcs);
+      formData.append("formeJuridique", data.formeJuridique);
+      formData.append("capitalSocial", data.capitalSocial);
 
       const res = await updateCompanyFacturationDetails(companyId, formData);
       if (res.error) {
         toast.error(res.error);
       } else {
         toast.success("Informations de facturation mises à jour !");
+        if (onSuccess) onSuccess();
       }
     });
   };
@@ -136,6 +156,53 @@ export function CompanyFacturationForm({ companyId }: { companyId: number }) {
                 placeholder="FR76 ...."
               />
             </Box>
+
+            <Flex gap={4}>
+              <Box className="flex-1">
+                <Text className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">
+                  SIREN
+                </Text>
+                <Input
+                  value={data.siren}
+                  onChange={(e) => setData({ ...data, siren: e.target.value })}
+                  placeholder="123 456 789"
+                />
+              </Box>
+              <Box className="flex-1">
+                <Text className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">
+                  RCS
+                </Text>
+                <Input
+                  value={data.rcs}
+                  onChange={(e) => setData({ ...data, rcs: e.target.value })}
+                  placeholder="RCS Paris"
+                />
+              </Box>
+            </Flex>
+            <Flex gap={4}>
+              <Box className="flex-1">
+                <Text className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">
+                  Forme Juridique
+                </Text>
+                <Input
+                  value={data.formeJuridique}
+                  onChange={(e) => setData({ ...data, formeJuridique: e.target.value })}
+                  placeholder="SAS, SARL, Association..."
+                />
+              </Box>
+              <Box className="flex-1">
+                <Text className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">
+                  Capital Social (€)
+                </Text>
+                <Input
+                  type="number"
+                  min="0"
+                  value={data.capitalSocial}
+                  onChange={(e) => setData({ ...data, capitalSocial: e.target.value })}
+                  placeholder="1000"
+                />
+              </Box>
+            </Flex>
 
             <Flex justify="end" className="mt-4">
               <Button type="submit" disabled={isPending} icon={<LuSave />}>
