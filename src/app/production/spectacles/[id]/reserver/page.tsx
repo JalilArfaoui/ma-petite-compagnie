@@ -1,22 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { refresh, revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import {
-  Badge,
-  Box,
-  Button,
-  Card,
-  Container,
-  Flex,
-  Heading,
-  HStack,
-  Input,
-  SimpleGrid,
-  Stack,
-  Text,
-  VStack,
-} from "@/components/ui";
-import { Prisma, BesoinSpectacle, StatutSpectacle, TypeSpectacle } from "@prisma/client";
+import { Box, Card, Heading } from "@/components/ui";
+import { Prisma } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 

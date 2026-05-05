@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Image from "next/image";
 import { Badge } from "@/components/ui/Badge/Badge";
 import { SearchBar } from "@/components/ui/SearchBar/SearchBar";
 
@@ -175,12 +176,14 @@ export default function ObjectPickerModal({
                   }`}
                 >
                   {/* Image */}
-                  <div className="w-full h-24 bg-slate-100 overflow-hidden">
+                  <div className="relative w-full h-24 bg-slate-100 overflow-hidden">
                     {typeObjet.image ? (
-                      <img
+                      <Image
+                        fill
                         src={typeObjet.image}
                         alt={typeObjet.nom}
-                        className="w-full h-full object-cover"
+                        className="object-cover"
+                        unoptimized
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-2xl text-slate-300">

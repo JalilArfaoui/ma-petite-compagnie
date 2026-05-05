@@ -5,7 +5,17 @@ import { toaster, Toaster } from "@/components/ui/Toast/toaster";
 import { ContactTable } from "./components/ContactTable";
 import { CSVContactImport } from "./components/CSVContactImport";
 import { csvToContacts } from "./action/CSVToContacts";
+import { listerContactsAvecListes } from "./api/contact/contact";
 export default function ContactPage() {
+  async function loadContacts(pagination = 30, page = 1) {
+    const resultat = await listerContactsAvecListes(pagination, page);
+    if (resultat.succes) {
+      return resultat.donnee;
+    } else {
+      toaster.create({ description: resultat.message, type: "error" });
+      return [];
+    }
+  }
   async function onCSVRead(donnees: Record<string, string>[]) {
     const resultats = await csvToContacts(donnees);
     console.log("On csv Read");
@@ -30,35 +40,39 @@ export default function ContactPage() {
     }
   }
   return (
-    <Box className=" py-5 flex-col items-center gap-4">
+    <Box className=" py-5 px-3 flex-col items-center gap-4">
       <Toaster />
-
-      <Stack
-        className="gap-5 items-center w-full justify-between  mb-10 z-10 bg-white"
-        direction="row"
-      >
-        <Stack className="gap-5 items-center" direction="row">
-          <Heading as="h3">Page de contact </Heading>
-        </Stack>
-        <Stack className="gap-5 items-center w-fit" direction="row" justify="end">
-          <CSVContactImport
-            attributs={{
-              attributsObligatoire: ["Nom", "Prénom"],
-              attributsOptionnels: ["Email", "Notes", "Téléphone", "Ville", "Adresse"],
-            }}
-            nomObjet="Contact"
-            onCSVRead={onCSVRead}
-          ></CSVContactImport>
-          <Link href="./communication/contact">
-            <Button size={"sm"} className=" scale-0.9">
-              <Text className="text-white">+ Créer un contact</Text>
-            </Button>
-          </Link>
-        </Stack>
+      <Stack className="gap-5 items-center mb-3" justify="center" direction="row">
+        <Heading as="h3">Communication</Heading>
       </Stack>
-
-      <Box className="md:w-full lg:w-[75%] mx-auto  ">
-        <ContactTable />
+      <Heading className="center text-center" as="h4">
+        Gérer vos contacts
+      </Heading>
+      <Stack
+        className="gap-5 items-center w-full  mb-10 z-10 bg-white"
+        direction="row"
+        justify="end"
+      >
+        <CSVContactImport
+          attributs={{
+            attributsObligatoire: ["Nom", "Prénom"],
+            attributsOptionnels: ["Email", "Notes", "Téléphone", "Ville", "Adresse"],
+          }}
+          nomObjet="Contact"
+          onCSVRead={onCSVRead}
+        ></CSVContactImport>
+        <Link href="./communication/contact">
+          <Button size={"sm"} className=" scale-0.9">
+            <Text className="text-white">+ Créer un contact</Text>
+          </Button>
+        </Link>
+        <Link href="./communication/liste">Affichage par liste</Link>
+      </Stack>
+      <Box className="md:w-full lg:w-[90%] mx-auto   ">
+        <ContactTable
+          keyReload={0}
+          getContacts={(pagination, page) => loadContacts(pagination, page)}
+        />
       </Box>
     </Box>
   );

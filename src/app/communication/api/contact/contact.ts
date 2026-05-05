@@ -1,85 +1,8 @@
 "use server";
-import { Contact } from "@prisma/client";
+import { Contact, ListeContact } from "@prisma/client";
 export type ContactInformation = Omit<Contact, "id" | "date_creation">;
 import { prisma } from "@/lib/prisma";
-/**
- * Résultat pour envoyer un message uniforme lorsqu'une interaction avec la BD ce fait.
- */
-type Result<T> = { succes: boolean; message: string; donnee: T | null };
-
-/**
- * Méthode utilitaire pour créer un objet résultat sans créer l'objet.
- * @param succes
- * @param message
- * @param donnee
- * @returns
- */
-function resultOf<T>(succes: boolean, message: string, donnee: T | null): Result<T> {
-  return { succes: succes, message: message, donnee: donnee };
-}
-
-function validerTelephone(tel: string) {
-  let valide = true;
-  if (tel && tel?.at(0) === "+") {
-    if (
-      tel.length === 18 &&
-      tel.at(3) === " " &&
-      tel.charCodeAt(1) >= 48 &&
-      tel.charCodeAt(1) <= 57 &&
-      tel.charCodeAt(2) >= 48 &&
-      tel.charCodeAt(2) <= 57
-    ) {
-      valide = true;
-    } else if (
-      tel.length === 13 &&
-      tel.charCodeAt(1) >= 48 &&
-      tel.charCodeAt(1) <= 57 &&
-      tel.charCodeAt(2) >= 48 &&
-      tel.charCodeAt(2) <= 57
-    ) {
-      valide = true;
-    } else {
-      valide = false;
-    }
-    if (!valide) {
-      return resultOf(false, "L'indicatif est mal écrit", null);
-    }
-    const telRegex = /^(\+[0-9][0-9] )?(([0-9][0-9][-]){4}[0-9][0-9])|([0-9]{10})$/;
-    if (!telRegex.test(tel)) {
-      return resultOf(false, "Le numéro de téléphone n'est pas valide.", null);
-    }
-  }
-}
-/**
- * Méthode pour vérifier les données d'un contact;
- * @param contact Le contact à vérifier.
- * @returns Le résultat de la vérification. Peut donner des messages d'erreur si le contact est incorrect.
- */
-function validerContact(contact: ContactInformation) {
-  if (
-    !contact.nom ||
-    !contact.prenom ||
-    contact.nom.trim().length == 0 ||
-    contact.prenom.trim().length == 0
-  ) {
-    return resultOf(false, "Le nom ou le prénom est vide.", null);
-  }
-
-  if (contact.email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(contact.email)) {
-      return resultOf(false, "L'adresse email n'est pas valide.", null);
-    }
-  }
-
-  if (contact.tel) {
-    const resultat = validerTelephone(contact.tel);
-    if (resultat && !resultat?.succes) {
-      return resultat;
-    }
-  }
-  return resultOf(true, "", null);
-}
+import { Result, resultOf, validerContact, resolvePagination } from "../../utils/helper";
 export async function contactAvecMemeEmail(email: string) {
   const contact = await prisma.contact.findFirst({ where: { email: email } });
   return contact ?? false;
@@ -104,22 +27,19 @@ export async function creerContact(contact: ContactInformation) {
     });
     return resultOf(true, "", nouveauContact);
   } catch (error: unknown) {
-    console.log(error);
+    console.error(error);
     return resultOf(false, "Une erreur est survenue lors de la création du contact", null);
   }
 }
 
 export async function listerContacts(paginationTaille: number = 10, page: number = 1) {
-  if (paginationTaille < 1 || page < 1) {
-    paginationTaille = 10;
-    page = 1;
-  }
-
-  const skip = paginationTaille * (page - 1);
+  let skip;
+  ({ skip, paginationTaille } = resolvePagination(paginationTaille, page));
   try {
     const contacts = await prisma.contact.findMany({ skip, take: paginationTaille });
     return resultOf(true, "", contacts);
   } catch (error) {
+    console.error(error);
     return resultOf(false, "Erreur lors de la récupération des contacts", null);
   }
 }
@@ -151,6 +71,7 @@ export async function modifierContact(contactId: number, nouveauContact: Contact
     });
     return resultOf(true, "", contactModifie);
   } catch (error) {
+    console.error(error);
     return resultOf(false, "Le contact n'existe pas ou n'a pas pu être modifié.", null);
   }
 }
@@ -159,6 +80,7 @@ export async function supprimerContact(id: number) {
   try {
     return await resultOf(true, "", prisma.contact.delete({ where: { id: id } }));
   } catch (error) {
+    console.error(error);
     return resultOf(false, "Le contact n'a pas pu être supprimé", null);
   }
 }
@@ -167,6 +89,7 @@ export async function supprimerContactAvecNom(nom: string) {
   try {
     return await resultOf(true, "", prisma.contact.deleteMany({ where: { nom: nom } }));
   } catch (error) {
+    console.error(error);
     return resultOf(false, "Le contact n'a pas pu être supprimé", null);
   }
 }
@@ -174,7 +97,53 @@ export async function supprimerContactsAvecEmail(email: string) {
   try {
     return await resultOf(true, "", prisma.contact.deleteMany({ where: { email: email } }));
   } catch (error) {
+    console.error(error);
     return resultOf(false, "Le contact n'a pas pu être supprimé", null);
+  }
+}
+export type ContactWithListes = Contact & {
+  listeContacts: {
+    id: number;
+    nom: string;
+  }[];
+};
+export async function listerContactsAvecListes(
+  paginationTaille: number = 10,
+  page: number = 1
+): Promise<Result<null> | Result<ContactWithListes[]>> {
+  try {
+    let skip;
+    ({ skip, paginationTaille } = resolvePagination(paginationTaille, page));
+    const contacts = await prisma.contact.findMany({
+      take: paginationTaille,
+      skip: skip,
+      include: { listeContacts: true },
+    });
+    return resultOf(true, "", contacts);
+  } catch (error) {
+    console.error(error);
+    return resultOf(false, "Impossible de récuperer les contacts de la liste", null);
+  }
+}
+export async function listerContactsDansListe(
+  liste: ListeContact,
+  paginationTaille: number = 10,
+  page: number = 1
+): Promise<Result<null> | Result<ContactWithListes[]>> {
+  try {
+    let skip;
+    ({ skip, paginationTaille } = resolvePagination(paginationTaille, page));
+    const contacts = await prisma.contact.findMany({
+      where: { listeContacts: { some: { id: liste.id } } },
+      take: paginationTaille,
+      skip: skip,
+      include: { listeContacts: true },
+    });
+
+    return resultOf(true, "", contacts);
+  } catch (error) {
+    console.error(error);
+    return resultOf(false, "Impossible de récuperer les contacts de la liste", null);
   }
 }
 
