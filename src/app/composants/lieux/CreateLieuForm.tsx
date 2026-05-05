@@ -1,15 +1,14 @@
 "use client";
 import { Lieu } from "@prisma/client";
 import { useState } from "react";
-import { Button, Input, SimpleGrid, Field } from "@/components/ui";
+import { Button, Input, Field } from "@/components/ui";
 import { creerLieu } from "@/app/actions/lieu";
 
 type Props = {
   onSuccess: (lieu: Lieu) => void;
   onCancel: () => void;
-  idCompagnie: number;
 };
-export function CreateLieuForm({ onSuccess, onCancel, idCompagnie }: Props) {
+export function CreateLieuForm({ onSuccess, onCancel }: Props) {
   const [libelle, setLibelle] = useState("");
   const [adresse, setAdresse] = useState("");
   const [ville, setVille] = useState("");

@@ -2,10 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getFactureById } from "@/app/actions/finance";
 import { generateFacturePDF } from "@/lib/pdf/facture";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const factureId = parseInt(id);
   if (isNaN(factureId)) {

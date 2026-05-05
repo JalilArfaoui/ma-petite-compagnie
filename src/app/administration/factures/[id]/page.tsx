@@ -34,9 +34,13 @@ export default async function FacturePage({ params }: { params: Promise<{ id: st
       <Box className="p-6">
         <Flex align="center" gap={4} className="mb-6">
           <Link href="/administration/factures">
-            <Button variant="ghost" size="sm" icon={<LuArrowLeft />}>Retour</Button>
+            <Button variant="ghost" size="sm" icon={<LuArrowLeft />}>
+              Retour
+            </Button>
           </Link>
-          <Heading as="h3" className="text-lg font-semibold">Brouillon - {facture.numero}</Heading>
+          <Heading as="h3" className="text-lg font-semibold">
+            Brouillon - {facture.numero}
+          </Heading>
         </Flex>
         <FactureEditor compagnie={compagnie} initialFacture={facture} />
       </Box>
@@ -45,22 +49,33 @@ export default async function FacturePage({ params }: { params: Promise<{ id: st
 
   // --- Émise / Payée / Annulée : on affiche le PDF en lecture seule ---
   return (
-    <Container className="py-8 max-w-6xl" style={{ height: "calc(100vh - 80px)", display: "flex", flexDirection: "column" }}>
+    <Container
+      className="py-8 max-w-6xl"
+      style={{ height: "calc(100vh - 80px)", display: "flex", flexDirection: "column" }}
+    >
       <Flex justify="between" align="center" className="mb-6">
         <Flex align="center" gap={4}>
           <Link href="/administration/factures">
-            <Button variant="ghost" size="sm" icon={<LuArrowLeft />}>Retour</Button>
+            <Button variant="ghost" size="sm" icon={<LuArrowLeft />}>
+              Retour
+            </Button>
           </Link>
           <Box>
             <Heading as="h2">{facture.numero}</Heading>
             <Text className="text-slate-500">{facture.clientNom}</Text>
           </Box>
-          <Badge variant={facture.status === "PAYEE" ? "green" : facture.status === "ANNULEE" ? "red" : "blue"}>
+          <Badge
+            variant={
+              facture.status === "PAYEE" ? "green" : facture.status === "ANNULEE" ? "red" : "blue"
+            }
+          >
             {statusLabel[facture.status] || facture.status}
           </Badge>
         </Flex>
         <a href={`/api/factures/${factureId}/pdf`} download={`${facture.numero}.pdf`}>
-          <Button variant="outline" size="sm" icon={<LuDownload />}>Télécharger le PDF</Button>
+          <Button variant="outline" size="sm" icon={<LuDownload />}>
+            Télécharger le PDF
+          </Button>
         </a>
       </Flex>
       <Box className="flex-1 bg-slate-100 rounded-xl overflow-hidden shadow-inner border">

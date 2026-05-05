@@ -1,6 +1,36 @@
 import { jsPDF } from "jspdf";
 
-export function generateFacturePDF(data: any): string {
+export interface FactureLigne {
+  designation: string;
+  quantite: number;
+  prixUnitaireHT: number;
+  tva: number;
+}
+
+export interface FactureData {
+  numero: string;
+  dateEmission: string | Date;
+  dateEcheance: string | Date;
+  lieuFacturation?: string | null;
+  clientNom: string;
+  clientAdresse: string | null;
+  clientSiren?: string | null;
+  lignes: FactureLigne[];
+  compagnie: {
+    nom: string;
+    adresse?: string | null;
+    ville?: string | null;
+    codePostal?: string | null;
+    siteWeb?: string | null;
+    rib?: string | null;
+    formeJuridique?: string | null;
+    capitalSocial?: string | number | null;
+    siren?: string | null;
+    rcs?: string | null;
+  };
+}
+
+export function generateFacturePDF(data: FactureData): string {
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
 
@@ -9,7 +39,7 @@ export function generateFacturePDF(data: any): string {
     placeholder: string,
     x: number,
     y: number,
-    options?: any
+    options?: object
   ) => {
     if (!text || text.trim() === "") {
       doc.setTextColor(250, 61, 47); // #fa3d2f
@@ -24,7 +54,7 @@ export function generateFacturePDF(data: any): string {
   doc.setFontSize(14);
   doc.setFont("helvetica", "bold");
   drawTextWithPlaceholder(data.compagnie.nom, "Nom de l'entreprise", 15, 20);
-  
+
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
   let startY = 26;
@@ -43,7 +73,7 @@ export function generateFacturePDF(data: any): string {
   if (data.compagnie.capitalSocial) legalParts.push(`Capital: ${data.compagnie.capitalSocial}€`);
   if (data.compagnie.siren) legalParts.push(`SIREN: ${data.compagnie.siren}`);
   if (data.compagnie.rcs) legalParts.push(`RCS: ${data.compagnie.rcs}`);
-  
+
   if (legalParts.length > 0) {
     doc.setFontSize(8);
     doc.setTextColor(100, 100, 100);
@@ -65,7 +95,7 @@ export function generateFacturePDF(data: any): string {
   doc.text("Facturé à :", pageWidth - 15, 20, { align: "right" });
   doc.setFontSize(12);
   drawTextWithPlaceholder(data.clientNom, "Nom du client", pageWidth - 15, 26, { align: "right" });
-  
+
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
   let clientY = 32;
@@ -91,13 +121,13 @@ export function generateFacturePDF(data: any): string {
 
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
-  
-  const formatDate = (d: string) => {
-    if (!d || d === "Non définie" || d === "Invalid Date") return d;
+
+  const formatDate = (d: string | Date) => {
+    if (!d || d === "Non définie" || d.toString() === "Invalid Date") return d?.toString() || "";
     try {
       return new Date(d).toLocaleDateString("fr-FR");
     } catch {
-      return d;
+      return d.toString();
     }
   };
 
@@ -105,7 +135,7 @@ export function generateFacturePDF(data: any): string {
   if (data.lieuFacturation) {
     doc.text(`Lieu : ${data.lieuFacturation}`, 15, 73);
   }
-  
+
   doc.text("Date d'échéance : ", 15, 78);
   if (!data.dateEcheance || data.dateEcheance === "Non définie") {
     drawTextWithPlaceholder("", "À définir", 46, 78);
@@ -116,7 +146,7 @@ export function generateFacturePDF(data: any): string {
   let totalHT = 0;
   let totalTVA = 0;
 
-  data.lignes.forEach((ligne: any) => {
+  data.lignes.forEach((ligne: FactureLigne) => {
     const prixHT = ligne.quantite * ligne.prixUnitaireHT;
     totalHT += prixHT;
     totalTVA += prixHT * (ligne.tva / 100);
@@ -147,12 +177,12 @@ export function generateFacturePDF(data: any): string {
   // Table Body
   doc.setFont("helvetica", "normal");
   let tableY = 102;
-  
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(amount);
   };
 
-  data.lignes.forEach((ligne: any) => {
+  data.lignes.forEach((ligne: FactureLigne) => {
     const prixHT = ligne.quantite * ligne.prixUnitaireHT;
 
     drawTextWithPlaceholder(ligne.designation, "Désignation de la prestation", 18, tableY);
@@ -166,7 +196,7 @@ export function generateFacturePDF(data: any): string {
       doc.text(formatCurrency(ligne.prixUnitaireHT), 155, tableY, { align: "right" });
       doc.text(formatCurrency(prixHT), 192, tableY, { align: "right" });
     }
-    
+
     doc.line(15, tableY + 3, pageWidth - 15, tableY + 3);
     tableY += 10;
   });
@@ -177,24 +207,24 @@ export function generateFacturePDF(data: any): string {
   if (totalTVA === 0) {
     doc.setFillColor(250, 250, 250);
     doc.rect(pageWidth - 80, tableY + 5, 65, 15, "F");
-    
+
     doc.setFont("helvetica", "bold");
     doc.text("Total à payer :", pageWidth - 75, tableY + 14);
     doc.text(formatCurrency(totalTTC), pageWidth - 20, tableY + 14, { align: "right" });
-    
+
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
     doc.text("TVA non applicable, art. 293 B du CGI", 15, tableY + 10);
   } else {
     doc.setFillColor(250, 250, 250);
     doc.rect(pageWidth - 80, tableY + 5, 65, 25, "F");
-    
+
     doc.text("Total HT :", pageWidth - 75, tableY + 12);
     doc.text(formatCurrency(totalHT), pageWidth - 20, tableY + 12, { align: "right" });
-    
+
     doc.text("Total TVA :", pageWidth - 75, tableY + 18);
     doc.text(formatCurrency(totalTVA), pageWidth - 20, tableY + 18, { align: "right" });
-    
+
     doc.setFont("helvetica", "bold");
     doc.text("Total TTC :", pageWidth - 75, tableY + 26);
     doc.text(formatCurrency(totalTTC), pageWidth - 20, tableY + 26, { align: "right" });
@@ -214,14 +244,23 @@ export function generateFacturePDF(data: any): string {
   doc.setTextColor(100, 100, 100);
   doc.text("Escompte pour paiement anticipé : néant.", 15, tableY + 65);
   doc.text("Taux des pénalités de retard : 3 fois le taux d'intérêt légal.", 15, tableY + 70);
-  doc.text("Indemnité forfaitaire pour frais de recouvrement en cas de retard de paiement : 40 €.", 15, tableY + 75);
+  doc.text(
+    "Indemnité forfaitaire pour frais de recouvrement en cas de retard de paiement : 40 €.",
+    15,
+    tableY + 75
+  );
 
   // Footer
   const pageHeight = doc.internal.pageSize.getHeight();
   doc.setFontSize(8);
   doc.setTextColor(150, 150, 150);
   doc.text("Merci de votre confiance.", pageWidth / 2, pageHeight - 15, { align: "center" });
-  doc.text(`${data.compagnie.nom} - ${data.compagnie.siteWeb || ""}`, pageWidth / 2, pageHeight - 10, { align: "center" });
+  doc.text(
+    `${data.compagnie.nom} - ${data.compagnie.siteWeb || ""}`,
+    pageWidth / 2,
+    pageHeight - 10,
+    { align: "center" }
+  );
 
   return doc.output("datauristring");
 }

@@ -6,7 +6,13 @@ import { getCompanyDetails, updateCompanyFacturationDetails } from "@/app/(auth)
 import { toast } from "sonner";
 import { LuSave, LuRefreshCw } from "react-icons/lu";
 
-export function CompanyFacturationForm({ companyId, onSuccess }: { companyId: number, onSuccess?: () => void }) {
+export function CompanyFacturationForm({
+  companyId,
+  onSuccess,
+}: {
+  companyId: number;
+  onSuccess?: () => void;
+}) {
   const [data, setData] = useState<{
     adresse: string;
     ville: string;
@@ -33,7 +39,6 @@ export function CompanyFacturationForm({ companyId, onSuccess }: { companyId: nu
 
   useEffect(() => {
     let active = true;
-    setLoading(true);
     getCompanyDetails(companyId).then((comp) => {
       if (!active) return;
       if (comp) {

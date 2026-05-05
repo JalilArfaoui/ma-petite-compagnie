@@ -1,5 +1,5 @@
 import React from "react";
-import { Page, Text, View, Document, StyleSheet, Image } from "@react-pdf/renderer";
+import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
 
 // Define styles
 const styles = StyleSheet.create({
@@ -166,9 +166,9 @@ export const PDFFacture = ({ data }: { data: FacturePDFProps }) => {
         {/* Metadata */}
         <View style={styles.metadata}>
           <Text style={styles.title}>FACTURE N° {data.numero}</Text>
-          <Text>Date d'émission : {formatDate(data.dateEmission)}</Text>
+          <Text>Date d&apos;émission : {formatDate(data.dateEmission)}</Text>
           {data.lieuFacturation && <Text>Lieu : {data.lieuFacturation}</Text>}
-          <Text>Date d'échéance : {formatDate(data.dateEcheance)}</Text>
+          <Text>Date d&apos;échéance : {formatDate(data.dateEcheance)}</Text>
         </View>
 
         {/* Table */}

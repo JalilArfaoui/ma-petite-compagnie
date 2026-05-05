@@ -111,7 +111,8 @@ export async function updateFacture(id: number, data: CreateFactureData) {
   });
 
   if (!existing) throw new Error("Facture introuvable");
-  if (existing.status !== "BROUILLON") throw new Error("Seuls les brouillons peuvent être modifiés");
+  if (existing.status !== "BROUILLON")
+    throw new Error("Seuls les brouillons peuvent être modifiés");
 
   await prisma.$transaction(async (tx) => {
     let finalNumero = data.numero?.trim() || existing.numero;
@@ -174,7 +175,8 @@ export async function supprimerBrouillon(id: number) {
   });
 
   if (!facture) throw new Error("Facture introuvable");
-  if (facture.status !== "BROUILLON") throw new Error("Seuls les brouillons peuvent être supprimés");
+  if (facture.status !== "BROUILLON")
+    throw new Error("Seuls les brouillons peuvent être supprimés");
 
   await prisma.facture.delete({ where: { id } });
 
@@ -201,9 +203,9 @@ export async function getFactureById(id: number) {
   if (!session?.activeCompanyId) return null;
 
   return await prisma.facture.findUnique({
-    where: { 
+    where: {
       id,
-      compagnieId: session.activeCompanyId
+      compagnieId: session.activeCompanyId,
     },
     include: { lignes: true, compagnie: true },
   });

@@ -32,7 +32,7 @@ export function ContactTable({
           if (c === contact) {
             return {
               ...c,
-              listeContacts: c.listeContacts.filter((liste, _) => liste.id !== listeId),
+              listeContacts: c.listeContacts.filter((liste) => liste.id !== listeId),
             };
           }
           return c;

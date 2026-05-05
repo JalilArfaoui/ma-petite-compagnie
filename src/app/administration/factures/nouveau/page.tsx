@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { FactureEditor } from "./editor";
 import { redirect } from "next/navigation";
-import { Box, Container, Heading } from "@/components/ui";
+import { Container, Heading } from "@/components/ui";
 
 export default async function NouveauFacturePage() {
   const session = await auth();
@@ -25,7 +25,9 @@ export default async function NouveauFacturePage() {
 
   return (
     <Container className="py-8 max-w-7xl">
-      <Heading as="h3" className="mb-6">Nouvelle Facture</Heading>
+      <Heading as="h3" className="mb-6">
+        Nouvelle Facture
+      </Heading>
       <FactureEditor compagnie={compagnie} />
     </Container>
   );
