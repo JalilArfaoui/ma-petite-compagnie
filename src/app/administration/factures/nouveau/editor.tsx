@@ -190,7 +190,9 @@ export function FactureEditor({
           if (message.includes("NEXT_REDIRECT")) return;
         }
         console.error(err);
-        toast.error(err instanceof Error ? err.message : "Erreur lors de l'enregistrement de la facture");
+        toast.error(
+          err instanceof Error ? err.message : "Erreur lors de l'enregistrement de la facture"
+        );
       }
     });
   };
