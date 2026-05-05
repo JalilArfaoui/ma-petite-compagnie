@@ -61,6 +61,7 @@ export default function PageCachets() {
   >("none");
   const [errors, setErrors] = useState<{ [key: string]: string }>({}); //stocker une erreur par champ
   const [isLoading, setIsLoading] = useState(false); //état pour désactiver le bouton pendant l'envoi (sécurité)
+  //const [page, setPage] = useState(1);
 
   //fonction helper pour transformer les données de Prisma au format du state local
   function formateCachet(data: CachetAvecRelations): Cachet {
@@ -454,7 +455,7 @@ export default function PageCachets() {
             </Table.Head>
 
             <Table.Body>
-              {cachetsFiltres.map((c) => (
+              {cachetsTries.map((c) => (
                 <Table.Row key={c.id}>
                   <Table.Cell>
                     {c.membre.user.prenom} {c.membre.user.nom}

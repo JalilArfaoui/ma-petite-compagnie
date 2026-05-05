@@ -2,7 +2,6 @@
 
 import { Card, Table, Heading } from "@/components/ui";
 import { useState, useEffect, useMemo } from "react";
-
 import { getCachetsAction } from "../cachets-actions";
 
 //const PAGE_SIZE = 20;
@@ -22,10 +21,10 @@ type Cachet = {
 export default function VisionCachetsPage() {
   const [cachets, setCachets] = useState<Cachet[]>([]);
   const [spectacleFilter, setSpectacleFilter] = useState<string>("tous");
-  const [page, setPage] = useState(1);
   const [sortBy, setSortBy] = useState<
     "none" | "dateCroissante" | "dateDecroissante" | "montantCroissant" | "montantDecroissant"
   >("none"); //pour avoir un seul tri actif à la fois
+  //const [page, setPage] = useState(1);
 
   useEffect(() => {
     getCachetsAction()
@@ -77,9 +76,11 @@ export default function VisionCachetsPage() {
     return result;
   }, [spectacleFilter, sortBy, cachets]);
 
+  /*
   const totalPages = Math.max(1, Math.ceil(filteredAndSorted.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
   const paginated = filteredAndSorted.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+  */
 
   return (
     <div>
@@ -96,7 +97,7 @@ export default function VisionCachetsPage() {
           value={spectacleFilter}
           onChange={(e) => {
             setSpectacleFilter(e.target.value as "tous" | string);
-            setPage(1);
+            //setPage(1);
           }}
           className="p-2 border border-slate-300 rounded-md w-full"
         >
@@ -115,7 +116,7 @@ export default function VisionCachetsPage() {
           value={sortBy}
           onChange={(e) => {
             setSortBy(e.target.value as typeof sortBy);
-            setPage(1);
+            //setPage(1);
           }}
           className="p-2 border border-slate-300 rounded-md w-full"
         >
@@ -144,7 +145,7 @@ export default function VisionCachetsPage() {
                 </Table.Row>
               </Table.Head>
               <Table.Body>
-                {paginated.map((cachet) => (
+                {filteredAndSorted.map((cachet) => (
                   <Table.Row key={cachet.id}>
                     <Table.Cell>{cachet.id}</Table.Cell>
                     <Table.Cell>{new Date(cachet.date).toLocaleDateString("fr-FR")}</Table.Cell>
