@@ -1,20 +1,22 @@
 "use server";
 import { prisma } from "@/lib/prisma";
 import { Contact } from "@prisma/client";
-import { resultOf } from "../../utils/helper";
+import { resolvePagination, resultOf } from "../../utils/helper";
 
 export async function trouverListeParNom(nomListe: string) {
   try {
     const resultat = await prisma.listeContact.findFirst({ where: { nom: nomListe } });
     return resultOf(true, "", resultat);
   } catch (error: unknown) {
-    console.log(error);
+    console.error(error);
     return resultOf(false, "Impossible de récupérer les listes par nom", null);
   }
 }
-export async function trouverBeaucoup() {
+export async function trouverListes(paginationTaille: number = 10, page: number = 1) {
+  let skip;
+  ({ skip, paginationTaille } = resolvePagination(paginationTaille, page));
   try {
-    const resultat = await prisma.listeContact.findMany();
+    const resultat = await prisma.listeContact.findMany({ skip, take: paginationTaille });
     return resultOf(true, "", resultat);
   } catch (error: unknown) {
     console.error(error);
@@ -23,31 +25,24 @@ export async function trouverBeaucoup() {
 }
 export async function creerListe(nomListe: string, contacts: Contact[]) {
   try {
-    let resultat = null;
-    const liste = await trouverListeParNom(nomListe);
-    if (liste.succes && liste.donnee !== null) {
-      resultat = await prisma.listeContact.update({
-        where: { id: liste.donnee.id },
-        data: {
-          contacts: {
-            connect: contacts.map((contact) => {
-              return { id: contact.id };
-            }),
-          },
+    const listeIds = contacts.map((contact) => {
+      return { id: contact.id };
+    });
+    const resultat = await prisma.listeContact.upsert({
+      where: { nom: nomListe },
+      update: {
+        contacts: {
+          connect: listeIds,
         },
-      });
-    } else {
-      resultat = await prisma.listeContact.create({
-        data: {
-          nom: nomListe,
-          contacts: {
-            connect: contacts.map((contact) => {
-              return { id: contact.id };
-            }),
-          },
+      },
+      create: {
+        nom: nomListe,
+        contacts: {
+          connect: listeIds,
         },
-      });
-    }
+      },
+    });
+
     return resultOf(true, "", resultat);
   } catch (error: unknown) {
     console.error(error);

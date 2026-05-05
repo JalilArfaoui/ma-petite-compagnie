@@ -1,9 +1,11 @@
 "use client";
 
-import { Text, Badge, Tooltip, Card, Link, Alert } from "@/components/ui";
-import { FaCheck, FaInfoCircle } from "react-icons/fa";
+import { Text, Badge, Tooltip, Card, Link, Alert, Button } from "@/components/ui";
+import { useRouter } from "next/navigation";
+import { FaArrowLeft, FaCheck, FaInfoCircle, FaPen, FaTrash, FaUndo } from "react-icons/fa";
 import { formatDateFr, formatMontant } from "../utils";
-import { Recette, Depense } from "./types";
+// Suppression des imports inutilisés car nous définissons une interface locale pour le composant ItemFinancierCard
+// import { Recette, Depense } from "./types";
 
 export function NoteInfo({
   children,
@@ -27,6 +29,22 @@ export function NoteInfo({
   );
 }
 
+export function BoutonRetourAdministration() {
+  const router = useRouter();
+
+  return (
+    <Button
+      variant="solid"
+      size="sm"
+      className="mb-8 hover:scale-105 transition-transform"
+      icon={<FaArrowLeft size={14} />}
+      onClick={() => router.push("/administration")}
+    >
+      Retour à la gestion administrative
+    </Button>
+  );
+}
+
 // flou pour le bas de liste des sections pour montrer la suite d'éléments
 export function FadeContainer({ children }: { children: React.ReactNode }) {
   return (
@@ -38,11 +56,11 @@ export function FadeContainer({ children }: { children: React.ReactNode }) {
 }
 
 // bouton "voir tout" en bas des sections
-export function VoirToutLink() {
+export function VoirToutLink({ href, label = "Voir tout" }: { href: string; label?: string }) {
   return (
     <div className="text-center mt-4">
-      <Link href="#" className="text-sm font-semibold">
-        Voir tout
+      <Link href={href} className="text-sm font-semibold">
+        {label}
       </Link>
     </div>
   );
@@ -68,82 +86,127 @@ export function BarreBudget({
   );
 }
 
-// Fonction guard permettant de déduire automatiquement si l'item est une Recette
-function isRecetteType(item: Recette | Depense): item is Recette {
-  return "statut" in item;
+interface ItemFinancier {
+  id: string;
+  nom: string;
+  montant: number;
+  date?: string;
+  type?: "facture" | "financement";
+  typeOp?: "RECETTE" | "DEPENSE";
+  statut?: "en_attente" | "paye";
+  spectacles?: string[];
+  fichier?: string;
 }
 
 export function ItemFinancierCard({
   item,
   onValider,
+  onEdit,
+  onDelete,
+  showSpectaclesInline = false,
 }: {
-  item: Recette | Depense;
+  item: ItemFinancier;
   onValider?: (id: string, e: React.MouseEvent) => void;
+  onEdit?: (id: string, e: React.MouseEvent) => void;
+  onDelete?: (id: string, e: React.MouseEvent) => void;
+  showSpectaclesInline?: boolean;
 }) {
-  const isRecette = isRecetteType(item);
-  const recette = isRecette ? item : null;
-  const isEnAttente = recette?.statut === "en_attente";
-
-  const typeBadgeVariant = recette?.type === "facture" ? "purple" : "blue";
-  const typeLabel =
-    recette?.type === "facture" ? "Facture" : recette?.type === "financement" ? "Subvention" : "";
-
-  const tooltipLabel =
-    item.spectacles && item.spectacles.length > 0
-      ? `${item.spectacles.join(", ")}`
-      : "Aucun spectacle rattaché";
+  const isRecette = item.typeOp === "RECETTE";
+  const isEnAttente = item.statut === "en_attente";
 
   return (
-    <Tooltip label={tooltipLabel} delayDuration={0}>
-      <Card className="p-3 bg-white !gap-0 shadow-sm border border-gray-100 transition-all hover:shadow-md cursor-help overflow-hidden">
-        <div className="flex flex-col sm:flex-row justify-between items-start gap-1 sm:gap-2">
-          <div className="flex flex-col gap-1 min-w-0 flex-1">
-            <Text className="font-bold text-sm truncate w-full" title={item.nom}>
-              {item.nom}
+    <Card className="p-3 bg-white !gap-0 shadow-sm border border-gray-100 transition-all hover:shadow-md overflow-hidden">
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-1 sm:gap-2">
+        <div className="flex flex-col gap-1 min-w-0 flex-1">
+          <Text className="font-bold text-sm truncate w-full" title={item.nom}>
+            {item.nom}
+          </Text>
+          {isRecette && (
+            <div className="mt-0.5">
+              <Badge
+                variant={item.type === "facture" ? "purple" : "blue"}
+                className="text-[9px] px-1.5 py-0 uppercase tracking-wider w-fit"
+              >
+                {item.type === "facture" ? "Facture" : "Subvention"}
+              </Badge>
+            </div>
+          )}
+          {item.date && (
+            <Text className="text-xs text-text-muted truncate mt-0.5">
+              {formatDateFr(item.date)}
             </Text>
-            {isRecette && (
-              <div className="mt-0.5">
+          )}
+          {showSpectaclesInline && item.spectacles && item.spectacles.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-1.5">
+              {item.spectacles.map((s) => (
                 <Badge
-                  variant={typeBadgeVariant}
-                  className="text-[9px] px-1.5 py-0 uppercase tracking-wider w-fit"
+                  key={s}
+                  variant="outline"
+                  className="text-[9px] px-1.5 py-0 bg-gray-50 text-gray-600 border-gray-200"
                 >
-                  {typeLabel}
+                  {s}
                 </Badge>
-              </div>
-            )}
-            {item.date && (
-              <Text className="text-xs text-text-muted truncate mt-0.5">
-                {formatDateFr(item.date)}
-              </Text>
-            )}
-          </div>
-
-          <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 flex-shrink-0 w-full sm:w-auto mt-2 sm:mt-0 pt-2 sm:pt-0 border-t border-gray-50 sm:border-none">
-            <Text className="font-bold text-sm">{formatMontant(item.montant)}</Text>
-            {isRecette && (
-              <div className="flex items-center gap-2">
-                <Badge
-                  variant={isEnAttente ? "yellow" : "green"}
-                  className="text-[10px] px-2 py-0 text-center whitespace-nowrap"
-                >
-                  {isEnAttente ? "En attente" : "Payé"}
-                </Badge>
-                {isEnAttente && onValider && (
-                  <Tooltip label="Valider" delayDuration={0}>
-                    <button
-                      onClick={(e) => onValider(item.id, e)}
-                      className="text-green-600 hover:bg-green-50 p-1 rounded-full bg-white border border-gray-100 shadow-sm cursor-pointer transition-colors"
-                      title="Valider"
-                    >
-                      <FaCheck size={10} />
-                    </button>
-                  </Tooltip>
-                )}
-              </div>
-            )}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
-      </Card>
-    </Tooltip>
+
+        <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 flex-shrink-0 w-full sm:w-auto mt-2 sm:mt-0 pt-2 sm:pt-0 border-t border-gray-50 sm:border-none">
+          <Text className="font-bold text-sm">{formatMontant(item.montant)}</Text>
+          <div className="flex items-center gap-2">
+            <Badge
+              variant={isEnAttente ? "yellow" : "green"}
+              className="text-[10px] px-2 py-0 text-center whitespace-nowrap"
+            >
+              {isEnAttente ? "En attente" : "Payé"}
+            </Badge>
+            {onValider && (
+              <Tooltip
+                label={isEnAttente ? "Valider" : "Marquer comme en attente"}
+                delayDuration={0}
+              >
+                <button
+                  onClick={(e) => onValider(item.id, e)}
+                  className={`${
+                    isEnAttente
+                      ? "text-green-600 hover:bg-green-50"
+                      : "text-gray-400 hover:bg-gray-100"
+                  } p-1 rounded-full bg-white border border-gray-100 shadow-sm cursor-pointer transition-colors`}
+                  title={isEnAttente ? "Valider" : "Annuler la validation"}
+                >
+                  {isEnAttente ? <FaCheck size={10} /> : <FaUndo size={10} />}
+                </button>
+              </Tooltip>
+            )}
+          </div>
+          {(onEdit || onDelete) && (
+            <div className="flex items-center gap-2">
+              {onEdit && (
+                <Tooltip label="Modifier" delayDuration={0}>
+                  <button
+                    onClick={(e) => onEdit(item.id, e)}
+                    className="text-blue-700 hover:bg-blue-50 p-1 rounded-full bg-white border border-gray-100 shadow-sm cursor-pointer transition-colors"
+                    title="Modifier"
+                  >
+                    <FaPen size={10} />
+                  </button>
+                </Tooltip>
+              )}
+              {onDelete && (
+                <Tooltip label="Supprimer" delayDuration={0}>
+                  <button
+                    onClick={(e) => onDelete(item.id, e)}
+                    className="text-red-600 hover:bg-red-50 p-1 rounded-full bg-white border border-gray-100 shadow-sm cursor-pointer transition-colors"
+                    title="Supprimer"
+                  >
+                    <FaTrash size={10} />
+                  </button>
+                </Tooltip>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </Card>
   );
 }

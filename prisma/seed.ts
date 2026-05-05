@@ -1,5 +1,15 @@
 import "dotenv/config";
-import { PrismaClient } from "@prisma/client";
+import {
+  PrismaClient,
+  Compagnie,
+  CategorieObjet,
+  TypeObjet,
+  Objet,
+  Lieu,
+  Spectacle,
+  Representation,
+  OperationFinanciere,
+} from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 
@@ -17,7 +27,7 @@ async function main() {
     { nom: "Compagnie des Arts Vivants" },
   ];
 
-  const compagnies = [];
+  const compagnies: Compagnie[] = [];
   for (const c of compagniesData) {
     const existing = await prisma.compagnie.findFirst({ where: { nom: c.nom } });
     if (existing) {
@@ -42,7 +52,7 @@ async function main() {
     "Textile",
   ];
 
-  const categories = [];
+  const categories: CategorieObjet[] = [];
   for (const nom of categoriesData) {
     const existing = await prisma.categorieObjet.findFirst({ where: { nom } });
     if (existing) {
@@ -77,7 +87,7 @@ async function main() {
     { nom: "Câble XLR 10m", categorieId: categories[3].id },
   ];
 
-  const typesObjets = [];
+  const typesObjets: TypeObjet[] = [];
   for (const t of typesObjetsData) {
     const existing = await prisma.typeObjet.findFirst({ where: { nom: t.nom } });
     if (existing) {
@@ -446,7 +456,7 @@ async function main() {
   await prisma.reservationObjet.deleteMany({});
   await prisma.objet.deleteMany({});
 
-  const objets = [];
+  const objets: Objet[] = [];
   for (const o of objetsData) {
     objets.push(await prisma.objet.create({ data: o }));
   }
@@ -487,7 +497,7 @@ async function main() {
     },
   ];
 
-  const lieux = [];
+  const lieux: Lieu[] = [];
   for (const l of lieuxData) {
     const existing = await prisma.lieu.findFirst({ where: { libelle: l.libelle } });
     if (existing) {
@@ -551,7 +561,7 @@ async function main() {
     },
   ];
 
-  const spectacles = [];
+  const spectacles: Spectacle[] = [];
   for (const s of spectaclesData) {
     const existing = await prisma.spectacle.findFirst({ where: { titre: s.titre } });
     if (existing) {
@@ -575,7 +585,7 @@ async function main() {
     { date: new Date("2026-07-05T20:30:00"), spectacleId: spectacles[1].id, lieuId: lieux[4].id },
   ];
 
-  const representations = [];
+  const representations: Representation[] = [];
   for (const r of repsData) {
     const existing = await prisma.representation.findFirst({
       where: { date: r.date, spectacleId: r.spectacleId },
@@ -619,6 +629,129 @@ async function main() {
     await prisma.reservationObjet.create({ data: r });
   }
   console.log(`✅ ${reservationsData.length} réservations d'objets`);
+
+  // --- Opérations financières (données issues de test_data.ts) ---
+  // Nettoyage pour éviter les doublons
+  await prisma.operationFinanciere.deleteMany({});
+
+  // Helper pour trouver un spectacle par titre (parmi ceux du seed)
+  const findSpectacle = (titre: string) => spectacles.find((s) => s.titre === titre);
+
+  const operationsData = [
+    // ── Recettes ──
+    {
+      nom: "Fonds de roulement initial",
+      montant: 10600.83,
+      date: new Date("2025-12-01"),
+      type: "RECETTE" as const,
+      categorie: "financement",
+      statut: "paye",
+      compagnieId: compagnies[0].id,
+      spectacles: [],
+    },
+    {
+      nom: "Théâtre municipal des Lices",
+      montant: 750.5,
+      date: new Date("2026-01-27"),
+      type: "RECETTE" as const,
+      categorie: "facture",
+      statut: "paye",
+      compagnieId: compagnies[0].id,
+      spectacles: ["Le Songe d'une nuit d'été"],
+    },
+    {
+      nom: "Mairie Gaillac",
+      montant: 300.25,
+      date: new Date("2026-01-17"),
+      type: "RECETTE" as const,
+      categorie: "facture",
+      statut: "paye",
+      compagnieId: compagnies[0].id,
+      spectacles: [],
+    },
+    {
+      nom: "Théâtre de Cordes",
+      montant: 450,
+      date: new Date("2026-02-10"),
+      type: "RECETTE" as const,
+      categorie: "facture",
+      statut: "en_attente",
+      compagnieId: compagnies[0].id,
+      spectacles: ["Carmen revisitée", "Pestacle"],
+    },
+    {
+      nom: "DRAC Occitanie",
+      montant: 5000,
+      date: new Date("2026-01-10"),
+      type: "RECETTE" as const,
+      categorie: "financement",
+      statut: "en_attente",
+      compagnieId: compagnies[0].id,
+      spectacles: ["Le Songe d'une nuit d'été"],
+    },
+    {
+      nom: "Ville d'Albi",
+      montant: 1150,
+      date: new Date("2026-01-15"),
+      type: "RECETTE" as const,
+      categorie: "financement",
+      statut: "paye",
+      compagnieId: compagnies[0].id,
+      spectacles: ["Carmen revisitée"],
+    },
+    {
+      nom: "Conseil départemental",
+      montant: 750,
+      date: new Date("2026-01-20"),
+      type: "RECETTE" as const,
+      categorie: "financement",
+      statut: "en_attente",
+      compagnieId: compagnies[0].id,
+      spectacles: ["Pestacle"],
+    },
+    // ── Dépenses ──
+    {
+      nom: "Décorations scène",
+      montant: 400,
+      date: new Date("2026-01-22"),
+      type: "DEPENSE" as const,
+      categorie: null,
+      statut: "paye",
+      compagnieId: compagnies[0].id,
+      spectacles: ["Pestacle"],
+    },
+    {
+      nom: "Loyer local de répét",
+      montant: 128,
+      date: new Date("2026-01-22"),
+      type: "DEPENSE" as const,
+      categorie: null,
+      statut: "paye",
+      compagnieId: compagnies[0].id,
+      spectacles: [],
+    },
+  ];
+
+  const operations: OperationFinanciere[] = [];
+  for (const op of operationsData) {
+    const { spectacles: spectacleTitres, ...opData } = op;
+    const spectacleConnections = spectacleTitres
+      .map((titre) => findSpectacle(titre))
+      .filter(Boolean)
+      .map((s) => ({ id: s!.id }));
+
+    operations.push(
+      await prisma.operationFinanciere.create({
+        data: {
+          ...opData,
+          spectacles: {
+            connect: spectacleConnections,
+          },
+        },
+      })
+    );
+  }
+  console.log(`✅ ${operations.length} opérations financières`);
 
   console.log("Seed terminé !");
 }

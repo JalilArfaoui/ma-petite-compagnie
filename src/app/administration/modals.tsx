@@ -1,7 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { Modal, Button, Select, Badge, Switch, Text, Input, Alert, Link } from "@/components/ui";
+import {
+  Modal,
+  Button,
+  Select,
+  Badge,
+  Switch,
+  Text,
+  Input,
+  Alert,
+  Link,
+  toaster,
+} from "@/components/ui";
 import { FaPlus, FaTimes, FaInfoCircle } from "react-icons/fa";
 
 /**
@@ -10,6 +21,7 @@ import { FaPlus, FaTimes, FaInfoCircle } from "react-icons/fa";
  * pour garantir que les informations saisies sont correctement transmises et typées.
  */
 export type DonneesAjoutFinancier = {
+  id?: string;
   nom: string;
   montant: number;
   date: string;
@@ -22,25 +34,51 @@ export type DonneesAjoutFinancier = {
 // Modal pour ajout rapide -> fake pour le moment (non connecté à la bdd)
 export function ModalAjoutRapide({
   typeSection,
-  onAdd,
+  onSubmit,
   spectacles,
+  mode = "create",
+  initialData,
+  trigger,
+  open: controlledOpen,
+  onOpenChange,
+  hideTrigger = false,
 }: {
   typeSection: "Recette" | "Dépense";
-  onAdd: (data: DonneesAjoutFinancier) => void;
+  onSubmit?: (data: DonneesAjoutFinancier) => void;
   spectacles: string[];
+  mode?: "create" | "edit";
+  initialData?: DonneesAjoutFinancier;
+  trigger?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  hideTrigger?: boolean;
 }) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen ?? internalOpen;
 
   // Champs communs
-  const [nom, setNom] = useState("");
-  const [montant, setMontant] = useState("");
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
-  const [fichier, setFichier] = useState<string>("");
-  const [selectedSpectacles, setSelectedSpectacles] = useState<string[]>([]);
+  const [nom, setNom] = useState(initialData?.nom ?? "");
+  const [montant, setMontant] = useState(initialData?.montant?.toString() ?? "");
+  const [date, setDate] = useState(initialData?.date ?? new Date().toISOString().split("T")[0]);
+  const [fichier, setFichier] = useState<string>(initialData?.fichier ?? "");
+  const [selectedSpectacles, setSelectedSpectacles] = useState<string[]>(
+    initialData?.spectacles ?? []
+  );
 
   // Champs spécifiques aux Recettes
-  const [typeRecette, setTypeRecette] = useState<"facture" | "financement">("financement"); // subvention par défaut
-  const [estPaye, setEstPaye] = useState(false);
+  const [typeRecette, setTypeRecette] = useState<"facture" | "financement">(
+    initialData?.type ?? "financement"
+  ); // subvention par défaut
+  const [estPaye, setEstPaye] = useState(initialData?.statut === "paye");
+
+  const isEdition = mode === "edit";
+  const setOpen = (value: boolean) => {
+    if (onOpenChange) {
+      onOpenChange(value);
+      return;
+    }
+    setInternalOpen(value);
+  };
 
   const handleAddSpectacle = (val: string) => {
     if (!selectedSpectacles.includes(val)) {
@@ -50,6 +88,19 @@ export function ModalAjoutRapide({
 
   const handleRemoveSpectacle = (val: string) => {
     setSelectedSpectacles(selectedSpectacles.filter((s) => s !== val));
+  };
+
+  const handleTypeRecetteChange = (type: "facture" | "financement") => {
+    // Note: En mode édition, les boutons d'UI sont désactivés pour empêcher le changement.
+    // Ce guard est une sécurité supplémentaire pour la logique métier.
+    if (isEdition) {
+      toaster.error({
+        title: "Modification impossible",
+        description: "Le type d'une recette ne peut pas être modifié en édition.",
+      });
+      return;
+    }
+    setTypeRecette(type);
   };
 
   const resetFormulaire = () => {
@@ -63,9 +114,10 @@ export function ModalAjoutRapide({
   };
 
   const handleSubmit = () => {
-    if (!nom || !montant || !date) return;
+    if (!nom || !montant || !date || !onSubmit) return;
 
     const payload: DonneesAjoutFinancier = {
+      ...(initialData?.id ? { id: initialData.id } : {}),
       nom,
       montant: Number(montant),
       date,
@@ -81,7 +133,7 @@ export function ModalAjoutRapide({
       payload.statut = estPaye ? "paye" : "en_attente";
     }
 
-    onAdd(payload);
+    onSubmit(payload);
 
     // Reset
     setOpen(false);
@@ -101,25 +153,33 @@ export function ModalAjoutRapide({
         else setOpen(true);
       }}
     >
-      <Modal.Trigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 rounded-full bg-slate-100 hover:bg-slate-200 cursor-pointer"
-        >
-          <FaPlus size={12} className="text-slate-600" />
-        </Button>
-      </Modal.Trigger>
+      {!hideTrigger && (
+        <Modal.Trigger asChild>
+          {trigger ?? (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 rounded-full bg-slate-100 hover:bg-slate-200 cursor-pointer"
+            >
+              <FaPlus size={12} className="text-slate-600" />
+            </Button>
+          )}
+        </Modal.Trigger>
+      )}
       <Modal.Content
         size="md"
         className="flex flex-col inset-0 translate-x-0 translate-y-0 h-[100dvh] max-w-none sm:inset-auto sm:left-[50%] sm:top-[50%] sm:translate-x-[-50%] sm:translate-y-[-50%] sm:h-auto sm:max-h-[85dvh] sm:max-w-[640px]"
       >
         <Modal.Header className="shrink-0">
-          <Modal.Title>Ajouter une {typeSection.toLowerCase()}</Modal.Title>
+          <Modal.Title>
+            {isEdition ? "Modifier" : "Ajouter"} une {typeSection.toLowerCase()}
+          </Modal.Title>
           <Modal.Description>
-            {typeSection === "Recette"
-              ? "Saisissez les informations de la nouvelle recette."
-              : "Remplissez les informations de votre dépense."}
+            {isEdition
+              ? `Mettez à jour les informations de ${typeSection === "Recette" ? "la recette" : "la dépense"}.`
+              : typeSection === "Recette"
+                ? "Saisissez les informations de la nouvelle recette."
+                : "Remplissez les informations de votre dépense."}
           </Modal.Description>
         </Modal.Header>
         <Modal.Body className="flex flex-col gap-5 pt-2 flex-1 min-h-0 overflow-y-auto">
@@ -129,23 +189,25 @@ export function ModalAjoutRapide({
               <div className="flex bg-slate-100 p-1 rounded-lg">
                 <button
                   type="button"
-                  onClick={() => setTypeRecette("financement")}
-                  className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all cursor-pointer ${
+                  onClick={() => handleTypeRecetteChange("financement")}
+                  disabled={isEdition}
+                  className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all ${
                     typeRecette === "financement"
                       ? "bg-white shadow-sm text-gray-900"
                       : "text-gray-500 hover:text-gray-700"
-                  }`}
+                  } ${isEdition ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
                 >
                   Subvention
                 </button>
                 <button
                   type="button"
-                  onClick={() => setTypeRecette("facture")}
-                  className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all cursor-pointer ${
+                  onClick={() => handleTypeRecetteChange("facture")}
+                  disabled={isEdition}
+                  className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all ${
                     typeRecette === "facture"
                       ? "bg-white shadow-sm text-gray-900"
                       : "text-gray-500 hover:text-gray-700"
-                  }`}
+                  } ${isEdition ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
                 >
                   Facture
                 </button>
@@ -153,25 +215,28 @@ export function ModalAjoutRapide({
 
               {typeRecette === "facture" && (
                 // Avertissement qu'il existe un générateur fourni par le site pour générer des factures
-                <Alert status="warning" className="text-xs">
+                <Alert status="warning" className="text-sm border-none bg-yellow-50/50">
                   <Alert.Icon>
-                    <FaInfoCircle className="h-4 w-4" />
+                    <FaInfoCircle className="h-4 w-4 text-yellow-700" />
                   </Alert.Icon>
-                  <Alert.Title>À savoir sur les factures :</Alert.Title>
-                  <Alert.Description>
-                    L&apos;outil intègre un générateur de factures automatisé. Toute facture créée
-                    via ce générateur sera <strong>automatiquement</strong> comptabilisée ici.
-                    <div className="mt-3 flex flex-col gap-2">
-                      <p>
-                        N&apos;utilisez ce formulaire d&apos;ajout manuel que si vous avez émis une
-                        facture en dehors notre système.
-                      </p>
-                      <Link
-                        href="#"
-                        className="text-yellow-800 font-bold underline flex items-center gap-1 w-fit"
-                      >
-                        Créer une facture avec l&apos;outil intégré en cliquant ici
+                  <Alert.Description className="text-yellow-900">
+                    La plateforme possède son propre générateur de factures. Nous vous conseillons
+                    vivement de l&apos;utiliser pour profiter de la comptabilisation automatique.
+                    <div className="mt-4 flex flex-col gap-3">
+                      <Link href="/administration/factures/nouveau" className="w-fit">
+                        <Button
+                          variant="solid"
+                          size="sm"
+                          className="bg-yellow-700 hover:bg-yellow-800 text-white rounded-full px-5 h-9 gap-2 shadow-md transition-all hover:scale-105"
+                        >
+                          <FaPlus size={10} />
+                          Générer une facture
+                        </Button>
                       </Link>
+                      <p className="text-[11px] text-yellow-800/80 italic">
+                        Utilisez le formulaire ci-dessous uniquement pour saisir une facture émise
+                        hors du système.
+                      </p>
                     </div>
                   </Alert.Description>
                 </Alert>
@@ -293,7 +358,9 @@ export function ModalAjoutRapide({
             Annuler
           </Button>
           <Button variant="solid" onClick={handleSubmit} disabled={!nom || !montant || !date}>
-            Ajouter {typeSection === "Recette" ? "la recette" : "la dépense"}
+            {isEdition
+              ? `Enregistrer ${typeSection === "Recette" ? "la recette" : "la dépense"}`
+              : `Ajouter ${typeSection === "Recette" ? "la recette" : "la dépense"}`}
           </Button>
         </Modal.Footer>
       </Modal.Content>

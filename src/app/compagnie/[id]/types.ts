@@ -9,6 +9,7 @@ export type MemberRights = {
   droitGestionDroitsMembres: boolean;
   droitAccesPlanning: boolean;
   droitGestionPlanning: boolean;
+  droitAccesAdministration: boolean;
 };
 
 export type Member = MemberRights & {
@@ -29,6 +30,7 @@ export const RIGHTS_LABELS: { key: keyof MemberRights; label: string }[] = [
   { key: "droitGestionDroitsMembres", label: "Gérer les droits" },
   { key: "droitModificationCompagnie", label: "Modifier la compagnie" },
   { key: "droitSuppressionCompagnie", label: "Supprimer la compagnie" },
+  { key: "droitAccesAdministration", label: "Accès à l'administration" },
 ];
 
 export const EMPTY_RIGHTS: MemberRights = {
@@ -40,4 +42,5 @@ export const EMPTY_RIGHTS: MemberRights = {
   droitGestionDroitsMembres: false,
   droitAccesPlanning: false,
   droitGestionPlanning: false,
+  droitAccesAdministration: false,
 };
