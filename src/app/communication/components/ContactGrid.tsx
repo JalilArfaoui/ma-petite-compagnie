@@ -13,7 +13,7 @@ export function ContactGrid({
   contact: ContactWithListes;
   onSelect: (contact: ContactWithListes) => void;
   onDelete: (contact: ContactWithListes) => void;
-  onListeElementDeleted: (contact: ContactWithListes, listeIndex: number) => void;
+  onListeElementDeleted: (contact: ContactWithListes, listeId: number) => void;
   className: string;
 }) {
   function afficherListe(listes: ListeContact[]) {
@@ -24,7 +24,7 @@ export function ContactGrid({
             <Button
               onClick={(e) => {
                 e.stopPropagation();
-                onListeElementDeleted(contact, i);
+                onListeElementDeleted(contact, liste.id);
               }}
               size="icon"
               className="h-5"

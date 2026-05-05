@@ -20,15 +20,19 @@ export function ContactTable({
   const [contacts, setContacts] = useState<ContactWithListes[]>([]);
   const [contactsSelectionne, setContactsSelectionne] = useState<ContactWithListes[]>([]);
 
-  async function deleteListeFromContact(contact: ContactWithListes, listeIndex: number) {
-    const result = await supprimerContactDeListe(contact, contact.listeContacts[listeIndex].nom);
+  async function deleteListeFromContact(contact: ContactWithListes, listeId: number) {
+    const listeAsupprimer = contact.listeContacts.find((liste) => liste.id == listeId);
+    if (!listeAsupprimer) {
+      return;
+    }
+    const result = await supprimerContactDeListe(contact, listeAsupprimer);
     if (result?.succes) {
       setContacts((prev) =>
         prev.map((c) => {
           if (c === contact) {
             return {
               ...c,
-              listeContacts: c.listeContacts.filter((_, i) => i !== listeIndex),
+              listeContacts: c.listeContacts.filter((liste, _) => liste.id !== listeId),
             };
           }
           return c;

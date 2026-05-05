@@ -1,6 +1,6 @@
 "use server";
 import { prisma } from "@/lib/prisma";
-import { Contact } from "@prisma/client";
+import { Contact, ListeContact } from "@prisma/client";
 import { resolvePagination, resultOf } from "../../utils/helper";
 
 export async function trouverListeParNom(nomListe: string) {
@@ -23,23 +23,19 @@ export async function trouverListes(paginationTaille: number = 10, page: number 
     return resultOf(false, "Impossible de récupérer les listes", null);
   }
 }
-export async function supprimerContactDeListe(contact: Contact, nomListe: string) {
+export async function supprimerContactDeListe(contact: Contact, liste: ListeContact) {
   try {
-    const liste = await trouverListeParNom(nomListe);
-    if (liste.succes && liste.donnee) {
-      const resultat = await prisma.listeContact.update({
-        where: { id: liste.donnee.id },
-        data: {
-          contacts: {
-            disconnect: {
-              id: contact.id,
-            },
+    const resultat = await prisma.listeContact.update({
+      where: { id: liste.id },
+      data: {
+        contacts: {
+          disconnect: {
+            id: contact.id,
           },
         },
-      });
-      return resultOf(true, "", resultat);
-    }
-    return resultOf(false, liste.message, null);
+      },
+    });
+    return resultOf(true, "", resultat);
   } catch (error: unknown) {
     console.error(error);
     return resultOf(
