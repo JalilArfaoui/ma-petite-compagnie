@@ -165,6 +165,7 @@ export default function ProfilePage() {
                           </div>
                         )}
                       </Flex>
+                        </Flex>
                       </Box>
                     );
                   })
