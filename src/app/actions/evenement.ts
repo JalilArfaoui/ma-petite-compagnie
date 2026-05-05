@@ -9,6 +9,8 @@ export async function creerEvenement(formData: FormData) {
     const categorieId = Number(formData.get("categorieId"))
     const dateDebut = formData.get("dateDebut") as string
     const dateFin = formData.get("dateFin") as string
+    const participantsString = formData.get("participants") as string
+
     try {
         if (!nom || !compagnieId || !lieuId || !categorieId || !dateDebut || !dateFin) {
             return { message: "Des informations sont manquantes, l'évènement ne peux pas être créé.", status: 400,
@@ -29,6 +31,9 @@ export async function creerEvenement(formData: FormData) {
                 compagnie: { connect: { id: compagnieId } },
                 lieu: { connect: { id: lieuId } },
                 categorie: { connect: { id: categorieId } }
+                participants: {
+                    create: participants.map((p) => ({
+                        idU: p.idU,})),
             }
         })
 
