@@ -4,7 +4,13 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/Badge/Badge";
-import { updateSpectacle, deleteSpectacle, deleteBesoin, createBesoinsFromList, ensureFicheTechnique } from "./actions";
+import {
+  updateSpectacle,
+  deleteSpectacle,
+  deleteBesoin,
+  createBesoinsFromList,
+  ensureFicheTechnique,
+} from "./actions";
 import ObjectPickerModal from "./ObjectPickerModal";
 
 // ========== Types ==========
@@ -144,7 +150,7 @@ export default function SpectacleDetailClient({ spectacle, typeObjets, categorie
     const file = e.target.files?.[0];
     if (!file) return;
     setFtUploading(true);
-    const ftId = spectacle.ficheTechnique?.id ?? await ensureFicheTechnique(spectacle.id);
+    const ftId = spectacle.ficheTechnique?.id ?? (await ensureFicheTechnique(spectacle.id));
     const fd = new FormData();
     fd.append("file", file);
     await fetch(`/production/api/spectacles/ficheTechnique/${ftId}/pdf`, {
@@ -532,32 +538,30 @@ export default function SpectacleDetailClient({ spectacle, typeObjets, categorie
                     <span className="font-serif">{spectacle.ficheTechnique.pdfName}</span>
                   </div>
                   <div className="flex flex-col gap-3">
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() =>
-                        window.open(
-                          `/production/api/spectacles/ficheTechnique/${spectacle.ficheTechnique!.id}/pdf`
-                        )
-                      }
-                      className="flex-1 bg-[#D00039] text-white font-serif font-bold italic rounded-[12px] py-2 text-sm hover:bg-[#B00030] transition-colors cursor-pointer"
-                    >
-                      Ouvrir le PDF
-                    </button>
-                    <button
-                      onClick={() => ftInputRef.current?.click()}
-                      disabled={ftUploading}
-                      className="border border-slate-300 rounded-[12px] px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
-                    >
-                      {ftUploading ? "..." : "Remplacer"}
-                    </button>
-                  </div>
-                  <a href={`${spectacle.id}/fiche`}>
-                    <button
-                      className="w-full bg-white border border-[#D00039] text-[#D00039] hover:bg-[#FFF5F7] font-serif font-bold italic rounded-[12px] py-2 text-sm transition-colors cursor-pointer"
-                    >
-                      Modifier la fiche technique
-                    </button>
-                  </a>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() =>
+                          window.open(
+                            `/production/api/spectacles/ficheTechnique/${spectacle.ficheTechnique!.id}/pdf`
+                          )
+                        }
+                        className="flex-1 bg-[#D00039] text-white font-serif font-bold italic rounded-[12px] py-2 text-sm hover:bg-[#B00030] transition-colors cursor-pointer"
+                      >
+                        Ouvrir le PDF
+                      </button>
+                      <button
+                        onClick={() => ftInputRef.current?.click()}
+                        disabled={ftUploading}
+                        className="border border-slate-300 rounded-[12px] px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
+                      >
+                        {ftUploading ? "..." : "Remplacer"}
+                      </button>
+                    </div>
+                    <a href={`${spectacle.id}/fiche`}>
+                      <button className="w-full bg-white border border-[#D00039] text-[#D00039] hover:bg-[#FFF5F7] font-serif font-bold italic rounded-[12px] py-2 text-sm transition-colors cursor-pointer">
+                        Modifier la fiche technique
+                      </button>
+                    </a>
                   </div>
                 </>
               ) : (

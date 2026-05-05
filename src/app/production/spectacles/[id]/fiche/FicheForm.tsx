@@ -30,26 +30,24 @@ export default function FicheForm({
 }) {
   const isEdit = !!fiche;
   const [sections, setSections] = useState<Section[]>(() =>
-    isEdit ? parseSections(fiche!.texte) : [{ id: 1, title: "Durée du spectacle :", body: "" },
-                                            { id: 2, title: "Scénographie :", body: "" },
-                                            { id: 3, title: "Espace scénique :", body: "" },
-                                            { id: 4, title: "Temps d'installation :", body: "" },
-                                            { id: 5, title: "Sonorisation :", body: "" },
-                                            { id: 6, title: "Position du public :", body: "" },
-                                            { id: 7, title: "Jauge maximum :", body: "" }
-
-    ]
+    isEdit
+      ? parseSections(fiche!.texte)
+      : [
+          { id: 1, title: "Durée du spectacle :", body: "" },
+          { id: 2, title: "Scénographie :", body: "" },
+          { id: 3, title: "Espace scénique :", body: "" },
+          { id: 4, title: "Temps d'installation :", body: "" },
+          { id: 5, title: "Sonorisation :", body: "" },
+          { id: 6, title: "Position du public :", body: "" },
+          { id: 7, title: "Jauge maximum :", body: "" },
+        ]
   );
   const [confirmeSuppr, setConfirmeSuppr] = useState(false);
-  const nextId = useRef(
-    isEdit ? parseSections(fiche!.texte).length + 1 : 8
-  );
+  const nextId = useRef(isEdit ? parseSections(fiche!.texte).length + 1 : 8);
 
-  const add = () =>
-    setSections((p) => [...p, { id: nextId.current++, title: "", body: "" }]);
+  const add = () => setSections((p) => [...p, { id: nextId.current++, title: "", body: "" }]);
 
-  const remove = (id: number) =>
-    setSections((p) => p.filter((s) => s.id !== id));
+  const remove = (id: number) => setSections((p) => p.filter((s) => s.id !== id));
 
   const move = (id: number, dir: -1 | 1) =>
     setSections((p) => {
@@ -61,13 +59,9 @@ export default function FicheForm({
     });
 
   const update = (id: number, field: "title" | "body", val: string) =>
-    setSections((p) =>
-      p.map((s) => (s.id === id ? { ...s, [field]: val } : s))
-    );
+    setSections((p) => p.map((s) => (s.id === id ? { ...s, [field]: val } : s)));
 
-  const texteJSON = JSON.stringify(
-    sections.map(({ title, body }) => ({ title, body }))
-  );
+  const texteJSON = JSON.stringify(sections.map(({ title, body }) => ({ title, body })));
 
   const sectionEditor = (
     <div>
@@ -95,18 +89,24 @@ export default function FicheForm({
               onClick={() => move(s.id, -1)}
               disabled={i === 0}
               className="px-2 py-1 text-xs border border-slate-200 rounded disabled:opacity-30 hover:bg-slate-50"
-            >↑</button>
+            >
+              ↑
+            </button>
             <button
               type="button"
               onClick={() => move(s.id, 1)}
               disabled={i === sections.length - 1}
               className="px-2 py-1 text-xs border border-slate-200 rounded disabled:opacity-30 hover:bg-slate-50"
-            >↓</button>
+            >
+              ↓
+            </button>
             <button
               type="button"
               onClick={() => remove(s.id)}
               className="px-2 py-1 text-xs border border-slate-200 rounded hover:bg-red-50 hover:text-red-700 hover:border-red-200"
-            >✕</button>
+            >
+              ✕
+            </button>
           </div>
           <textarea
             value={s.body}
@@ -160,9 +160,7 @@ export default function FicheForm({
             </button>
           ) : (
             <div className="flex items-center gap-3 p-3 bg-red-50 border border-red-200 rounded-md">
-              <p className="flex-1 text-sm text-red-700 font-medium">
-                Confirmer la suppression ?
-              </p>
+              <p className="flex-1 text-sm text-red-700 font-medium">Confirmer la suppression ?</p>
               <form action={deleteAction}>
                 <button
                   type="submit"
@@ -170,7 +168,6 @@ export default function FicheForm({
                 >
                   Supprimer
                 </button>
-                
               </form>
               <button
                 type="button"

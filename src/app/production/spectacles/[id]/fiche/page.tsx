@@ -7,7 +7,11 @@ export const dynamic = "force-dynamic";
 /* =========================
    CREATE
 ========================= */
-async function createFicheTechnique(spectacleId: number, spectacleTitre: string, formData: FormData) {
+async function createFicheTechnique(
+  spectacleId: number,
+  spectacleTitre: string,
+  formData: FormData
+) {
   "use server";
 
   const texte = formData.get("texte") as string;
@@ -79,11 +83,10 @@ export default async function FichesTechniquesPage({
           📋 Gestion de la Fiche Technique
         </h1>
         <a href={`/production/spectacles/${id}`}>
-        <button
-          className="text-sm text-slate-500 hover:text-[#D00039] font-serif mb-4 inline-flex items-center gap-1 cursor-pointer"
-        >
-          ← Retour à la fiche du spectacle
-        </button></a>
+          <button className="text-sm text-slate-500 hover:text-[#D00039] font-serif mb-4 inline-flex items-center gap-1 cursor-pointer">
+            ← Retour à la fiche du spectacle
+          </button>
+        </a>
         <div className="p-6 shadow-lg border-t-4 border-t-[#D00039] bg-white rounded-xl">
           <h3 className="mb-6 text-xl font-bold text-[#D00039]">
             {fiche ? "✏️ Modifier la fiche technique" : "➕ Ajouter une fiche technique"}

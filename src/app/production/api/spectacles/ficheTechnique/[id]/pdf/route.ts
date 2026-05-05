@@ -8,12 +8,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   const { id } = await params;
   const fiche = await prisma.ficheTechnique.findUnique({
     where: { id: Number(id) },
-    select: { id: true,
-              pdf: true,
-              texte: true, 
-              pdfName: true, 
-              spectacleId: true
-     },
+    select: { id: true, pdf: true, texte: true, pdfName: true, spectacleId: true },
   });
 
   if (!fiche) {
@@ -29,7 +24,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
       statut: true,
       dure: true,
       ficheTechnique: {
-        select: { id: true, texte: true, pdfName: true, spectacleId: true},
+        select: { id: true, texte: true, pdfName: true, spectacleId: true },
       },
     },
   });
@@ -55,8 +50,10 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     if (Array.isArray(parsed)) {
       sections = parsed.filter(
         (s): s is FicheSection =>
-          typeof s === "object" && s !== null &&
-          typeof s.title === "string" && typeof s.body === "string"
+          typeof s === "object" &&
+          s !== null &&
+          typeof s.title === "string" &&
+          typeof s.body === "string"
       );
     }
   } catch {
@@ -176,7 +173,6 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     },
   });
 }
-
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
