@@ -57,10 +57,17 @@ export default function RecettesClient({
   }, [recettesTriees, showFactures, showSubventions]);
 
   const handleAddRecette = (data: DonneesAjoutFinancier) => {
-    handleAdd(data, buildRecetteLocale, "Recette ajoutée");
-
     startTransition(async () => {
-      await creerOperation(buildRecettePayload(data));
+      const result = await creerOperation(buildRecettePayload(data));
+      if ("error" in result) {
+        toaster.error({
+          title: "Erreur lors de l'ajout",
+          description: result.error,
+        });
+        return;
+      }
+
+      handleAdd(result.operation, "Recette ajoutée");
     });
   };
 

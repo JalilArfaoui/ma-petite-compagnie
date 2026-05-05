@@ -72,7 +72,7 @@ export async function creerOperation(data: OperationFormData) {
         })
       : [];
 
-  await prisma.operationFinanciere.create({
+  const operation = await prisma.operationFinanciere.create({
     data: {
       nom: data.nom,
       montant: data.montant,
@@ -86,12 +86,27 @@ export async function creerOperation(data: OperationFormData) {
         connect: spectacleConnections.map((s) => ({ id: s.id })),
       },
     },
+    include: { spectacles: { select: { titre: true } } },
   });
 
   revalidatePath("/administration");
   revalidatePath("/administration/recettes");
   revalidatePath("/administration/depenses");
-  return { success: true };
+  return {
+    success: true,
+    operation: {
+      id: operation.id.toString(),
+      nom: operation.nom,
+      montant: operation.montant,
+      date: operation.date.toISOString().split("T")[0],
+      type: (operation.categorie ?? "facture") as "facture" | "financement",
+      typeOp: operation.type,
+      statut: (operation.statut ?? "en_attente") as "en_attente" | "paye",
+      source: operation.source,
+      spectacles: operation.spectacles.map((s) => s.titre),
+      fichier: operation.fichier ?? undefined,
+    },
+  };
 }
 
 // ─── Modification ───
