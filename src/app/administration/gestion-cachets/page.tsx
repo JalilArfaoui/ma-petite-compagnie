@@ -1,25 +1,20 @@
 "use client";
 
-import { Button, Card, Table, Heading, Pagination } from "@/components/ui";
-
-import { useState, useMemo } from "react";
+import { Button, Card, Table, Heading } from "@/components/ui";
+import { useState, useEffect } from "react";
+import { Prisma } from "@prisma/client";
+import {
+  getCachetsAction,
+  creerCachetAction,
+  mettreAJourCachetAction,
+  supprimerCachetAction,
+  getAllMembresAction,
+  getAllSpectaclesAction,
+} from "../cachets-actions";
 
 const PAGE_SIZE = 20;
 
-const NOM_SPECTACLE = [
-  { value: "romeoetjuliette", label: "Roméo et Juliette" },
-  { value: "hamlet", label: "Hamlet" },
-  { value: "leroilion", label: "Le Roi Lion" },
-] as const;
-
-const MEMBRES_TROUPE = [
-  { value: "alicedupont", label: "Alice Dupont" },
-  { value: "bernardmartin", label: "Bernard Martin" },
-  { value: "clairedurand", label: "Claire Durand" },
-  { value: "davidlefevre", label: "David Lefevre" },
-  { value: "emmamoreau", label: "Emma Moreau" },
-] as const;
-
+//seule la note est optionnelle, toutes les autres clés sont obligatoires donc pas de null permis
 type Cachet = {
   id: number;
   membreId: number;

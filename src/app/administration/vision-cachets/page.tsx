@@ -1,11 +1,12 @@
 "use client";
 
-import { Card, Table, Heading, Pagination } from "@/components/ui";
-import { useState, useMemo } from "react";
+import { Card, Table, Heading } from "@/components/ui";
+import { useState, useEffect } from "react";
+import {
+  getCachetsAction,
+} from "../cachets-actions";
 
 const PAGE_SIZE = 20;
-
-type Spectacle = "Hamlet" | "Le Roi Lion" | "Romeo et Juliette";
 
 //seule la note est optionnelle, toutes les autres clés sont obligatoires donc pas de null permis
 type Cachet = {
@@ -22,7 +23,6 @@ type Cachet = {
 export default function VisionCachetsPage() {
   const [cachets, setCachets] = useState<Cachet[]>([]);
   const [spectacleFilter, setSpectacleFilter] = useState<string>("tous");
-  const [spectacleFilter, setSpectacleFilter] = useState<"tous" | Spectacle>("tous");
   const [page, setPage] = useState(1);
   const [sortBy, setSortBy] = useState<
     "none" | "dateCroissante" | "dateDecroissante" | "montantCroissant" | "montantDecroissant"
