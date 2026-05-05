@@ -20,7 +20,7 @@ export function ContactTable({
   const [contacts, setContacts] = useState<ContactWithListes[]>([]);
   const [contactsSelectionne, setContactsSelectionne] = useState<ContactWithListes[]>([]);
 
-  async function loadContact() {
+  async function loadContacts() {
     const resultat = await getContacts(paginationTaille, page);
     setContacts(resultat ?? []);
     loadListes();
@@ -35,11 +35,11 @@ export function ContactTable({
     }
   }
   useEffect(() => {
-    async function loadContact() {
+    async function loadContacts() {
       const resultat = await getContacts(paginationTaille, page);
       setContacts(resultat ?? []);
     }
-    loadContact();
+    loadContacts();
   }, [keyReload, page, getContacts]);
 
   useEffect(() => {
@@ -63,12 +63,11 @@ export function ContactTable({
     const toutesReussies = resultats.every((r) => r.succes);
     if (toutesReussies) {
       toaster.create({ type: "success", title: "Les contacts ont bien été associés à la liste" });
-      // mise à jour de l'état ici
     } else {
       const erreur = resultats.find((r) => !r.succes);
       toaster.create({ type: "error", title: erreur?.message });
     }
-    loadContact();
+    loadContacts();
     setContactsSelectionne([]);
   }
 
