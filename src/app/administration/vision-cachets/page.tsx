@@ -1,7 +1,9 @@
 "use client";
 
-import { Card, Table, Heading } from "@/components/ui";
+import { Card, Table, Heading, Pagination } from "@/components/ui";
 import { useState, useMemo } from "react";
+
+const PAGE_SIZE = 20;
 
 type Spectacle = "Hamlet" | "Le Roi Lion" | "Romeo et Juliette";
 
@@ -24,6 +26,7 @@ const CACHETS_DATA: Cachet[] = [
 
 export default function VisionCachetsPage() {
   const [spectacleFilter, setSpectacleFilter] = useState<"tous" | Spectacle>("tous");
+  const [page, setPage] = useState(1);
   const [sortBy, setSortBy] = useState<
     "none" | "dateCroissante" | "dateDecroissante" | "montantCroissant" | "montantDecroissant"
   >("none"); //pour avoir un seul tri actif à la fois
@@ -54,6 +57,10 @@ export default function VisionCachetsPage() {
     return result;
   }, [spectacleFilter, sortBy]);
 
+  const totalPages = Math.max(1, Math.ceil(filteredAndSorted.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages);
+  const paginated = filteredAndSorted.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+
   return (
     <div>
       <Heading as="h3" className="font-extrabold mb-4 pt-6 text-center">
@@ -67,7 +74,7 @@ export default function VisionCachetsPage() {
 
         <select
           value={spectacleFilter}
-          onChange={(e) => setSpectacleFilter(e.target.value as "tous" | Spectacle)}
+          onChange={(e) => { setSpectacleFilter(e.target.value as "tous" | Spectacle); setPage(1); }}
           className="p-2 border border-slate-300 rounded-md w-full"
         >
           <option value="tous">Tous les spectacles</option>
@@ -83,7 +90,7 @@ export default function VisionCachetsPage() {
         </Heading>
         <select
           value={sortBy}
-          onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+          onChange={(e) => { setSortBy(e.target.value as typeof sortBy); setPage(1); }}
           className="p-2 border border-slate-300 rounded-md w-full"
         >
           <option value="none">Aucun tri</option>
@@ -110,7 +117,7 @@ export default function VisionCachetsPage() {
                 </Table.Row>
               </Table.Head>
               <Table.Body>
-                {filteredAndSorted.map((cachet) => (
+                {paginated.map((cachet) => (
                   <Table.Row key={cachet.id}>
                     <Table.Cell>{cachet.id}</Table.Cell>
                     <Table.Cell>{new Date(cachet.date).toLocaleDateString("fr-FR")}</Table.Cell>
@@ -122,6 +129,9 @@ export default function VisionCachetsPage() {
             </Table>
           </Card.Body>
         </Card>
+        {filteredAndSorted.length > PAGE_SIZE && (
+          <Pagination currentPage={safePage} totalPages={totalPages} onPageChange={setPage} />
+        )}
       </div>
     </div>
   );

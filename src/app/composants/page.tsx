@@ -25,10 +25,28 @@ import {
   toaster,
   Modal,
   FileUpload,
+  Pagination,
 } from "@/components/ui";
+import { useState } from "react";
 import { FaHome } from "react-icons/fa";
 
+const EXEMPLE_MEMBRES = Array.from({ length: 25 }, (_, i) => ({
+  id: i + 1,
+  nom: ["Dupont", "Martin", "Bernard", "Lefevre", "Moreau"][i % 5],
+  prenom: ["Jean", "Marie", "Alice", "Paul", "Sophie"][i % 5],
+  role: ["Comédien", "Metteur en scène", "Régisseur", "Directeur", "Costumière"][i % 5],
+}));
+
+const PAGE_SIZE_EXEMPLE = 5;
+
 export default function Home() {
+  const [pagePagination, setPagePagination] = useState(1);
+  const totalPagesPagination = Math.ceil(EXEMPLE_MEMBRES.length / PAGE_SIZE_EXEMPLE);
+  const membresPagines = EXEMPLE_MEMBRES.slice(
+    (pagePagination - 1) * PAGE_SIZE_EXEMPLE,
+    pagePagination * PAGE_SIZE_EXEMPLE
+  );
+
   return (
     <Container className="py-10 px-4 max-w-7xl mx-auto">
       <Toaster />
@@ -386,6 +404,36 @@ export default function Home() {
                     </Table.Row>
                   </Table.Body>
                 </Table>
+              </Card.Body>
+            </Card>
+
+            <Card title="Pagination">
+              <Card.Body>
+                <Table>
+                  <Table.Head>
+                    <Table.Row>
+                      <Table.Header>#</Table.Header>
+                      <Table.Header>Nom</Table.Header>
+                      <Table.Header>Prénom</Table.Header>
+                      <Table.Header>Rôle</Table.Header>
+                    </Table.Row>
+                  </Table.Head>
+                  <Table.Body>
+                    {membresPagines.map((m) => (
+                      <Table.Row key={m.id}>
+                        <Table.Cell>{m.id}</Table.Cell>
+                        <Table.Cell>{m.nom}</Table.Cell>
+                        <Table.Cell>{m.prenom}</Table.Cell>
+                        <Table.Cell>{m.role}</Table.Cell>
+                      </Table.Row>
+                    ))}
+                  </Table.Body>
+                </Table>
+                <Pagination
+                  currentPage={pagePagination}
+                  totalPages={totalPagesPagination}
+                  onPageChange={setPagePagination}
+                />
               </Card.Body>
             </Card>
 
