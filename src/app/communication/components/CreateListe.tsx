@@ -29,7 +29,7 @@ export function CreateListe({
   return (
     <Modal onOpenChange={() => setContacts(getContacts())}>
       <Modal.Trigger asChild>
-        <Button variant="outline" size={"sm"} disabled={disabled}>
+        <Button variant="outline" size={"sm"} className="break-all" disabled={disabled}>
           Créer ou associer une liste aux contacts séléctionnés
         </Button>
       </Modal.Trigger>
