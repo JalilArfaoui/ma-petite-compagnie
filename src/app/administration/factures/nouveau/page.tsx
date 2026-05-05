@@ -25,6 +25,7 @@ export default async function NouveauFacturePage() {
 
   return (
     <Container className="py-8 max-w-7xl">
+      <Heading as="h3" className="mb-6">Nouvelle Facture</Heading>
       <FactureEditor compagnie={compagnie} />
     </Container>
   );

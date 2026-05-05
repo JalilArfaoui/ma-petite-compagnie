@@ -202,7 +202,6 @@ export function FactureEditor({
     <Flex gap={6} className="h-[calc(100vh-120px)]">
       <Box className="w-1/2 overflow-y-auto pr-2 pb-10" onBlur={refreshPdf} onKeyDown={handleKeyDown}>
         <Stack gap={6}>
-          {!initialFacture && <Heading as="h2">Nouvelle Facture</Heading>}
 
           <Card className="p-6">
             <Stack gap={4}>
