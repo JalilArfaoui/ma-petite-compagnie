@@ -1,18 +1,19 @@
 "use client";
-import { toaster, Modal, Button, Toaster, Select } from "@/components/ui";
+import { Modal, Button, Toaster, Select } from "@/components/ui";
 import { ListeContact } from "@prisma/client";
 import { trouverListes } from "../api/contact/liste";
 import { useEffect, useRef, useState } from "react";
 
 export function GetListe({
   disabled = false,
+  listes,
   onGetListe,
 }: {
   disabled: boolean;
+  listes: ListeContact[];
   onGetListe: (listes: ListeContact[]) => void;
 }) {
   const close = useRef<HTMLButtonElement>(null);
-  const [listes, setListes] = useState<ListeContact[]>([]);
   const [listesSelectionnees, setListesSelectionnees] = useState<ListeContact[]>([]);
   async function confirmer(listes: ListeContact[]) {
     if (listesSelectionnees.length !== 0) {

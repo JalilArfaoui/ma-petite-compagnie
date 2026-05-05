@@ -2,7 +2,7 @@
 import { Contact, ListeContact } from "@prisma/client";
 export type ContactInformation = Omit<Contact, "id" | "date_creation">;
 import { prisma } from "@/lib/prisma";
-import { Result, resultOf, validerContact } from "../../utils/helper";
+import { Result, resultOf, validerContact, resolvePagination } from "../../utils/helper";
 export async function contactAvecMemeEmail(email: string) {
   const contact = await prisma.contact.findFirst({ where: { email: email } });
   return contact ?? false;
@@ -130,6 +130,21 @@ function resolvePagination(paginationTaille: number, page: number) {
     paginationTaille = 10;
     page = 1;
   }
+}
+export async function listerContactsDansListe(
+  liste: ListeContact,
+  paginationTaille: number = 10,
+  page: number = 1
+): Promise<Result<null> | Result<ContactWithListes[]>> {
+  try {
+    let skip;
+    ({ skip, paginationTaille } = resolvePagination(paginationTaille, page));
+    const contacts = await prisma.contact.findMany({
+      where: { listeContacts: { some: { id: liste.id } } },
+      take: paginationTaille,
+      skip: skip,
+      include: { listeContacts: true },
+    });
 
   const skip = paginationTaille * (page - 1);
   return { skip, paginationTaille };

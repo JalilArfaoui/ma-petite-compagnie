@@ -90,3 +90,13 @@ export function validerContact(contact: ContactInformation) {
   }
   return resultOf(true, "", null);
 }
+
+export function resolvePagination(paginationTaille: number, page: number) {
+  if (paginationTaille < 1 || page < 1) {
+    paginationTaille = 10;
+    page = 1;
+  }
+
+  const skip = paginationTaille * (page - 1);
+  return { skip, paginationTaille };
+}

@@ -1,7 +1,7 @@
 "use server";
 import { prisma } from "@/lib/prisma";
 import { Contact } from "@prisma/client";
-import { resultOf } from "../../utils/helper";
+import { resolvePagination, resultOf } from "../../utils/helper";
 
 export async function trouverListeParNom(nomListe: string) {
   try {
@@ -13,12 +13,8 @@ export async function trouverListeParNom(nomListe: string) {
   }
 }
 export async function trouverListes(paginationTaille: number = 10, page: number = 1) {
-  if (paginationTaille < 1 || page < 1) {
-    paginationTaille = 10;
-    page = 1;
-  }
-
-  const skip = paginationTaille * (page - 1);
+  let skip;
+  ({ skip, paginationTaille } = resolvePagination(paginationTaille, page));
   try {
     const resultat = await prisma.listeContact.findMany({ skip, take: paginationTaille });
     return resultOf(true, "", resultat);
@@ -53,31 +49,24 @@ export async function supprimerContactDeListe(contact: Contact, nomListe: string
 }
 export async function creerListe(nomListe: string, contacts: Contact[]) {
   try {
-    let resultat = null;
-    const liste = await trouverListeParNom(nomListe);
-    if (liste.succes && liste.donnee !== null) {
-      resultat = await prisma.listeContact.update({
-        where: { id: liste.donnee.id },
-        data: {
-          contacts: {
-            connect: contacts.map((contact) => {
-              return { id: contact.id };
-            }),
-          },
+    const listeIds = contacts.map((contact) => {
+      return { id: contact.id };
+    });
+    const resultat = await prisma.listeContact.upsert({
+      where: { nom: nomListe },
+      update: {
+        contacts: {
+          connect: listeIds,
         },
-      });
-    } else {
-      resultat = await prisma.listeContact.create({
-        data: {
-          nom: nomListe,
-          contacts: {
-            connect: contacts.map((contact) => {
-              return { id: contact.id };
-            }),
-          },
+      },
+      create: {
+        nom: nomListe,
+        contacts: {
+          connect: listeIds,
         },
-      });
-    }
+      },
+    });
+
     return resultOf(true, "", resultat);
   } catch (error: unknown) {
     console.error(error);

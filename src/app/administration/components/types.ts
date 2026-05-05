@@ -6,6 +6,7 @@ export interface Recette {
   spectacles?: string[];
   montant: number;
   statut: "en_attente" | "paye";
+  typeOp?: "RECETTE" | "DEPENSE";
   fichier?: string;
 }
 
@@ -15,6 +16,7 @@ export interface Depense {
   date?: string;
   spectacles?: string[];
   montant: number;
+  typeOp?: "RECETTE" | "DEPENSE";
   fichier?: string;
 }
 
