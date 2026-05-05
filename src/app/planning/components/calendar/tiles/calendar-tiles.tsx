@@ -19,7 +19,18 @@ export default function CalendarTile({
 }: {
   calDay: CalendarDay;
   index: number;
-  onEventClick?: (event: EvenementBuiltInt) => void;
+  onEventClick?: (
+    event: EvenementBuiltInt,
+    context?: {
+      anchorRect: DOMRect;
+      popupTheme?: {
+        backgroundColor: string;
+        borderColor: string;
+        textColor: string;
+        accentColor: string;
+      };
+    }
+  ) => void;
   viewType: "monthly" | "weekly";
   slotHeight?: number;
 }) {
@@ -43,7 +54,6 @@ export default function CalendarTile({
 
   const weeklyEvents: PositionedEvent[] = placerEvenementsEnColonne(viewType, calDay);
 
-
   return (
     <div
       key={index}
@@ -55,54 +65,90 @@ export default function CalendarTile({
       <div className="day-number">{calDay.day}</div>
 
       <div className="events-container">
-        {(viewType === "weekly"
-          ? weeklyEvents
-          : calDay.events.map((event: EvenementBuiltInt) => ({ event }))
-        ).map((item: PositionedEvent | { event: EvenementBuiltInt }) => {
-          const event = item.event;
-          const topInMinutes =
-            viewType === "weekly" && "startMinutes" in item ? item.startMinutes : 0;
-          const durationInMinutes =
-            viewType === "weekly" && "endMinutes" in item
-              ? Math.max(item.endMinutes - item.startMinutes, 15)
-              : 0;
-          const column = viewType === "weekly" && "column" in item ? (item.column ?? 0) : 0;
-          const columnsCount =
-            viewType === "weekly" && "columnsCount" in item ? (item.columnsCount ?? 1) : 1;
-          const widthPercent = 100 / columnsCount;
-          const leftPercent = column * widthPercent;
+        {viewType === "weekly"
+          ? weeklyEvents.map((item) => {
+              const event = item.event;
+              const topInMinutes = item.startMinutes;
+              const durationInMinutes = Math.max(item.endMinutes - item.startMinutes, 15);
+              const widthPercent = 100 / item.columnsCount;
+              const leftPercent = item.column * widthPercent;
 
-          return (
-            <div
-              key={event.id}
-              className="event-tile"
-              onClick={() =>
-                onEventClick?.({ ...event, dateDebut: event.dateDebut, dateFin: event.dateFin })
-              }
-              title={event.nom}
-              style={{
-                position: viewType === "weekly" ? "absolute" : "relative",
-                top:
-                  viewType === "weekly"
-                    ? `${(topInMinutes / 60) * (slotHeight || 35.6)}px`
-                    : "auto",
-                height:
-                  viewType === "weekly"
-                    ? `${(durationInMinutes / 60) * (slotHeight || 35.6)}px`
-                    : "auto",
-                left: viewType === "weekly" ? `calc(${leftPercent}% + 4px)` : undefined,
-                right: viewType === "weekly" ? "auto" : undefined,
-                width: viewType === "weekly" ? `calc(${widthPercent}% - 8px)` : undefined,
-              }}
-            >
-              <span className="event-dot" aria-hidden="true" />
-              <span className="event-content">
-                <span className="event-time">{formatEventRange(event)}</span>
-                <span className="event-name">{event.nom}</span>
-              </span>
-            </div>
-          );
-        })}
+              return (
+                <div
+                  key={event.id}
+                  className="event-tile"
+                  onClick={(clickEvent) => {
+                    const tile = clickEvent.currentTarget;
+                    const computedTileStyles = window.getComputedStyle(tile);
+                    const dot = tile.querySelector<HTMLElement>(".event-dot");
+                    const dotStyles = dot ? window.getComputedStyle(dot) : null;
+
+                    onEventClick?.(
+                      { ...event, dateDebut: event.dateDebut, dateFin: event.dateFin },
+                      {
+                        anchorRect: tile.getBoundingClientRect(),
+                        popupTheme: {
+                          backgroundColor: computedTileStyles.backgroundColor,
+                          borderColor: computedTileStyles.borderColor,
+                          textColor: computedTileStyles.color,
+                          accentColor: dotStyles?.backgroundColor || computedTileStyles.borderColor,
+                        },
+                      }
+                    );
+                  }}
+                  title={event.nom}
+                  style={{
+                    position: "absolute",
+                    top: `${(topInMinutes / 60) * (slotHeight || 35.6)}px`,
+                    height: `${(durationInMinutes / 60) * (slotHeight || 35.6)}px`,
+                    left: `calc(${leftPercent}% + 4px)`,
+                    right: "auto",
+                    width: `calc(${widthPercent}% - 8px)`,
+                  }}
+                >
+                  <span className="event-dot" aria-hidden="true" />
+                  <span className="event-content">
+                    <span className="event-time">{formatEventRange(event)}</span>
+                    <span className="event-name">{event.nom}</span>
+                  </span>
+                </div>
+              );
+            })
+          : calDay.events.map((event) => (
+              <div
+                key={event.id}
+                className="event-tile"
+                onClick={(clickEvent) => {
+                  const tile = clickEvent.currentTarget;
+                  const computedTileStyles = window.getComputedStyle(tile);
+                  const dot = tile.querySelector<HTMLElement>(".event-dot");
+                  const dotStyles = dot ? window.getComputedStyle(dot) : null;
+
+                  onEventClick?.(
+                    { ...event, dateDebut: event.dateDebut, dateFin: event.dateFin },
+                    {
+                      anchorRect: tile.getBoundingClientRect(),
+                      popupTheme: {
+                        backgroundColor: computedTileStyles.backgroundColor,
+                        borderColor: computedTileStyles.borderColor,
+                        textColor: computedTileStyles.color,
+                        accentColor: dotStyles?.backgroundColor || computedTileStyles.borderColor,
+                      },
+                    }
+                  );
+                }}
+                title={event.nom}
+                style={{
+                  position: "relative",
+                }}
+              >
+                <span className="event-dot" aria-hidden="true" />
+                <span className="event-content">
+                  <span className="event-time">{formatEventRange(event)}</span>
+                  <span className="event-name">{event.nom}</span>
+                </span>
+              </div>
+            ))}
       </div>
     </div>
   );
