@@ -36,7 +36,7 @@ export default async function FacturePage({ params }: { params: Promise<{ id: st
           <Link href="/administration/factures">
             <Button variant="ghost" size="sm" icon={<LuArrowLeft />}>Retour</Button>
           </Link>
-          <Heading as="h2">Brouillon — {facture.numero}</Heading>
+          <Heading as="h3" className="text-lg font-semibold">Brouillon - {facture.numero}</Heading>
         </Flex>
         <FactureEditor compagnie={compagnie} initialFacture={facture} />
       </Box>

@@ -44,6 +44,12 @@ export function FactureEditor({
   const router = useRouter();
 
   // Form State — pré-rempli si édition d'un brouillon existant
+  const defaultEcheance = () => {
+    const d = new Date();
+    d.setDate(d.getDate() + 30);
+    return d.toISOString().split("T")[0];
+  };
+
   const [dateEmission, setDateEmission] = useState<string>(
     initialFacture
       ? new Date(initialFacture.dateEmission).toISOString().split("T")[0]
@@ -52,7 +58,7 @@ export function FactureEditor({
   const [dateEcheance, setDateEcheance] = useState<string>(
     initialFacture?.dateEcheance
       ? new Date(initialFacture.dateEcheance).toISOString().split("T")[0]
-      : ""
+      : defaultEcheance()
   );
   const [lieu, setLieu] = useState<string>(
     initialFacture?.lieuFacturation || compagnie.ville || ""
@@ -163,7 +169,7 @@ export function FactureEditor({
           numero: numeroManuel || undefined,
           dateEcheance: new Date(dateEcheance || Date.now()),
           lieuFacturation: lieu,
-          clientNom: clientNom || "Brouillon",
+          clientNom: clientNom,
           clientAdresse,
           clientSiren,
           lignes,
@@ -196,7 +202,7 @@ export function FactureEditor({
     <Flex gap={6} className="h-[calc(100vh-120px)]">
       <Box className="w-1/2 overflow-y-auto pr-2 pb-10" onBlur={refreshPdf} onKeyDown={handleKeyDown}>
         <Stack gap={6}>
-          <Heading as="h2">{initialFacture ? "Éditer le brouillon" : "Nouvelle Facture"}</Heading>
+          {!initialFacture && <Heading as="h2">Nouvelle Facture</Heading>}
 
           <Card className="p-6">
             <Stack gap={4}>
