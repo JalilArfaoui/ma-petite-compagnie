@@ -98,9 +98,7 @@ export function CreateEvenementForm({ onSuccess, onCancel, compagnieId }: Props)
         </Select>
         {/* Format des datetime-local YYYY-MM-DDTHH:mm*/}
         <Field.Root required>
-          <Field.Label>
-            Début
-          </Field.Label>
+          <Field.Label>Début</Field.Label>
           <Input
             name={"dateDebut"}
             type={"datetime-local"}
