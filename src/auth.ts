@@ -65,6 +65,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 droitGestionDroitsMembres: membership.droitGestionDroitsMembres,
                 droitAccesPlanning: membership.droitAccesPlanning,
                 droitGestionPlanning: membership.droitGestionPlanning,
+                droitAccesAdministration: membership.droitAccesAdministration,
               };
             }
           }
@@ -109,6 +110,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               droitGestionDroitsMembres: m0.droitGestionDroitsMembres,
               droitAccesPlanning: m0.droitAccesPlanning,
               droitGestionPlanning: m0.droitGestionPlanning,
+              droitAccesAdministration: m0.droitAccesAdministration,
             };
           } else {
             session.activeCompanyId = token.activeCompanyId as number | null | undefined;
