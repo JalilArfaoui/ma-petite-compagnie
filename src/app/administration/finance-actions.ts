@@ -38,6 +38,14 @@ export type TresorerieData = {
   mouvements: TresorerieMouvement[];
 };
 
+function revaliderPagesFinance() {
+  revalidatePath("/administration");
+  revalidatePath("/administration/recettes");
+  revalidatePath("/administration/depenses");
+  revalidatePath("/administration/equilibre-financier");
+  revalidatePath("/administration/tresorerie");
+}
+
 // ─── Lecture ───
 
 export async function getOperations(type: TypeOperation) {
@@ -149,22 +157,24 @@ export async function getTresorerieReelle(): Promise<TresorerieData> {
 
   let totalEncaisse = 0;
   let totalDepense = 0;
-  const mouvements = operations.map((op) => {
+  const mouvements: TresorerieMouvement[] = [];
+
+  for (const op of operations) {
     if (op.type === "RECETTE") {
       totalEncaisse += op.montant;
     } else {
       totalDepense += op.montant;
     }
 
-    return {
+    mouvements.push({
       id: op.id.toString(),
       nom: op.nom,
       date: op.date.toISOString().split("T")[0],
       typeOp: op.type,
       montant: op.type === "DEPENSE" ? -op.montant : op.montant,
       spectacles: op.spectacles.map((s) => s.titre),
-    };
-  });
+    });
+  }
 
   return {
     soldeActuel: totalEncaisse - totalDepense,
@@ -208,11 +218,7 @@ export async function creerOperation(data: OperationFormData) {
     include: { spectacles: { select: { titre: true } } },
   });
 
-  revalidatePath("/administration");
-  revalidatePath("/administration/recettes");
-  revalidatePath("/administration/depenses");
-  revalidatePath("/administration/equilibre-financier");
-  revalidatePath("/administration/tresorerie");
+  revaliderPagesFinance();
   return {
     success: true,
     operation: {
@@ -267,11 +273,7 @@ export async function modifierOperation(data: OperationFormData) {
     },
   });
 
-  revalidatePath("/administration");
-  revalidatePath("/administration/recettes");
-  revalidatePath("/administration/depenses");
-  revalidatePath("/administration/equilibre-financier");
-  revalidatePath("/administration/tresorerie");
+  revaliderPagesFinance();
   return { success: true };
 }
 
@@ -291,11 +293,7 @@ export async function supprimerOperation(id: number) {
     where: { id },
   });
 
-  revalidatePath("/administration");
-  revalidatePath("/administration/recettes");
-  revalidatePath("/administration/depenses");
-  revalidatePath("/administration/equilibre-financier");
-  revalidatePath("/administration/tresorerie");
+  revaliderPagesFinance();
   return { success: true };
 }
 
@@ -318,10 +316,6 @@ export async function toggleStatutOperation(id: number, actuel: string) {
     data: { statut: nouveauStatut },
   });
 
-  revalidatePath("/administration");
-  revalidatePath("/administration/recettes");
-  revalidatePath("/administration/depenses");
-  revalidatePath("/administration/equilibre-financier");
-  revalidatePath("/administration/tresorerie");
+  revaliderPagesFinance();
   return { success: true };
 }
