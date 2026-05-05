@@ -32,23 +32,23 @@ export const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-black/5 bg-cream-50 xs:max-sm:py-2 sm:max-md:py-3 md:py-4">
+    <header className="sticky top-0 z-50 w-full border-b border-black/5 bg-cream-50">
       <Container className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        <div className="flex xs:max-sm:h-12 sm:max-md:h-14 md:h-16 items-center justify-between xs:max-sm:gap-2 sm:gap-3 md:gap-4">
+        <div className="flex h-14 md:h-16 items-center justify-between gap-3">
           {/* Logo Section */}
           <Link
             href="/"
-            className="flex items-center xs:max-sm:gap-2 sm:gap-3 md:gap-4 hover:opacity-80 transition-opacity"
+            className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity shrink-0"
           >
             <Logo size={28} />
-            <h1 className="font-black leading-[1.1] tracking-tight text-black font-serif xs:max-sm:text-[16px] sm:max-md:text-[18px] md:max-lg:text-[18px] lg:text-[22px]">
+            <h1 className="font-black leading-[1.1] tracking-tight text-black font-serif text-[16px] sm:text-[18px] lg:text-[22px]">
               Ma petite
               <br />
               compagnie
             </h1>
           </Link>
 
-          {/* Navigation Section - Desktop */}
+          {/* Navigation Section - Desktop uniquement */}
           <nav className="hidden md:flex items-center md:gap-6 lg:gap-8 xl:gap-10">
             {navigationItems.map((item) => (
               <Link
@@ -61,30 +61,28 @@ export const Header = () => {
             ))}
           </nav>
 
-          {/* CTA & Burger Section */}
-          <div className="flex items-center xs:max-sm:gap-2 sm:gap-3 md:gap-4">
+          {/* CTA Section - Desktop uniquement */}
+          <div className="hidden md:flex items-center gap-3 shrink-0">
             {!isLoading && (
               <>
                 {session ? (
                   <>
                     {hasMultipleCompanies ? (
-                      <div className="flex items-center gap-2">
-                        <Select
-                          value={session?.activeCompanyId?.toString()}
-                          onValueChange={handleCompanyChange}
-                        >
-                          <Select.Trigger className="w-[200px]">
-                            <Select.Value placeholder="Choisir une compagnie" />
-                          </Select.Trigger>
-                          <Select.Content>
-                            {companies.map((company) => (
-                              <Select.Item key={company.id} value={company.id.toString()}>
-                                {company.nom}
-                              </Select.Item>
-                            ))}
-                          </Select.Content>
-                        </Select>
-                      </div>
+                      <Select
+                        value={session?.activeCompanyId?.toString()}
+                        onValueChange={handleCompanyChange}
+                      >
+                        <Select.Trigger className="w-[200px]">
+                          <Select.Value placeholder="Choisir une compagnie" />
+                        </Select.Trigger>
+                        <Select.Content>
+                          {companies.map((company) => (
+                            <Select.Item key={company.id} value={company.id.toString()}>
+                              {company.nom}
+                            </Select.Item>
+                          ))}
+                        </Select.Content>
+                      </Select>
                     ) : hasNoCompany ? (
                       <Link href="/compagnie/nouveau">
                         <Button
@@ -97,7 +95,7 @@ export const Header = () => {
                         </Button>
                       </Link>
                     ) : (
-                      <Badge variant="red" className="px-4 py-1.5 font-bold text-sm rounded-full">
+                      <Badge variant="red" className="px-4 py-1.5 font-bold text-sm rounded-full max-w-[180px] truncate">
                         {activeCompany?.nom || "Inconnue"}
                       </Badge>
                     )}
@@ -109,7 +107,7 @@ export const Header = () => {
                         icon={<LuUser />}
                         className="border-slate-200 hover:bg-slate-50"
                       >
-                        <span className="hidden sm:inline">Profil</span>
+                        Profil
                       </Button>
                     </Link>
 
@@ -119,26 +117,28 @@ export const Header = () => {
                       onClick={() => signOut({ redirectTo: "/" })}
                       icon={<LuLogOut />}
                     >
-                      <span className="hidden sm:inline">Déconnexion</span>
+                      Déconnexion
                     </Button>
                   </>
                 ) : (
-                  <Button
-                    variant="solid"
-                    icon={<LuLogIn className="xs:max-sm:text-lg sm:max-md:text-base md:text-lg" />}
-                    className="xs:max-sm:px-2 xs:max-sm:py-2 sm:max-md:px-3 sm:max-md:py-2 md:px-4 md:py-3 xs:max-sm:text-xs sm:max-md:text-sm md:text-base"
-                    onClick={() => signIn()}
-                  >
-                    <span className="xs:max-sm:hidden sm:max-md:inline md:inline">Connexion</span>
+                  <Button variant="solid" icon={<LuLogIn />} onClick={() => signIn()}>
+                    Connexion
                   </Button>
                 )}
               </>
             )}
+          </div>
 
-            {/* Burger Menu Button - Mobile */}
+          {/* Mobile : connexion (si déconnecté) + burger */}
+          <div className="flex md:hidden items-center gap-2 shrink-0">
+            {!isLoading && !session && (
+              <Button variant="solid" size="sm" icon={<LuLogIn />} onClick={() => signIn()}>
+                Connexion
+              </Button>
+            )}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 hover:opacity-60 transition-opacity"
+              className="p-2 hover:opacity-60 transition-opacity"
               aria-label="Toggle menu"
             >
               {isMenuOpen ? <LuX className="text-2xl" /> : <LuMenu className="text-2xl" />}
@@ -150,15 +150,62 @@ export const Header = () => {
       {/* Mobile Menu - Sidebar */}
       {isMenuOpen && (
         <>
-          {/* Overlay */}
           <div
-            className="fixed inset-0 bg-black/30 md:hidden z-40"
+            className="fixed inset-0 bg-black/30 z-40"
             onClick={() => setIsMenuOpen(false)}
           />
 
-          {/* Sidebar Menu */}
-          <nav className="fixed top-0 left-0 h-screen w-64 bg-cream-50 shadow-lg z-50 xs:max-sm:pt-16 sm:max-md:pt-20 overflow-y-auto md:hidden">
-            <div className="flex flex-col gap-1 px-4 pb-6">
+          <nav className="fixed top-0 left-0 h-screen w-72 bg-cream-50 shadow-lg z-50 overflow-y-auto">
+            {/* Logo sidebar */}
+            <div className="flex items-center gap-3 px-8 h-14 border-b border-black/10 shrink-0">
+              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity" onClick={() => setIsMenuOpen(false)}>
+                <Logo size={24} />
+                <span className="font-black leading-[1.1] tracking-tight text-black font-serif text-[15px]">
+                  Ma petite<br />compagnie
+                </span>
+              </Link>
+            </div>
+
+            <div className="flex flex-col gap-1 px-4 pb-6 pt-2">
+              {/* Compagnie */}
+              {session && (
+                <div className="px-4 py-3 mb-2 border-b border-black/10">
+                  {hasMultipleCompanies ? (
+                    <Select
+                      value={session?.activeCompanyId?.toString()}
+                      onValueChange={(v) => { handleCompanyChange(v); setIsMenuOpen(false); }}
+                    >
+                      <Select.Trigger className="w-full">
+                        <Select.Value placeholder="Choisir une compagnie" />
+                      </Select.Trigger>
+                      <Select.Content>
+                        {companies.map((company) => (
+                          <Select.Item key={company.id} value={company.id.toString()}>
+                            {company.nom}
+                          </Select.Item>
+                        ))}
+                      </Select.Content>
+                    </Select>
+                  ) : hasNoCompany ? (
+                    <Link href="/compagnie/nouveau" onClick={() => setIsMenuOpen(false)}>
+                      <Button
+                        variant="solid"
+                        size="sm"
+                        icon={<FaTheaterMasks />}
+                        className="bg-primary hover:bg-primary/90 w-full"
+                      >
+                        Créer une compagnie
+                      </Button>
+                    </Link>
+                  ) : (
+                    <Badge variant="red" className="px-4 py-1.5 font-bold text-sm rounded-full max-w-full truncate">
+                      {activeCompany?.nom || "Inconnue"}
+                    </Badge>
+                  )}
+                </div>
+              )}
+
+              {/* Navigation */}
               {navigationItems.map((item) => (
                 <Link
                   key={item}
@@ -169,6 +216,31 @@ export const Header = () => {
                   {item}
                 </Link>
               ))}
+
+              {/* Actions auth */}
+              {session && (
+                <div className="mt-4 pt-4 border-t border-black/10 flex flex-col gap-2">
+                  <Link href="/profil" onClick={() => setIsMenuOpen(false)}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      icon={<LuUser />}
+                      className="border-slate-200 hover:bg-slate-50 w-full"
+                    >
+                      Profil
+                    </Button>
+                  </Link>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => { signOut({ redirectTo: "/" }); setIsMenuOpen(false); }}
+                    icon={<LuLogOut />}
+                    className="w-full"
+                  >
+                    Déconnexion
+                  </Button>
+                </div>
+              )}
             </div>
           </nav>
         </>

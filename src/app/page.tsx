@@ -13,11 +13,11 @@ export default function Home() {
           >
             Gérez votre troupe
           </Heading>
-          <span className="relative inline-block z-10">
-            <span className="absolute bottom-3 xs:max-lg:bottom-2 left-0 w-full h-5 xs:max-lg:h-3 lg:h-4 bg-[#FFE8B4] opacity-80 -z-10 rounded-full scale-105 xs:max-sm:scale-110 "></span>
+          <span className="relative inline-block">
             <Heading as="h2" className="xs:max-md:text-xl md:max-lg:text-4xl lg:max-xl:text-5xl">
               sans faire de drame.
             </Heading>
+            <span className="absolute left-0 -bottom-1 w-full h-3 xs:max-lg:h-2 bg-[#FFE8B4] opacity-80 rounded-full scale-x-105"></span>
           </span>
           <Text className="break-words mt-2 sm:max-md:mt-4 md:mt-6 lg:mt-8 leading-relaxed text-center text-sm sm:text-sm md:text-base lg:text-lg xl:text-2xl xs:max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl">
             L&apos;outil tout-en-un pour les compagnies de théâtre, danse et arts de la rue. Des
