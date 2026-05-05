@@ -1,8 +1,10 @@
 "use client";
 
-import { Button, Card, Table, Heading } from "@/components/ui";
+import { Button, Card, Table, Heading, Pagination } from "@/components/ui";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
+
+const PAGE_SIZE = 20;
 
 const NOM_SPECTACLE = [
   { value: "romeoetjuliette", label: "Roméo et Juliette" },
@@ -38,7 +40,8 @@ export default function PageCachets() {
   const [filtreMembre, setFiltreMembre] = useState("");
   const [filtreSpectacle, setFiltreSpectacle] = useState("");
   const [tri, setTri] = useState<"date" | "montant">("date");
-  const [errors, setErrors] = useState<{ [key: string]: string }>({}); //stocker une erreur par champ
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [page, setPage] = useState(1);
 
   function ajouterCachet(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -133,12 +136,17 @@ export default function PageCachets() {
     ? cachetsFiltresParMembre.filter((c) => c.spectacle === filtreSpectacle)
     : cachetsFiltresParMembre;
 
-  //filtrage par date (décroissant) ou montant (décroissant), (agit uniquement sur cachets de membre x)
-  const cachetsTries = [...cachetsFiltres].sort((a, b) => {
-    if (tri === "date") return b.date.localeCompare(a.date);
-    if (tri === "montant") return b.montant - a.montant;
-    return 0;
-  });
+  const cachetsTries = useMemo(() => {
+    return [...cachetsFiltres].sort((a, b) => {
+      if (tri === "date") return b.date.localeCompare(a.date);
+      if (tri === "montant") return b.montant - a.montant;
+      return 0;
+    });
+  }, [cachetsFiltres, tri]);
+
+  const totalPages = Math.max(1, Math.ceil(cachetsTries.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages);
+  const cachetsPagines = cachetsTries.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
   return (
     <main>
@@ -265,7 +273,10 @@ export default function PageCachets() {
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
               value={filtreMembre}
-              onChange={(e) => setFiltreMembre(e.target.value)}
+              onChange={(e) => {
+                setFiltreMembre(e.target.value);
+                setPage(1);
+              }}
             >
               <option value="">Tous les membres</option>
               {MEMBRES_TROUPE.map((nom) => (
@@ -281,7 +292,10 @@ export default function PageCachets() {
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
               value={filtreSpectacle}
-              onChange={(e) => setFiltreSpectacle(e.target.value)}
+              onChange={(e) => {
+                setFiltreSpectacle(e.target.value);
+                setPage(1);
+              }}
             >
               <option value="">Tous</option>
               {NOM_SPECTACLE.map((spectacle) => (
@@ -297,7 +311,10 @@ export default function PageCachets() {
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
               value={tri}
-              onChange={(e) => setTri(e.target.value as "date" | "montant")}
+              onChange={(e) => {
+                setTri(e.target.value as "date" | "montant");
+                setPage(1);
+              }}
             >
               <option value="date">Date</option>
               <option value="montant">Montant de cachets</option>
@@ -321,7 +338,7 @@ export default function PageCachets() {
             </Table.Head>
 
             <Table.Body>
-              {cachetsTries.map((c) => (
+              {cachetsPagines.map((c) => (
                 <Table.Row key={c.id}>
                   <Table.Cell>
                     {MEMBRES_TROUPE.find((m) => m.value === c.membre)?.label ?? c.membre}
@@ -357,6 +374,9 @@ export default function PageCachets() {
           </Table>
         </Card.Body>
       </Card>
+      {cachetsTries.length > PAGE_SIZE && (
+        <Pagination currentPage={safePage} totalPages={totalPages} onPageChange={setPage} />
+      )}
     </main>
   );
 }
