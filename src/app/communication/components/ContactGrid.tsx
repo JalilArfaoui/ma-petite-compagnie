@@ -21,7 +21,14 @@ export function ContactGrid({
       return (
         <div className="m-1 bg-primary text-white text-center rounded-xl" key={liste.id}>
           <Stack direction="row" justify="start" className="items-center w-30">
-            <Button onClick={() => onListeElementDeleted(contact, i)} size="icon" className="h-5">
+            <Button
+              onClick={(e) => {
+                e.stopPropagation();
+                onListeElementDeleted(contact, i);
+              }}
+              size="icon"
+              className="h-5"
+            >
               X
             </Button>
 

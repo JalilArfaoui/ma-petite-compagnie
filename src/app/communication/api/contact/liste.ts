@@ -27,7 +27,7 @@ export async function supprimerContactDeListe(contact: Contact, nomListe: string
   try {
     const liste = await trouverListeParNom(nomListe);
     if (liste.succes && liste.donnee) {
-      await prisma.listeContact.update({
+      const resultat = await prisma.listeContact.update({
         where: { id: liste.donnee.id },
         data: {
           contacts: {
@@ -37,7 +37,9 @@ export async function supprimerContactDeListe(contact: Contact, nomListe: string
           },
         },
       });
+      return resultOf(true, "", resultat);
     }
+    return resultOf(false, liste.message, null);
   } catch (error: unknown) {
     console.error(error);
     return resultOf(

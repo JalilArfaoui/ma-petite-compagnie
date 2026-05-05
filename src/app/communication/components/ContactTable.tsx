@@ -20,21 +20,28 @@ export function ContactTable({
   const [contacts, setContacts] = useState<ContactWithListes[]>([]);
   const [contactsSelectionne, setContactsSelectionne] = useState<ContactWithListes[]>([]);
 
-  function deleteListeFromContact(contact: ContactWithListes, listeIndex: number) {
-    supprimerContactDeListe(contact, contact.listeContacts[listeIndex].nom);
-    setContacts((prev) =>
-      prev.map((c) => {
-        if (c === contact) {
-          console.log(c);
-          return {
-            ...c,
-            listeContacts: c.listeContacts.filter((_, i) => i !== listeIndex),
-          };
-        }
-        return c;
-      })
-    );
-    console.log(contacts);
+  async function deleteListeFromContact(contact: ContactWithListes, listeIndex: number) {
+    const result = await supprimerContactDeListe(contact, contact.listeContacts[listeIndex].nom);
+    if (result?.succes) {
+      setContacts((prev) =>
+        prev.map((c) => {
+          if (c === contact) {
+            return {
+              ...c,
+              listeContacts: c.listeContacts.filter((_, i) => i !== listeIndex),
+            };
+          }
+          return c;
+        })
+      );
+      toaster.create({
+        type: "success",
+        title: "Suppression liste",
+        description: "La liste a bien été enlevée",
+      });
+    } else {
+      toaster.create({ type: "error", title: "Suppression liste", description: result?.message });
+    }
   }
 
   async function loadListes() {

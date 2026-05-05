@@ -1,8 +1,7 @@
 "use client";
 import { Modal, Button, Toaster, Select } from "@/components/ui";
 import { ListeContact } from "@prisma/client";
-import { trouverListes } from "../api/contact/liste";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 export function GetListe({
   disabled = false,
