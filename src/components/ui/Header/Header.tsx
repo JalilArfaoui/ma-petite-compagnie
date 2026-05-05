@@ -95,7 +95,10 @@ export const Header = () => {
                         </Button>
                       </Link>
                     ) : (
-                      <Badge variant="red" className="px-4 py-1.5 font-bold text-sm rounded-full max-w-[180px] truncate">
+                      <Badge
+                        variant="red"
+                        className="px-4 py-1.5 font-bold text-sm rounded-full max-w-[180px] truncate"
+                      >
                         {activeCompany?.nom || "Inconnue"}
                       </Badge>
                     )}
@@ -150,18 +153,21 @@ export const Header = () => {
       {/* Mobile Menu - Sidebar */}
       {isMenuOpen && (
         <>
-          <div
-            className="fixed inset-0 bg-black/30 z-40"
-            onClick={() => setIsMenuOpen(false)}
-          />
+          <div className="fixed inset-0 bg-black/30 z-40" onClick={() => setIsMenuOpen(false)} />
 
           <nav className="fixed top-0 left-0 h-screen w-72 bg-cream-50 shadow-lg z-50 overflow-y-auto">
             {/* Logo sidebar */}
             <div className="flex items-center gap-3 px-8 h-14 border-b border-black/10 shrink-0">
-              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity" onClick={() => setIsMenuOpen(false)}>
+              <Link
+                href="/"
+                className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                onClick={() => setIsMenuOpen(false)}
+              >
                 <Logo size={24} />
                 <span className="font-black leading-[1.1] tracking-tight text-black font-serif text-[15px]">
-                  Ma petite<br />compagnie
+                  Ma petite
+                  <br />
+                  compagnie
                 </span>
               </Link>
             </div>
@@ -173,7 +179,10 @@ export const Header = () => {
                   {hasMultipleCompanies ? (
                     <Select
                       value={session?.activeCompanyId?.toString()}
-                      onValueChange={(v) => { handleCompanyChange(v); setIsMenuOpen(false); }}
+                      onValueChange={(v) => {
+                        handleCompanyChange(v);
+                        setIsMenuOpen(false);
+                      }}
                     >
                       <Select.Trigger className="w-full">
                         <Select.Value placeholder="Choisir une compagnie" />
@@ -198,7 +207,10 @@ export const Header = () => {
                       </Button>
                     </Link>
                   ) : (
-                    <Badge variant="red" className="px-4 py-1.5 font-bold text-sm rounded-full max-w-full truncate">
+                    <Badge
+                      variant="red"
+                      className="px-4 py-1.5 font-bold text-sm rounded-full max-w-full truncate"
+                    >
                       {activeCompany?.nom || "Inconnue"}
                     </Badge>
                   )}
@@ -233,7 +245,10 @@ export const Header = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => { signOut({ redirectTo: "/" }); setIsMenuOpen(false); }}
+                    onClick={() => {
+                      signOut({ redirectTo: "/" });
+                      setIsMenuOpen(false);
+                    }}
                     icon={<LuLogOut />}
                     className="w-full"
                   >
