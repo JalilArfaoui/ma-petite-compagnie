@@ -2,7 +2,6 @@ import Calendar from "./components/calendar/calendar";
 
 const yearInMS = new Date(2027, 0, 1).getTime() - new Date(2026, 0, 1).getTime();
 
-
 export default function PlanningPage() {
   return (
     <div>
