@@ -13,6 +13,13 @@ export type EvenementBuiltInt = {
     dateFin: number;
 }
 
+type EventPopupTheme = {
+  backgroundColor: string;
+  borderColor: string;
+  textColor: string;
+  accentColor: string;
+};
+
 export type CalendarDay = {
     day: number;
     month: number;
@@ -23,8 +30,14 @@ export type CalendarDay = {
 }
 
 interface EventCalendarProps {
-    events: EvenementBuiltInt[];
-    onEventClick?: (event: EvenementBuiltInt) => void;
+  events: EvenementBuiltInt[];
+  onEventClick?: (
+    event: EvenementBuiltInt,
+    context?: {
+      anchorRect: DOMRect;
+      popupTheme?: EventPopupTheme;
+    }
+  ) => void;
 }
 
 const WEEKDAYS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];

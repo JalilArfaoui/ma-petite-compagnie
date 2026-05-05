@@ -11,11 +11,22 @@ export default function MonthlyTile({
     onEventClick,
     slotHeight,
 }: {
-    calDay: CalendarDay;
-    index: number;
-    onEventClick?: (event: EvenementBuiltInt) => void;
-    viewType: 'monthly' | 'weekly';
-    slotHeight?: number;
+  calDay: CalendarDay;
+  index: number;
+  onEventClick?: (
+    event: EvenementBuiltInt,
+    context?: {
+      anchorRect: DOMRect;
+      popupTheme?: {
+        backgroundColor: string;
+        borderColor: string;
+        textColor: string;
+        accentColor: string;
+      };
+    }
+  ) => void;
+  viewType: "monthly" | "weekly";
+  slotHeight?: number;
 }) {
 
 

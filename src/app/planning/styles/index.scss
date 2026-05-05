@@ -64,6 +64,14 @@ body {
   color: #111827;
 }
 
+.event-details-popup-accent {
+  display: block;
+  width: 40px;
+  height: 4px;
+  border-radius: 999px;
+  margin-bottom: 10px;
+}
+
 .event-details-popup-title {
   margin: 0 26px 10px 0;
   font-size: 14px;
@@ -97,7 +105,8 @@ body {
   height: 24px;
   border: none;
   background: transparent;
-  color: #4b5563;
+  color: inherit;
+  opacity: 0.75;
   border-radius: 999px;
   cursor: pointer;
   font-size: 18px;
@@ -105,7 +114,8 @@ body {
 }
 
 .event-details-popup-close:hover {
-  background: #f3f4f6;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 1;
 }
 
 .quick-calendar-panel {
