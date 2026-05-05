@@ -147,6 +147,19 @@ enum EtatObjet {
   CASSE
 }
 
+//partie groupe administration
+
+enum TypeOperation {
+  RECETTE
+  DEPENSE
+}
+
+enum SourceOperation {
+  MANUEL
+  FACTURE
+  CACHET
+}
+
 model CategorieObjet {
   id         Int         @id @default(autoincrement())
   nom        String      @unique
@@ -181,6 +194,7 @@ model Spectacle {
   representations        Representation[]
   besoins                BesoinSpectacle[]
   cachets                Cachet[]
+  operations             OperationFinanciere[]
 }
 
 model BesoinSpectacle {
@@ -240,5 +254,30 @@ model Cachet {
   spectacle    Spectacle @relation(fields: [spectacleId], references: [id], onDelete: Cascade)
   montant      Int
   note         String?
+}
+
+model OperationFinanciere {
+  id          Int             @id @default(autoincrement())
+  nom         String
+  montant     Float
+  date        DateTime
+  type        TypeOperation
+  statut      String          @default("en_attente") // paye, en_attente
+  source      SourceOperation @default(MANUEL)
+  categorie   String?         // Ex: "Subvention", "Matériel", etc.
+  fichier     String?
+
+  // Lien implicite many-to-many avec les spectacles
+  spectacles  Spectacle[]
+
+  // Préparé pour les futures FK (branches collègues)
+  factureId   Int?            // ID de la facture source (si applicable)
+  cachetId    Int?            // ID du cachet source (si applicable)
+
+  compagnieId Int
+  compagnie   Compagnie       @relation(fields: [compagnieId], references: [id])
+
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
 }
 

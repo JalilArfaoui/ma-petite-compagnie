@@ -631,6 +631,9 @@ async function main() {
   }
   console.log(`✅ ${reservationsData.length} réservations d'objets`);
 
+  //nettoyage pour éviter les doublons
+  await prisma.operationFinanciere.deleteMany({});
+
   // -- Utilisateurs (Membres) --
   const usersData = [
     {
@@ -693,6 +696,9 @@ async function main() {
     { userId: users[4].id, compagnieId: compagnies[2].id },
     { userId: users[5].id, compagnieId: compagnies[0].id },
   ];
+
+  //helper pour trouver un spectacle par titre (parmi ceux du seed)
+  const findSpectacle = (titre: string) => spectacles.find((s) => s.titre === titre);
 
   const companyMembers = [];
   for (const m of companyMembersData) {
@@ -803,15 +809,133 @@ async function main() {
   }
   console.log(`✅ ${cachetData.length} cachets`);
 
-  console.log("Seed terminé !");
-}
+  // -- Recettes et dépenses --
+  const operationsData = [
+    // -- Recettes --
+    {
+      nom: "Fonds de roulement initial",
+      montant: 10600.83,
+      date: new Date("2025-12-01"),
+      type: "RECETTE" as const,
+      categorie: "financement",
+      statut: "paye",
+      compagnieId: compagnies[0].id,
+      spectacles: [],
+    },
+    {
+      nom: "Théâtre municipal des Lices",
+      montant: 750.5,
+      date: new Date("2026-01-27"),
+      type: "RECETTE" as const,
+      categorie: "facture",
+      statut: "paye",
+      compagnieId: compagnies[0].id,
+      spectacles: ["Le Songe d'une nuit d'été"],
+    },
+    {
+      nom: "Mairie Gaillac",
+      montant: 300.25,
+      date: new Date("2026-01-17"),
+      type: "RECETTE" as const,
+      categorie: "facture",
+      statut: "paye",
+      compagnieId: compagnies[0].id,
+      spectacles: [],
+    },
+    {
+      nom: "Théâtre de Cordes",
+      montant: 450,
+      date: new Date("2026-02-10"),
+      type: "RECETTE" as const,
+      categorie: "facture",
+      statut: "en_attente",
+      compagnieId: compagnies[0].id,
+      spectacles: ["Carmen revisitée", "Pestacle"],
+    },
+    {
+      nom: "DRAC Occitanie",
+      montant: 5000,
+      date: new Date("2026-01-10"),
+      type: "RECETTE" as const,
+      categorie: "financement",
+      statut: "en_attente",
+      compagnieId: compagnies[0].id,
+      spectacles: ["Le Songe d'une nuit d'été"],
+    },
+    {
+      nom: "Ville d'Albi",
+      montant: 1150,
+      date: new Date("2026-01-15"),
+      type: "RECETTE" as const,
+      categorie: "financement",
+      statut: "paye",
+      compagnieId: compagnies[0].id,
+      spectacles: ["Carmen revisitée"],
+    },
+    {
+      nom: "Conseil départemental",
+      montant: 750,
+      date: new Date("2026-01-20"),
+      type: "RECETTE" as const,
+      categorie: "financement",
+      statut: "en_attente",
+      compagnieId: compagnies[0].id,
+      spectacles: ["Pestacle"],
+    },
 
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-    await pool.end();
-  });
+    // -- Dépenses --
+    {
+      nom: "Décorations scène",
+      montant: 400,
+      date: new Date("2026-01-22"),
+      type: "DEPENSE" as const,
+      categorie: null,
+      statut: "paye",
+      compagnieId: compagnies[0].id,
+      spectacles: ["Pestacle"],
+    },
+    {
+      nom: "Loyer local de répét",
+      montant: 128,
+      date: new Date("2026-01-22"),
+      type: "DEPENSE" as const,
+      categorie: null,
+      statut: "paye",
+      compagnieId: compagnies[0].id,
+      spectacles: [],
+    },
+  ];
+
+  const operations: OperationFinanciere[] = [];
+  for (const op of operationsData) {
+    const { spectacles: spectacleTitres, ...opData } = op;
+    const spectacleConnections = spectacleTitres
+      .map((titre) => findSpectacle(titre))
+      .filter(Boolean)
+      .map((s) => ({ id: s!.id }));
+
+    operations.push(
+      await prisma.operationFinanciere.create({
+        data: {
+          ...opData,
+          spectacles: {
+            connect: spectacleConnections,
+          },
+        },
+      })
+    );
+    console.log(`✅ ${operations.length} opérations financières`);
+
+    console.log("Seed terminé !");
+  }
+
+  main()
+    .catch((e) => {
+      console.error(e);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+      await pool.end();
+    });
+}
