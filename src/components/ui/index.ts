@@ -32,3 +32,4 @@ export * from "./SearchBar/SearchBar";
 export * from "./Modal/Modal";
 export * from "./FileUpload/FileUpload";
 export * from "./Pagination/Pagination";
+export * from "./Field/Field";
