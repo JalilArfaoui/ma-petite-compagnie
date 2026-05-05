@@ -20,6 +20,7 @@ export function GetListe({
       close.current?.click();
     }
   }
+
   return (
     <Modal>
       <Modal.Trigger asChild>
