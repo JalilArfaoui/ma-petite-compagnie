@@ -25,8 +25,6 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
-    "@chakra-ui/react": "^3.31.0",
-    "@emotion/react": "^11.14.0",
     "@floating-ui/core": "^1.7.4",
     "@floating-ui/dom": "^1.7.5",
     "@floating-ui/react-dom": "^2.1.7",
@@ -46,7 +44,6 @@
     "next-themes": "^0.4.6",
     "pg": "^8.17.1",
     "react": "19.2.3",
-    "react-auth": "^1.0.0",
     "react-dom": "19.2.3",
     "react-icons": "^5.5.0",
     "next-auth": "^5.0.0-beta.30",

@@ -1,6 +1,7 @@
 
 import isToday from "../methods/isToday";
 import { CalendarDay, EvenementBuiltInt } from "../calendar";
+import { placerEvenementsEnColonne } from "./placerEvenementsEnColonne";
 
 
 
