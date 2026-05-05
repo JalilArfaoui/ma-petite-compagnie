@@ -2,7 +2,7 @@
 import { Contact } from "@prisma/client";
 export type ContactInformation = Omit<Contact, "id" | "date_creation">;
 import { prisma } from "@/lib/prisma";
-import { resultOf, validerContact } from "../../utils/helper";
+import { Result, resultOf, validerContact } from "../../utils/helper";
 export async function contactAvecMemeEmail(email: string) {
   const contact = await prisma.contact.findFirst({ where: { email: email } });
   return contact ?? false;
@@ -27,7 +27,7 @@ export async function creerContact(contact: ContactInformation) {
     });
     return resultOf(true, "", nouveauContact);
   } catch (error: unknown) {
-    console.log(error);
+    console.error(error);
     return resultOf(false, "Une erreur est survenue lors de la création du contact", null);
   }
 }
@@ -100,7 +100,29 @@ export async function supprimerContactsAvecEmail(email: string) {
     return resultOf(false, "Le contact n'a pas pu être supprimé", null);
   }
 }
+export type ContactWithListes = Contact & {
+  listeContacts: {
+    id: number;
+    nom: string;
+  }[];
+};
+export async function listerContactsAvecListes(
+  paginationTaille: number = 10,
+  page: number = 1
+): Promise<Result<null> | Result<ContactWithListes[]>> {
+  if (paginationTaille < 1 || page < 1) {
+    paginationTaille = 10;
+    page = 1;
+  }
 
+  const skip = paginationTaille * (page - 1);
+  const contacts = await prisma.contact.findMany({
+    take: paginationTaille,
+    skip: skip,
+    include: { listeContacts: true },
+  });
+  return resultOf(true, "", contacts);
+}
 export async function trouverParIdContact(id: number) {
   const contact = await prisma.contact.findUnique({ where: { id: id } });
   if (!contact) {

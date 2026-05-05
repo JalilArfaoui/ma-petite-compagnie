@@ -1,23 +1,54 @@
 import { useEffect, useState } from "react";
-import { listerContacts, supprimerContact } from "../api/contact/contact";
+import {
+  ContactWithListes,
+  listerContactsAvecListes,
+  supprimerContact,
+} from "../api/contact/contact";
 import { Box, Button, Stack, Table, Text, Toaster, toaster } from "@/components/ui";
-import { Contact } from "@prisma/client";
+import { Contact, ListeContact } from "@prisma/client";
 import { ContactGrid } from "./ContactGrid";
+import { CreateListe } from "./CreateListe";
+import { GetListe } from "./GetListe";
+import { creerListe } from "../api/contact/liste";
 
 export function ContactTable() {
-  const [contacts, setContacts] = useState<Contact[]>([]);
-  const [contactsSelectionne, setContactsSelectionne] = useState<Contact[]>([]);
+  const [contacts, setContacts] = useState<ContactWithListes[]>([]);
+  const [contactsSelectionne, setContactsSelectionne] = useState<ContactWithListes[]>([]);
+  async function loadContacts() {
+    const resultat = await listerContactsAvecListes(30, 1);
+    if (resultat.succes) {
+      setContacts(resultat.donnee ?? []);
+    } else {
+      toaster.create({ description: resultat.message, type: "error" });
+    }
+  }
   useEffect(() => {
-    async function loadContact() {
-      const resultat = await listerContacts(30, 1);
+    async function loadContacts() {
+      const resultat = await listerContactsAvecListes(30, 1);
       if (resultat.succes) {
         setContacts(resultat.donnee ?? []);
       } else {
         toaster.create({ description: resultat.message, type: "error" });
       }
     }
-    loadContact();
+    loadContacts();
   }, []);
+  loadContacts();
+  async function associerListe(listes: ListeContact[]) {
+    const resultats = await Promise.all(
+      listes.map((liste) => creerListe(liste.nom, contactsSelectionne))
+    );
+    const toutesReussies = resultats.every((r) => r.succes);
+    if (toutesReussies) {
+      toaster.create({ type: "success", title: "Les contacts ont bien été associés à la liste" });
+      // mise à jour de l'état ici
+    } else {
+      const erreur = resultats.find((r) => !r.succes);
+      toaster.create({ type: "error", title: erreur?.message });
+    }
+    loadContacts();
+    setContactsSelectionne([]);
+  }
 
   async function supprimerUnContact(contact: Contact) {
     const resultat = await supprimerContact(contact.id);
@@ -43,7 +74,7 @@ export function ContactTable() {
     });
     deselectAll();
   }
-  function updateSelected(contact: Contact) {
+  function updateSelected(contact: ContactWithListes) {
     setContactsSelectionne((prev) => {
       if (prev.includes(contact)) {
         return prev.filter((c) => c !== contact);
@@ -65,13 +96,19 @@ export function ContactTable() {
     });
   }
   return (
-    <Box className="">
+    <Box>
       <Toaster />
       <Stack direction="row" gap={2} className="justify-between">
-        <Stack direction="row" gap={2} className="items-center" justify="start">
+        <Stack direction="row" gap={2} className="items-end" justify="start">
           <Text className="h-fit font-bold text-2xl">Liste de contacts</Text>
         </Stack>
-        <Stack direction="row" gap={2} justify="end">
+
+        <Stack
+          direction="row"
+          className="grid grid-cols-1 sm:grid-cols-2 flex-wrap "
+          gap={2}
+          justify="end"
+        >
           <Button
             className=" border-solid "
             variant={"outline"}
@@ -81,6 +118,15 @@ export function ContactTable() {
           >
             Supprimer
           </Button>
+          <GetListe
+            disabled={contactsSelectionne.length <= 0}
+            onGetListe={(a) => associerListe(a)}
+          ></GetListe>
+          <CreateListe
+            onCreatedListe={() => loadContacts()}
+            disabled={contactsSelectionne.length <= 0}
+            getContacts={() => contactsSelectionne}
+          ></CreateListe>
           {contactsSelectionne.length == 0 ? (
             <Button variant="outline" size={"sm"} onClick={() => selectAll()}>
               Tout sélectionner
@@ -100,6 +146,7 @@ export function ContactTable() {
               <Table.Cell className=" text-[10px] md:text-[16px]">Prénom</Table.Cell>
               <Table.Cell className="text-[10px] md:text-[16px]">Email</Table.Cell>
               <Table.Cell className=" text-[10px] md:text-[16px]">Téléphone</Table.Cell>
+              <Table.Cell className=" text-[10px] md:text-[16px]">Listes</Table.Cell>
               <Table.Cell className=" text-[10px] md:text-[16px]">Ville</Table.Cell>
               <Table.Cell className=" text-[10px] md:text-[16px]">Lieu</Table.Cell>
               <Table.Cell className="text-[10px] md:text-[16px] max-w-75">Notes</Table.Cell>
