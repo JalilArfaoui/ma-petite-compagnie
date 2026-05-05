@@ -925,8 +925,8 @@ async function main() {
         },
       })
     );
-    console.log(`✅ ${operations.length} opérations financières`);
   }
+  console.log(`✅ ${operations.length} opérations financières`);
 
   console.log("Seed terminé !");
 }

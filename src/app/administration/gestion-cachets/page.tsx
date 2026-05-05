@@ -56,7 +56,7 @@ export default function PageCachets() {
   const [editId, setEditId] = useState<number | null>(null);
   const [filtreMembre, setFiltreMembre] = useState<number | null>(null);
   const [filtreSpectacle, setFiltreSpectacle] = useState<number | null>(null);
-  const [sortBy, setSortBy] = useState<
+  const [triPar, setTriPar] = useState<
     "none" | "dateCroissante" | "dateDecroissante" | "montantCroissant" | "montantDecroissant"
   >("none");
   const [errors, setErrors] = useState<{ [key: string]: string }>({}); //stocker une erreur par champ
@@ -239,7 +239,7 @@ export default function PageCachets() {
 
   //filtrage par date ou montant avec direction croissante/décroissante
   const cachetsTries = [...cachetsFiltres].sort((a, b) => {
-    switch (sortBy) {
+    switch (triPar) {
       case "dateCroissante":
         return a.date.localeCompare(b.date);
       case "dateDecroissante":
@@ -423,9 +423,9 @@ export default function PageCachets() {
             <label>Options de tri</label>
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
-              value={sortBy}
+              value={triPar}
               onChange={(e) => {
-                setSortBy(e.target.value as typeof sortBy);
+                setTriPar(e.target.value as typeof triPar);
                 //setPage(1);
               }}
             >
