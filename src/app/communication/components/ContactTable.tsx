@@ -33,16 +33,16 @@ export function ContactTable({
       })
     );
   }
-  async function loadContact() {
+  async function loadContacts() {
     const resultat = await getContacts(paginationTaille, page);
     setContacts(resultat ?? []);
   }
   useEffect(() => {
-    async function loadContact() {
+    async function loadContacts() {
       const resultat = await getContacts(paginationTaille, page);
       setContacts(resultat ?? []);
     }
-    loadContact();
+    loadContacts();
   }, [keyReload, page, getContacts]);
 
   function changerPage(page: number) {
