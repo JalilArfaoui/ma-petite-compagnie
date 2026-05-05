@@ -33,18 +33,21 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET(req:NextRequest){
-  try{
+export async function GET(req: NextRequest) {
+  try {
     const { searchParams } = new URL(req.url);
     const idCompagnie = Number(searchParams.get("idCompagnie"));
     if (!idCompagnie) {
-      return NextResponse.json({ message: "L'id de la compagnie n'est pas récupéré" }, { status: 400 });
+      return NextResponse.json(
+        { message: "L'id de la compagnie n'est pas récupéré" },
+        { status: 400 }
+      );
     }
-    const lieux = await  prisma.lieu.findMany({
-      where:{
-        idCompagnie:idCompagnie
-      }
-    })
+    const lieux = await prisma.lieu.findMany({
+      where: {
+        idCompagnie: idCompagnie,
+      },
+    });
     return NextResponse.json(lieux, { status: 200 });
   } catch (error) {
     console.error(error);
