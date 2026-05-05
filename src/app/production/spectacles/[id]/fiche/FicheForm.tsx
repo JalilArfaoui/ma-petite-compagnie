@@ -30,11 +30,19 @@ export default function FicheForm({
 }) {
   const isEdit = !!fiche;
   const [sections, setSections] = useState<Section[]>(() =>
-    isEdit ? parseSections(fiche!.texte) : []
+    isEdit ? parseSections(fiche!.texte) : [{ id: 1, title: "Durée du spectacle :", body: "" },
+                                            { id: 2, title: "Scénographie :", body: "" },
+                                            { id: 3, title: "Espace scénique :", body: "" },
+                                            { id: 4, title: "Temps d'installation :", body: "" },
+                                            { id: 5, title: "Sonorisation :", body: "" },
+                                            { id: 6, title: "Position du public :", body: "" },
+                                            { id: 7, title: "Jauge maximum :", body: "" }
+
+    ]
   );
   const [confirmeSuppr, setConfirmeSuppr] = useState(false);
   const nextId = useRef(
-    isEdit ? parseSections(fiche!.texte).length + 1 : 1
+    isEdit ? parseSections(fiche!.texte).length + 1 : 8
   );
 
   const add = () =>
@@ -162,6 +170,7 @@ export default function FicheForm({
                 >
                   Supprimer
                 </button>
+                
               </form>
               <button
                 type="button"
