@@ -125,6 +125,7 @@ export async function listerContactsAvecListes(
     return resultOf(false, "Impossible de récuperer les contacts de la liste", null);
   }
 }
+
 export async function listerContactsDansListe(
   liste: ListeContact,
   paginationTaille: number = 10,
