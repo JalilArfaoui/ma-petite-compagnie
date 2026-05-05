@@ -112,12 +112,15 @@ model Contact {
   role    Role?
   email String? @unique
   tel String?
-
   notes String?
   ville String?
   lieu String?
   date_creation DateTime @default(now())
   listeContacts ListeContact[]
+  date_relance  DateTime?
+  note_relance  String?
+  tags          Tag[]
+  echanges      Echange[]
 }
 // partie groupe production
 
@@ -223,5 +226,29 @@ model ReservationObjet {
   objet            Objet          @relation(fields: [objetId], references: [id], onDelete: Cascade)
   representationId Int
   representation   Representation @relation(fields: [representationId], references: [id], onDelete: Cascade)
+}
+
+enum TypeEchange {
+  EMAIL
+  APPEL
+  RENCONTRE
+  COURRIER
+  AUTRE
+}
+
+model Tag {
+  id       Int       @id @default(autoincrement())
+  nom      String    @unique
+  couleur  String    @default("#6366f1")
+  contacts Contact[]
+}
+
+model Echange {
+  id          Int          @id @default(autoincrement())
+  contactId   Int
+  contact     Contact      @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  type        TypeEchange
+  description String
+  date        DateTime     @default(now())
 }
 
