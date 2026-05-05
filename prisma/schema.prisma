@@ -36,6 +36,7 @@ model Compagnie {
   lieuxEvenement Lieu[]
   spectacles Spectacle[] @relation("SpectaclesCompagnie")
   objets Objet[] @relation("ObjetsCompagnie")
+  operations OperationFinanciere[]
 }
 
 model Evenement {
@@ -90,6 +91,7 @@ model CompanyMember {
   droitGestionDroitsMembres  Boolean @default(false)
   droitAccesPlanning         Boolean @default(false)
   droitGestionPlanning       Boolean @default(false)
+  droitAccesAdministration   Boolean @default(false)
 
   @@unique([userId, compagnieId])
 }
@@ -176,6 +178,7 @@ model Spectacle {
   ficheTechnique         FicheTechnique?
   representations        Representation[]
   besoins                BesoinSpectacle[]
+  operations             OperationFinanciere[]
 }
 
 model BesoinSpectacle {
@@ -226,3 +229,40 @@ model ReservationObjet {
   representation   Representation @relation(fields: [representationId], references: [id], onDelete: Cascade)
 }
 
+// Partie groupe Finance
+
+enum TypeOperation {
+  RECETTE
+  DEPENSE
+}
+
+enum SourceOperation {
+  MANUEL
+  FACTURE
+  CACHET
+}
+
+model OperationFinanciere {
+  id          Int             @id @default(autoincrement())
+  nom         String
+  montant     Float
+  date        DateTime
+  type        TypeOperation
+  statut      String          @default("en_attente") // paye, en_attente
+  source      SourceOperation @default(MANUEL)
+  categorie   String?         // Ex: "Subvention", "Matériel", etc.
+  fichier     String?
+
+  // Lien implicite many-to-many avec les spectacles
+  spectacles  Spectacle[]
+
+  // Préparé pour les futures FK (branches collègues)
+  factureId   Int?            // ID de la facture source (si applicable)
+  cachetId    Int?            // ID du cachet source (si applicable)
+
+  compagnieId Int
+  compagnie   Compagnie       @relation(fields: [compagnieId], references: [id])
+
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}

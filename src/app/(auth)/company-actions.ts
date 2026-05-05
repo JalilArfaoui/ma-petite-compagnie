@@ -79,6 +79,9 @@ export async function addMemberByEmail(formData: FormData) {
             memberOrError.droitAccesPlanning && formData.get("droitAccesPlanning") === "true",
           droitGestionPlanning:
             memberOrError.droitGestionPlanning && formData.get("droitGestionPlanning") === "true",
+          droitAccesAdministration:
+            memberOrError.droitAccesAdministration &&
+            formData.get("droitAccesAdministration") === "true",
         }),
       },
     });
@@ -210,6 +213,9 @@ export async function updateMemberRights(formData: FormData) {
           memberOrError.droitAccesPlanning && formData.get("droitAccesPlanning") === "true",
         droitGestionPlanning:
           memberOrError.droitGestionPlanning && formData.get("droitGestionPlanning") === "true",
+        droitAccesAdministration:
+          memberOrError.droitAccesAdministration &&
+          formData.get("droitAccesAdministration") === "true",
       },
     });
     revalidatePath(`/compagnie/${compagnieId}`);
@@ -241,6 +247,7 @@ export async function createCompany(formData: FormData) {
             droitGestionDroitsMembres: true,
             droitAccesPlanning: true,
             droitGestionPlanning: true,
+            droitAccesAdministration: true,
           },
         },
       },
