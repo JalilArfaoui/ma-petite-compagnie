@@ -938,5 +938,16 @@ async function main() {
     .finally(async () => {
       await prisma.$disconnect();
       await pool.end();
-    });
+  });
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+    await pool.end();
+  });
 }
