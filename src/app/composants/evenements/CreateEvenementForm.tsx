@@ -1,12 +1,9 @@
-"use client";
-
-import { SubmitEventHandler, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Evenement } from "@prisma/client";
-import { Box, Button, Input, Select, SimpleGrid, Modal, Field } from "@/components/ui";
+import { Box, Button, Input, Select, Modal, Field } from "@/components/ui";
 import { CreateLieuForm } from "@/app/composants/lieux/CreateLieuForm";
 import { CreateCategorieForm } from "@/app/composants/categories/CreateCategorieForm";
 import { creerEvenement } from "@/app/actions/evenement";
-import { DialogContent, DialogTitle } from "@radix-ui/react-dialog";
 import { getCategories } from "@/app/actions/categorie";
 import { getLieux } from "@/app/actions/lieu";
 
@@ -103,7 +100,6 @@ export function CreateEvenementForm({ onSuccess, onCancel, compagnieId }: Props)
         <Field.Root required>
           <Field.Label>
             Début
-            {/*<Field.RequiredIndicator />*/}
           </Field.Label>
           <Input
             name={"dateDebut"}
@@ -114,7 +110,7 @@ export function CreateEvenementForm({ onSuccess, onCancel, compagnieId }: Props)
           />
         </Field.Root>
         <Field.Root required>
-          <Field.Label>Fin {/*<Field.RequiredIndicator />*/}</Field.Label>
+          <Field.Label>Fin</Field.Label>
           <Input
             name={"dateFin"}
             type={"datetime-local"}
@@ -152,18 +148,10 @@ export function CreateEvenementForm({ onSuccess, onCancel, compagnieId }: Props)
           <Box>
             <Button onClick={() => setShowCreateCategorie(true)}>+</Button>
           </Box>
-          {/*</GridItem>
-        </SimpleGrid>*/}
         </Select>
         {/* TODO pouvoir sélectionner des participants */}
-        {/*<SimpleGrid columns={{ base: 3, md: 3 }}>
-          <GridItem colSpan={{ base: 1, md: 1 }}>*/}
         <Button onClick={onCancel}>Annuler</Button>
-        {/*}</GridItem>
-          <GridItem colSpan={{ base: 1, md: 1 }}>*/}
         <Button type={"submit"}>Créer</Button>
-        {/*}</GridItem>
-      </SimpleGrid>*/}
       </form>
       {showCreateLieu && (
         <Modal open={showCreateLieu} onOpenChange={setShowCreateLieu}>

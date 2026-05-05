@@ -1,7 +1,4 @@
-"use server";
-
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
 
 export async function creerLieu(datas: FormData) {
   const libelle = datas.get("libelle") as string;
