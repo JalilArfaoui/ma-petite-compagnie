@@ -25,7 +25,7 @@ export function ContactTable({
     setContacts(resultat ?? []);
     loadListes();
   }
-  /** Use callback ne */
+  /** Use callback ne permet pas de faire l'appel de cette fonction dans use effect*/
   async function loadListes() {
     const resultat = await trouverListes();
     if (resultat.succes) {
