@@ -1,9 +1,9 @@
-import { getFactures } from "@/app/actions/finance";
+import { getFactures, supprimerBrouillon } from "@/app/actions/finance";
 import { Box, Button, Card, Container, Flex, Heading, Text, Badge } from "@/components/ui";
 import { Table } from "@/components/ui/Table/Table";
 import { FactureStatus } from "@prisma/client";
 import Link from "next/link";
-import { LuPlus, LuFileText } from "react-icons/lu";
+import { LuPlus, LuFileText, LuTrash2 } from "react-icons/lu";
 
 function getStatusBadge(status: FactureStatus) {
   switch (status) {
@@ -50,14 +50,14 @@ export default async function FacturesPage() {
                 <Table.Header>Client</Table.Header>
                 <Table.Header>Date d'émission</Table.Header>
                 <Table.Header>Échéance</Table.Header>
-                <Table.Header>Montant HT</Table.Header>
+                <Table.Header>Montant</Table.Header>
                 <Table.Header>Statut</Table.Header>
                 <Table.Header className="text-right">Actions</Table.Header>
               </Table.Row>
             </Table.Head>
             <Table.Body>
               {factures.map((facture) => {
-                const montantHT = facture.lignes.reduce(
+                const montant = facture.lignes.reduce(
                   (acc, ligne) => acc + ligne.quantite * ligne.prixUnitaireHT,
                   0
                 );
@@ -68,12 +68,21 @@ export default async function FacturesPage() {
                     <Table.Cell>{facture.clientNom}</Table.Cell>
                     <Table.Cell>{facture.dateEmission.toLocaleDateString("fr-FR")}</Table.Cell>
                     <Table.Cell>{facture.dateEcheance.toLocaleDateString("fr-FR")}</Table.Cell>
-                    <Table.Cell>{montantHT.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}</Table.Cell>
+                    <Table.Cell>{montant.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}</Table.Cell>
                     <Table.Cell>{getStatusBadge(facture.status)}</Table.Cell>
                     <Table.Cell className="text-right">
-                      <Link href={`/administration/factures/${facture.id}`}>
-                        <Button variant="ghost" size="sm">Voir</Button>
-                      </Link>
+                      <Flex gap={2} justify="end">
+                        <Link href={`/administration/factures/${facture.id}`}>
+                          <Button variant="ghost" size="sm">Voir</Button>
+                        </Link>
+                        {facture.status === "BROUILLON" && (
+                          <form action={supprimerBrouillon.bind(null, facture.id)}>
+                            <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-700" type="submit">
+                              <LuTrash2 size={16} />
+                            </Button>
+                          </form>
+                        )}
+                      </Flex>
                     </Table.Cell>
                   </Table.Row>
                 );

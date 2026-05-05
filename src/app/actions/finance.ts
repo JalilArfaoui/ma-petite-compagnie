@@ -86,8 +86,17 @@ export async function creerFacture(data: CreateFactureData) {
     });
   });
 
+  const created = await prisma.facture.findFirst({
+    where: { compagnieId },
+    orderBy: { createdAt: "desc" },
+  });
+
   revalidatePath("/administration/factures");
-  redirect("/administration/factures");
+  if (data.estBrouillon && created) {
+    redirect(`/administration/factures/${created.id}`);
+  } else {
+    redirect("/administration/factures");
+  }
 }
 
 export async function updateFacture(id: number, data: CreateFactureData) {
@@ -151,6 +160,23 @@ export async function updateFacture(id: number, data: CreateFactureData) {
       },
     });
   });
+
+  revalidatePath("/administration/factures");
+  redirect("/administration/factures");
+}
+
+export async function supprimerBrouillon(id: number) {
+  const session = await auth();
+  if (!session?.activeCompanyId) throw new Error("Non autorisé");
+
+  const facture = await prisma.facture.findUnique({
+    where: { id, compagnieId: session.activeCompanyId },
+  });
+
+  if (!facture) throw new Error("Facture introuvable");
+  if (facture.status !== "BROUILLON") throw new Error("Seuls les brouillons peuvent être supprimés");
+
+  await prisma.facture.delete({ where: { id } });
 
   revalidatePath("/administration/factures");
   redirect("/administration/factures");

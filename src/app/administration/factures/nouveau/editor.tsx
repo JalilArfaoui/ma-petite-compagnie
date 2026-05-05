@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition, useEffect, useCallback, useRef } from "react";
-import dynamic from "next/dynamic";
 import {
   Box,
   Button,
@@ -14,11 +13,12 @@ import {
   SimpleGrid,
 } from "@/components/ui";
 import { toast } from "sonner";
-import { Compagnie } from "@prisma/client";
+import { Compagnie, Facture, LigneFacture } from "@prisma/client";
 import { generateFacturePDF } from "@/lib/pdf/facture";
-import { creerFacture } from "@/app/actions/finance";
-import { LuPlus, LuTrash2, LuSave } from "react-icons/lu";
+import { creerFacture, updateFacture } from "@/app/actions/finance";
+import { LuPlus, LuTrash2, LuSave, LuCheck } from "react-icons/lu";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 type LigneType = "PRESTATION" | "FRAIS" | "REDUCTION";
 
@@ -30,31 +30,66 @@ type LigneForm = {
   type: LigneType;
 };
 
-export function FactureEditor({ compagnie }: { compagnie: Compagnie }) {
+export type FactureComplete = Facture & { lignes: LigneFacture[] };
+
+export function FactureEditor({
+  compagnie,
+  initialFacture,
+}: {
+  compagnie: Compagnie;
+  initialFacture?: FactureComplete;
+}) {
   const [isPending, startTransition] = useTransition();
   const [hasAttemptedSave, setHasAttemptedSave] = useState(false);
+  const router = useRouter();
 
-  // Form State
-  const [dateEmission, setDateEmission] = useState<string>(new Date().toISOString().split("T")[0]);
-  const [dateEcheance, setDateEcheance] = useState<string>("");
-  const [lieu, setLieu] = useState<string>(compagnie.ville || "");
-  const [clientNom, setClientNom] = useState<string>("");
-  const [clientAdresse, setClientAdresse] = useState<string>("");
-  const [clientSiren, setClientSiren] = useState<string>("");
-  const [numeroManuel, setNumeroManuel] = useState<string>("");
+  // Form State — pré-rempli si édition d'un brouillon existant
+  const [dateEmission, setDateEmission] = useState<string>(
+    initialFacture
+      ? new Date(initialFacture.dateEmission).toISOString().split("T")[0]
+      : new Date().toISOString().split("T")[0]
+  );
+  const [dateEcheance, setDateEcheance] = useState<string>(
+    initialFacture?.dateEcheance
+      ? new Date(initialFacture.dateEcheance).toISOString().split("T")[0]
+      : ""
+  );
+  const [lieu, setLieu] = useState<string>(
+    initialFacture?.lieuFacturation || compagnie.ville || ""
+  );
+  const [clientNom, setClientNom] = useState<string>(initialFacture?.clientNom || "");
+  const [clientAdresse, setClientAdresse] = useState<string>(
+    initialFacture?.clientAdresse || ""
+  );
+  const [clientSiren, setClientSiren] = useState<string>(
+    initialFacture?.clientSiren || ""
+  );
+  const [numeroManuel, setNumeroManuel] = useState<string>(
+    initialFacture && !initialFacture.numero.startsWith("DRAFT-")
+      ? initialFacture.numero
+      : ""
+  );
 
-  const [lignes, setLignes] = useState<LigneForm[]>([
-    {
-      designation: "Prestation standard",
-      quantite: 1,
-      prixUnitaireHT: 0,
-      tva: 20,
-      type: "PRESTATION",
-    },
-  ]);
+  const [lignes, setLignes] = useState<LigneForm[]>(
+    initialFacture?.lignes.map((l) => ({
+      designation: l.designation,
+      quantite: l.quantite,
+      prixUnitaireHT: l.prixUnitaireHT,
+      tva: 0, // toujours 0 (association non assujettie TVA)
+      type: l.type as LigneType,
+    })) || [
+      {
+        designation: "Prestation standard",
+        quantite: 1,
+        prixUnitaireHT: 0,
+        tva: 0,
+        type: "PRESTATION",
+      },
+    ]
+  );
 
   const pdfData = {
-    numero: numeroManuel || "BROUILLON",
+    numero: initialFacture?.numero || numeroManuel || "BROUILLON",
     dateEmission,
     dateEcheance: dateEcheance || "Non définie",
     lieuFacturation: lieu,
@@ -90,49 +125,66 @@ export function FactureEditor({ compagnie }: { compagnie: Compagnie }) {
 
   useEffect(() => {
     refreshPdf();
-  }, []); // Initial generation
+  }, []);
 
   const handleAddLine = () => {
-    setLignes([
-      ...lignes,
-      { designation: "", quantite: 1, prixUnitaireHT: 0, tva: 20, type: "PRESTATION" },
-    ]);
-    setTimeout(refreshPdf, 0); // Refresh after state update
+    setLignes([...lignes, { designation: "", quantite: 1, prixUnitaireHT: 0, tva: 0, type: "PRESTATION" }]);
+    setTimeout(refreshPdf, 0);
   };
 
   const handleRemoveLine = (index: number) => {
     setLignes(lignes.filter((_, i) => i !== index));
-    setTimeout(refreshPdf, 0); // Refresh after state update
+    setTimeout(refreshPdf, 0);
   };
 
-  const updateLine = <K extends keyof LigneForm>(index: number, field: K, value: LigneForm[K]) => {
+  const updateLine = <K extends keyof LigneForm>(
+    index: number,
+    field: K,
+    value: LigneForm[K]
+  ) => {
     const newLignes = [...lignes];
     newLignes[index] = { ...newLignes[index], [field]: value };
     setLignes(newLignes);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (estBrouillon: boolean) => {
     setHasAttemptedSave(true);
-    if (!clientNom || !dateEcheance || !clientAdresse) {
+
+    // Pour un brouillon, on est plus permissif (pas d'adresse requise)
+    if (!estBrouillon && (!clientNom || !dateEcheance || !clientAdresse)) {
       toast.error("Veuillez remplir le nom du client, son adresse et la date d'échéance.");
+      return;
+    }
+    if (estBrouillon && !clientNom) {
+      toast.error("Veuillez au moins renseigner le nom du client.");
       return;
     }
 
     startTransition(async () => {
       try {
-        await creerFacture({
+        const payload = {
           numero: numeroManuel || undefined,
-          dateEcheance: new Date(dateEcheance),
+          dateEcheance: new Date(dateEcheance || Date.now()),
           lieuFacturation: lieu,
-          clientNom,
+          clientNom: clientNom || "Brouillon",
           clientAdresse,
           clientSiren,
           lignes,
-        });
-        toast.success("Facture créée avec succès !");
+          estBrouillon,
+        };
+
+        if (initialFacture?.id) {
+          await updateFacture(initialFacture.id, payload);
+          // redirect handled server-side
+        } else {
+          await creerFacture(payload);
+          // redirect handled server-side
+        }
       } catch (err: any) {
+        // redirect throws NEXT_REDIRECT, which is not a real error
+        if (err?.message?.includes("NEXT_REDIRECT")) return;
         console.error(err);
-        toast.error(err.message || "Erreur lors de la création de la facture");
+        toast.error(err.message || "Erreur lors de l'enregistrement de la facture");
       }
     });
   };
@@ -147,7 +199,7 @@ export function FactureEditor({ compagnie }: { compagnie: Compagnie }) {
     <Flex gap={6} className="h-[calc(100vh-120px)]">
       <Box className="w-1/2 overflow-y-auto pr-2 pb-10" onBlur={refreshPdf} onKeyDown={handleKeyDown}>
         <Stack gap={6}>
-          <Heading as="h2">Nouvelle Facture</Heading>
+          <Heading as="h2">{initialFacture ? "Éditer le brouillon" : "Nouvelle Facture"}</Heading>
 
           <Card className="p-6">
             <Stack gap={4}>
@@ -280,7 +332,7 @@ export function FactureEditor({ compagnie }: { compagnie: Compagnie }) {
                       />
                     </Box>
                     <Flex gap={3}>
-                      <Box className="w-[20%]">
+                      <Box className="w-[30%]">
                         <Text className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Qté</Text>
                         <Input
                           type="number"
@@ -288,21 +340,13 @@ export function FactureEditor({ compagnie }: { compagnie: Compagnie }) {
                           onChange={(e) => updateLine(i, "quantite", parseFloat(e.target.value) || 0)}
                         />
                       </Box>
-                      <Box className="w-[40%]">
-                        <Text className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Prix U. HT</Text>
+                      <Box className="w-[70%]">
+                        <Text className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Prix unitaire</Text>
                         <Input
                           type="number"
                           step="0.01"
                           value={ligne.prixUnitaireHT}
                           onChange={(e) => updateLine(i, "prixUnitaireHT", parseFloat(e.target.value) || 0)}
-                        />
-                      </Box>
-                      <Box className="w-[20%]">
-                        <Text className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">TVA %</Text>
-                        <Input
-                          type="number"
-                          value={ligne.tva}
-                          onChange={(e) => updateLine(i, "tva", parseFloat(e.target.value) || 0)}
                         />
                       </Box>
                     </Flex>
@@ -315,19 +359,31 @@ export function FactureEditor({ compagnie }: { compagnie: Compagnie }) {
             </Stack>
           </Card>
 
-          <Button 
-            size="lg" 
-            onClick={handleSubmit} 
-            disabled={isPending} 
-            icon={<LuSave />}
-            className="w-full mt-4"
-          >
-            {isPending ? "Génération..." : "Enregistrer et Générer la facture"}
-          </Button>
+          <Flex gap={4} className="mt-4">
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => handleSubmit(true)}
+              disabled={isPending}
+              icon={<LuSave />}
+              className="w-1/2"
+            >
+              Enregistrer en brouillon
+            </Button>
+            <Button
+              size="lg"
+              onClick={() => handleSubmit(false)}
+              disabled={isPending}
+              icon={<LuCheck />}
+              className="w-1/2"
+            >
+              Émettre la facture
+            </Button>
+          </Flex>
         </Stack>
       </Box>
 
-      {/* View Panel */}
+      {/* Aperçu PDF */}
       <Box className="w-1/2 h-full bg-slate-100 rounded-xl overflow-hidden shadow-inner border relative group">
         {pdfUrl ? (
           <iframe src={pdfUrl} className="w-full h-full border-none rounded-xl" />
