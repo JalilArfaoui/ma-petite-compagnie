@@ -13,6 +13,7 @@ export type CreateFactureData = {
   clientNom: string;
   clientAdresse: string;
   clientSiren?: string;
+  estBrouillon: boolean;
   lignes: {
     designation: string;
     quantite: number;
@@ -35,21 +36,85 @@ export async function creerFacture(data: CreateFactureData) {
 
   if (!compagnie) throw new Error("Compagnie introuvable");
 
-  const newFacture = await prisma.$transaction(async (tx) => {
-    const year = new Date().getFullYear();
-    const prefix = `FACT-${year}-`;
-
-    // Find last invoice from this year
-    const lastFacture = await tx.facture.findFirst({
-      where: {
-        numero: { startsWith: prefix },
-        compagnieId,
-      },
-      orderBy: { numero: "desc" },
-    });
-
+  await prisma.$transaction(async (tx) => {
     let finalNumero = data.numero?.trim();
-    if (!finalNumero) {
+
+    if (data.estBrouillon) {
+      if (!finalNumero) {
+        finalNumero = `DRAFT-${Date.now()}`;
+      }
+    } else {
+      if (!finalNumero || finalNumero.startsWith("DRAFT-")) {
+        const year = new Date().getFullYear();
+        const prefix = `FACT-${year}-`;
+        const lastFacture = await tx.facture.findFirst({
+          where: { numero: { startsWith: prefix }, compagnieId },
+          orderBy: { numero: "desc" },
+        });
+        let nextSeq = 1;
+        if (lastFacture) {
+          const parts = lastFacture.numero.split("-");
+          const lastSeq = parseInt(parts[parts.length - 1]);
+          if (!isNaN(lastSeq)) nextSeq = lastSeq + 1;
+        }
+        finalNumero = `${prefix}${nextSeq.toString().padStart(4, "0")}`;
+      }
+    }
+
+    const lieu = data.lieuFacturation?.trim() || compagnie.ville || "";
+
+    return await tx.facture.create({
+      data: {
+        numero: finalNumero!,
+        dateEcheance: data.dateEcheance,
+        lieuFacturation: lieu,
+        clientNom: data.clientNom,
+        clientAdresse: data.clientAdresse,
+        clientSiren: data.clientSiren,
+        status: data.estBrouillon ? FactureStatus.BROUILLON : FactureStatus.EMISE,
+        compagnieId,
+        lignes: {
+          create: data.lignes.map((l) => ({
+            designation: l.designation,
+            quantite: l.quantite,
+            prixUnitaireHT: l.prixUnitaireHT,
+            tva: l.tva,
+            type: l.type,
+          })),
+        },
+      },
+    });
+  });
+
+  revalidatePath("/administration/factures");
+  redirect("/administration/factures");
+}
+
+export async function updateFacture(id: number, data: CreateFactureData) {
+  const session = await auth();
+  if (!session?.activeCompanyId) {
+    throw new Error("Aucune compagnie active.");
+  }
+  const compagnieId = session.activeCompanyId;
+
+  const existing = await prisma.facture.findUnique({
+    where: { id, compagnieId },
+  });
+
+  if (!existing) throw new Error("Facture introuvable");
+  if (existing.status !== "BROUILLON") throw new Error("Seuls les brouillons peuvent être modifiés");
+
+  await prisma.$transaction(async (tx) => {
+    let finalNumero = data.numero?.trim() || existing.numero;
+
+    if (!data.estBrouillon && finalNumero.startsWith("DRAFT-")) {
+      // Transition DRAFT -> EMISE : assign a sequential number
+      const year = new Date().getFullYear();
+      const prefix = `FACT-${year}-`;
+      const lastFacture = await tx.facture.findFirst({
+        where: { numero: { startsWith: prefix }, compagnieId },
+        orderBy: { numero: "desc" },
+      });
       let nextSeq = 1;
       if (lastFacture) {
         const parts = lastFacture.numero.split("-");
@@ -59,9 +124,13 @@ export async function creerFacture(data: CreateFactureData) {
       finalNumero = `${prefix}${nextSeq.toString().padStart(4, "0")}`;
     }
 
-    const lieu = data.lieuFacturation?.trim() || compagnie.ville || "";
+    const lieu = data.lieuFacturation?.trim() || "";
 
-    return await tx.facture.create({
+    // Replace lines
+    await tx.ligneFacture.deleteMany({ where: { factureId: id } });
+
+    return await tx.facture.update({
+      where: { id },
       data: {
         numero: finalNumero,
         dateEcheance: data.dateEcheance,
@@ -69,7 +138,7 @@ export async function creerFacture(data: CreateFactureData) {
         clientNom: data.clientNom,
         clientAdresse: data.clientAdresse,
         clientSiren: data.clientSiren,
-        compagnieId,
+        status: data.estBrouillon ? FactureStatus.BROUILLON : FactureStatus.EMISE,
         lignes: {
           create: data.lignes.map((l) => ({
             designation: l.designation,

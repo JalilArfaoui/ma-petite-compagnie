@@ -71,8 +71,9 @@ export default async function FacturesPage() {
                     <Table.Cell>{montantHT.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}</Table.Cell>
                     <Table.Cell>{getStatusBadge(facture.status)}</Table.Cell>
                     <Table.Cell className="text-right">
-                      {/* TODO: Add actions like view PDF / Edit / Delete */}
-                      <Button variant="ghost" size="sm">Voir</Button>
+                      <Link href={`/administration/factures/${facture.id}`}>
+                        <Button variant="ghost" size="sm">Voir</Button>
+                      </Link>
                     </Table.Cell>
                   </Table.Row>
                 );
