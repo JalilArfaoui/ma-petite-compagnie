@@ -1,9 +1,3 @@
-/*
-  Warnings:
-
-  - A unique constraint covering the columns `[nom]` on the table `ListeContact` will be added. If there are existing duplicate values, this will fail.
-
-*/
 -- CreateEnum
 CREATE TYPE "TypeOperation" AS ENUM ('RECETTE', 'DEPENSE');
 
@@ -40,9 +34,6 @@ CREATE TABLE "_OperationFinanciereToSpectacle" (
 
 -- CreateIndex
 CREATE INDEX "_OperationFinanciereToSpectacle_B_index" ON "_OperationFinanciereToSpectacle"("B");
-
--- CreateIndex
-CREATE UNIQUE INDEX "ListeContact_nom_key" ON "ListeContact"("nom");
 
 -- AddForeignKey
 ALTER TABLE "OperationFinanciere" ADD CONSTRAINT "OperationFinanciere_compagnieId_fkey" FOREIGN KEY ("compagnieId") REFERENCES "Compagnie"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
