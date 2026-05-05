@@ -43,16 +43,23 @@ export default function DepensesClient({
 
   const handleAddDepense = (data: DonneesAjoutFinancier) => {
     startTransition(async () => {
-      const result = await creerOperation(buildDepensePayload(data));
-      if ("error" in result) {
+      try {
+        const result = await creerOperation(buildDepensePayload(data));
+        if ("error" in result) {
+          toaster.error({
+            title: "Erreur lors de l'ajout",
+            description: result.error,
+          });
+          return;
+        }
+
+        handleAdd(result.operation, "Dépense ajoutée");
+      } catch {
         toaster.error({
           title: "Erreur lors de l'ajout",
-          description: result.error,
+          description: "Impossible d'ajouter la dépense.",
         });
-        return;
       }
-
-      handleAdd(result.operation, "Dépense ajoutée");
     });
   };
 

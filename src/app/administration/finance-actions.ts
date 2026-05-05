@@ -107,8 +107,8 @@ export async function getEquilibresSpectacles(): Promise<SpectacleEquilibre[]> {
     const depenses = spectacle.operations
       .filter((op) => op.type === "DEPENSE")
       .reduce((total, op) => total + op.montant, 0);
-    const baseBudget = Math.max(spectacle.budget_initial + recettesPayees, 1);
-    const pourcentageConsomme = Math.min(Math.max((depenses / baseBudget) * 100, 0), 100);
+    const baseBudget = spectacle.budget_initial + recettesPayees;
+    const pourcentageConsomme = baseBudget <= 0 ? 0 : Math.min((depenses / baseBudget) * 100, 100);
 
     return {
       id: spectacle.id,

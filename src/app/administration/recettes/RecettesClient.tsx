@@ -58,16 +58,23 @@ export default function RecettesClient({
 
   const handleAddRecette = (data: DonneesAjoutFinancier) => {
     startTransition(async () => {
-      const result = await creerOperation(buildRecettePayload(data));
-      if ("error" in result) {
+      try {
+        const result = await creerOperation(buildRecettePayload(data));
+        if ("error" in result) {
+          toaster.error({
+            title: "Erreur lors de l'ajout",
+            description: result.error,
+          });
+          return;
+        }
+
+        handleAdd(result.operation, "Recette ajoutée");
+      } catch {
         toaster.error({
           title: "Erreur lors de l'ajout",
-          description: result.error,
+          description: "Impossible d'ajouter la recette.",
         });
-        return;
       }
-
-      handleAdd(result.operation, "Recette ajoutée");
     });
   };
 
