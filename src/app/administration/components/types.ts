@@ -21,7 +21,12 @@ export interface Depense {
 }
 
 export interface SpectacleEquilibre {
+  id: number;
   nom: string;
+  budgetInitial: number;
+  recettesPayees: number;
+  recettesEnAttente: number;
+  depenses: number;
   pourcentageConsomme: number;
   montant: number;
 }

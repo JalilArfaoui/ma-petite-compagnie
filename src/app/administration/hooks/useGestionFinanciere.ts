@@ -17,16 +17,11 @@ export function useGestionFinanciere<
     );
   }, [items]);
 
-  const handleAdd = (
-    data: DonneesAjoutFinancier,
-    mapping: (d: DonneesAjoutFinancier) => T,
-    successMessage?: string
-  ) => {
-    const nouvelItem = mapping(data);
-    setItems((prev) => [nouvelItem, ...prev]);
+  const handleAdd = (nouvelItem: T, successMessage?: string) => {
     toaster.success({
       title: successMessage || `${nomType} ajouté${nomType.endsWith("e") ? "e" : ""}`,
     });
+    setItems((prev) => [nouvelItem, ...prev]);
   };
 
   const handleEdit = (
