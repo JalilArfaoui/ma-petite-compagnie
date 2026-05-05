@@ -35,6 +35,7 @@ model Compagnie {
   lieuxEvenement Lieu[]
   spectacles Spectacle[] @relation("SpectaclesCompagnie")
   objets Objet[] @relation("ObjetsCompagnie")
+  operations OperationFinanciere[]
 }
 
 model Evenement {
@@ -89,6 +90,7 @@ model CompanyMember {
   droitGestionDroitsMembres  Boolean @default(false)
   droitAccesPlanning         Boolean @default(false)
   droitGestionPlanning       Boolean @default(false)
+  droitAccesAdministration   Boolean @default(false)
 
   cachets Cachet[]
 

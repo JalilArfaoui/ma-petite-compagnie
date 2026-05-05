@@ -1,6 +1,9 @@
 "use client";
 import { Heading, Container, Stack, Text, Card } from "@/components/ui";
 import { FaHome } from "react-icons/fa";
+import { GiRoundStar } from "react-icons/gi";
+import { FaCalendar } from "react-icons/fa6";
+import { HiUserGroup } from "react-icons/hi2";
 
 export default function Home() {
   return (
@@ -32,19 +35,19 @@ export default function Home() {
             <Card
               title="Planning de répétition"
               description="Gérez les disponibilités de vos comédiens. Générez des feuilles de service claires."
-              icon={<FaHome />}
+              icon={<FaCalendar />}
               iconColor="red"
             />
             <Card
               title="Production & Décors"
               description="Suivez le budget costumes au centime près. Listez les accessoires pour la tournée."
-              icon={<FaHome />}
+              icon={<GiRoundStar />}
               iconColor="yellow"
             />
             <Card
               title="Casting & Équipe"
               description="Centralisez mensurations et contacts. Un trombinoscope toujours à jour."
-              icon={<FaHome />}
+              icon={<HiUserGroup />}
               iconColor="blue"
             />
           </div>

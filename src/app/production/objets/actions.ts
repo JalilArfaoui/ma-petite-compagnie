@@ -48,7 +48,7 @@ export async function createObjet(formData: FormData) {
   const typeObjetId = Number(formData.get("typeObjetId"));
   const etat = (formData.get("etat") as EtatObjet) || "NEUF";
   const estDisponible = formData.get("estDisponible") === "true";
-  const compagnieId = Number(formData.get("compagnieId"));
+  const compagnieId = 1;
   const commentaire = (formData.get("commentaire") as string) || null;
 
   await prisma.objet.create({
@@ -124,12 +124,13 @@ export async function deleteReservation(formData: FormData) {
 // ========== Fetch data ==========
 
 export async function fetchObjetsPageData() {
-  const [typesObjets, categories, compagnies, representations] = await Promise.all([
+  const [typesObjets, categories, representations] = await Promise.all([
     prisma.typeObjet.findMany({
       orderBy: { nom: "asc" },
       include: {
         categorie: true,
         objets: {
+          where: { compagnieId: 1 },
           include: {
             compagnie: true,
             reservations: {
@@ -147,7 +148,6 @@ export async function fetchObjetsPageData() {
       },
     }),
     prisma.categorieObjet.findMany({ orderBy: { nom: "asc" } }),
-    prisma.compagnie.findMany({ orderBy: { nom: "asc" } }),
     prisma.representation.findMany({
       orderBy: { date: "asc" },
       include: {
@@ -157,5 +157,5 @@ export async function fetchObjetsPageData() {
     }),
   ]);
 
-  return { typesObjets, categories, compagnies, representations };
+  return { typesObjets, categories, representations };
 }
