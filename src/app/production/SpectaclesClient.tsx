@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { createSpectacle } from "./actions";
 
 interface SpectacleData {
@@ -22,11 +23,12 @@ function SpectacleCard({ spectacle }: { spectacle: SpectacleData }) {
       className="relative aspect-[3/4] rounded-[20px] overflow-hidden cursor-pointer group shadow-md hover:shadow-xl transition-all hover:-translate-y-1"
     >
       {spectacle.hasImage && !imgError ? (
-        <img
+        <Image
+          fill
           src={`/production/api/spectacles/${spectacle.id}/image`}
           alt={spectacle.titre}
           onError={() => setImgError(true)}
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 object-cover"
         />
       ) : (
         <div className="absolute inset-0 bg-slate-300 flex items-center justify-center">

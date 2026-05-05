@@ -289,6 +289,167 @@ async function main() {
       compagnieId: compagnies[2].id,
       commentaire: "Connecteur cassé",
     },
+    // --- Extra objects for compagnie 1 ---
+    // Rideau rouge (compagnie 1)
+    {
+      typeObjetId: typesObjets[5].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: null,
+    },
+    {
+      typeObjetId: typesObjets[5].id,
+      etat: "ABIME" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: "Légèrement décoloré",
+    },
+    // Panneau de fond (compagnie 1)
+    {
+      typeObjetId: typesObjets[6].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: null,
+    },
+    {
+      typeObjetId: typesObjets[6].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: "Fond forêt enchantée",
+    },
+    // Projecteur LED (compagnie 1)
+    {
+      typeObjetId: typesObjets[7].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: null,
+    },
+    {
+      typeObjetId: typesObjets[7].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: null,
+    },
+    {
+      typeObjetId: typesObjets[7].id,
+      etat: "ABIME" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: "Ventilateur bruyant",
+    },
+    // Micro sans fil (compagnie 1)
+    {
+      typeObjetId: typesObjets[8].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: null,
+    },
+    {
+      typeObjetId: typesObjets[8].id,
+      etat: "ABIME" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: "Batterie faible",
+    },
+    // Enceinte portable (compagnie 1)
+    {
+      typeObjetId: typesObjets[9].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: null,
+    },
+    // Perruque blonde (compagnie 1)
+    {
+      typeObjetId: typesObjets[10].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: null,
+    },
+    // Masque vénitien (compagnie 1)
+    {
+      typeObjetId: typesObjets[11].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: null,
+    },
+    // Marionnette à fil (compagnie 1)
+    {
+      typeObjetId: typesObjets[12].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: null,
+    },
+    {
+      typeObjetId: typesObjets[12].id,
+      etat: "ABIME" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: "Fil emmêlé",
+    },
+    // Banc de jardin (compagnie 1)
+    {
+      typeObjetId: typesObjets[14].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: null,
+    },
+    // Drap de scène (compagnie 1)
+    {
+      typeObjetId: typesObjets[15].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: null,
+    },
+    {
+      typeObjetId: typesObjets[15].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: "Blanc 6x4m",
+    },
+    // Couronne dorée (compagnie 1)
+    {
+      typeObjetId: typesObjets[16].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: null,
+    },
+    // Machine à fumée (compagnie 1)
+    {
+      typeObjetId: typesObjets[18].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: null,
+    },
+    // Câble XLR (compagnie 1)
+    {
+      typeObjetId: typesObjets[19].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: null,
+    },
+    {
+      typeObjetId: typesObjets[19].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: null,
+    },
   ];
 
   // Delete existing objects to avoid duplicates on re-seed
@@ -320,6 +481,19 @@ async function main() {
       adresse: "8 quai de la Gare",
       ville: "Lyon",
       idCompagnie: compagnies[2].id,
+    },
+    {
+      libelle: "Espace Culturel Molière",
+      adresse: "3 place du Théâtre",
+      ville: "Marseille",
+      idCompagnie: compagnies[0].id,
+      numero_salle: "Salle A",
+    },
+    {
+      libelle: "La Fabrique",
+      adresse: "22 avenue Jean Jaurès",
+      ville: "Toulouse",
+      idCompagnie: compagnies[0].id,
     },
   ];
 
@@ -364,6 +538,27 @@ async function main() {
       compagnieId: compagnies[2].id,
       budget_initial: 12000,
     },
+    {
+      titre: "Les Misérables — Acte I",
+      type: "THEATRE" as const,
+      statut: "EN_CREATION" as const,
+      compagnieId: compagnies[0].id,
+      budget_initial: 25000,
+    },
+    {
+      titre: "Valse des ombres",
+      type: "DANSE" as const,
+      statut: "EN_TOURNEE" as const,
+      compagnieId: compagnies[0].id,
+      budget_initial: 18000,
+    },
+    {
+      titre: "Circus Absurdum",
+      type: "CIRQUE" as const,
+      statut: "EN_REPETITION" as const,
+      compagnieId: compagnies[0].id,
+      budget_initial: 22000,
+    },
   ];
 
   const spectacles: Spectacle[] = [];
@@ -383,6 +578,11 @@ async function main() {
     { date: new Date("2026-04-22T20:00:00"), spectacleId: spectacles[0].id, lieuId: lieux[2].id },
     { date: new Date("2026-05-10T19:30:00"), spectacleId: spectacles[1].id, lieuId: lieux[1].id },
     { date: new Date("2026-06-01T21:00:00"), spectacleId: spectacles[2].id, lieuId: lieux[2].id },
+    { date: new Date("2026-05-03T20:30:00"), spectacleId: spectacles[0].id, lieuId: lieux[3].id },
+    { date: new Date("2026-05-18T19:00:00"), spectacleId: spectacles[4].id, lieuId: lieux[0].id },
+    { date: new Date("2026-06-12T20:00:00"), spectacleId: spectacles[5].id, lieuId: lieux[4].id },
+    { date: new Date("2026-06-20T21:00:00"), spectacleId: spectacles[6].id, lieuId: lieux[3].id },
+    { date: new Date("2026-07-05T20:30:00"), spectacleId: spectacles[1].id, lieuId: lieux[4].id },
   ];
 
   const representations: Representation[] = [];
@@ -400,12 +600,29 @@ async function main() {
 
   // --- Réservations d'objets ---
   const reservationsData = [
+    // Représentation 0: Le Songe — Théâtre Municipal
     { objetId: objets[0].id, representationId: representations[0].id },
     { objetId: objets[1].id, representationId: representations[0].id },
     { objetId: objets[4].id, representationId: representations[0].id },
+    // Représentation 1: Le Songe — Le Hangar
     { objetId: objets[10].id, representationId: representations[1].id },
+    // Représentation 2: Carmen — Salle Gaveau
     { objetId: objets[13].id, representationId: representations[2].id },
+    // Représentation 3: Pestacle — Le Hangar
     { objetId: objets[14].id, representationId: representations[3].id },
+    // Représentation 4: Le Songe — Espace Culturel Molière
+    { objetId: objets[25].id, representationId: representations[4].id },
+    { objetId: objets[27].id, representationId: representations[4].id },
+    // Représentation 5: Les Misérables — Théâtre Municipal
+    { objetId: objets[29].id, representationId: representations[5].id },
+    { objetId: objets[30].id, representationId: representations[5].id },
+    { objetId: objets[35].id, representationId: representations[5].id },
+    // Représentation 6: Valse des ombres — La Fabrique
+    { objetId: objets[32].id, representationId: representations[6].id },
+    { objetId: objets[36].id, representationId: representations[6].id },
+    // Représentation 7: Circus Absurdum — Espace Culturel Molière
+    { objetId: objets[40].id, representationId: representations[7].id },
+    { objetId: objets[42].id, representationId: representations[7].id },
   ];
 
   for (const r of reservationsData) {
