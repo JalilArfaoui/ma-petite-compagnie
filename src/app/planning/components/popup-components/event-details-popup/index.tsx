@@ -35,7 +35,13 @@ const getDurationLabel = (start: number, end: number) => {
   return `${minutes}min`;
 };
 
-export default function EventDetailsPopup({ event, top, left, theme, onClose }: EventDetailsPopupProps) {
+export default function EventDetailsPopup({
+  event,
+  top,
+  left,
+  theme,
+  onClose,
+}: EventDetailsPopupProps) {
   return (
     <div
       className="event-details-popup"
@@ -50,7 +56,12 @@ export default function EventDetailsPopup({ event, top, left, theme, onClose }: 
       aria-label="Details de l'evenement"
     >
       <span className="event-details-popup-accent" style={{ backgroundColor: theme.accentColor }} />
-      <button type="button" className="event-details-popup-close" onClick={onClose} aria-label="Fermer">
+      <button
+        type="button"
+        className="event-details-popup-close"
+        onClick={onClose}
+        aria-label="Fermer"
+      >
         ×
       </button>
       <p className="event-details-popup-title">{event.nom}</p>

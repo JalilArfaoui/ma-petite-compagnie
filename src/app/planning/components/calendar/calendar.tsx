@@ -1,7 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import MonthlyTile from "./tiles/monthly-tile";
-import CreateEventAction from "../actions/create-event";
 import EventDetailsPopup from "../popup-components/event-details-popup";
 import {
   Alert,
@@ -68,8 +66,6 @@ interface EventCalendarProps {
     }
   ) => void;
 }
-
-
 
 const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }: EventCalendarProps) => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -343,7 +339,11 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }: EventC
       if (isQuickCalendarOpen && !target.closest(".quick-calendar-wrapper")) {
         setIsQuickCalendarOpen(false);
       }
-      if (selectedEvent && !target.closest(".event-details-popup") && !target.closest(".event-tile")) {
+      if (
+        selectedEvent &&
+        !target.closest(".event-details-popup") &&
+        !target.closest(".event-tile")
+      ) {
         closeEventPopup();
       }
     };
