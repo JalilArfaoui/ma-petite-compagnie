@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Badge, Button, Container, Logo, Text, Select } from "@/components/ui";
-import { LuLogIn, LuLogOut, LuRepeat, LuUser, LuMenu, LuX } from "react-icons/lu";
+import { Badge, Button, Container, Logo, Select } from "@/components/ui";
+import { LuLogIn, LuLogOut, LuUser, LuMenu, LuX } from "react-icons/lu";
 import { FaTheaterMasks } from "react-icons/fa";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
@@ -14,7 +14,12 @@ export const Header = () => {
   const isLoading = status === "loading";
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const navigationItems = ["Production", "Planning", "Communication", "Administration"];
+  const navigationItems = [
+    "Production",
+    "Planning",
+    "Communication",
+    ...(session?.rights?.droitAccesAdministration ? ["Administration"] : []),
+  ];
 
   // Cache le header sur les pages d'auth
   if (pathname === "/login" || pathname === "/register") {
@@ -29,6 +34,9 @@ export const Header = () => {
 
   const handleCompanyChange = async (value: string) => {
     await update({ activeCompanyId: parseInt(value) });
+    if (pathname.startsWith("/administration")) {
+      window.location.reload();
+    }
   };
 
   return (

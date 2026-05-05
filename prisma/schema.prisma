@@ -90,6 +90,7 @@ model CompanyMember {
   droitGestionDroitsMembres  Boolean @default(false)
   droitAccesPlanning         Boolean @default(false)
   droitGestionPlanning       Boolean @default(false)
+  droitAccesAdministration   Boolean @default(false)
 
   @@unique([userId, compagnieId])
 }
@@ -264,4 +265,3 @@ model OperationFinanciere {
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
 }
-
