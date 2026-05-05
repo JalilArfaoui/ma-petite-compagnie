@@ -54,7 +54,7 @@ export function FactureEditor({ compagnie }: { compagnie: Compagnie }) {
     dateEmission,
     dateEcheance: dateEcheance || "Non définie",
     lieuFacturation: lieu,
-    clientNom: clientNom || "Client",
+    clientNom,
     clientAdresse,
     lignes,
     compagnie: {
@@ -129,9 +129,15 @@ export function FactureEditor({ compagnie }: { compagnie: Compagnie }) {
     });
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      refreshPdf();
+    }
+  };
+
   return (
     <Flex gap={6} className="h-[calc(100vh-120px)]">
-      <Box className="w-1/2 overflow-y-auto pr-2 pb-10" onBlur={refreshPdf}>
+      <Box className="w-1/2 overflow-y-auto pr-2 pb-10" onBlur={refreshPdf} onKeyDown={handleKeyDown}>
         <Stack gap={6}>
           <Heading as="h2">Nouvelle Facture</Heading>
 

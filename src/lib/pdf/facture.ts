@@ -4,10 +4,26 @@ export function generateFacturePDF(data: any): string {
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
 
+  const drawTextWithPlaceholder = (
+    text: string | null | undefined,
+    placeholder: string,
+    x: number,
+    y: number,
+    options?: any
+  ) => {
+    if (!text || text.trim() === "") {
+      doc.setTextColor(250, 61, 47); // #fa3d2f
+      doc.text(placeholder, x, y, options);
+      doc.setTextColor(0, 0, 0);
+    } else {
+      doc.text(text, x, y, options);
+    }
+  };
+
   // Company Info (Left)
   doc.setFontSize(14);
   doc.setFont("helvetica", "bold");
-  doc.text(data.compagnie.nom || "Votre Compagnie", 15, 20);
+  drawTextWithPlaceholder(data.compagnie.nom, "Nom de l'entreprise", 15, 20);
   
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
@@ -31,7 +47,7 @@ export function generateFacturePDF(data: any): string {
   doc.setFont("helvetica", "bold");
   doc.text("Facturé à :", pageWidth - 15, 20, { align: "right" });
   doc.setFontSize(12);
-  doc.text(data.clientNom || "Client", pageWidth - 15, 26, { align: "right" });
+  drawTextWithPlaceholder(data.clientNom, "Nom du client", pageWidth - 15, 26, { align: "right" });
   
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
@@ -94,7 +110,7 @@ export function generateFacturePDF(data: any): string {
     totalHT += prixHT;
     totalTVA += tva;
 
-    doc.text(ligne.designation || "-", 18, tableY);
+    drawTextWithPlaceholder(ligne.designation, "Désignation de la prestation", 18, tableY);
     doc.text(ligne.quantite.toString(), 110, tableY, { align: "right" });
     doc.text(formatCurrency(ligne.prixUnitaireHT), 140, tableY, { align: "right" });
     doc.text(`${ligne.tva}%`, 160, tableY, { align: "right" });
