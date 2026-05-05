@@ -49,11 +49,9 @@ export function Pagination({ currentPage, totalPages, onPageChange, className }:
           <Button
             key={page}
             variant={page === currentPage ? "solid" : "outline"}
-            variant={page === currentPage ? "solid" : "outline"}
             size="sm"
             onClick={() => onPageChange(page)}
             aria-current={page === currentPage ? "page" : undefined}
-            onClick={() => onPageChange(page)}
           >
             {page}
           </Button>
