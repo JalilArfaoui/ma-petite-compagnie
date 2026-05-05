@@ -148,16 +148,13 @@ export function FactureEditor({
   };
 
   const handleSubmit = async (estBrouillon: boolean) => {
-    setHasAttemptedSave(true);
-
-    // Pour un brouillon, on est plus permissif (pas d'adresse requise)
-    if (!estBrouillon && (!clientNom || !dateEcheance || !clientAdresse)) {
-      toast.error("Veuillez remplir le nom du client, son adresse et la date d'échéance.");
-      return;
-    }
-    if (estBrouillon && !clientNom) {
-      toast.error("Veuillez au moins renseigner le nom du client.");
-      return;
+    // Ne bloquer que si on émet (pas pour un brouillon)
+    if (!estBrouillon) {
+      setHasAttemptedSave(true);
+      if (!clientNom || !dateEcheance || !clientAdresse) {
+        toast.error("Veuillez remplir le nom du client, son adresse et la date d'échéance.");
+        return;
+      }
     }
 
     startTransition(async () => {
