@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect, useCallback, useRef } from "react";
 import dynamic from "next/dynamic";
 import {
   Box,
@@ -15,7 +15,7 @@ import {
 } from "@/components/ui";
 import { toast } from "sonner";
 import { Compagnie } from "@prisma/client";
-import { HTMLFacturePreview } from "@/components/finance/HTMLFacturePreview";
+import { generateFacturePDF } from "@/lib/pdf/facture";
 import { creerFacture } from "@/app/actions/finance";
 import { LuPlus, LuTrash2, LuSave } from "react-icons/lu";
 
@@ -67,15 +67,37 @@ export function FactureEditor({ compagnie }: { compagnie: Compagnie }) {
     },
   };
 
+  const [pdfUrl, setPdfUrl] = useState<string>("");
+  const lastPdfDataRef = useRef<string>("");
+
+  const refreshPdf = useCallback(() => {
+    try {
+      const currentDataStr = JSON.stringify(pdfData);
+      if (currentDataStr !== lastPdfDataRef.current) {
+        const url = generateFacturePDF(pdfData);
+        setPdfUrl(url);
+        lastPdfDataRef.current = currentDataStr;
+      }
+    } catch (err) {
+      console.error("Erreur génération PDF:", err);
+    }
+  }, [pdfData]);
+
+  useEffect(() => {
+    refreshPdf();
+  }, []); // Initial generation
+
   const handleAddLine = () => {
     setLignes([
       ...lignes,
       { designation: "", quantite: 1, prixUnitaireHT: 0, tva: 20, type: "PRESTATION" },
     ]);
+    setTimeout(refreshPdf, 0); // Refresh after state update
   };
 
   const handleRemoveLine = (index: number) => {
     setLignes(lignes.filter((_, i) => i !== index));
+    setTimeout(refreshPdf, 0); // Refresh after state update
   };
 
   const updateLine = <K extends keyof LigneForm>(index: number, field: K, value: LigneForm[K]) => {
@@ -109,7 +131,7 @@ export function FactureEditor({ compagnie }: { compagnie: Compagnie }) {
 
   return (
     <Flex gap={6} className="h-[calc(100vh-120px)]">
-      <Box className="w-1/2 overflow-y-auto pr-2 pb-10">
+      <Box className="w-1/2 overflow-y-auto pr-2 pb-10" onBlur={refreshPdf}>
         <Stack gap={6}>
           <Heading as="h2">Nouvelle Facture</Heading>
 
@@ -261,7 +283,13 @@ export function FactureEditor({ compagnie }: { compagnie: Compagnie }) {
 
       {/* View Panel */}
       <Box className="w-1/2 h-full bg-slate-100 rounded-xl overflow-hidden shadow-inner border relative group">
-        <HTMLFacturePreview data={pdfData} />
+        {pdfUrl ? (
+          <iframe src={pdfUrl} className="w-full h-full border-none rounded-xl" />
+        ) : (
+          <Flex className="w-full h-full items-center justify-center text-slate-400">
+            Chargement de l'aperçu PDF...
+          </Flex>
+        )}
       </Box>
     </Flex>
   );
