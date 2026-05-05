@@ -20,6 +20,24 @@ export type OperationFormData = {
   fichier?: string;
 };
 
+export type TresorerieMouvement = {
+  id: string;
+  nom: string;
+  date: string;
+  typeOp: "RECETTE" | "DEPENSE";
+  montant: number;
+  spectacles: string[];
+};
+
+export type TresorerieData = {
+  soldeActuel: number;
+  totalEncaisse: number;
+  totalDepense: number;
+  nombreMouvements: number;
+  derniereDateMouvement: string | null;
+  mouvements: TresorerieMouvement[];
+};
+
 // ─── Lecture ───
 
 export async function getOperations(type: TypeOperation) {
@@ -105,6 +123,52 @@ export async function getEquilibresSpectacles(): Promise<SpectacleEquilibre[]> {
   });
 }
 
+export async function getTresorerieReelle(): Promise<TresorerieData> {
+  const context = await getActiveAdministrationContext();
+  if (!context.ok) throw new Error(context.error);
+
+  const operations = await prisma.operationFinanciere.findMany({
+    where: {
+      compagnieId: context.compagnieId,
+      OR: [{ type: "DEPENSE" }, { type: "RECETTE", statut: "paye" }],
+    },
+    select: {
+      id: true,
+      nom: true,
+      montant: true,
+      date: true,
+      type: true,
+      spectacles: { select: { titre: true } },
+    },
+    orderBy: { date: "desc" },
+  });
+
+  const mouvements = operations.map((op) => ({
+    id: op.id.toString(),
+    nom: op.nom,
+    date: op.date.toISOString().split("T")[0],
+    typeOp: op.type,
+    montant: op.type === "DEPENSE" ? -op.montant : op.montant,
+    spectacles: op.spectacles.map((s) => s.titre),
+  }));
+
+  const totalEncaisse = operations
+    .filter((op) => op.type === "RECETTE")
+    .reduce((total, op) => total + op.montant, 0);
+  const totalDepense = operations
+    .filter((op) => op.type === "DEPENSE")
+    .reduce((total, op) => total + op.montant, 0);
+
+  return {
+    soldeActuel: totalEncaisse - totalDepense,
+    totalEncaisse,
+    totalDepense,
+    nombreMouvements: mouvements.length,
+    derniereDateMouvement: mouvements[0]?.date ?? null,
+    mouvements,
+  };
+}
+
 // ─── Création ───
 
 export async function creerOperation(data: OperationFormData) {
@@ -141,6 +205,7 @@ export async function creerOperation(data: OperationFormData) {
   revalidatePath("/administration/recettes");
   revalidatePath("/administration/depenses");
   revalidatePath("/administration/equilibre-financier");
+  revalidatePath("/administration/tresorerie");
   return {
     success: true,
     operation: {
@@ -199,6 +264,7 @@ export async function modifierOperation(data: OperationFormData) {
   revalidatePath("/administration/recettes");
   revalidatePath("/administration/depenses");
   revalidatePath("/administration/equilibre-financier");
+  revalidatePath("/administration/tresorerie");
   return { success: true };
 }
 
@@ -222,6 +288,7 @@ export async function supprimerOperation(id: number) {
   revalidatePath("/administration/recettes");
   revalidatePath("/administration/depenses");
   revalidatePath("/administration/equilibre-financier");
+  revalidatePath("/administration/tresorerie");
   return { success: true };
 }
 
@@ -248,5 +315,6 @@ export async function toggleStatutOperation(id: number, actuel: string) {
   revalidatePath("/administration/recettes");
   revalidatePath("/administration/depenses");
   revalidatePath("/administration/equilibre-financier");
+  revalidatePath("/administration/tresorerie");
   return { success: true };
 }

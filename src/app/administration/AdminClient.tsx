@@ -78,7 +78,7 @@ export default function AdminClient({
             titre="Trésorerie actuelle"
             valeur={formatMontant(tresorerieActuelle)}
             sousTexte=""
-            href="#"
+            href="/administration/tresorerie"
           />
           <IndicateurCle
             titre="Recettes"
