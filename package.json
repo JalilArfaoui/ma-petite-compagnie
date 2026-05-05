@@ -82,5 +82,8 @@
     "tsx": "^4.21.0",
     "typescript": "5.9.3",
     "vitest": "^4.0.17"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "*"
   }
 }
