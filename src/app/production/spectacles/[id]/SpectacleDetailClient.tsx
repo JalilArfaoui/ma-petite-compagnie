@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/Badge/Badge";
 import { updateSpectacle, deleteSpectacle, deleteBesoin, createBesoinsFromList, ensureFicheTechnique } from "./actions";
@@ -198,12 +199,13 @@ export default function SpectacleDetailClient({ spectacle, typeObjets, categorie
         {/* ===== SECTION 1: POSTER IMAGE ===== */}
         <div className="relative h-[300px] md:h-[400px] rounded-[20px] overflow-hidden bg-slate-200 mb-6 group">
           {(spectacle.hasImage || hasUploaded) && !imgError ? (
-            <img
+            <Image
+              fill
               key={imgKey}
               src={`/production/api/spectacles/${spectacle.id}/image?v=${imgKey}`}
               alt={spectacle.titre}
               onError={() => setImgError(true)}
-              className="w-full h-full object-contain"
+              className="object-contain"
             />
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center text-slate-400">
@@ -638,12 +640,14 @@ export default function SpectacleDetailClient({ spectacle, typeObjets, categorie
                     className="flex items-center gap-3 p-3 rounded-[12px] bg-slate-50 border border-slate-200"
                   >
                     {/* Image */}
-                    <div className="w-12 h-12 rounded-lg bg-slate-200 overflow-hidden flex-shrink-0">
+                    <div className="relative w-12 h-12 rounded-lg bg-slate-200 overflow-hidden flex-shrink-0">
                       {besoin.typeObjet.image ? (
-                        <img
+                        <Image
+                          fill
                           src={besoin.typeObjet.image}
                           alt={besoin.typeObjet.nom}
-                          className="w-full h-full object-cover"
+                          className="object-cover"
+                          unoptimized
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-slate-400 text-lg">

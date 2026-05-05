@@ -16,6 +16,7 @@ Projet « Techno Web » de la Licence 3 Informatique - Université Jean-Françoi
 - [Dorian Labaste](https://github.com/D0lab) - dorian.labaste@etud.univ-jfc.fr
 - [Enzo Cluzel](https://github.com/enzo2900) - enzo.cluzel10@gmail.com
 - Illia Shuldieshov - shuldeshovwork013@gmail.com
+- [Léo Ajas](https://github.com/leoajs) - ajas.leo.82@gmail.com
 - Matéo Faussurier - mateo.faussurier@iut-rodez.fr
 - [Matys Laurent](https://github.com/SyMat12) - matys.laurent@etud.univ-jfc.fr
 - [Romain Fagonde](https://github.com/rom1-dev) - romain.fagonde@etud.univ-jfc.fr
