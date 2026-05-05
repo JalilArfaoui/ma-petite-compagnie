@@ -108,8 +108,8 @@ export function FactureEditor({ compagnie }: { compagnie: Compagnie }) {
   };
 
   return (
-    <SimpleGrid columns={{ base: 1, lg: 2 }} gap={6} className="h-[calc(100vh-120px)]">
-      <Box className="overflow-y-auto pr-2 pb-10">
+    <Flex gap={6} className="h-[calc(100vh-120px)]">
+      <Box className="w-1/2 overflow-y-auto pr-2 pb-10">
         <Stack gap={6}>
           <Heading as="h2">Nouvelle Facture</Heading>
 
@@ -260,9 +260,9 @@ export function FactureEditor({ compagnie }: { compagnie: Compagnie }) {
       </Box>
 
       {/* View Panel */}
-      <Box className="h-full bg-slate-100 rounded-xl overflow-hidden shadow-inner border relative group">
+      <Box className="w-1/2 h-full bg-slate-100 rounded-xl overflow-hidden shadow-inner border relative group">
         <HTMLFacturePreview data={pdfData} />
       </Box>
-    </SimpleGrid>
+    </Flex>
   );
 }
