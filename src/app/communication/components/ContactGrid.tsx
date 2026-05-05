@@ -19,13 +19,17 @@ export function ContactGrid({
   function afficherListe(listes: ListeContact[]) {
     return listes.map((liste, i) => {
       return (
-        <div className="m-1 bg-primary text-white rounded-full text-center" key={liste.id}>
-          <Stack direction="row" justify="start">
+        <div className="m-1 bg-primary text-white text-center rounded-xl" key={liste.id}>
+          <Stack direction="row" justify="start" className="items-center w-30">
             <Button onClick={() => onListeElementDeleted(contact, i)} size="icon" className="h-5">
               X
             </Button>
 
-            <Stack direction="row" justify="center" className="w-full">
+            <Stack
+              direction="row"
+              justify="center"
+              className="w-full text-pretty wrap-break-word break-all p-1"
+            >
               {liste.nom}
             </Stack>
           </Stack>
@@ -36,13 +40,13 @@ export function ContactGrid({
 
   return (
     <Table.Row onClick={() => onSelect(contact)} className={"active:bg-gray-100 " + className}>
-      <Table.Cell className="text-[8px] md:text-[12px] lg:text-[1rem] text-pretty wrap-break-word break-all">
+      <Table.Cell className=" max-w-40 text-[8px] md:text-[12px] lg:text-[1rem] text-pretty wrap-break-word break-all">
         {contact.nom}
       </Table.Cell>
-      <Table.Cell className=" max-w-80  text-[8px] md:text-[12px] lg:text-[1rem] text-pretty wrap-break-word break-all">
+      <Table.Cell className=" max-w-40  text-[8px] md:text-[12px] lg:text-[1rem] text-pretty wrap-break-word break-all">
         {contact.prenom}
       </Table.Cell>
-      <Table.Cell className="text-[8px] md:text-[12px] lg:text-[1rem]  max-w-40 text-pretty wrap-break-word break-all">
+      <Table.Cell className="text-[8px] md:text-[12px] lg:text-[1rem]  max-w-70 text-pretty wrap-break-word break-all">
         {contact.email}
       </Table.Cell>
       <Table.Cell className="text-[8px] md:text-[12px] lg:text-[1rem]">{contact.tel}</Table.Cell>

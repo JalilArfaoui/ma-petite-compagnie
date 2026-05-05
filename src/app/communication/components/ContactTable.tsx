@@ -24,14 +24,16 @@ export function ContactTable({
     setContacts((prev) =>
       prev.map((c) => {
         if (c === contact) {
+          console.log(c);
           return {
             ...c,
-            listes: c.listeContacts.filter((_, i) => i !== listeIndex),
+            listeContacts: c.listeContacts.filter((_, i) => i !== listeIndex),
           };
         }
         return c;
       })
     );
+    console.log(contacts);
   }
   async function loadContacts() {
     const resultat = await getContacts(paginationTaille, page);
