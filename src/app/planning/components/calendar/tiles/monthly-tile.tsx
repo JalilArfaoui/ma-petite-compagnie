@@ -22,6 +22,12 @@ export default function MonthlyTile({
     event: EvenementBuiltInt,
     context?: {
       anchorRect: DOMRect;
+      popupTheme?: {
+        backgroundColor: string;
+        borderColor: string;
+        textColor: string;
+        accentColor: string;
+      };
     }
   ) => void;
   viewType: "monthly" | "weekly";
@@ -141,12 +147,25 @@ export default function MonthlyTile({
               <div
                 key={event.id}
                 className="event-tile"
-                onClick={(clickEvent) =>
+                onClick={(clickEvent) => {
+                  const tile = clickEvent.currentTarget;
+                  const computedTileStyles = window.getComputedStyle(tile);
+                  const dot = tile.querySelector<HTMLElement>(".event-dot");
+                  const dotStyles = dot ? window.getComputedStyle(dot) : null;
+
                   onEventClick?.(
                     { ...event, dateDebut: event.dateDebut, dateFin: event.dateFin },
-                    { anchorRect: clickEvent.currentTarget.getBoundingClientRect() }
-                  )
-                }
+                    {
+                      anchorRect: tile.getBoundingClientRect(),
+                      popupTheme: {
+                        backgroundColor: computedTileStyles.backgroundColor,
+                        borderColor: computedTileStyles.borderColor,
+                        textColor: computedTileStyles.color,
+                        accentColor: dotStyles?.backgroundColor || computedTileStyles.borderColor,
+                      },
+                    }
+                  );
+                }}
                 title={event.nom}
                 style={{
                   position: viewType === "weekly" ? "absolute" : "relative",

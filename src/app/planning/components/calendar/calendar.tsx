@@ -40,6 +40,13 @@ export type EvenementBuiltInt = {
   columnsCount?: number;
 };
 
+type EventPopupTheme = {
+  backgroundColor: string;
+  borderColor: string;
+  textColor: string;
+  accentColor: string;
+};
+
 export type CalendarDay = {
   day: number;
   month: number;
@@ -55,6 +62,7 @@ interface EventCalendarProps {
     event: EvenementBuiltInt,
     context?: {
       anchorRect: DOMRect;
+      popupTheme?: EventPopupTheme;
     }
   ) => void;
 }
@@ -92,6 +100,12 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }: EventC
   const [quickDate, setQuickDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState<EvenementBuiltInt | null>(null);
   const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
+  const [popupTheme, setPopupTheme] = useState<EventPopupTheme>({
+    backgroundColor: "#ffffff",
+    borderColor: "#e5e7eb",
+    textColor: "#111827",
+    accentColor: "#667eea",
+  });
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth() + 1; // 1-12
@@ -281,6 +295,7 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }: EventC
     event: EvenementBuiltInt,
     context?: {
       anchorRect: DOMRect;
+      popupTheme?: EventPopupTheme;
     }
   ) => {
     const fallbackTop = window.innerHeight / 2;
@@ -311,6 +326,9 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }: EventC
     }
 
     setPopupPosition({ top, left });
+    if (context?.popupTheme) {
+      setPopupTheme(context.popupTheme);
+    }
     setSelectedEvent(event);
   };
 
@@ -566,6 +584,7 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }: EventC
             event={selectedEvent}
             top={popupPosition.top}
             left={popupPosition.left}
+            theme={popupTheme}
             onClose={closeEventPopup}
           />
         </div>
