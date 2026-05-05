@@ -25,6 +25,8 @@ import {
   Icon,
   SearchBar,
 } from "@/components/ui";
+import { MINI_WEEKDAYS, MONTHS, WEEKDAYS } from "./utils/constant";
+import CalendarTile from "./tiles/calendar-tiles";
 
 export type EvenementBuiltInt = {
   id: number;
@@ -67,30 +69,7 @@ interface EventCalendarProps {
   ) => void;
 }
 
-const WEEKDAYS = [
-  { full: "Lundi", short: "Lun" },
-  { full: "Mardi", short: "Mar" },
-  { full: "Mercredi", short: "Mer" },
-  { full: "Jeudi", short: "Jeu" },
-  { full: "Vendredi", short: "Ven" },
-  { full: "Samedi", short: "Sam" },
-  { full: "Dimanche", short: "Dim" },
-];
-const MINI_WEEKDAYS = ["Lu", "Ma", "Me", "Je", "Ve", "Sa", "Di"];
-const MONTHS = [
-  "Janvier",
-  "Fevrier",
-  "Mars",
-  "Avril",
-  "Mai",
-  "Juin",
-  "Juillet",
-  "Aout",
-  "Septembre",
-  "Octobre",
-  "Novembre",
-  "Decembre",
-];
+
 
 const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }: EventCalendarProps) => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -527,7 +506,6 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }: EventC
       </div>
 
       <div className="calendar">
-        <CreateEventAction />
         <div className="calendar-content">
           {viewType === "weekly" && (
             <div className="time-slots" ref={ref}>
@@ -562,7 +540,7 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }: EventC
                 ))}
 
               {calendarDays.map((calDay, index) => (
-                <MonthlyTile
+                <CalendarTile
                   key={index}
                   calDay={calDay}
                   index={index}
