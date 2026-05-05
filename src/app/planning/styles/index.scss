@@ -52,6 +52,62 @@ body {
   position: relative;
 }
 
+.event-details-popup {
+  position: fixed;
+  width: min(320px, calc(100vw - 24px));
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.18);
+  z-index: 80;
+  color: #111827;
+}
+
+.event-details-popup-title {
+  margin: 0 26px 10px 0;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.event-details-popup-row {
+  display: grid;
+  grid-template-columns: 86px 1fr;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.35;
+  margin-bottom: 6px;
+}
+
+.event-details-popup-row:last-child {
+  margin-bottom: 0;
+}
+
+.event-details-popup-label {
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.event-details-popup-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: #4b5563;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.event-details-popup-close:hover {
+  background: #f3f4f6;
+}
+
 .quick-calendar-panel {
   position: absolute;
   top: calc(100% + 8px);

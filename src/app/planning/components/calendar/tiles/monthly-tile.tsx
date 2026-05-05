@@ -18,7 +18,12 @@ export default function MonthlyTile({
 }: {
   calDay: CalendarDay;
   index: number;
-  onEventClick?: (event: EvenementBuiltInt) => void;
+  onEventClick?: (
+    event: EvenementBuiltInt,
+    context?: {
+      anchorRect: DOMRect;
+    }
+  ) => void;
   viewType: "monthly" | "weekly";
   slotHeight?: number;
 }) {
@@ -136,8 +141,11 @@ export default function MonthlyTile({
               <div
                 key={event.id}
                 className="event-tile"
-                onClick={() =>
-                  onEventClick?.({ ...event, dateDebut: event.dateDebut, dateFin: event.dateFin })
+                onClick={(clickEvent) =>
+                  onEventClick?.(
+                    { ...event, dateDebut: event.dateDebut, dateFin: event.dateFin },
+                    { anchorRect: clickEvent.currentTarget.getBoundingClientRect() }
+                  )
                 }
                 title={event.nom}
                 style={{
