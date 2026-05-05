@@ -1,6 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import CalendarTile from "./tiles/calendar-tiles";
+import MonthlyTile from "./tiles/monthly-tile";
+import CreateEventAction from "../actions/create-event";
+import EventDetailsPopup from "../popup-components/event-details-popup";
 import {
   Alert,
   Badge,
@@ -24,6 +26,7 @@ import {
   SearchBar,
 } from "@/components/ui";
 import { MINI_WEEKDAYS, MONTHS, WEEKDAYS } from "./utils/constant";
+import CalendarTile from "./tiles/calendar-tiles";
 
 export type EvenementBuiltInt = {
   id: number;
@@ -39,6 +42,13 @@ export type EvenementBuiltInt = {
   columnsCount?: number;
 };
 
+type EventPopupTheme = {
+  backgroundColor: string;
+  borderColor: string;
+  textColor: string;
+  accentColor: string;
+};
+
 export type CalendarDay = {
   day: number;
   month: number;
@@ -50,7 +60,13 @@ export type CalendarDay = {
 
 interface EventCalendarProps {
   events: EvenementBuiltInt[];
-  onEventClick?: (event: EvenementBuiltInt) => void;
+  onEventClick?: (
+    event: EvenementBuiltInt,
+    context?: {
+      anchorRect: DOMRect;
+      popupTheme?: EventPopupTheme;
+    }
+  ) => void;
 }
 
 
@@ -61,6 +77,14 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }: EventC
   const [viewType, setViewType] = useState<"monthly" | "weekly">("monthly");
   const [isQuickCalendarOpen, setIsQuickCalendarOpen] = useState(false);
   const [quickDate, setQuickDate] = useState(new Date());
+  const [selectedEvent, setSelectedEvent] = useState<EvenementBuiltInt | null>(null);
+  const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
+  const [popupTheme, setPopupTheme] = useState<EventPopupTheme>({
+    backgroundColor: "#ffffff",
+    borderColor: "#e5e7eb",
+    textColor: "#111827",
+    accentColor: "#667eea",
+  });
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth() + 1; // 1-12
@@ -242,6 +266,51 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }: EventC
   const ref = React.useRef<HTMLDivElement>(null);
   const [globalSlotsHeight, setGlobalSlotsHeight] = useState(0);
 
+  const closeEventPopup = () => {
+    setSelectedEvent(null);
+  };
+
+  const openEventPopup = (
+    event: EvenementBuiltInt,
+    context?: {
+      anchorRect: DOMRect;
+      popupTheme?: EventPopupTheme;
+    }
+  ) => {
+    const fallbackTop = window.innerHeight / 2;
+    const fallbackLeft = window.innerWidth / 2;
+    const anchorRect = context?.anchorRect;
+
+    const popupWidth = 320;
+    const gap = 10;
+    const viewportPadding = 12;
+
+    let left = anchorRect ? anchorRect.right + gap : fallbackLeft;
+    let top = anchorRect ? anchorRect.top : fallbackTop;
+
+    if (left + popupWidth > window.innerWidth - viewportPadding && anchorRect) {
+      left = anchorRect.left - popupWidth - gap;
+    }
+
+    if (left < viewportPadding) {
+      left = viewportPadding;
+    }
+
+    if (top < viewportPadding) {
+      top = viewportPadding;
+    }
+
+    if (top + 260 > window.innerHeight - viewportPadding) {
+      top = Math.max(viewportPadding, window.innerHeight - 260 - viewportPadding);
+    }
+
+    setPopupPosition({ top, left });
+    if (context?.popupTheme) {
+      setPopupTheme(context.popupTheme);
+    }
+    setSelectedEvent(event);
+  };
+
   const measureSlotHeight = () => {
     if (!ref.current) return;
     const firstSlot = ref.current.querySelector<HTMLElement>(".time-slot");
@@ -269,11 +338,13 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }: EventC
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (!isQuickCalendarOpen) return;
       if (!(event.target instanceof Node)) return;
       const target = event.target as HTMLElement;
-      if (!target.closest(".quick-calendar-wrapper")) {
+      if (isQuickCalendarOpen && !target.closest(".quick-calendar-wrapper")) {
         setIsQuickCalendarOpen(false);
+      }
+      if (selectedEvent && !target.closest(".event-details-popup") && !target.closest(".event-tile")) {
+        closeEventPopup();
       }
     };
 
@@ -281,7 +352,32 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }: EventC
     return () => {
       window.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isQuickCalendarOpen]);
+  }, [isQuickCalendarOpen, selectedEvent]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeEventPopup();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleWindowResize = () => {
+      if (!selectedEvent) return;
+      closeEventPopup();
+    };
+
+    window.addEventListener("resize", handleWindowResize);
+    return () => {
+      window.removeEventListener("resize", handleWindowResize);
+    };
+  }, [selectedEvent]);
 
   return (
     <div className="event-calendar">
@@ -448,7 +544,10 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }: EventC
                   key={index}
                   calDay={calDay}
                   index={index}
-                  onEventClick={onEventClick}
+                  onEventClick={(event, context) => {
+                    openEventPopup(event, context);
+                    onEventClick?.(event, context);
+                  }}
                   viewType={viewType}
                   slotHeight={globalSlotsHeight}
                 />
@@ -457,6 +556,17 @@ const Calendar: React.FC<EventCalendarProps> = ({ events, onEventClick }: EventC
           </div>
         </div>
       </div>
+      {selectedEvent && (
+        <div>
+          <EventDetailsPopup
+            event={selectedEvent}
+            top={popupPosition.top}
+            left={popupPosition.left}
+            theme={popupTheme}
+            onClose={closeEventPopup}
+          />
+        </div>
+      )}
     </div>
   );
 };
