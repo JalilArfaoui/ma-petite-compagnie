@@ -1,12 +1,11 @@
 "use client";
 
 import { Card, Table, Heading } from "@/components/ui";
-import { useState, useEffect } from "react";
-import {
-  getCachetsAction,
-} from "../cachets-actions";
+import { useState, useEffect, useMemo } from "react";
 
-const PAGE_SIZE = 20;
+import { getCachetsAction } from "../cachets-actions";
+
+//const PAGE_SIZE = 20;
 
 //seule la note est optionnelle, toutes les autres clés sont obligatoires donc pas de null permis
 type Cachet = {
@@ -95,9 +94,8 @@ export default function VisionCachetsPage() {
 
         <select
           value={spectacleFilter}
-          onChange={(e) => setSpectacleFilter(e.target.value as "tous" | string)}
           onChange={(e) => {
-            setSpectacleFilter(e.target.value as "tous" | Spectacle);
+            setSpectacleFilter(e.target.value as "tous" | string);
             setPage(1);
           }}
           className="p-2 border border-slate-300 rounded-md w-full"
@@ -159,9 +157,6 @@ export default function VisionCachetsPage() {
             </Table>
           </Card.Body>
         </Card>
-        {filteredAndSorted.length > PAGE_SIZE && (
-          <Pagination currentPage={safePage} totalPages={totalPages} onPageChange={setPage} />
-        )}
       </div>
     </div>
   );

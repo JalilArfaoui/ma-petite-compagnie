@@ -926,19 +926,9 @@ async function main() {
       })
     );
     console.log(`✅ ${operations.length} opérations financières`);
-
-    console.log("Seed terminé !");
   }
 
-  main()
-    .catch((e) => {
-      console.error(e);
-      process.exit(1);
-    })
-    .finally(async () => {
-      await prisma.$disconnect();
-      await pool.end();
-  });
+  console.log("Seed terminé !");
 }
 
 main()
@@ -950,4 +940,3 @@ main()
     await prisma.$disconnect();
     await pool.end();
   });
-}

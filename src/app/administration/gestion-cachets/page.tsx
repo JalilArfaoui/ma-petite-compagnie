@@ -12,7 +12,7 @@ import {
   getAllSpectaclesAction,
 } from "../cachets-actions";
 
-const PAGE_SIZE = 20;
+//const PAGE_SIZE = 20;
 
 //seule la note est optionnelle, toutes les autres clés sont obligatoires donc pas de null permis
 type Cachet = {
@@ -251,17 +251,12 @@ export default function PageCachets() {
         return 0;
     }
   });
-  const cachetsTries = useMemo(() => {
-    return [...cachetsFiltres].sort((a, b) => {
-      if (tri === "date") return b.date.localeCompare(a.date);
-      if (tri === "montant") return b.montant - a.montant;
-      return 0;
-    });
-  }, [cachetsFiltres, tri]);
 
+  /*
   const totalPages = Math.max(1, Math.ceil(cachetsTries.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
   const cachetsPagines = cachetsTries.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+  */
 
   return (
     <main>
@@ -390,11 +385,9 @@ export default function PageCachets() {
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
               value={filtreMembre?.toString() || ""}
-              onChange={(e) => setFiltreMembre(e.target.value ? Number(e.target.value) : null)}
-              value={filtreMembre}
               onChange={(e) => {
-                setFiltreMembre(e.target.value);
-                setPage(1);
+                setFiltreMembre(e.target.value ? Number(e.target.value) : null);
+                //setPage(1);
               }}
             >
               <option value="">Tous les membres</option>
@@ -411,11 +404,9 @@ export default function PageCachets() {
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
               value={filtreSpectacle?.toString() || ""}
-              onChange={(e) => setFiltreSpectacle(e.target.value ? Number(e.target.value) : null)}
-              value={filtreSpectacle}
               onChange={(e) => {
-                setFiltreSpectacle(e.target.value);
-                setPage(1);
+                setFiltreSpectacle(e.target.value ? Number(e.target.value) : null);
+                //setPage(1);
               }}
             >
               <option value="">Tous</option>
@@ -432,11 +423,9 @@ export default function PageCachets() {
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-              value={tri}
               onChange={(e) => {
-                setTri(e.target.value as "date" | "montant");
-                setPage(1);
+                setSortBy(e.target.value as typeof sortBy);
+                //setPage(1);
               }}
             >
               <option value="none">Aucun tri</option>
@@ -465,7 +454,7 @@ export default function PageCachets() {
             </Table.Head>
 
             <Table.Body>
-              {cachetsPagines.map((c) => (
+              {cachetsFiltres.map((c) => (
                 <Table.Row key={c.id}>
                   <Table.Cell>
                     {c.membre.user.prenom} {c.membre.user.nom}
@@ -502,9 +491,6 @@ export default function PageCachets() {
           </Table>
         </Card.Body>
       </Card>
-      {cachetsTries.length > PAGE_SIZE && (
-        <Pagination currentPage={safePage} totalPages={totalPages} onPageChange={setPage} />
-      )}
     </main>
   );
 }
