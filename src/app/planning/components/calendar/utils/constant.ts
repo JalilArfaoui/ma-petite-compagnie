@@ -1,5 +1,14 @@
-const weekdays = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
-const months = [
+const WEEKDAYS = [
+  { full: "Lundi", short: "Lun" },
+  { full: "Mardi", short: "Mar" },
+  { full: "Mercredi", short: "Mer" },
+  { full: "Jeudi", short: "Jeu" },
+  { full: "Vendredi", short: "Ven" },
+  { full: "Samedi", short: "Sam" },
+  { full: "Dimanche", short: "Dim" },
+];
+const MINI_WEEKDAYS = ["Lu", "Ma", "Me", "Je", "Ve", "Sa", "Di"];
+const MONTHS = [
   "Janvier",
   "Fevrier",
   "Mars",
@@ -14,4 +23,4 @@ const months = [
   "Decembre",
 ];
 
-export { weekdays, months };
+export { WEEKDAYS, MINI_WEEKDAYS, MONTHS };
