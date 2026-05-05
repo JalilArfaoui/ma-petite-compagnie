@@ -631,7 +631,8 @@ async function main() {
   }
   console.log(`✅ ${reservationsData.length} réservations d'objets`);
 
-  //nettoyage pour éviter les doublons
+  // --- Opérations financières ---
+  // Nettoyage pour éviter les doublons
   await prisma.operationFinanciere.deleteMany({});
 
   // -- Utilisateurs (Membres) --

@@ -14,11 +14,16 @@ export const Header = () => {
   const isLoading = status === "loading";
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const canAccessAdministration = Boolean(session?.rights?.droitAccesAdministration);
   const navigationItems = [
-    "Production",
-    "Planning",
-    "Communication",
-    ...(session?.rights?.droitAccesAdministration ? ["Administration"] : []),
+    { label: "Production", href: "/production" },
+    { label: "Planning", href: "/planning" },
+    { label: "Communication", href: "/communication" },
+    ...(canAccessAdministration
+      ? [{ label: "Administration", href: "/administration" }]
+      : session
+        ? [{ label: "Cachets", href: "/administration/vision-cachets" }]
+        : []),
   ];
 
   // Cache le header sur les pages d'auth
@@ -60,11 +65,11 @@ export const Header = () => {
           <nav className="hidden md:flex items-center md:gap-6 lg:gap-8 xl:gap-10">
             {navigationItems.map((item) => (
               <Link
-                key={item}
-                href={`/${item.toLowerCase()}`}
+                key={item.href}
+                href={item.href}
                 className="text-slate-600 hover:text-primary transition-colors font-serif md:text-[13px] lg:text-[15px] xl:text-[18px]"
               >
-                {item}
+                {item.label}
               </Link>
             ))}
           </nav>
@@ -169,12 +174,12 @@ export const Header = () => {
             <div className="flex flex-col gap-1 px-4 pb-6">
               {navigationItems.map((item) => (
                 <Link
-                  key={item}
-                  href={`/${item.toLowerCase()}`}
+                  key={item.href}
+                  href={item.href}
                   className="text-slate-600 hover:text-primary hover:bg-black/5 transition-colors font-serif text-base px-4 py-3 rounded"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  {item}
+                  {item.label}
                 </Link>
               ))}
             </div>

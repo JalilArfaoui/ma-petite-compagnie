@@ -14,7 +14,7 @@ import { OperationFormData } from "./finance-actions";
 
 export function buildRecetteLocale(data: DonneesAjoutFinancier): Recette {
   return {
-    id: data.id?.toString() ?? `r-temp-${Date.now()}`,
+    id: data.id?.toString() ?? "",
     nom: data.nom,
     montant: data.montant,
     date: data.date,
@@ -28,7 +28,7 @@ export function buildRecetteLocale(data: DonneesAjoutFinancier): Recette {
 
 export function buildDepenseLocale(data: DonneesAjoutFinancier): Depense {
   return {
-    id: data.id?.toString() ?? `d-temp-${Date.now()}`,
+    id: data.id?.toString() ?? "",
     nom: data.nom,
     montant: data.montant,
     date: data.date,
