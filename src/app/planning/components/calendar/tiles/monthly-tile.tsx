@@ -68,7 +68,10 @@ export default function MonthlyTile({
             let groupEnd = groupStart + 1;
             let maxEndInGroup = baseEvents[groupStart].endMinutes;
 
-            while (groupEnd < baseEvents.length && baseEvents[groupEnd].startMinutes < maxEndInGroup) {
+            while (
+              groupEnd < baseEvents.length &&
+              baseEvents[groupEnd].startMinutes < maxEndInGroup
+            ) {
               maxEndInGroup = Math.max(maxEndInGroup, baseEvents[groupEnd].endMinutes);
               groupEnd++;
             }
@@ -107,13 +110,13 @@ export default function MonthlyTile({
         })()
       : [];
 
-    type EventItem = {
-      event: EvenementBuiltInt;
-      startMinutes: number;
-      endMinutes: number;
-      column?: number;
-      columnsCount?: number;
-    };
+  type EventItem = {
+    event: EvenementBuiltInt;
+    startMinutes: number;
+    endMinutes: number;
+    column?: number;
+    columnsCount?: number;
+  };
 
   return (
     <div
@@ -126,18 +129,22 @@ export default function MonthlyTile({
       <div className="day-number">{calDay.day}</div>
 
       <div className="events-container">
-      {(viewType === "weekly" ? weeklyEvents : calDay.events.map((event: EvenementBuiltInt) => ({ event }))).map(
-           (item: PositionedEvent | { event: EvenementBuiltInt }) => {
-            const event = item.event;
-            const topInMinutes = viewType === "weekly" && "startMinutes" in item ? item.startMinutes : 0;
-            const durationInMinutes =
-              viewType === "weekly" && "endMinutes" in item
-                ? Math.max(item.endMinutes - item.startMinutes, 15)
-                : 0;
-            const column = viewType === "weekly" && "column" in item ? item.column ?? 0 : 0;
-            const columnsCount = viewType === "weekly" && "columnsCount" in item ? item.columnsCount ?? 1 : 1;
-            const widthPercent = 100 / columnsCount;
-            const leftPercent = column * widthPercent;
+        {(viewType === "weekly"
+          ? weeklyEvents
+          : calDay.events.map((event: EvenementBuiltInt) => ({ event }))
+        ).map((item: PositionedEvent | { event: EvenementBuiltInt }) => {
+          const event = item.event;
+          const topInMinutes =
+            viewType === "weekly" && "startMinutes" in item ? item.startMinutes : 0;
+          const durationInMinutes =
+            viewType === "weekly" && "endMinutes" in item
+              ? Math.max(item.endMinutes - item.startMinutes, 15)
+              : 0;
+          const column = viewType === "weekly" && "column" in item ? (item.column ?? 0) : 0;
+          const columnsCount =
+            viewType === "weekly" && "columnsCount" in item ? (item.columnsCount ?? 1) : 1;
+          const widthPercent = 100 / columnsCount;
+          const leftPercent = column * widthPercent;
 
           return (
             <div
@@ -164,15 +171,12 @@ export default function MonthlyTile({
             >
               <span className="event-dot" aria-hidden="true" />
               <span className="event-content">
-                <span className="event-time">
-                  {formatEventRange(event)}
-                </span>
+                <span className="event-time">{formatEventRange(event)}</span>
                 <span className="event-name">{event.nom}</span>
               </span>
             </div>
           );
-          }
-        )}
+        })}
       </div>
     </div>
   );
