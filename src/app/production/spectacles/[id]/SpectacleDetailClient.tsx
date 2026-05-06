@@ -757,7 +757,6 @@ export default function SpectacleDetailClient({ spectacle, typeObjets, categorie
         <div className="flex flex-col sm:flex-row gap-3 mb-12">
           <a href={spectacle.id + "/reserver"}>
             <button
-              disabled
               className="flex-1 bg-slate-200 text-slate-400 font-serif font-bold italic rounded-[12px] py-3 text-sm cursor-not-allowed"
             >
               Créer une représentation
