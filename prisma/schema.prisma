@@ -106,7 +106,7 @@ enum Role {
 
 model ListeContact {
   id Int @id @default(autoincrement())
-  nom String
+  nom String @unique
   contacts Contact[] 
 }
 

@@ -8,6 +8,7 @@ import {
   Lieu,
   Spectacle,
   Representation,
+  Cachet,
   OperationFinanciere,
 } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
@@ -796,6 +797,7 @@ async function main() {
     },
   ];
 
+  const cachets: Cachet[] = [];
   for (const c of cachetData) {
     const existing = await prisma.cachet.findFirst({
       where: {
@@ -804,8 +806,10 @@ async function main() {
         date: c.date,
       },
     });
-    if (!existing) {
-      await prisma.cachet.create({ data: c });
+    if (existing) {
+      cachets.push(existing);
+    } else {
+      cachets.push(await prisma.cachet.create({ data: c }));
     }
   }
   console.log(`✅ ${cachetData.length} cachets`);
