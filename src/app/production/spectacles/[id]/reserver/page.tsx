@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import { refresh, revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { Box, Card, Heading } from "@/components/ui";
+import { Box, Heading } from "@/components/ui";
 import { Prisma } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
@@ -48,7 +47,6 @@ async function deleteRepresentation(formData: FormData) {
   const spectacleId = formData.get("spectacleId") as string;
 
   const representationId = Number(formData.get("representationId"));
-  console.log(representationId);
   await prisma.representation.delete({
     where: {
       id: representationId,
