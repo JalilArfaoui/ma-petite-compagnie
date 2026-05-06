@@ -4,8 +4,6 @@ import { Card, Table, Heading } from "@/components/ui";
 import { useState, useEffect, useMemo } from "react";
 import { getCachetsAction } from "../cachets-actions";
 
-//const PAGE_SIZE = 20;
-
 //seule la note est optionnelle, toutes les autres clés sont obligatoires donc pas de null permis
 type Cachet = {
   id: number;
