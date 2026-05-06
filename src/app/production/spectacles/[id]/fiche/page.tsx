@@ -49,7 +49,6 @@ async function deleteFicheTechnique(spectacleId: number, formData: FormData) {
   await prisma.ficheTechnique.delete({
     where: { spectacleId },
   });
-  console.log("essaie");
   revalidatePath(`/production/spectacles/${spectacleId}`);
 }
 
@@ -73,6 +72,10 @@ export default async function FichesTechniquesPage({
       },
     },
   });
+  
+  if (!spectacle) {
+  return <p>Spectacle introuvable.</p>;
+  }
 
   const fiche = spectacle?.ficheTechnique ?? null;
 
@@ -93,11 +96,11 @@ export default async function FichesTechniquesPage({
           </h3>
 
           <FicheForm
-            spectacleTitre={spectacle!.titre}
+            spectacleTitre={spectacle.titre}
             fiche={fiche}
-            createAction={createFicheTechnique.bind(null, spectacle!.id, spectacle!.titre)}
-            updateAction={updateFicheTechnique.bind(null, spectacle!.id)}
-            deleteAction={deleteFicheTechnique.bind(null, spectacle!.id)}
+            createAction={createFicheTechnique.bind(null, spectacle.id, spectacle.titre)}
+            updateAction={updateFicheTechnique.bind(null, spectacle.id)}
+            deleteAction={deleteFicheTechnique.bind(null, spectacle.id)}
           />
         </div>
       </div>
