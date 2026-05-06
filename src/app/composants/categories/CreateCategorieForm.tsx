@@ -2,16 +2,15 @@
 
 import { useState } from "react";
 import { Categorie } from "@prisma/client";
-import { Button, Input, SimpleGrid, Field } from "@/components/ui";
+import { Button, Input, Field } from "@/components/ui";
 import { creerCategorie } from "@/app/actions/categorie";
 
 type Props = {
   onSuccess: (categorie: Categorie) => void;
   onCancel: () => void;
-  idCompagnie: number;
 };
 
-export function CreateCategorieForm({ onSuccess, onCancel, idCompagnie }: Props) {
+export function CreateCategorieForm({ onSuccess, onCancel }: Props) {
   const [nom, setNom] = useState("");
   const [couleur, setCouleur] = useState("#000000");
 
