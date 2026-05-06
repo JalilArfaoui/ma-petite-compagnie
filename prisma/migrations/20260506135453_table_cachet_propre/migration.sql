@@ -1,9 +1,12 @@
-/*
-  Warnings:
+-- AlterTable
+ALTER TABLE "Compagnie" ADD COLUMN     "capitalSocial" DOUBLE PRECISION,
+ADD COLUMN     "formeJuridique" TEXT,
+ADD COLUMN     "rcs" TEXT,
+ADD COLUMN     "siren" TEXT;
 
-  - A unique constraint covering the columns `[nom]` on the table `ListeContact` will be added. If there are existing duplicate values, this will fail.
+-- AlterTable
+ALTER TABLE "Facture" ADD COLUMN     "clientSiren" TEXT;
 
-*/
 -- CreateTable
 CREATE TABLE "Cachet" (
     "id" SERIAL NOT NULL,
@@ -15,9 +18,6 @@ CREATE TABLE "Cachet" (
 
     CONSTRAINT "Cachet_pkey" PRIMARY KEY ("id")
 );
-
--- CreateIndex
-CREATE UNIQUE INDEX "ListeContact_nom_key" ON "ListeContact"("nom");
 
 -- AddForeignKey
 ALTER TABLE "Cachet" ADD CONSTRAINT "Cachet_membreId_fkey" FOREIGN KEY ("membreId") REFERENCES "CompanyMember"("id") ON DELETE CASCADE ON UPDATE CASCADE;
