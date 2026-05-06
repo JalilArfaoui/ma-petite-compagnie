@@ -1,4 +1,4 @@
-import { Box, Button, Stack, Table } from "@/components/ui";
+import { Button, Stack, Table } from "@/components/ui";
 import Link from "next/link";
 import { ContactWithListes } from "../api/contact/contact";
 import { ListeContact } from "@prisma/client";
@@ -17,7 +17,7 @@ export function ContactGrid({
   className: string;
 }) {
   function afficherListe(listes: ListeContact[]) {
-    return listes.map((liste, i) => {
+    return listes.map((liste) => {
       return (
         <div className="m-1 bg-primary text-white text-center rounded-xl" key={liste.id}>
           <Stack direction="row" justify="start" className="items-center w-30">

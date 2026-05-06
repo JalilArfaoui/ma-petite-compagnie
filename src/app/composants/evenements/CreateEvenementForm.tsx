@@ -10,10 +10,9 @@ import { getLieux } from "@/app/actions/lieu";
 type Props = {
   onSuccess?: (evenement: Evenement) => void;
   onCancel?: () => void;
-  compagnieId: number;
 };
 
-export function CreateEvenementForm({ onSuccess, onCancel, compagnieId }: Props) {
+export function CreateEvenementForm({ onSuccess, onCancel }: Props) {
   const [nom, setNom] = useState("");
   const [dateDebut, setDateDebut] = useState("");
   const [dateFin, setDateFin] = useState("");
@@ -159,7 +158,6 @@ export function CreateEvenementForm({ onSuccess, onCancel, compagnieId }: Props)
           </Modal.Header>
           <Modal.Content>
             <CreateLieuForm
-              idCompagnie={compagnieId}
               onSuccess={(lieu) => {
                 const { id, libelle } = lieu;
                 setLieuxMap((prev) => [...prev, { id, libelle }]);
@@ -181,7 +179,6 @@ export function CreateEvenementForm({ onSuccess, onCancel, compagnieId }: Props)
           </Modal.Header>
           <Modal.Content>
             <CreateCategorieForm
-              idCompagnie={compagnieId}
               onSuccess={(categorie) => {
                 const { id, nom } = categorie;
                 setCategoriesMap((prev) => [...prev, { id, nom }]);
