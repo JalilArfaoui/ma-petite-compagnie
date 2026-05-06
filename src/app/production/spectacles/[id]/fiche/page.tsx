@@ -72,9 +72,9 @@ export default async function FichesTechniquesPage({
       },
     },
   });
-  
+
   if (!spectacle) {
-  return <p>Spectacle introuvable.</p>;
+    return <p>Spectacle introuvable.</p>;
   }
 
   const fiche = spectacle?.ficheTechnique ?? null;

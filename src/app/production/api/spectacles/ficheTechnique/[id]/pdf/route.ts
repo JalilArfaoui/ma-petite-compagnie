@@ -8,13 +8,14 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   const { id } = await params;
   const fiche = await prisma.ficheTechnique.findUnique({
     where: { id: Number(id) },
-    select: { id: true, 
-              pdf: true, 
-              texte: true, 
-              pdfName: true, 
-              spectacleId: true,
-              spectacle: {select: {titre: true} },
-             },
+    select: {
+      id: true,
+      pdf: true,
+      texte: true,
+      pdfName: true,
+      spectacleId: true,
+      spectacle: { select: { titre: true } },
+    },
   });
 
   if (!fiche) {

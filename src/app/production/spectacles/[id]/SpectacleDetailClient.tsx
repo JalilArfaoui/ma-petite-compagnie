@@ -598,9 +598,7 @@ export default function SpectacleDetailClient({ spectacle, typeObjets, categorie
                     <div className="flex-1 h-px bg-slate-200" />
                   </div>
                   <a href={`/production/spectacle/${spectacle.id}/fiche`}>
-                    <button
-                      className="w-full bg-white border border-[#D00039] text-[#D00039] hover:bg-[#FFF5F7] font-serif font-bold italic rounded-[12px] py-2 text-sm transition-colors cursor-pointer"
-                    >
+                    <button className="w-full bg-white border border-[#D00039] text-[#D00039] hover:bg-[#FFF5F7] font-serif font-bold italic rounded-[12px] py-2 text-sm transition-colors cursor-pointer">
                       Faites la vôtre
                     </button>
                   </a>
@@ -758,12 +756,12 @@ export default function SpectacleDetailClient({ spectacle, typeObjets, categorie
         {/* ===== SECTION 5: BOTTOM ACTIONS ===== */}
         <div className="flex flex-col sm:flex-row gap-3 mb-12">
           <a href={spectacle.id + "/reserver"}>
-          <button
-            disabled
-            className="flex-1 bg-slate-200 text-slate-400 font-serif font-bold italic rounded-[12px] py-3 text-sm cursor-not-allowed"
-          >
-            Créer une représentation
-          </button>
+            <button
+              disabled
+              className="flex-1 bg-slate-200 text-slate-400 font-serif font-bold italic rounded-[12px] py-3 text-sm cursor-not-allowed"
+            >
+              Créer une représentation
+            </button>
           </a>
           <button
             onClick={handleDelete}
