@@ -583,7 +583,7 @@ async function main() {
   const repsData = [
     {
       debutResa: new Date("2026-04-15T20:00:00"),
-      finResa: new Date("2026-04-15T20:00:00"),
+      finResa: new Date("2026-04-15T21:00:00"),
       spectacleId: spectacles[0].id,
       lieuId: lieux[0].id,
     },

@@ -12,7 +12,7 @@ export async function updateSpectacle(formData: FormData) {
   const type = formData.get("type") as TypeSpectacle;
   const statut = formData.get("statut") as StatutSpectacle;
   const budget_initial = Number(formData.get("budget_initial")) || 0;
-  const dure = formData.get("dure") ? Number(formData.get("dure")) : null;
+  const dure = Number(formData.get("dure"));
 
   await prisma.spectacle.update({
     where: { id },
