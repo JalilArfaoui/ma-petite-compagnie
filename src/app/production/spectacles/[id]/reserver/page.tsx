@@ -2,7 +2,6 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { Box, Heading } from "@/components/ui";
-import { Prisma } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
@@ -109,8 +108,12 @@ const formatDate2 = (date1: Date, date2: Date) => {
   return d;
 };
 
-const formatDateInput = (date: Date) => {
-  return date.toISOString().slice(0, 16);
+const memeJour = (a: Date, b: Date) => {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
 };
 
 const compagnieId = 1; // TODO: remplacer par l'id de la compagnie connectée
@@ -246,7 +249,7 @@ export default async function ProductionPage({
                     <div className="flex flex-col gap-2 text-sm">
                       <p>
                         <strong>📅 Date:</strong>{" "}
-                        {representation.debutResa.getDate() === representation.finResa.getDate()
+                        {memeJour(representation.debutResa, representation.finResa)
                           ? formatDate2(representation.debutResa, representation.finResa)
                           : "du " +
                             formatDate(representation.debutResa) +
@@ -595,7 +598,7 @@ export default async function ProductionPage({
                     <div className="flex flex-col gap-2 text-sm">
                       <p>
                         <strong>📅 Date:</strong>{" "}
-                        {representation.debutResa.getDate() === representation.finResa.getDate()
+                        {memeJour(representation.debutResa, representation.finResa)
                           ? formatDate2(representation.debutResa, representation.finResa)
                           : "du " +
                             formatDate(representation.debutResa) +
