@@ -323,12 +323,12 @@ export default async function ProductionPage({
                             AND: [
                               {
                                 debutResa: {
-                                  gt: debut,
+                                  gte: debut,
                                 },
                               },
                               {
                                 debutResa: {
-                                  lt: fin,
+                                  lte: fin,
                                 },
                               },
                             ],
@@ -337,12 +337,12 @@ export default async function ProductionPage({
                             AND: [
                               {
                                 finResa: {
-                                  gt: debut,
+                                  gte: debut,
                                 },
                               },
                               {
                                 finResa: {
-                                  lt: fin,
+                                  lte: fin,
                                 },
                               },
                             ],
@@ -351,12 +351,12 @@ export default async function ProductionPage({
                             AND: [
                               {
                                 debutResa: {
-                                  lt: debut,
+                                  lte: debut,
                                 },
                               },
                               {
                                 finResa: {
-                                  gt: fin,
+                                  gte: fin,
                                 },
                               },
                             ],
