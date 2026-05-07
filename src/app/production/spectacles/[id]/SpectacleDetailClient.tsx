@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/Badge/Badge";
 import {
@@ -537,24 +538,32 @@ export default function SpectacleDetailClient({ spectacle, typeObjets, categorie
                     </svg>
                     <span className="font-serif">{spectacle.ficheTechnique.pdfName}</span>
                   </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() =>
-                        window.open(
-                          `/production/api/spectacles/ficheTechnique/${spectacle.ficheTechnique!.id}/pdf`
-                        )
-                      }
-                      className="flex-1 bg-[#D00039] text-white font-serif font-bold italic rounded-[12px] py-2 text-sm hover:bg-[#B00030] transition-colors cursor-pointer"
+                  <div className="flex flex-col gap-3">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() =>
+                          window.open(
+                            `/production/api/spectacles/ficheTechnique/${spectacle.ficheTechnique!.id}/pdf`
+                          )
+                        }
+                        className="flex-1 bg-[#D00039] text-white font-serif font-bold italic rounded-[12px] py-2 text-sm hover:bg-[#B00030] transition-colors cursor-pointer"
+                      >
+                        Ouvrir le PDF
+                      </button>
+                      <button
+                        onClick={() => ftInputRef.current?.click()}
+                        disabled={ftUploading}
+                        className="border border-slate-300 rounded-[12px] px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
+                      >
+                        {ftUploading ? "..." : "Remplacer"}
+                      </button>
+                    </div>
+                    <Link
+                      href={`/production/spectacles/${spectacle.id}/fiche`}
+                      className="w-full bg-white border border-[#D00039] text-[#D00039] hover:bg-[#FFF5F7] font-serif font-bold italic rounded-[12px] py-2 text-sm transition-colors cursor-pointer inline-block text-center"
                     >
-                      Ouvrir le PDF
-                    </button>
-                    <button
-                      onClick={() => ftInputRef.current?.click()}
-                      disabled={ftUploading}
-                      className="border border-slate-300 rounded-[12px] px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
-                    >
-                      {ftUploading ? "..." : "Remplacer"}
-                    </button>
+                      Modifier la fiche technique
+                    </Link>
                   </div>
                 </>
               ) : (
@@ -590,12 +599,12 @@ export default function SpectacleDetailClient({ spectacle, typeObjets, categorie
                     <span className="text-xs text-slate-400 font-serif">ou</span>
                     <div className="flex-1 h-px bg-slate-200" />
                   </div>
-                  <button
-                    onClick={() => router.push("/production/fiches-techniques")}
-                    className="w-full bg-white border border-[#D00039] text-[#D00039] hover:bg-[#FFF5F7] font-serif font-bold italic rounded-[12px] py-2 text-sm transition-colors cursor-pointer"
+                  <Link
+                    href={`/production/spectacles/${spectacle.id}/fiche`}
+                    className="w-full bg-white border border-[#D00039] text-[#D00039] hover:bg-[#FFF5F7] font-serif font-bold italic rounded-[12px] py-2 text-sm transition-colors cursor-pointer inline-block text-center"
                   >
                     Faites la vôtre
-                  </button>
+                  </Link>
                 </div>
               )}
             </div>
@@ -749,11 +758,12 @@ export default function SpectacleDetailClient({ spectacle, typeObjets, categorie
 
         {/* ===== SECTION 5: BOTTOM ACTIONS ===== */}
         <div className="flex flex-col sm:flex-row gap-3 mb-12">
-          <a href={spectacle.id + "/reserver"}>
-            <button className="border border-red-200 text-red-600 bg-white hover:bg-red-50 font-serif rounded-[12px] px-6 py-3 text-sm transition-colors cursor-pointer">
-              Créer une représentation
-            </button>
-          </a>
+          <Link
+            href={`/production/spectacles/${spectacle.id}/reserver`}
+            className="flex-1 border border-red-200 text-red-600 bg-white hover:bg-red-50 font-serif font-bold italic rounded-[12px] py-3 text-sm transition-colors cursor-pointer inline-block text-center"
+          >
+            Créer une représentation
+          </Link>
           <button
             onClick={handleDelete}
             className="border border-red-200 text-red-600 bg-white hover:bg-red-50 font-serif rounded-[12px] px-6 py-3 text-sm transition-colors cursor-pointer"

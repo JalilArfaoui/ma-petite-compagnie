@@ -2,7 +2,6 @@ import Link from "next/link";
 
 const navItems = [
   { href: "/production", label: "🎭 Spectacles" },
-  { href: "/production/fiches-techniques", label: "📋 Fiches Techniques" },
   { href: "/production/representations", label: "📅 Représentations" },
   { href: "/production/objets", label: "🎪 Objets" },
 ];
