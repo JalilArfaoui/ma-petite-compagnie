@@ -3,8 +3,52 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 
-const MONTANT_CACHET_MINIMUM_LEGAL = 110;
-const NOTE_NB_MAX_CARACS = 120;
+export const MONTANT_CACHET_MINIMUM_LEGAL: number = 110;
+export const NOTE_NB_MAX_CARACS: number = 120;
+export let ID_UTILISATEUR_CONNECTE: number = -1;
+
+//vérifie si le membre est connecté et à accès à la page gestion cachets
+//(pas besoin de vérifier pour vision cachets puisque tous les membres de la compagnie y ont accès)
+export async function accesPageAuth(): Promise<{
+  estConnecte: boolean;
+  peutAccederGestionCachets?: boolean;
+  error?: string;
+}> {
+  let session; //let au lieu de const pour pouvoir l'utiliser en dehors du premier try/catch, et pour pouvoir assigner une nouvelle valeur dessus
+  try {
+    session = await auth();
+    if (!session) return { estConnecte: false as const, error: "Non autorisé" };
+  } catch (error) {
+    console.error("Erreur lors de l'authentification:", error);
+    return { estConnecte: false as const, error: "Erreur lors de l'authentification" };
+  }
+
+  try {
+    const membreCompagnie = await prisma.companyMember.findFirst({
+      where: {
+        userId: Number(session.user.id),
+      },
+    });
+
+    if (!membreCompagnie) {
+      return { estConnecte: false as const, error: "Membre de la compagnie non trouvé" };
+    } else {
+      ID_UTILISATEUR_CONNECTE = membreCompagnie.id;
+    }
+
+    if (membreCompagnie.droitAccesAdministration) {
+      return { estConnecte: true, peutAccederGestionCachets: true };
+    } else {
+      return { estConnecte: true, peutAccederGestionCachets: false };
+    }
+  } catch (error) {
+    console.error("Erreur lors de la vérification des droits d'accès:", error);
+    return {
+      estConnecte: false as const,
+      error: "Erreur lors de la vérification des droits d'accès",
+    };
+  }
+}
 
 //fonction helper pour valider les données d'un cachet
 async function validerCachetDataAction(data: {
@@ -188,12 +232,12 @@ export async function getAllMembresAction() {
   if (!session) return { success: false, error: "Non autorisé" };
 
   try {
-    const membres = await prisma.companyMember.findMany({
+    const membreCompagnie = await prisma.companyMember.findMany({
       include: {
         user: true,
       },
     });
-    return { success: true, data: membres };
+    return { success: true, data: membreCompagnie };
   } catch (error) {
     console.error("Erreur lors de la récupération des membres:", error);
     return { success: false, error: "Impossible de récupérer les membres" };
