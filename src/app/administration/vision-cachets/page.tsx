@@ -1,39 +1,55 @@
 "use client";
 
 import { Card, Table, Heading } from "@/components/ui";
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { getCachetsAction } from "../cachets-actions";
 
-type Spectacle = "Hamlet" | "Le Roi Lion" | "Romeo et Juliette";
-
+//seule la note est optionnelle, toutes les autres clés sont obligatoires donc pas de null permis
 type Cachet = {
   id: number;
+  membreId: number;
+  membre: { user: { nom: string | null; prenom: string | null } };
   date: string;
   montant: number;
-  spectacle: Spectacle;
+  spectacleId: number;
+  spectacle: { titre: string };
+  note?: string | null;
 };
 
-//dictionnaire temporaire le temps que la bdd soit opérationnelle
-const CACHETS_DATA: Cachet[] = [
-  { id: 1, date: "2024-01-18", montant: 150, spectacle: "Le Roi Lion" },
-  { id: 2, date: "2024-03-21", montant: 300, spectacle: "Hamlet" },
-  { id: 3, date: "2024-06-04", montant: 200, spectacle: "Romeo et Juliette" },
-  { id: 4, date: "2024-07-15", montant: 180, spectacle: "Le Roi Lion" },
-  { id: 5, date: "2024-08-07", montant: 250, spectacle: "Hamlet" },
-  { id: 6, date: "2024-09-24", montant: 120, spectacle: "Le Roi Lion" },
-];
-
 export default function VisionCachetsPage() {
-  const [spectacleFilter, setSpectacleFilter] = useState<"tous" | Spectacle>("tous");
+  const [cachets, setCachets] = useState<Cachet[]>([]);
+  const [spectacleFilter, setSpectacleFilter] = useState<string>("tous");
   const [sortBy, setSortBy] = useState<
     "none" | "dateCroissante" | "dateDecroissante" | "montantCroissant" | "montantDecroissant"
   >("none"); //pour avoir un seul tri actif à la fois
+  //const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    getCachetsAction()
+      .then((result) => {
+        if (result.success && result.data) {
+          const cachetFormate = result.data.map((c) => ({
+            ...c,
+            //convertit date de type Date en date de type string
+            //simplement parce que je prefère utiliser string plutôt que Date pour la clé date
+            date: typeof c.date === "string" ? c.date : c.date.toISOString().split("T")[0],
+          }));
+          setCachets(cachetFormate);
+        } else if (!result.success) {
+          console.error(result.error);
+        }
+      })
+      .catch((error) => {
+        console.error("Erreur non gérée:", error);
+      });
+  }, []);
 
   //filtrage + tri
   const filteredAndSorted = useMemo(() => {
-    let result = [...CACHETS_DATA];
+    let result = [...cachets];
 
     if (spectacleFilter !== "tous") {
-      result = result.filter((cachet) => cachet.spectacle === spectacleFilter);
+      result = result.filter((cachet) => cachet.spectacle.titre === spectacleFilter);
     }
 
     switch (sortBy) {
@@ -44,34 +60,47 @@ export default function VisionCachetsPage() {
         result.sort((a, b) => b.date.localeCompare(a.date));
         break;
       case "montantCroissant":
-        result.sort((a, b) => a.montant - b.montant);
+        result.sort((a, b) => {
+          return a.montant - b.montant;
+        });
         break;
       case "montantDecroissant":
-        result.sort((a, b) => b.montant - a.montant);
+        result.sort((a, b) => {
+          return b.montant - a.montant;
+        });
         break;
     }
 
     return result;
-  }, [spectacleFilter, sortBy]);
+  }, [spectacleFilter, sortBy, cachets]);
+
+  /*
+  const totalPages = Math.max(1, Math.ceil(filteredAndSorted.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages);
+  const paginated = filteredAndSorted.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+  */
 
   return (
     <div>
-      <Heading as="h3" className="font-extrabold mb-4 pt-6 text-center">
+      <Heading as="h2" className="font-extrabold mb-4 pt-6 text-center">
         Liste des cachets
       </Heading>
 
-      <div className="mx-auto max-w-4xl bg-hover p-5 border-none shadow-sm transition-shadow flex flex-col gap-5">
+      <div className="mx-auto max-w-4xl rounded-[20px] bg-hover p-[20px] border-none shadow-sm transition-shadow flex flex-col gap-[20px]">
         <Heading as="h4" className="font-semibold">
           Filtrer par spectacle
         </Heading>
 
         <select
           value={spectacleFilter}
-          onChange={(e) => setSpectacleFilter(e.target.value as "tous" | Spectacle)}
+          onChange={(e) => {
+            setSpectacleFilter(e.target.value as "tous" | string);
+            //setPage(1);
+          }}
           className="p-2 border border-slate-300 rounded-md w-full"
         >
           <option value="tous">Tous les spectacles</option>
-          {[...new Set(CACHETS_DATA.map((c) => c.spectacle))].map((s) => (
+          {[...new Set(cachets.map((c) => c.spectacle.titre))].map((s) => (
             <option key={s} value={s}>
               {s}
             </option>
@@ -79,11 +108,14 @@ export default function VisionCachetsPage() {
         </select>
 
         <Heading as="h4" className="font-semibold">
-          Options de triage
+          Options de tri
         </Heading>
         <select
           value={sortBy}
-          onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+          onChange={(e) => {
+            setSortBy(e.target.value as typeof sortBy);
+            //setPage(1);
+          }}
           className="p-2 border border-slate-300 rounded-md w-full"
         >
           <option value="none">Aucun tri</option>
@@ -107,6 +139,7 @@ export default function VisionCachetsPage() {
                   <Table.Header>Date</Table.Header>
                   <Table.Header>Montant</Table.Header>
                   <Table.Header>Spectacle</Table.Header>
+                  <Table.Header>Note</Table.Header>
                 </Table.Row>
               </Table.Head>
               <Table.Body>
@@ -115,7 +148,8 @@ export default function VisionCachetsPage() {
                     <Table.Cell>{cachet.id}</Table.Cell>
                     <Table.Cell>{new Date(cachet.date).toLocaleDateString("fr-FR")}</Table.Cell>
                     <Table.Cell>{cachet.montant} €</Table.Cell>
-                    <Table.Cell>{cachet.spectacle}</Table.Cell>
+                    <Table.Cell>{cachet.spectacle.titre}</Table.Cell>
+                    <Table.Cell>{cachet.note || "-"}</Table.Cell>
                   </Table.Row>
                 ))}
               </Table.Body>

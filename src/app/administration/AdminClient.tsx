@@ -9,9 +9,9 @@ import {
   DepensesSection,
   Recette,
   Depense,
+  SpectacleEquilibre,
 } from "./components";
 import { formatMontant } from "./utils";
-import { SPECTACLES_DATA } from "./test_data";
 
 type RecetteFromServer = {
   id: string;
@@ -37,10 +37,12 @@ export default function AdminClient({
   initialRecettes,
   initialDepenses,
   nomsSpectacles,
+  equilibresSpectacles,
 }: {
   initialRecettes: RecetteFromServer[];
   initialDepenses: DepenseFromServer[];
   nomsSpectacles: string[];
+  equilibresSpectacles: SpectacleEquilibre[];
 }) {
   const [recettes, setRecettes] = useState<Recette[]>(initialRecettes);
   const [depenses, setDepenses] = useState<Depense[]>(initialDepenses);
@@ -76,7 +78,7 @@ export default function AdminClient({
             titre="Trésorerie actuelle"
             valeur={formatMontant(tresorerieActuelle)}
             sousTexte=""
-            href="#"
+            href="/administration/tresorerie"
           />
           <IndicateurCle
             titre="Recettes"
@@ -108,7 +110,7 @@ export default function AdminClient({
             setRecettes={setRecettes}
             spectacles={nomsSpectacles}
           />
-          <EquilibreFinancier spectacles={SPECTACLES_DATA} />
+          <EquilibreFinancier spectacles={equilibresSpectacles} />
           <DepensesSection
             depenses={depenses}
             setDepenses={setDepenses}

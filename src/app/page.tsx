@@ -1,6 +1,5 @@
 "use client";
 import { Heading, Container, Stack, Text, Card } from "@/components/ui";
-import { FaHome } from "react-icons/fa";
 import { GiRoundStar } from "react-icons/gi";
 import { FaCalendar } from "react-icons/fa6";
 import { HiUserGroup } from "react-icons/hi2";

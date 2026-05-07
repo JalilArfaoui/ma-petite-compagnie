@@ -8,10 +8,12 @@ import {
   Lieu,
   Spectacle,
   Representation,
+  Cachet,
   OperationFinanciere,
 } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
+import bcryptjs from "bcryptjs";
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const adapter = new PrismaPg(pool);
@@ -682,15 +684,191 @@ async function main() {
   }
   console.log(`✅ ${reservationsData.length} réservations d'objets`);
 
-  // --- Opérations financières (données issues de test_data.ts) ---
+  // --- Opérations financières ---
   // Nettoyage pour éviter les doublons
   await prisma.operationFinanciere.deleteMany({});
 
-  // Helper pour trouver un spectacle par titre (parmi ceux du seed)
+  // -- Utilisateurs (Membres) --
+  const usersData = [
+    {
+      email: "jean.dupont@theatre.fr",
+      password: await bcryptjs.hash("password", 10),
+      nom: "Dupont",
+      prenom: "Jean",
+    },
+    {
+      email: "marie.martin@theatre.fr",
+      password: await bcryptjs.hash("password", 10),
+      nom: "Martin",
+      prenom: "Marie",
+    },
+    {
+      email: "pierre.bernard@theatre.fr",
+      password: await bcryptjs.hash("password", 10),
+      nom: "Bernard",
+      prenom: "Pierre",
+    },
+    {
+      email: "sophie.leclerc@theatre.fr",
+      password: await bcryptjs.hash("password", 10),
+      nom: "Leclerc",
+      prenom: "Sophie",
+    },
+    {
+      email: "thomas.gaston@theatre.fr",
+      password: await bcryptjs.hash("password", 10),
+      nom: "Gaston",
+      prenom: "Thomas",
+    },
+    {
+      email: "claire.laurent@theatre.fr",
+      password: await bcryptjs.hash("password", 10),
+      nom: "Laurent",
+      prenom: "Claire",
+    },
+  ];
+
+  const users = [];
+  for (const u of usersData) {
+    const existing = await prisma.user.findFirst({
+      where: { email: u.email },
+    });
+    if (existing) {
+      users.push(existing);
+    } else {
+      users.push(await prisma.user.create({ data: u }));
+    }
+  }
+  console.log(`✅ ${users.length} utilisateurs créés`);
+
+  // -- CompanyMembers --
+  const companyMembersData = [
+    { userId: users[0].id, compagnieId: compagnies[0].id },
+    { userId: users[1].id, compagnieId: compagnies[0].id },
+    { userId: users[2].id, compagnieId: compagnies[0].id },
+    { userId: users[3].id, compagnieId: compagnies[1].id },
+    { userId: users[4].id, compagnieId: compagnies[2].id },
+    { userId: users[5].id, compagnieId: compagnies[0].id },
+  ];
+
+  //helper pour trouver un spectacle par titre (parmi ceux du seed)
   const findSpectacle = (titre: string) => spectacles.find((s) => s.titre === titre);
 
+  const companyMembers = [];
+  for (const m of companyMembersData) {
+    const existing = await prisma.companyMember.findFirst({
+      where: { userId: m.userId, compagnieId: m.compagnieId },
+    });
+    if (existing) {
+      companyMembers.push(existing);
+    } else {
+      companyMembers.push(await prisma.companyMember.create({ data: m }));
+    }
+  }
+  console.log(`✅ ${companyMembers.length} membres de compagnie`);
+
+  // -- Cachets --
+  const cachetData = [
+    // 11 nouveaux cachets avec dates <= 30 avril 2026 et montants >= 110€
+    {
+      membreId: companyMembers[0].id,
+      spectacleId: spectacles[0].id,
+      date: new Date("2026-01-15T18:00:00"),
+      montant: 130,
+      note: "Répétition - rôle principal",
+    },
+    {
+      membreId: companyMembers[1].id,
+      spectacleId: spectacles[0].id,
+      date: new Date("2026-01-20T19:00:00"),
+      montant: 275,
+      note: "Répétition - rôle secondaire",
+    },
+    {
+      membreId: companyMembers[2].id,
+      spectacleId: spectacles[1].id,
+      date: new Date("2026-02-05T17:30:00"),
+      montant: 240,
+      note: "Entraînement danse",
+    },
+    {
+      membreId: companyMembers[3].id,
+      spectacleId: spectacles[1].id,
+      date: new Date("2026-02-10T18:30:00"),
+      montant: 125,
+      note: "Coaching spécifique",
+    },
+    {
+      membreId: companyMembers[4].id,
+      spectacleId: spectacles[2].id,
+      date: new Date("2026-02-15T16:00:00"),
+      montant: 310,
+      note: "Préparation musicale",
+    },
+    {
+      membreId: companyMembers[5].id,
+      spectacleId: spectacles[2].id,
+      date: new Date("2026-02-20T17:00:00"),
+      montant: 430,
+      note: "Composition musicale",
+    },
+    {
+      membreId: companyMembers[0].id,
+      spectacleId: spectacles[3].id,
+      date: new Date("2026-03-01T15:30:00"),
+      montant: 250,
+      note: "Atelier circassien",
+    },
+    {
+      membreId: companyMembers[1].id,
+      spectacleId: spectacles[3].id,
+      date: new Date("2026-03-05T14:00:00"),
+      montant: 500,
+      note: "Stage acrobatie",
+    },
+    {
+      membreId: companyMembers[2].id,
+      spectacleId: spectacles[0].id,
+      date: new Date("2026-03-15T19:30:00"),
+      montant: 290,
+      note: "Représentation générale",
+    },
+    {
+      membreId: companyMembers[3].id,
+      spectacleId: spectacles[1].id,
+      date: new Date("2026-04-01T20:00:00"),
+      montant: 160,
+      note: "Générale costumes",
+    },
+    {
+      membreId: companyMembers[4].id,
+      spectacleId: spectacles[2].id,
+      date: new Date("2026-04-25T18:00:00"),
+      montant: 420,
+      note: "Dernière préparation avant tournée",
+    },
+  ];
+
+  const cachets: Cachet[] = [];
+  for (const c of cachetData) {
+    const existing = await prisma.cachet.findFirst({
+      where: {
+        membreId: c.membreId,
+        spectacleId: c.spectacleId,
+        date: c.date,
+      },
+    });
+    if (existing) {
+      cachets.push(existing);
+    } else {
+      cachets.push(await prisma.cachet.create({ data: c }));
+    }
+  }
+  console.log(`✅ ${cachetData.length} cachets`);
+
+  // -- Recettes et dépenses --
   const operationsData = [
-    // ── Recettes ──
+    // -- Recettes --
     {
       nom: "Fonds de roulement initial",
       montant: 10600.83,
@@ -761,7 +939,8 @@ async function main() {
       compagnieId: compagnies[0].id,
       spectacles: ["Pestacle"],
     },
-    // ── Dépenses ──
+
+    // -- Dépenses --
     {
       nom: "Décorations scène",
       montant: 400,

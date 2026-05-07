@@ -3,6 +3,9 @@
 import { useRef, useState } from "react";
 import { updateRepresentation, deleteRepresentation, removeReservation } from "./actions";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
+import { Pagination } from "@/components/ui";
+
+const PAGE_SIZE = 20;
 
 // ========== Types ==========
 
@@ -164,6 +167,14 @@ export default function RepresentationsClient({
   spectacles,
   lieux,
 }: RepresentationsClientProps) {
+  const [page, setPage] = useState(1);
+  const totalPages = Math.max(1, Math.ceil(representations.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages);
+  const representationsPaginees = representations.slice(
+    (safePage - 1) * PAGE_SIZE,
+    safePage * PAGE_SIZE
+  );
+
   return (
     <div className="max-w-7xl mx-auto px-4">
       <div className="flex flex-col gap-8">
@@ -179,7 +190,7 @@ export default function RepresentationsClient({
           </h3>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {representations.map((r) => (
+            {representationsPaginees.map((r) => (
               <div
                 key={r.id}
                 className="p-6 shadow-md border-l-4 border-l-[#D00039] bg-white rounded-xl transition-all hover:shadow-xl hover:-translate-y-0.5"
@@ -283,6 +294,10 @@ export default function RepresentationsClient({
             <div className="p-12 text-center bg-white rounded-xl shadow-md">
               <p className="text-slate-500 text-lg">Aucune représentation pour le moment.</p>
             </div>
+          )}
+
+          {representations.length > PAGE_SIZE && (
+            <Pagination currentPage={safePage} totalPages={totalPages} onPageChange={setPage} />
           )}
         </div>
       </div>
