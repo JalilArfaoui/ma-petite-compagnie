@@ -1,8 +1,10 @@
 "use client";
 
-import { Card, Table, Heading } from "@/components/ui";
+import { Card, Table, Heading, Pagination } from "@/components/ui";
 import { useState, useEffect, useMemo } from "react";
-import { getCachetsAction } from "../cachets-actions";
+import { getCachetsAction, accesPageAuth, ID_UTILISATEUR_CONNECTE } from "../cachets-actions";
+
+const PAGE_SIZE = 20;
 
 //seule la note est optionnelle, toutes les autres clés sont obligatoires donc pas de null permis
 type Cachet = {
@@ -17,12 +19,26 @@ type Cachet = {
 };
 
 export default function VisionCachetsPage() {
+  //appel uniquement dans vision-cachets car c'est la page par défaut de l'onglet administration après connexion
+  accesPageAuth().then((result) => {
+    const estConnecté: boolean = result.estConnecte;
+    const peutAccederGestionCachets: boolean = result.peutAccederGestionCachets || false;
+    const error: string = result.error || "";
+
+    if (error !== "") {
+      if (!estConnecté) {
+        console.error("Utilisateur non connecté. Redirection vers la page de connexion.");
+        //window.location.href = "/connexion";
+      }
+    }
+  });
+
   const [cachets, setCachets] = useState<Cachet[]>([]);
   const [spectacleFilter, setSpectacleFilter] = useState<string>("tous");
   const [sortBy, setSortBy] = useState<
     "none" | "dateCroissante" | "dateDecroissante" | "montantCroissant" | "montantDecroissant"
   >("none"); //pour avoir un seul tri actif à la fois
-  //const [page, setPage] = useState(1);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     getCachetsAction()
@@ -45,8 +61,10 @@ export default function VisionCachetsPage() {
   }, []);
 
   //filtrage + tri
-  const filteredAndSorted = useMemo(() => {
+  const filtresEtTries = useMemo(() => {
     let result = [...cachets];
+
+    result = result.filter((cachet) => cachet.membreId === ID_UTILISATEUR_CONNECTE);
 
     if (spectacleFilter !== "tous") {
       result = result.filter((cachet) => cachet.spectacle.titre === spectacleFilter);
@@ -74,11 +92,9 @@ export default function VisionCachetsPage() {
     return result;
   }, [spectacleFilter, sortBy, cachets]);
 
-  /*
-  const totalPages = Math.max(1, Math.ceil(filteredAndSorted.length / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(filtresEtTries.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
-  const paginated = filteredAndSorted.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
-  */
+  const cachetsPagines = filtresEtTries.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
   return (
     <div>
@@ -95,7 +111,7 @@ export default function VisionCachetsPage() {
           value={spectacleFilter}
           onChange={(e) => {
             setSpectacleFilter(e.target.value as "tous" | string);
-            //setPage(1);
+            setPage(1);
           }}
           className="p-2 border border-slate-300 rounded-md w-full"
         >
@@ -114,7 +130,7 @@ export default function VisionCachetsPage() {
           value={sortBy}
           onChange={(e) => {
             setSortBy(e.target.value as typeof sortBy);
-            //setPage(1);
+            setPage(1);
           }}
           className="p-2 border border-slate-300 rounded-md w-full"
         >
@@ -143,7 +159,7 @@ export default function VisionCachetsPage() {
                 </Table.Row>
               </Table.Head>
               <Table.Body>
-                {filteredAndSorted.map((cachet) => (
+                {cachetsPagines.map((cachet) => (
                   <Table.Row key={cachet.id}>
                     <Table.Cell>{cachet.id}</Table.Cell>
                     <Table.Cell>{new Date(cachet.date).toLocaleDateString("fr-FR")}</Table.Cell>
@@ -156,6 +172,9 @@ export default function VisionCachetsPage() {
             </Table>
           </Card.Body>
         </Card>
+        {filtresEtTries.length > PAGE_SIZE && (
+          <Pagination currentPage={safePage} totalPages={totalPages} onPageChange={setPage} />
+        )}
       </div>
     </div>
   );
