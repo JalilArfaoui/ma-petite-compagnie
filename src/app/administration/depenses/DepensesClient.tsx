@@ -2,6 +2,7 @@
 
 import { useTransition } from "react";
 import { DonneesAjoutFinancier } from "../modals";
+import { toaster } from "@/components/ui";
 import { ItemFinancierCard } from "../components/shared";
 import { Depense } from "../components/types";
 import { useGestionFinanciere } from "../hooks/useGestionFinanciere";
@@ -41,10 +42,24 @@ export default function DepensesClient({
   } = useGestionFinanciere<Depense>(initialDepenses, "dépense");
 
   const handleAddDepense = (data: DonneesAjoutFinancier) => {
-    handleAdd(data, buildDepenseLocale, "Dépense ajoutée");
-
     startTransition(async () => {
-      await creerOperation(buildDepensePayload(data));
+      try {
+        const result = await creerOperation(buildDepensePayload(data));
+        if ("error" in result) {
+          toaster.error({
+            title: "Erreur lors de l'ajout",
+            description: result.error,
+          });
+          return;
+        }
+
+        handleAdd(result.operation, "Dépense ajoutée");
+      } catch {
+        toaster.error({
+          title: "Erreur lors de l'ajout",
+          description: "Impossible d'ajouter la dépense.",
+        });
+      }
     });
   };
 

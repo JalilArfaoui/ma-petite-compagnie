@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { TypeOperation } from "@prisma/client";
 import { getActiveAdministrationContext } from "./auth-helpers";
+import { SpectacleEquilibre } from "./components/types";
 
 // ─── Types pour les données transmises par les formulaires ───
 
@@ -18,6 +19,32 @@ export type OperationFormData = {
   spectacles?: string[]; // titres des spectacles liés
   fichier?: string;
 };
+
+export type TresorerieMouvement = {
+  id: string;
+  nom: string;
+  date: string;
+  typeOp: "RECETTE" | "DEPENSE";
+  montant: number;
+  spectacles: string[];
+};
+
+export type TresorerieData = {
+  soldeActuel: number;
+  totalEncaisse: number;
+  totalDepense: number;
+  nombreMouvements: number;
+  derniereDateMouvement: string | null;
+  mouvements: TresorerieMouvement[];
+};
+
+function revaliderPagesFinance() {
+  revalidatePath("/administration");
+  revalidatePath("/administration/recettes");
+  revalidatePath("/administration/depenses");
+  revalidatePath("/administration/equilibre-financier");
+  revalidatePath("/administration/tresorerie");
+}
 
 // ─── Lecture ───
 
@@ -57,6 +84,108 @@ export async function getNomsSpectacles() {
   return spectacles.map((s) => s.titre);
 }
 
+export async function getEquilibresSpectacles(): Promise<SpectacleEquilibre[]> {
+  const context = await getActiveAdministrationContext();
+  if (!context.ok) throw new Error(context.error);
+
+  const spectacles = await prisma.spectacle.findMany({
+    where: { compagnieId: context.compagnieId },
+    select: {
+      id: true,
+      titre: true,
+      budget_initial: true,
+      operations: {
+        select: {
+          montant: true,
+          type: true,
+          statut: true,
+        },
+      },
+    },
+    orderBy: { titre: "asc" },
+  });
+
+  return spectacles.map((spectacle) => {
+    const { recettesPayees, recettesEnAttente, depenses } = spectacle.operations.reduce(
+      (totaux, op) => {
+        if (op.type === "RECETTE" && op.statut === "paye") {
+          totaux.recettesPayees += op.montant;
+        } else if (op.type === "RECETTE" && op.statut === "en_attente") {
+          totaux.recettesEnAttente += op.montant;
+        } else if (op.type === "DEPENSE") {
+          totaux.depenses += op.montant;
+        }
+        return totaux;
+      },
+      { recettesPayees: 0, recettesEnAttente: 0, depenses: 0 }
+    );
+    const baseBudget = spectacle.budget_initial + recettesPayees;
+    const pourcentageConsomme = baseBudget <= 0 ? 0 : Math.min((depenses / baseBudget) * 100, 100);
+
+    return {
+      id: spectacle.id,
+      nom: spectacle.titre,
+      budgetInitial: spectacle.budget_initial,
+      recettesPayees,
+      recettesEnAttente,
+      depenses,
+      montant: spectacle.budget_initial + recettesPayees - depenses,
+      pourcentageConsomme,
+    };
+  });
+}
+
+export async function getTresorerieReelle(): Promise<TresorerieData> {
+  const context = await getActiveAdministrationContext();
+  if (!context.ok) throw new Error(context.error);
+
+  const operations = await prisma.operationFinanciere.findMany({
+    where: {
+      compagnieId: context.compagnieId,
+      OR: [{ type: "DEPENSE" }, { type: "RECETTE", statut: "paye" }],
+    },
+    select: {
+      id: true,
+      nom: true,
+      montant: true,
+      date: true,
+      type: true,
+      spectacles: { select: { titre: true } },
+    },
+    orderBy: { date: "desc" },
+  });
+
+  let totalEncaisse = 0;
+  let totalDepense = 0;
+  const mouvements: TresorerieMouvement[] = [];
+
+  for (const op of operations) {
+    if (op.type === "RECETTE") {
+      totalEncaisse += op.montant;
+    } else {
+      totalDepense += op.montant;
+    }
+
+    mouvements.push({
+      id: op.id.toString(),
+      nom: op.nom,
+      date: op.date.toISOString().split("T")[0],
+      typeOp: op.type,
+      montant: op.type === "DEPENSE" ? -op.montant : op.montant,
+      spectacles: op.spectacles.map((s) => s.titre),
+    });
+  }
+
+  return {
+    soldeActuel: totalEncaisse - totalDepense,
+    totalEncaisse,
+    totalDepense,
+    nombreMouvements: mouvements.length,
+    derniereDateMouvement: mouvements[0]?.date ?? null,
+    mouvements,
+  };
+}
+
 // ─── Création ───
 
 export async function creerOperation(data: OperationFormData) {
@@ -72,7 +201,7 @@ export async function creerOperation(data: OperationFormData) {
         })
       : [];
 
-  await prisma.operationFinanciere.create({
+  const operation = await prisma.operationFinanciere.create({
     data: {
       nom: data.nom,
       montant: data.montant,
@@ -86,12 +215,25 @@ export async function creerOperation(data: OperationFormData) {
         connect: spectacleConnections.map((s) => ({ id: s.id })),
       },
     },
+    include: { spectacles: { select: { titre: true } } },
   });
 
-  revalidatePath("/administration");
-  revalidatePath("/administration/recettes");
-  revalidatePath("/administration/depenses");
-  return { success: true };
+  revaliderPagesFinance();
+  return {
+    success: true,
+    operation: {
+      id: operation.id.toString(),
+      nom: operation.nom,
+      montant: operation.montant,
+      date: operation.date.toISOString().split("T")[0],
+      type: (operation.categorie ?? "facture") as "facture" | "financement",
+      typeOp: operation.type,
+      statut: (operation.statut ?? "en_attente") as "en_attente" | "paye",
+      source: operation.source,
+      spectacles: operation.spectacles.map((s) => s.titre),
+      fichier: operation.fichier ?? undefined,
+    },
+  };
 }
 
 // ─── Modification ───
@@ -131,9 +273,7 @@ export async function modifierOperation(data: OperationFormData) {
     },
   });
 
-  revalidatePath("/administration");
-  revalidatePath("/administration/recettes");
-  revalidatePath("/administration/depenses");
+  revaliderPagesFinance();
   return { success: true };
 }
 
@@ -153,9 +293,7 @@ export async function supprimerOperation(id: number) {
     where: { id },
   });
 
-  revalidatePath("/administration");
-  revalidatePath("/administration/recettes");
-  revalidatePath("/administration/depenses");
+  revaliderPagesFinance();
   return { success: true };
 }
 
@@ -178,8 +316,6 @@ export async function toggleStatutOperation(id: number, actuel: string) {
     data: { statut: nouveauStatut },
   });
 
-  revalidatePath("/administration");
-  revalidatePath("/administration/recettes");
-  revalidatePath("/administration/depenses");
+  revaliderPagesFinance();
   return { success: true };
 }

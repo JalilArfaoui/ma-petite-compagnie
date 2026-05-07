@@ -7,7 +7,7 @@ import { ModalAjoutRapide, DonneesAjoutFinancier } from "../modals";
 import { Depense } from "./types";
 import { FadeContainer, ItemFinancierCard, VoirToutLink } from "./shared";
 import { creerOperation } from "../finance-actions";
-import { buildDepenseLocale, buildDepensePayload } from "../finance-helpers";
+import { buildDepensePayload } from "../finance-helpers";
 
 export function DepensesSection({
   depenses,
@@ -27,14 +27,28 @@ export function DepensesSection({
     .slice(0, 5);
 
   const handleAddDepense = (data: DonneesAjoutFinancier) => {
-    setDepenses([buildDepenseLocale(data), ...depenses]);
-    toaster.success({
-      title: "Dépense ajoutée",
-      description: "La dépense a été directement comptabilisée comme payée.",
-    });
-
     startTransition(async () => {
-      await creerOperation(buildDepensePayload(data));
+      try {
+        const result = await creerOperation(buildDepensePayload(data));
+        if ("error" in result) {
+          toaster.error({
+            title: "Erreur lors de l'ajout",
+            description: result.error,
+          });
+          return;
+        }
+
+        setDepenses((prev) => [result.operation, ...prev]);
+        toaster.success({
+          title: "Dépense ajoutée",
+          description: "La dépense a été directement comptabilisée comme payée.",
+        });
+      } catch {
+        toaster.error({
+          title: "Erreur lors de l'ajout",
+          description: "Impossible d'ajouter la dépense.",
+        });
+      }
     });
   };
 

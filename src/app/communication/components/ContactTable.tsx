@@ -5,7 +5,7 @@ import { Contact, ListeContact } from "@prisma/client";
 import { ContactGrid } from "./ContactGrid";
 import { CreateListe } from "./CreateListe";
 import { GetListe } from "./GetListe";
-import { creerListe, trouverListes } from "../api/contact/liste";
+import { creerListe, supprimerContactDeListe, trouverListes } from "../api/contact/liste";
 
 export function ContactTable({
   getContacts,
@@ -20,12 +20,34 @@ export function ContactTable({
   const [contacts, setContacts] = useState<ContactWithListes[]>([]);
   const [contactsSelectionne, setContactsSelectionne] = useState<ContactWithListes[]>([]);
 
-  async function loadContacts() {
-    const resultat = await getContacts(paginationTaille, page);
-    setContacts(resultat ?? []);
-    loadListes();
+  async function deleteListeFromContact(contact: ContactWithListes, listeId: number) {
+    const listeAsupprimer = contact.listeContacts.find((liste) => liste.id == listeId);
+    if (!listeAsupprimer) {
+      return;
+    }
+    const result = await supprimerContactDeListe(contact, listeAsupprimer);
+    if (result?.succes) {
+      setContacts((prev) =>
+        prev.map((c) => {
+          if (c === contact) {
+            return {
+              ...c,
+              listeContacts: c.listeContacts.filter((liste) => liste.id !== listeId),
+            };
+          }
+          return c;
+        })
+      );
+      toaster.create({
+        type: "success",
+        title: "Suppression liste",
+        description: "La liste a bien été enlevée",
+      });
+    } else {
+      toaster.create({ type: "error", title: "Suppression liste", description: result?.message });
+    }
   }
-  /** Use callback ne permet pas de faire l'appel de cette fonction dans use effect*/
+
   async function loadListes() {
     const resultat = await trouverListes();
     if (resultat.succes) {
@@ -34,13 +56,6 @@ export function ContactTable({
       toaster.create({ description: resultat.message, type: "error" });
     }
   }
-  useEffect(() => {
-    async function loadContacts() {
-      const resultat = await getContacts(paginationTaille, page);
-      setContacts(resultat ?? []);
-    }
-    loadContacts();
-  }, [keyReload, page, getContacts]);
 
   useEffect(() => {
     async function loadListes() {
@@ -53,6 +68,19 @@ export function ContactTable({
     }
     loadListes();
   }, []);
+  async function loadContacts() {
+    const resultat = await getContacts(paginationTaille, page);
+    setContacts(resultat ?? []);
+    loadListes();
+  }
+  useEffect(() => {
+    async function loadContacts() {
+      const resultat = await getContacts(paginationTaille, page);
+      setContacts(resultat ?? []);
+    }
+    loadContacts();
+  }, [keyReload, page, getContacts]);
+
   function changerPage(page: number) {
     setPage(page);
   }
@@ -184,6 +212,7 @@ export function ContactTable({
                   onDelete={supprimerUnContact}
                   contact={contact}
                   onSelect={updateSelected}
+                  onListeElementDeleted={deleteListeFromContact}
                   className={contactsSelectionne.includes(contact) ? "bg-gray-100" : ""}
                 />
               );

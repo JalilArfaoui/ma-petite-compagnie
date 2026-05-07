@@ -7,7 +7,7 @@ import { modifierContactAction } from "../action/contactFormAction";
 import ContactDetails from "../components/contactDetails";
 import { trouverParIdContact } from "../api/contact/contact";
 import { useRouter } from "next/navigation";
-import { Box, Button, Heading, Link } from "@/components/ui";
+import { Box, Button, Heading } from "@/components/ui";
 
 export function ContactModification({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();

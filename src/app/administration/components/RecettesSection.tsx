@@ -7,7 +7,7 @@ import { ModalAjoutRapide, DonneesAjoutFinancier } from "../modals";
 import { Recette } from "./types";
 import { FadeContainer, ItemFinancierCard, VoirToutLink } from "./shared";
 import { toggleStatutOperation, creerOperation } from "../finance-actions";
-import { buildRecetteLocale, buildRecettePayload, getNouveauStatut } from "../finance-helpers";
+import { buildRecettePayload, getNouveauStatut } from "../finance-helpers";
 
 export function RecettesSection({
   recettes,
@@ -51,11 +51,25 @@ export function RecettesSection({
   const recettesAffichees = recettesFiltrees.slice(0, 5);
 
   const handleAddRecette = (data: DonneesAjoutFinancier) => {
-    setRecettes([buildRecetteLocale(data), ...recettes]);
-    toaster.success({ title: "Recette ajoutée" });
-
     startTransition(async () => {
-      await creerOperation(buildRecettePayload(data));
+      try {
+        const result = await creerOperation(buildRecettePayload(data));
+        if ("error" in result) {
+          toaster.error({
+            title: "Erreur lors de l'ajout",
+            description: result.error,
+          });
+          return;
+        }
+
+        setRecettes((prev) => [result.operation, ...prev]);
+        toaster.success({ title: "Recette ajoutée" });
+      } catch {
+        toaster.error({
+          title: "Erreur lors de l'ajout",
+          description: "Impossible d'ajouter la recette.",
+        });
+      }
     });
   };
 
