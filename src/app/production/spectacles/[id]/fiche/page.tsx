@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import Link from "next/link";
 import FicheForm from "./FicheForm";
 
 export const dynamic = "force-dynamic";
@@ -38,6 +40,7 @@ async function updateFicheTechnique(spectacleId: number, formData: FormData) {
   });
 
   revalidatePath(`/production/spectacles/${spectacleId}`);
+  redirect(`/production/spectacles/${spectacleId}`);
 }
 
 /* =========================
@@ -85,11 +88,12 @@ export default async function FichesTechniquesPage({
         <h1 className="text-4xl text-[#D00039] text-center font-bold">
           📋 Gestion de la Fiche Technique
         </h1>
-        <a href={`/production/spectacles/${id}`}>
-          <button className="text-sm text-slate-500 hover:text-[#D00039] font-serif mb-4 inline-flex items-center gap-1 cursor-pointer">
-            ← Retour à la fiche du spectacle
-          </button>
-        </a>
+        <Link
+          href={`/production/spectacles/${id}`}
+          className="text-sm text-slate-500 hover:text-[#D00039] font-serif mb-4 inline-flex items-center gap-1 cursor-pointer"
+        >
+          ← Retour à la fiche du spectacle
+        </Link>
         <div className="p-6 shadow-lg border-t-4 border-t-[#D00039] bg-white rounded-xl">
           <h3 className="mb-6 text-xl font-bold text-[#D00039]">
             {fiche ? "✏️ Modifier la fiche technique" : "➕ Ajouter une fiche technique"}

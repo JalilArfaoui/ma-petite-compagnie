@@ -1,8 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { jsPDF } from "jspdf";
-
-type FicheSection = { title: string; body: string };
+import { parseFicheSections, FicheSection } from "@/lib/parseFicheSections";
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -32,21 +31,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     });
   }
 
-  let sections: FicheSection[] = [];
-  try {
-    const parsed = JSON.parse(fiche.texte ?? "[]");
-    if (Array.isArray(parsed)) {
-      sections = parsed.filter(
-        (s): s is FicheSection =>
-          typeof s === "object" &&
-          s !== null &&
-          typeof s.title === "string" &&
-          typeof s.body === "string"
-      );
-    }
-  } catch {
-    sections = [{ title: "", body: fiche.texte ?? "" }];
-  }
+  const sections: FicheSection[] = parseFicheSections(fiche.texte);
 
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -146,7 +131,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     status: 200,
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="${filename}"`,
+      "Content-Disposition": `inline; filename="${filename}"`,
     },
   });
 }

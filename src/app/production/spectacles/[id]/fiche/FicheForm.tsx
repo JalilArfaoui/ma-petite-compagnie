@@ -1,18 +1,12 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { parseFicheSections } from "@/lib/parseFicheSections";
 
 type Section = { id: number; title: string; body: string };
 
 function parseSections(texte: string): Section[] {
-  try {
-    const parsed = JSON.parse(texte);
-    if (Array.isArray(parsed)) {
-      return parsed.map((s, i) => ({ id: i + 1, title: s.title ?? "", body: s.body ?? "" }));
-    }
-  } catch {}
-  // Ancien format texte brut : on crée une section unique
-  return texte ? [{ id: 1, title: "", body: texte }] : [];
+  return parseFicheSections(texte).map((s, i) => ({ id: i + 1, ...s }));
 }
 
 export default function FicheForm({
