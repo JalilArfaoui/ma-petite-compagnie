@@ -21,8 +21,10 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     return new NextResponse("Fiche introuvable", { status: 404 });
   }
 
+  const slugTitle = fiche.spectacle.titre.replace(/[^a-z0-9]/gi, "-").toLowerCase();
+  const filename = fiche.pdfName ?? `fiche-technique-${slugTitle}.pdf`;
+
   if (fiche.pdf) {
-    const filename = fiche.pdfName || "fiche-technique.pdf";
     return new NextResponse(fiche.pdf, {
       headers: {
         "Content-Type": "application/pdf",
@@ -125,7 +127,6 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   }
 
   const pdfBuffer = Buffer.from(doc.output("arraybuffer"));
-  const filename = fiche.pdfName || "fiche-technique.pdf";
 
   return new NextResponse(pdfBuffer, {
     status: 200,

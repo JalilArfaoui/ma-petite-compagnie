@@ -6,6 +6,8 @@ export function parseFicheSections(texte: string | null | undefined): FicheSecti
     if (Array.isArray(parsed)) {
       return parsed.map((s) => ({ title: s.title ?? "", body: s.body ?? "" }));
     }
-  } catch {}
+  } catch (e) {
+    console.error("parseFicheSections: JSON malformé", e);
+  }
   return texte ? [{ title: "", body: texte }] : [];
 }

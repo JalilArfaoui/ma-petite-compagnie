@@ -165,7 +165,17 @@ export default async function ProductionPage({
           spectacleId: spectacle.id,
         },
       });
-      const besoins: { [id: string]: typeof req } = {};
+      type BesoinWithTypeObjet = Prisma.BesoinSpectacleGetPayload<{
+        include: {
+          typeObjet: {
+            include: {
+              categorie: { select: { nom: true } };
+              objets: true;
+            };
+          };
+        };
+      }>;
+      const besoins: Record<string, BesoinWithTypeObjet[]> = {};
       const categories: string[] = [];
       req.forEach((element) => {
         if (besoins[element.typeObjet.categorie.nom] == undefined) {

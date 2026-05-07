@@ -9,21 +9,17 @@ export const dynamic = "force-dynamic";
 /* =========================
    CREATE
 ========================= */
-async function createFicheTechnique(
-  spectacleId: number,
-  spectacleTitre: string,
-  formData: FormData
-) {
+async function createFicheTechnique(spectacleId: number, formData: FormData) {
   "use server";
 
   const texte = formData.get("texte") as string;
-  const pdfName = "Fiche Technique - " + spectacleTitre + ".pdf";
 
   await prisma.ficheTechnique.create({
-    data: { texte, spectacleId, pdfName },
+    data: { texte, spectacleId },
   });
 
-  revalidatePath(`/production/spectacles/`);
+  revalidatePath(`/production/spectacles/${spectacleId}`);
+  redirect(`/production/spectacles/${spectacleId}`);
 }
 
 /* =========================
@@ -53,6 +49,7 @@ async function deleteFicheTechnique(spectacleId: number, formData: FormData) {
     where: { spectacleId },
   });
   revalidatePath(`/production/spectacles/${spectacleId}`);
+  redirect(`/production/spectacles/${spectacleId}`);
 }
 
 /* =========================
@@ -71,7 +68,7 @@ export default async function FichesTechniquesPage({
       id: true,
       titre: true,
       ficheTechnique: {
-        select: { texte: true, pdfName: true, spectacleId: true },
+        select: { texte: true, spectacleId: true },
       },
     },
   });
@@ -80,7 +77,7 @@ export default async function FichesTechniquesPage({
     return <p>Spectacle introuvable.</p>;
   }
 
-  const fiche = spectacle?.ficheTechnique ?? null;
+  const fiche = spectacle.ficheTechnique ?? null;
 
   return (
     <div className="max-w-7xl mx-auto px-4">
@@ -102,7 +99,7 @@ export default async function FichesTechniquesPage({
           <FicheForm
             spectacleTitre={spectacle.titre}
             fiche={fiche}
-            createAction={createFicheTechnique.bind(null, spectacle.id, spectacle.titre)}
+            createAction={createFicheTechnique.bind(null, spectacle.id)}
             updateAction={updateFicheTechnique.bind(null, spectacle.id)}
             deleteAction={deleteFicheTechnique.bind(null, spectacle.id)}
           />
