@@ -158,7 +158,7 @@ export default function VisionCachetsPage() {
           </Card.Body>
         </Card>
       </div>
-      {<Pagination currentPage={safePage} totalPages={totalPages} onPageChange={setPage} />}
+      <Pagination currentPage={safePage} totalPages={totalPages} onPageChange={setPage} />
     </div>
   );
 }
