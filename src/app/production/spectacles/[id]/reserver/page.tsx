@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -116,8 +117,6 @@ const memeJour = (a: Date, b: Date) => {
   );
 };
 
-const compagnieId = 1; // TODO: remplacer par l'id de la compagnie connectée
-
 export default async function ProductionPage({
   params,
   searchParams,
@@ -125,6 +124,8 @@ export default async function ProductionPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ date?: string; lieu?: number }>;
 }) {
+  const session = await auth();
+  const compagnieId = Number(session!.activeCompanyId);
   const { id } = await params;
   const { date: dateParam, lieu: lieuParam } = await searchParams;
   const laDate = dateParam ? (dateParam as string) : null;

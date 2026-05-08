@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { requireActiveCompanyProduction } from "./auth-helpers";
 
 const navItems = [
   { href: "/production", label: "🎭 Spectacles" },
@@ -6,7 +7,8 @@ const navItems = [
   { href: "/production/objets", label: "🎪 Objets" },
 ];
 
-export default function ProductionLayout({ children }: { children: React.ReactNode }) {
+export default async function ProductionLayout({ children }: { children: React.ReactNode }) {
+  await requireActiveCompanyProduction();
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Navigation */}

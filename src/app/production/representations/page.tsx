@@ -1,12 +1,17 @@
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import RepresentationsClient from "./RepresentationsClient";
 
 export const dynamic = "force-dynamic";
 
 export default async function RepresentationsPage() {
+  const session = await auth();
+  const compagnieId = Number(session!.activeCompanyId);
+
   const [representations, spectacles, lieux] = await Promise.all([
     prisma.representation.findMany({
       orderBy: { debutResa: "desc" },
+      where: { spectacle: { compagnieId } },
       include: {
         spectacle: true,
         lieu: true,
@@ -22,7 +27,7 @@ export default async function RepresentationsPage() {
         },
       },
     }),
-    prisma.spectacle.findMany({ orderBy: { titre: "asc" } }),
+    prisma.spectacle.findMany({ orderBy: { titre: "asc" }, where: { compagnieId } }),
     prisma.lieu.findMany({ orderBy: { libelle: "asc" } }),
   ]);
 
