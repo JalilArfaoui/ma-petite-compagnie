@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 export default async function RepresentationsPage() {
   const [representations, spectacles, lieux] = await Promise.all([
     prisma.representation.findMany({
-      orderBy: { date: "desc" },
+      orderBy: { debutResa: "desc" },
       include: {
         spectacle: true,
         lieu: true,

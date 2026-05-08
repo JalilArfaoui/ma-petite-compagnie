@@ -149,7 +149,7 @@ export async function fetchObjetsPageData() {
     }),
     prisma.categorieObjet.findMany({ orderBy: { nom: "asc" } }),
     prisma.representation.findMany({
-      orderBy: { date: "asc" },
+      orderBy: { debutResa: "asc" },
       include: {
         spectacle: true,
         lieu: true,

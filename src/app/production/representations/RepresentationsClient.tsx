@@ -24,7 +24,8 @@ interface ReservationData {
 
 interface RepresentationData {
   id: number;
-  date: string;
+  debutResa: string;
+  finResa: string;
   spectacleId: number;
   lieuId: number;
   spectacle: { id: number; titre: string };
@@ -215,7 +216,7 @@ export default function RepresentationsClient({
                   {/* Info */}
                   <div className="flex flex-col gap-2 text-sm">
                     <p>
-                      <strong>📅 Date:</strong> {formatDate(r.date)}
+                      <strong>📅 Date:</strong> {formatDate(r.debutResa)}
                     </p>
                     <p>
                       <strong>📍 Adresse:</strong> {r.lieu.adresse}, {r.lieu.ville}
@@ -238,7 +239,7 @@ export default function RepresentationsClient({
                         <input
                           name="date"
                           type="datetime-local"
-                          defaultValue={formatDateInput(r.date)}
+                          defaultValue={formatDateInput(r.debutResa)}
                           className="text-sm h-8 px-2 border border-slate-300 rounded-md focus:border-[#D00039] focus:ring-1 focus:ring-[#D00039] outline-none"
                         />
                         <select
