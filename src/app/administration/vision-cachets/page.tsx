@@ -2,7 +2,7 @@
 
 import { Card, Table, Heading, Pagination } from "@/components/ui";
 import { useState, useEffect, useMemo } from "react";
-import { getCachetsAction} from "../cachets-actions";
+import { getCachetsAction } from "../cachets-actions";
 
 const PAGE_SIZE = 20;
 
@@ -49,7 +49,7 @@ export default function VisionCachetsPage() {
   //filtrage + tri
   const filtresEtTries = useMemo(() => {
     let resultat = [...cachets];
-    
+
     if (filtreSpectacle !== "tous") {
       resultat = resultat.filter((cachet) => cachet.spectacle.titre === filtreSpectacle);
     }
