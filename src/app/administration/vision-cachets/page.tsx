@@ -2,7 +2,7 @@
 
 import { Card, Table, Heading, Pagination } from "@/components/ui";
 import { useState, useEffect, useMemo } from "react";
-import { getCachetsAction, accesPageAuth } from "../cachets-actions";
+import { getCachetsAction} from "../cachets-actions";
 
 const PAGE_SIZE = 20;
 
@@ -19,28 +19,6 @@ type Cachet = {
 };
 
 export default function VisionCachetsPage() {
-  const [idUtilisateurConnecte, setIdUtilisateurConnecte] = useState<number>(-1);
-  const [estConnecte, setEstConnecte] = useState<boolean>(false);
-
-  useEffect(() => {
-    //appel uniquement dans vision-cachets car c'est la page par défaut de l'onglet administration après connexion
-    accesPageAuth().then((result) => {
-      const estConnecteResultat = result.estConnecte;
-      const idResultat = result.idUtilisateurConnecte || -1;
-      const error = result.error || "";
-
-      setEstConnecte(estConnecteResultat);
-      setIdUtilisateurConnecte(idResultat);
-
-      if (error !== "") {
-        if (!estConnecteResultat) {
-          console.error("Utilisateur non connecté. Redirection vers la page de connexion.");
-          //window.location.href = "/connexion";
-        }
-      }
-    });
-  }, []);
-
   const [cachets, setCachets] = useState<Cachet[]>([]);
   const [filtreSpectacle, setFiltreSpectacle] = useState<string>("tous");
   const [triPar, setTriPar] = useState<
@@ -71,9 +49,7 @@ export default function VisionCachetsPage() {
   //filtrage + tri
   const filtresEtTries = useMemo(() => {
     let resultat = [...cachets];
-
-    resultat = resultat.filter((cachet) => cachet.membreId === idUtilisateurConnecte);
-
+    
     if (filtreSpectacle !== "tous") {
       resultat = resultat.filter((cachet) => cachet.spectacle.titre === filtreSpectacle);
     }
