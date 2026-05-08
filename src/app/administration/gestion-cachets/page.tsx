@@ -489,7 +489,7 @@ export default function PageCachets() {
           </Table>
         </Card.Body>
       </Card>
-      {<Pagination currentPage={safePage} totalPages={totalPages} onPageChange={setPage} />}
+      <Pagination currentPage={safePage} totalPages={totalPages} onPageChange={setPage} />
     </main>
   );
 }
