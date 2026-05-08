@@ -170,14 +170,12 @@ export default async function ProductionPage({
           typeObjet: {
             include: {
               categorie: { select: { nom: true } };
-              objets: true; // Prisma will further narrow based on your where clause usage
+              objets: true;
             };
           };
         };
       }>;
-
       const besoins: Record<string, BesoinWithTypeObjet[]> = {};
-
       const categories: string[] = [];
       req.forEach((element) => {
         if (besoins[element.typeObjet.categorie.nom] == undefined) {
