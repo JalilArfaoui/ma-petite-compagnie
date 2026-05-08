@@ -10,8 +10,6 @@ import {
   supprimerCachetAction,
   getAllMembresAction,
   getAllSpectaclesAction,
-  MONTANT_CACHET_MINIMUM_LEGAL,
-  NOTE_NB_MAX_CARACS,
 } from "../cachets-actions";
 
 const PAGE_SIZE = 20;
@@ -42,6 +40,9 @@ type CachetAvecRelations = Prisma.CachetGetPayload<{
 }>;
 
 export default function PageCachets() {
+  const MONTANT_CACHET_MINIMUM_LEGAL = 110;
+  const NOTE_NB_MAX_CARACS = 120;
+
   const [cachets, setCachets] = useState<Cachet[]>([]);
   const [membres, setMembres] = useState<
     Array<{ id: number; user: { nom: string | null; prenom: string | null } }>
@@ -377,8 +378,8 @@ export default function PageCachets() {
       </Heading>
 
       <div className="mx-auto max-w-4xl rounded-[20px] bg-hover p-[20px] border-none shadow-sm transition-shadow flex flex-col gap-[20px]">
-        <div className="flex flex-wrap gap-6 items-end">
-          <div className="flex flex-col gap-1">
+        <div className="flex flex-wrap justify-between items-end gap-6 w-full">
+          <div className="flex flex-col gap-1 flex-1 max-w-xs items-center">
             <label>Filtrer par membre</label>
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
@@ -397,7 +398,7 @@ export default function PageCachets() {
             </select>
           </div>
 
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 flex-1 max-w-xs items-center">
             <label>Filtrer par spectacle</label>
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
@@ -416,7 +417,7 @@ export default function PageCachets() {
             </select>
           </div>
 
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 flex-1 max-w-xs items-center">
             <label>Options de tri</label>
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
