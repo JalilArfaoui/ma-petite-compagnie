@@ -266,6 +266,7 @@ model Cachet {
   spectacle    Spectacle @relation(fields: [spectacleId], references: [id], onDelete: Cascade)
   montant      Int
   note         String?
+  statut       Int            //0 = non payé, 1 = en attente de paiement, 2 = payé
 }
 
 model OperationFinanciere {

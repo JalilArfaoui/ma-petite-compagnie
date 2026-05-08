@@ -12,6 +12,12 @@ import {
   getAllSpectaclesAction,
 } from "../cachets-actions";
 
+const STATUT_DICT: { [key: number]: string } = {
+  0: "Non payé",
+  1: "En attente de paiement",
+  2: "Payé",
+};
+
 const PAGE_SIZE = 20;
 
 //seule la note est optionnelle, toutes les autres clés sont obligatoires donc pas de null permis
@@ -24,17 +30,19 @@ type Cachet = {
   spectacleId: number;
   spectacle: { titre: string };
   note?: string | null;
+  statut: number;
 };
 
 //type pour représenter le Cachet retourné par Prisma avant transformation
 type CachetAvecRelations = Prisma.CachetGetPayload<{
   include: {
-    spectacle: true;
     membre: {
       include: {
         user: true;
       };
     };
+    spectacle: true;
+    statut: true;
   };
 }>;
 
@@ -52,9 +60,11 @@ export default function PageCachets() {
   const [montant, setMontant] = useState<number | null>(null);
   const [spectacleId, setSpectacleId] = useState<number | null>(null);
   const [note, setNote] = useState("");
+  const [statut, setStatut] = useState<number | null>(null);
   const [editId, setEditId] = useState<number | null>(null);
   const [filtreMembre, setFiltreMembre] = useState<number | null>(null);
   const [filtreSpectacle, setFiltreSpectacle] = useState<number | null>(null);
+  const [filtreStatut, setFiltreStatut] = useState<number | null>(null);
   const [triPar, setTriPar] = useState<
     "none" | "dateCroissante" | "dateDecroissante" | "montantCroissant" | "montantDecroissant"
   >("none");
@@ -134,6 +144,11 @@ export default function PageCachets() {
       foundErrors.spectacle = "Un spectacle doit être choisi";
     }
 
+    //validation obligatoire du statut
+    if (!statut) {
+      foundErrors.statut = "Un statut doit être choisi";
+    }
+
     //pas forcement nécéssaire puisque déjà géré dans le code de l'input, mais mieux vaut être prévoyant
     if (note.length > NOTE_NB_MAX_CARACS) {
       foundErrors.note = `La note ne peut pas dépasser ${NOTE_NB_MAX_CARACS} caractères`;
@@ -157,6 +172,7 @@ export default function PageCachets() {
         montant: montant!,
         spectacleId: spectacleId!,
         note,
+        statut: Number(statut),
       })
         .then((result) => {
           if (result.success && result.data) {
@@ -177,6 +193,7 @@ export default function PageCachets() {
         montant: montant!,
         spectacleId: spectacleId!,
         note,
+        statut: Number(statut),
       })
         .then((result) => {
           if (result.success && result.data) {
@@ -197,6 +214,7 @@ export default function PageCachets() {
     setDate("");
     setMontant(null);
     setSpectacleId(null);
+    setStatut(null);
     setNote("");
     setErrors({});
   }
@@ -223,6 +241,7 @@ export default function PageCachets() {
     setDate(c.date);
     setMontant(c.montant);
     setSpectacleId(c.spectacleId);
+    setStatut(c.statut);
     setNote(c.note || "");
   }
 
@@ -232,12 +251,18 @@ export default function PageCachets() {
     : cachets;
 
   //filtrage par spectacle (agit uniquement sur cachets de membre x)
-  const cachetsFiltres = filtreSpectacle
+  const cachetsFiltresParSpectacle = filtreSpectacle
     ? cachetsFiltresParMembre.filter((c) => c.spectacleId === filtreSpectacle)
     : cachetsFiltresParMembre;
 
+  //filtrage par statut (agit uniquement sur cachets de membre x et spectacle y)
+  const cachetsFiltresParStatut =
+    filtreStatut !== null
+      ? cachetsFiltresParSpectacle.filter((c) => c.statut === filtreStatut)
+      : cachetsFiltresParSpectacle;
+
   //filtrage par date ou montant avec direction croissante/décroissante
-  const cachetsTries = [...cachetsFiltres].sort((a, b) => {
+  const cachetsTries = [...cachetsFiltresParStatut].sort((a, b) => {
     switch (triPar) {
       case "dateCroissante":
         return a.date.localeCompare(b.date);
@@ -301,6 +326,7 @@ export default function PageCachets() {
               disabled={isLoading}
             />
           </div>
+
           <div>
             <Heading as="h4" className="font-semibold">
               Montant du cachet
@@ -317,6 +343,7 @@ export default function PageCachets() {
               disabled={isLoading}
             />
           </div>
+
           <div>
             <Heading as="h4" className="font-semibold">
               Spectacle
@@ -338,6 +365,27 @@ export default function PageCachets() {
               ))}
             </select>
           </div>
+
+          <div>
+            <Heading as="h4" className="font-semibold">
+              statut
+            </Heading>
+            <br />
+            {errors.spectacle && <p className="text-red-600 text-sm">{errors.spectacle}</p>}
+            <select
+              className="p-2 border border-slate-300 rounded-md w-full"
+              id="statut"
+              value={statut?.toString() || ""}
+              onChange={(e) => setStatut(e.target.value ? Number(e.target.value) : null)}
+              disabled={isLoading}
+            >
+              <option value=""> Choisir un état </option>
+              <option value="en_attente"> En attente de paiement </option>
+              <option value="valide"> Payé </option>
+              <option value="refuse"> Non payé </option>
+            </select>
+          </div>
+
           <div>
             <Heading as="h4" className="font-semibold">
               Note
@@ -417,6 +465,25 @@ export default function PageCachets() {
           </div>
 
           <div className="flex flex-col gap-1 flex-1 max-w-xs items-center">
+            <label>Filtrer par statut</label>
+            <select
+              className="p-2 border border-slate-300 rounded-md w-full"
+              value={filtreStatut?.toString() || ""}
+              onChange={(e) => {
+                setFiltreStatut(e.target.value ? Number(e.target.value) : null);
+                setPage(1);
+              }}
+            >
+              <option value="">Tous</option>
+              {Object.entries(STATUT_DICT).map(([id, label]) => (
+                <option key={id} value={id}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex flex-col gap-1 flex-1 max-w-xs items-center">
             <label>Options de tri</label>
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
@@ -446,6 +513,7 @@ export default function PageCachets() {
                 <Table.Header>Montant</Table.Header>
                 <Table.Header>Spectacle</Table.Header>
                 <Table.Header>Note</Table.Header>
+                <Table.Header>Statut</Table.Header>
                 <Table.Header>Modifier cachet</Table.Header>
                 <Table.Header>Supprimer cachet</Table.Header>
               </Table.Row>
@@ -461,6 +529,7 @@ export default function PageCachets() {
                   <Table.Cell>{c.montant} €</Table.Cell>
                   <Table.Cell>{c.spectacle.titre}</Table.Cell>
                   <Table.Cell>{c.note || "-"}</Table.Cell>
+                  <Table.Cell>{STATUT_DICT[c.statut]}</Table.Cell>
                   <Table.Cell>
                     <Button
                       variant="outline"

@@ -724,6 +724,7 @@ async function main() {
       date: new Date("2026-01-15T18:00:00"),
       montant: 130,
       note: "Répétition - rôle principal",
+      statut: 2, //0 = non payé, 1 = en attente de paiement, 2 = payé
     },
     {
       membreId: companyMembers[1].id,
@@ -731,6 +732,7 @@ async function main() {
       date: new Date("2026-01-20T19:00:00"),
       montant: 275,
       note: "Répétition - rôle secondaire",
+      statut: 1,
     },
     {
       membreId: companyMembers[2].id,
@@ -738,6 +740,7 @@ async function main() {
       date: new Date("2026-02-05T17:30:00"),
       montant: 240,
       note: "Entraînement danse",
+      statut: 0,
     },
     {
       membreId: companyMembers[3].id,
@@ -745,6 +748,7 @@ async function main() {
       date: new Date("2026-02-10T18:30:00"),
       montant: 125,
       note: "Coaching spécifique",
+      statut: 2,
     },
     {
       membreId: companyMembers[4].id,
@@ -752,6 +756,7 @@ async function main() {
       date: new Date("2026-02-15T16:00:00"),
       montant: 310,
       note: "Préparation musicale",
+      statut: 2,
     },
     {
       membreId: companyMembers[5].id,
@@ -759,6 +764,7 @@ async function main() {
       date: new Date("2026-02-20T17:00:00"),
       montant: 430,
       note: "Composition musicale",
+      statut: 1,
     },
     {
       membreId: companyMembers[0].id,
@@ -766,6 +772,7 @@ async function main() {
       date: new Date("2026-03-01T15:30:00"),
       montant: 250,
       note: "Atelier circassien",
+      statut: 0,
     },
     {
       membreId: companyMembers[1].id,
@@ -773,6 +780,7 @@ async function main() {
       date: new Date("2026-03-05T14:00:00"),
       montant: 500,
       note: "Stage acrobatie",
+      statut: 0,
     },
     {
       membreId: companyMembers[2].id,
@@ -780,6 +788,7 @@ async function main() {
       date: new Date("2026-03-15T19:30:00"),
       montant: 290,
       note: "Représentation générale",
+      statut: 1,
     },
     {
       membreId: companyMembers[3].id,
@@ -787,6 +796,7 @@ async function main() {
       date: new Date("2026-04-01T20:00:00"),
       montant: 160,
       note: "Générale costumes",
+      statut: 2,
     },
     {
       membreId: companyMembers[4].id,
@@ -794,6 +804,7 @@ async function main() {
       date: new Date("2026-04-25T18:00:00"),
       montant: 420,
       note: "Dernière préparation avant tournée",
+      statut: 2,
     },
   ];
 

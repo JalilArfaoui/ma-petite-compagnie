@@ -12,6 +12,7 @@ async function validerCachetDataAction(data: {
   date: string;
   montant: number;
   spectacleId: number;
+  statut: number;
   note?: string;
 }): Promise<{ valid: boolean; error?: string }> {
   if (!Number.isInteger(data.membreId) || data.membreId <= 0) {
@@ -68,6 +69,7 @@ export async function creerCachetAction(data: {
   date: string;
   montant: number;
   spectacleId: number;
+  statut: number;
   note?: string;
 }) {
   //authentification
@@ -113,6 +115,7 @@ export async function mettreAJourCachetAction(
     date: string;
     montant: number;
     spectacleId: number;
+    statut: number;
     note?: string;
   }
 ) {
