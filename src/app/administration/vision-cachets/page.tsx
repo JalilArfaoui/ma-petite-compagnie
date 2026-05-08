@@ -47,7 +47,7 @@ export default function VisionCachetsPage() {
   }, []);
 
   //filtrage + tri
-  const filtresEtTries = useMemo(() => {
+  const cachetsFiltresEtTries = useMemo(() => {
     let resultat = [...cachets];
 
     if (filtreSpectacle !== "tous") {
@@ -76,9 +76,12 @@ export default function VisionCachetsPage() {
     return resultat;
   }, [filtreSpectacle, triPar, cachets]);
 
-  const totalPages = Math.max(1, Math.ceil(filtresEtTries.length / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(cachetsFiltresEtTries.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
-  const cachetsPagines = filtresEtTries.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+  const cachetsPagines = cachetsFiltresEtTries.slice(
+    (safePage - 1) * PAGE_SIZE,
+    safePage * PAGE_SIZE
+  );
 
   return (
     <div>
@@ -154,7 +157,7 @@ export default function VisionCachetsPage() {
             </Table>
           </Card.Body>
         </Card>
-        {filtresEtTries.length > PAGE_SIZE && (
+        {cachetsFiltresEtTries.length > PAGE_SIZE && (
           <Pagination currentPage={safePage} totalPages={totalPages} onPageChange={setPage} />
         )}
       </div>

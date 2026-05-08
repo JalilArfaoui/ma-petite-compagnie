@@ -27,7 +27,6 @@ type Cachet = {
 };
 
 //type pour représenter le Cachet retourné par Prisma avant transformation
-//cela permet d'éviter l'erreur pointé par lint à la ligne: (function formateCachet(data: CachetWithRelations): Cachet {)
 type CachetAvecRelations = Prisma.CachetGetPayload<{
   include: {
     spectacle: true;

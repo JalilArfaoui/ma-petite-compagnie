@@ -3,8 +3,8 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 
-const MONTANT_CACHET_MINIMUM_LEGAL: number = 110;
-const NOTE_NB_MAX_CARACS: number = 120;
+const MONTANT_CACHET_MINIMUM_LEGAL = 110;
+const NOTE_NB_MAX_CARACS = 120;
 
 //fonction helper pour valider les données d'un cachet
 async function validerCachetDataAction(data: {
@@ -188,12 +188,12 @@ export async function getAllMembresAction() {
   if (!session) return { success: false, error: "Non autorisé" };
 
   try {
-    const membreCompagnie = await prisma.companyMember.findMany({
+    const membresCompagnie = await prisma.companyMember.findMany({
       include: {
         user: true,
       },
     });
-    return { success: true, data: membreCompagnie };
+    return { success: true, data: membresCompagnie };
   } catch (error) {
     console.error("Erreur lors de la récupération des membres:", error);
     return { success: false, error: "Impossible de récupérer les membres" };
