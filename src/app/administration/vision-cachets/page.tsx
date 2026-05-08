@@ -2,7 +2,7 @@
 
 import { Card, Table, Heading, Pagination } from "@/components/ui";
 import { useState, useEffect, useMemo } from "react";
-import { getCachetsAction, accesPageAuth, ID_UTILISATEUR_CONNECTE } from "../cachets-actions";
+import { getCachetsAction, accesPageAuth } from "../cachets-actions";
 
 const PAGE_SIZE = 20;
 
@@ -19,23 +19,31 @@ type Cachet = {
 };
 
 export default function VisionCachetsPage() {
-  //appel uniquement dans vision-cachets car c'est la page par défaut de l'onglet administration après connexion
-  accesPageAuth().then((result) => {
-    const estConnecté: boolean = result.estConnecte;
-    const peutAccederGestionCachets: boolean = result.peutAccederGestionCachets || false;
-    const error: string = result.error || "";
+  const [idUtilisateurConnecte, setIdUtilisateurConnecte] = useState<number>(-1);
+  const [estConnecte, setEstConnecte] = useState<boolean>(false);
 
-    if (error !== "") {
-      if (!estConnecté) {
-        console.error("Utilisateur non connecté. Redirection vers la page de connexion.");
-        //window.location.href = "/connexion";
+  useEffect(() => {
+    //appel uniquement dans vision-cachets car c'est la page par défaut de l'onglet administration après connexion
+    accesPageAuth().then((result) => {
+      const estConnecteResultat = result.estConnecte;
+      const idResultat = result.idUtilisateurConnecte || -1;
+      const error = result.error || "";
+
+      setEstConnecte(estConnecteResultat);
+      setIdUtilisateurConnecte(idResultat);
+
+      if (error !== "") {
+        if (!estConnecteResultat) {
+          console.error("Utilisateur non connecté. Redirection vers la page de connexion.");
+          //window.location.href = "/connexion";
+        }
       }
-    }
-  });
+    });
+  }, []);
 
   const [cachets, setCachets] = useState<Cachet[]>([]);
-  const [spectacleFilter, setSpectacleFilter] = useState<string>("tous");
-  const [sortBy, setSortBy] = useState<
+  const [filtreSpectacle, setFiltreSpectacle] = useState<string>("tous");
+  const [triPar, setTriPar] = useState<
     "none" | "dateCroissante" | "dateDecroissante" | "montantCroissant" | "montantDecroissant"
   >("none"); //pour avoir un seul tri actif à la fois
   const [page, setPage] = useState(1);
@@ -62,35 +70,35 @@ export default function VisionCachetsPage() {
 
   //filtrage + tri
   const filtresEtTries = useMemo(() => {
-    let result = [...cachets];
+    let resultat = [...cachets];
 
-    result = result.filter((cachet) => cachet.membreId === ID_UTILISATEUR_CONNECTE);
+    resultat = resultat.filter((cachet) => cachet.membreId === idUtilisateurConnecte);
 
-    if (spectacleFilter !== "tous") {
-      result = result.filter((cachet) => cachet.spectacle.titre === spectacleFilter);
+    if (filtreSpectacle !== "tous") {
+      resultat = resultat.filter((cachet) => cachet.spectacle.titre === filtreSpectacle);
     }
 
-    switch (sortBy) {
+    switch (triPar) {
       case "dateCroissante":
-        result.sort((a, b) => a.date.localeCompare(b.date));
+        resultat.sort((a, b) => a.date.localeCompare(b.date));
         break;
       case "dateDecroissante":
-        result.sort((a, b) => b.date.localeCompare(a.date));
+        resultat.sort((a, b) => b.date.localeCompare(a.date));
         break;
       case "montantCroissant":
-        result.sort((a, b) => {
+        resultat.sort((a, b) => {
           return a.montant - b.montant;
         });
         break;
       case "montantDecroissant":
-        result.sort((a, b) => {
+        resultat.sort((a, b) => {
           return b.montant - a.montant;
         });
         break;
     }
 
-    return result;
-  }, [spectacleFilter, sortBy, cachets]);
+    return resultat;
+  }, [filtreSpectacle, triPar, cachets]);
 
   const totalPages = Math.max(1, Math.ceil(filtresEtTries.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
@@ -108,9 +116,9 @@ export default function VisionCachetsPage() {
         </Heading>
 
         <select
-          value={spectacleFilter}
+          value={filtreSpectacle}
           onChange={(e) => {
-            setSpectacleFilter(e.target.value as "tous" | string);
+            setFiltreSpectacle(e.target.value as "tous" | string);
             setPage(1);
           }}
           className="p-2 border border-slate-300 rounded-md w-full"
@@ -127,9 +135,9 @@ export default function VisionCachetsPage() {
           Options de tri
         </Heading>
         <select
-          value={sortBy}
+          value={triPar}
           onChange={(e) => {
-            setSortBy(e.target.value as typeof sortBy);
+            setTriPar(e.target.value as typeof triPar);
             setPage(1);
           }}
           className="p-2 border border-slate-300 rounded-md w-full"
@@ -151,7 +159,6 @@ export default function VisionCachetsPage() {
             <Table>
               <Table.Head>
                 <Table.Row>
-                  <Table.Header>Numero</Table.Header>
                   <Table.Header>Date</Table.Header>
                   <Table.Header>Montant</Table.Header>
                   <Table.Header>Spectacle</Table.Header>
@@ -161,7 +168,6 @@ export default function VisionCachetsPage() {
               <Table.Body>
                 {cachetsPagines.map((cachet) => (
                   <Table.Row key={cachet.id}>
-                    <Table.Cell>{cachet.id}</Table.Cell>
                     <Table.Cell>{new Date(cachet.date).toLocaleDateString("fr-FR")}</Table.Cell>
                     <Table.Cell>{cachet.montant} €</Table.Cell>
                     <Table.Cell>{cachet.spectacle.titre}</Table.Cell>
