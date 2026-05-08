@@ -6,60 +6,6 @@ import { auth } from "@/auth";
 const MONTANT_CACHET_MINIMUM_LEGAL: number = 110;
 const NOTE_NB_MAX_CARACS: number = 120;
 
-//vérifie si le membre est connecté et à accès à la page gestion cachets
-//(pas besoin de vérifier pour vision cachets puisque tous les membres de la compagnie y ont accès)
-export async function accesPageAuth(): Promise<{
-  estConnecte: boolean;
-  idUtilisateurConnecte?: number;
-  peutAccederGestionCachets?: boolean;
-  error?: string;
-}> {
-  let session; //let au lieu de const pour pouvoir l'utiliser en dehors du premier try/catch, et pour pouvoir assigner une nouvelle valeur dessus
-  let id_utilisateur_connecte: number = -1;
-
-  try {
-    session = await auth();
-    if (!session) return { estConnecte: false as const, error: "Non autorisé" };
-  } catch (error) {
-    console.error("Erreur lors de l'authentification:", error);
-    return { estConnecte: false as const, error: "Erreur lors de l'authentification" };
-  }
-
-  try {
-    const membreCompagnie = await prisma.companyMember.findFirst({
-      where: {
-        userId: Number(session.user.id),
-      },
-    });
-
-    if (!membreCompagnie) {
-      return { estConnecte: false as const, error: "Membre de la compagnie non trouvé" };
-    } else {
-      id_utilisateur_connecte = membreCompagnie.id;
-    }
-
-    if (membreCompagnie.droitAccesAdministration) {
-      return {
-        estConnecte: true,
-        idUtilisateurConnecte: id_utilisateur_connecte,
-        peutAccederGestionCachets: true,
-      };
-    } else {
-      return {
-        estConnecte: true,
-        idUtilisateurConnecte: id_utilisateur_connecte,
-        peutAccederGestionCachets: false,
-      };
-    }
-  } catch (error) {
-    console.error("Erreur lors de la vérification des droits d'accès:", error);
-    return {
-      estConnecte: false as const,
-      error: "Erreur lors de la vérification des droits d'accès",
-    };
-  }
-}
-
 //fonction helper pour valider les données d'un cachet
 async function validerCachetDataAction(data: {
   membreId: number;
