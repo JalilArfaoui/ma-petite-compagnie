@@ -489,9 +489,7 @@ export default function PageCachets() {
           </Table>
         </Card.Body>
       </Card>
-      {cachetsTries.length > PAGE_SIZE && (
-        <Pagination currentPage={safePage} totalPages={totalPages} onPageChange={setPage} />
-      )}
+      {<Pagination currentPage={safePage} totalPages={totalPages} onPageChange={setPage} />}
     </main>
   );
 }

@@ -157,10 +157,8 @@ export default function VisionCachetsPage() {
             </Table>
           </Card.Body>
         </Card>
-        {cachetsFiltresEtTries.length > PAGE_SIZE && (
-          <Pagination currentPage={safePage} totalPages={totalPages} onPageChange={setPage} />
-        )}
       </div>
+      {<Pagination currentPage={safePage} totalPages={totalPages} onPageChange={setPage} />}
     </div>
   );
 }
