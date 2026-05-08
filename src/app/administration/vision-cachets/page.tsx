@@ -4,6 +4,12 @@ import { Card, Table, Heading, Pagination } from "@/components/ui";
 import { useState, useEffect, useMemo } from "react";
 import { getCachetsAction } from "../cachets-actions";
 
+const STATUT_DICT: { [key: number]: string } = {
+  0: "Non payé",
+  1: "En attente de paiement",
+  2: "Payé",
+};
+
 const PAGE_SIZE = 20;
 
 //seule la note est optionnelle, toutes les autres clés sont obligatoires donc pas de null permis
@@ -15,12 +21,14 @@ type Cachet = {
   montant: number;
   spectacleId: number;
   spectacle: { titre: string };
+  statut: number;
   note?: string | null;
 };
 
 export default function VisionCachetsPage() {
   const [cachets, setCachets] = useState<Cachet[]>([]);
   const [filtreSpectacle, setFiltreSpectacle] = useState<string>("tous");
+  const [filtreStatut, setFiltreStatut] = useState<string>("tous");
   const [triPar, setTriPar] = useState<
     "none" | "dateCroissante" | "dateDecroissante" | "montantCroissant" | "montantDecroissant"
   >("none"); //pour avoir un seul tri actif à la fois
@@ -54,6 +62,11 @@ export default function VisionCachetsPage() {
       resultat = resultat.filter((cachet) => cachet.spectacle.titre === filtreSpectacle);
     }
 
+    if (filtreStatut !== "tous") {
+      const statutNum = parseInt(filtreStatut, 10);
+      resultat = resultat.filter((cachet) => cachet.statut === statutNum);
+    }
+
     switch (triPar) {
       case "dateCroissante":
         resultat.sort((a, b) => a.date.localeCompare(b.date));
@@ -74,7 +87,7 @@ export default function VisionCachetsPage() {
     }
 
     return resultat;
-  }, [filtreSpectacle, triPar, cachets]);
+  }, [filtreSpectacle, filtreStatut, triPar, cachets]);
 
   const totalPages = Math.max(1, Math.ceil(cachetsFiltresEtTries.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
@@ -111,6 +124,26 @@ export default function VisionCachetsPage() {
         </select>
 
         <Heading as="h4" className="font-semibold">
+          Filtrer par statut
+        </Heading>
+
+        <select
+          value={filtreStatut}
+          onChange={(e) => {
+            setFiltreStatut(e.target.value as "tous" | string);
+            setPage(1);
+          }}
+          className="p-2 border border-slate-300 rounded-md w-full"
+        >
+          <option value="tous">Tous les status</option>
+          {Object.entries(STATUT_DICT).map(([id, label]) => (
+            <option key={id} value={id}>
+              {label}
+            </option>
+          ))}
+        </select>
+
+        <Heading as="h4" className="font-semibold">
           Options de tri
         </Heading>
         <select
@@ -141,6 +174,7 @@ export default function VisionCachetsPage() {
                   <Table.Header>Date</Table.Header>
                   <Table.Header>Montant</Table.Header>
                   <Table.Header>Spectacle</Table.Header>
+                  <Table.Header>Statut</Table.Header>
                   <Table.Header>Note</Table.Header>
                 </Table.Row>
               </Table.Head>
@@ -150,6 +184,7 @@ export default function VisionCachetsPage() {
                     <Table.Cell>{new Date(cachet.date).toLocaleDateString("fr-FR")}</Table.Cell>
                     <Table.Cell>{cachet.montant} €</Table.Cell>
                     <Table.Cell>{cachet.spectacle.titre}</Table.Cell>
+                    <Table.Cell>{STATUT_DICT[cachet.statut]}</Table.Cell>
                     <Table.Cell>{cachet.note || "-"}</Table.Cell>
                   </Table.Row>
                 ))}
