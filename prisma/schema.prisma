@@ -191,7 +191,7 @@ model TypeObjet {
 model Spectacle {
   id                     Int              @id @default(autoincrement())
   titre                  String
-  dure                   Int?
+  dure                   Int
   description            String?
   type                   TypeSpectacle?
   statut                 StatutSpectacle  @default(EN_CREATION)
@@ -229,7 +229,8 @@ model FicheTechnique {
 
 model Representation {
   id          Int               @id @default(autoincrement())
-  date        DateTime
+  debutResa   DateTime
+  finResa     DateTime
   spectacleId Int
   spectacle   Spectacle         @relation(fields: [spectacleId], references: [id], onDelete: Cascade)
   lieuId      Int

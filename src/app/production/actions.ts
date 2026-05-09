@@ -7,10 +7,12 @@ import { TypeSpectacle } from "@prisma/client";
 export async function createSpectacle(formData: FormData) {
   const titre = formData.get("titre") as string;
   const type = formData.get("type") as TypeSpectacle;
+  const dure = Number(formData.get("dure"));
 
   await prisma.spectacle.create({
     data: {
       titre,
+      dure,
       type,
       compagnieId: 1,
     },
