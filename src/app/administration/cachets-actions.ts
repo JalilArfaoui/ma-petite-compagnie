@@ -37,7 +37,7 @@ async function validerCachetDataAction(data: {
   if (!Object.values(StatutCachet).includes(data.statut)) {
     return { valid: false, error: "Le statut est invalide" };
   }
-  
+
   if (data.note && data.note.length > NOTE_NB_MAX_CARACS) {
     return { valid: false, error: `La note ne peut pas dépasser ${NOTE_NB_MAX_CARACS} caractères` };
   }

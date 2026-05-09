@@ -462,13 +462,11 @@ export default function PageCachets() {
               }}
             >
               <option value="">Tous</option>
-              {Object.entries(StatutCachet)
-                .filter(([key]) => isNaN(Number(key))) //filtre les clés numériques de l'enum
-                .map(([, value]) => (
-                  <option key={value} value={value}>
-                    {STATUT_DICT[value as StatutCachet]}
-                  </option>
-                ))}
+              {Object.values(StatutCachet).map((value) => (
+                <option key={value} value={value}>
+                  {STATUT_DICT[value]}
+                </option>
+              ))}
             </select>
           </div>
 

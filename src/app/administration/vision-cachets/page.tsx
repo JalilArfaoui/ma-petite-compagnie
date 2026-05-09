@@ -116,13 +116,11 @@ export default function VisionCachetsPage() {
           className="p-2 border border-slate-300 rounded-md w-full"
         >
           <option value="tous">Tous</option>
-          {Object.entries(StatutCachet)
-            .filter(([key]) => isNaN(Number(key))) //filtre les clés numériques de l'enum
-            .map(([key, value]) => (
-              <option key={value} value={value}>
-                {STATUT_DICT[value as StatutCachet]}
-              </option>
-            ))}
+          {Object.values(StatutCachet).map((value) => (
+            <option key={value} value={value}>
+              {STATUT_DICT[value]}
+            </option>
+          ))}
         </select>
 
         <Heading as="h4" className="font-semibold">
