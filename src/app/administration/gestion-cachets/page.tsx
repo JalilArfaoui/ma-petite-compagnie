@@ -59,6 +59,7 @@ export default function PageCachets() {
   function formateCachet(data: CachetAvecRelations): Cachet {
     return {
       ...data,
+      montant: data.montant.toString(),
       date: typeof data.date === "string" ? data.date : data.date.toISOString().split("T")[0],
     };
   }
@@ -152,7 +153,7 @@ export default function PageCachets() {
         //on est sur que membreId et spectacleId ne sont pas null grâce à la validation au-dessus
         membreId: membreId!,
         date,
-        montant: montant.toString()!,
+        montant: montant!,
         spectacleId: spectacleId!,
         statut: statut!,
         note,
@@ -173,7 +174,7 @@ export default function PageCachets() {
       creerCachetAction({
         membreId: membreId!,
         date,
-        montant: montant.toString()!,
+        montant: montant!,
         spectacleId: spectacleId!,
         statut: statut!,
         note,
