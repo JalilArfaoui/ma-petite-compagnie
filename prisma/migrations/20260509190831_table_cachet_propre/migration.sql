@@ -16,7 +16,7 @@ CREATE TABLE "Cachet" (
     "membreId" INTEGER NOT NULL,
     "date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "spectacleId" INTEGER NOT NULL,
-    "montant" DOUBLE PRECISION NOT NULL,
+    "montant" DECIMAL(10,2) NOT NULL,
     "statut" "StatutCachet" NOT NULL DEFAULT 'NON_PAYE',
     "note" TEXT,
 

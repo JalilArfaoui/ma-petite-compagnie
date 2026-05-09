@@ -359,17 +359,17 @@ export default function PageCachets() {
               className="p-2 border border-slate-300 rounded-md w-full"
               id="statut"
               value={statut?.toString() || ""}
-              onChange={(e) => setStatut(e.target.value as StatutCachet)}
+              onChange={(e) =>
+                setStatut(e.target.value ? (e.target.value as StatutCachet) : undefined)
+              }
               disabled={isLoading}
             >
               <option value=""> Choisir un statut </option>
-              {Object.entries(StatutCachet)
-                .filter(([key]) => isNaN(Number(key))) //filtre les clés numériques de l'enum
-                .map(([, value]) => (
-                  <option key={value} value={value}>
-                    {STATUT_DICT[value as StatutCachet]}
-                  </option>
-                ))}
+              {Object.values(StatutCachet).map((value) => (
+                <option key={value} value={value}>
+                  {STATUT_DICT[value]}
+                </option>
+              ))}
             </select>
           </div>
 
