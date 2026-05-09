@@ -2,9 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
-
-const MONTANT_CACHET_MINIMUM_LEGAL = 110;
-const NOTE_NB_MAX_CARACS = 120;
+import { MONTANT_CACHET_MINIMUM_LEGAL, NOTE_NB_MAX_CARACS, StatutCachet } from "./cachets-partage";
 
 //fonction helper pour valider les données d'un cachet
 async function validerCachetDataAction(data: {
@@ -12,9 +10,12 @@ async function validerCachetDataAction(data: {
   date: string;
   montant: number;
   spectacleId: number;
-  statut: number;
+  statut: StatutCachet;
   note?: string;
 }): Promise<{ valid: boolean; error?: string }> {
+  const session = await auth();
+  if (!session) return { valid: false as const, error: "Non autorisé" };
+
   if (!Number.isInteger(data.membreId) || data.membreId <= 0) {
     return { valid: false, error: "L'identifiant du membre est invalide" };
   }
@@ -69,7 +70,7 @@ export async function creerCachetAction(data: {
   date: string;
   montant: number;
   spectacleId: number;
-  statut: number;
+  statut: StatutCachet;
   note?: string;
 }) {
   //authentification
@@ -89,6 +90,7 @@ export async function creerCachetAction(data: {
         date: new Date(data.date),
         montant: data.montant,
         spectacleId: data.spectacleId,
+        statut: data.statut,
         note: data.note || null,
       },
       include: {
@@ -115,7 +117,7 @@ export async function mettreAJourCachetAction(
     date: string;
     montant: number;
     spectacleId: number;
-    statut: number;
+    statut: StatutCachet;
     note?: string;
   }
 ) {
@@ -146,6 +148,7 @@ export async function mettreAJourCachetAction(
         date: new Date(data.date),
         montant: data.montant,
         spectacleId: data.spectacleId,
+        statut: data.statut,
         note: data.note || null,
       },
       include: {

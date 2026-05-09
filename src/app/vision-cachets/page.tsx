@@ -2,33 +2,13 @@
 
 import { Card, Table, Heading, Pagination } from "@/components/ui";
 import { useState, useEffect, useMemo } from "react";
-import { getCachetsAction } from "../administration/cachets-actions";
-
-const STATUT_DICT: { [key: number]: string } = {
-  0: "Non payé",
-  1: "En attente de paiement",
-  2: "Payé",
-};
-
-const PAGE_SIZE = 20;
-
-//seule la note est optionnelle, toutes les autres clés sont obligatoires donc pas de null permis
-type Cachet = {
-  id: number;
-  membreId: number;
-  membre: { user: { nom: string | null; prenom: string | null } };
-  date: string;
-  montant: number;
-  spectacleId: number;
-  spectacle: { titre: string };
-  statut: number;
-  note?: string | null;
-};
+import { getCachetsAction } from "../cachets-actions";
+import { Cachet, PAGE_SIZE, StatutCachet, STATUT_DICT } from "../cachets-partage";
 
 export default function VisionCachetsPage() {
   const [cachets, setCachets] = useState<Cachet[]>([]);
   const [filtreSpectacle, setFiltreSpectacle] = useState<string>("tous");
-  const [filtreStatut, setFiltreStatut] = useState<string>("tous");
+  const [filtreStatut, setFiltreStatut] = useState<StatutCachet | "tous">("tous");
   const [triPar, setTriPar] = useState<
     "none" | "dateCroissante" | "dateDecroissante" | "montantCroissant" | "montantDecroissant"
   >("none"); //pour avoir un seul tri actif à la fois
@@ -63,8 +43,7 @@ export default function VisionCachetsPage() {
     }
 
     if (filtreStatut !== "tous") {
-      const statutNum = parseInt(filtreStatut, 10);
-      resultat = resultat.filter((cachet) => cachet.statut === statutNum);
+      resultat = resultat.filter((cachet) => cachet.statut === filtreStatut);
     }
 
     switch (triPar) {
@@ -130,15 +109,17 @@ export default function VisionCachetsPage() {
         <select
           value={filtreStatut}
           onChange={(e) => {
-            setFiltreStatut(e.target.value as "tous" | string);
+            setFiltreStatut(e.target.value as "tous" | StatutCachet);
             setPage(1);
           }}
           className="p-2 border border-slate-300 rounded-md w-full"
         >
-          <option value="tous">Tous les status</option>
-          {Object.entries(STATUT_DICT).map(([id, label]) => (
-            <option key={id} value={id}>
-              {label}
+          <option value="tous">Tous</option>
+          {Object.entries(StatutCachet)
+          .filter(([key]) => isNaN(Number(key))) //filtre les clés numériques de l'enum
+          .map(([key, value]) => (
+            <option key={value} value={value}>
+              {StatutCachet[value as StatutCachet]}
             </option>
           ))}
         </select>
@@ -193,7 +174,7 @@ export default function VisionCachetsPage() {
           </Card.Body>
         </Card>
       </div>
-      {<Pagination currentPage={safePage} totalPages={totalPages} onPageChange={setPage} />}
+      <Pagination currentPage={safePage} totalPages={totalPages} onPageChange={setPage} />
     </div>
   );
 }
