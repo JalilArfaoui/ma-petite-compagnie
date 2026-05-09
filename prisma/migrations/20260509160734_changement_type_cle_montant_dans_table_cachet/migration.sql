@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "Cachet" ALTER COLUMN "montant" SET DATA TYPE DOUBLE PRECISION;

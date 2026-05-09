@@ -14,9 +14,6 @@ async function validerCachetDataAction(data: {
   statut: StatutCachet;
   note?: string;
 }): Promise<{ valid: boolean; error?: string }> {
-  const session = await auth();
-  if (!session) return { valid: false as const, error: "Non autorisé" };
-
   if (!Number.isInteger(data.membreId) || data.membreId <= 0) {
     return { valid: false, error: "L'identifiant du membre est invalide" };
   }
@@ -37,14 +34,10 @@ async function validerCachetDataAction(data: {
     };
   }
 
-  if (
-    data.statut !== "NON_PAYE" &&
-    data.statut !== "EN_ATTENTE_DE_PAIEMENT" &&
-    data.statut !== "PAYE"
-  ) {
+  if (!Object.values(StatutCachet).includes(data.statut)) {
     return { valid: false, error: "Le statut est invalide" };
   }
-
+  
   if (data.note && data.note.length > NOTE_NB_MAX_CARACS) {
     return { valid: false, error: `La note ne peut pas dépasser ${NOTE_NB_MAX_CARACS} caractères` };
   }
