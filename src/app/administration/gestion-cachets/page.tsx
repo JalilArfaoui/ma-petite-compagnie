@@ -152,7 +152,7 @@ export default function PageCachets() {
         //on est sur que membreId et spectacleId ne sont pas null grâce à la validation au-dessus
         membreId: membreId!,
         date,
-        montant: montant!,
+        montant: montant.toString()!,
         spectacleId: spectacleId!,
         statut: statut!,
         note,
@@ -173,7 +173,7 @@ export default function PageCachets() {
       creerCachetAction({
         membreId: membreId!,
         date,
-        montant: montant!,
+        montant: montant.toString()!,
         spectacleId: spectacleId!,
         statut: statut!,
         note,
@@ -457,7 +457,7 @@ export default function PageCachets() {
               className="p-2 border border-slate-300 rounded-md w-full"
               value={filtreStatut?.toString() || ""}
               onChange={(e) => {
-                setFiltreStatut(e.target.value as StatutCachet);
+                setFiltreStatut(e.target.value ? (e.target.value as StatutCachet) : undefined);
                 setPage(1);
               }}
             >
