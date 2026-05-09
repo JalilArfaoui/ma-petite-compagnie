@@ -118,7 +118,7 @@ export default function VisionCachetsPage() {
           <option value="tous">Tous</option>
           {Object.entries(StatutCachet)
             .filter(([key]) => isNaN(Number(key))) //filtre les clés numériques de l'enum
-            .map(([, value]) => (
+            .map(([key, value]) => (
               <option key={value} value={value}>
                 {STATUT_DICT[value as StatutCachet]}
               </option>
