@@ -10,7 +10,7 @@ import {
   supprimerCachetAction,
   getAllMembresAction,
   getAllSpectaclesAction,
-} from "../cachets-actions";
+} from "../administration/cachets-actions";
 
 const STATUT_DICT: { [key: number]: string } = {
   0: "Non payé",
@@ -336,6 +336,7 @@ export default function PageCachets() {
             <input
               className="flex w-full rounded-[12px] border border-border bg-white px-4 py-3 text-[1rem] text-text-primary font-serif placeholder:text-text-muted transition-all hover:border-border-hover hover:bg-bg-hover focus-visible:outline-none focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-60 disabled:bg-bg-disabled focus:border-primary focus:ring-1 focus:ring-primary"
               type="number"
+              step="0.01"
               min={MONTANT_CACHET_MINIMUM_LEGAL}
               value={montant?.toString() || ""}
               placeholder={`${MONTANT_CACHET_MINIMUM_LEGAL}`}
