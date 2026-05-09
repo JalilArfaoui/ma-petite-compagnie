@@ -10,28 +10,15 @@ import {
   supprimerCachetAction,
   getAllMembresAction,
   getAllSpectaclesAction,
-} from "../administration/cachets-actions";
-
-const STATUT_DICT: { [key: number]: string } = {
-  0: "Non payé",
-  1: "En attente de paiement",
-  2: "Payé",
-};
-
-const PAGE_SIZE = 20;
-
-//seule la note est optionnelle, toutes les autres clés sont obligatoires donc pas de null permis
-type Cachet = {
-  id: number;
-  membreId: number;
-  membre: { user: { nom: string | null; prenom: string | null } };
-  date: string;
-  montant: number;
-  spectacleId: number;
-  spectacle: { titre: string };
-  note?: string | null;
-  statut: number;
-};
+} from "../cachets-actions";
+import {
+  Cachet,
+  MONTANT_CACHET_MINIMUM_LEGAL,
+  NOTE_NB_MAX_CARACS,
+  PAGE_SIZE,
+  StatutCachet,
+  STATUT_DICT,
+} from "../cachets-partage";
 
 //type pour représenter le Cachet retourné par Prisma avant transformation
 type CachetAvecRelations = Prisma.CachetGetPayload<{
@@ -42,14 +29,10 @@ type CachetAvecRelations = Prisma.CachetGetPayload<{
       };
     };
     spectacle: true;
-    statut: true;
   };
 }>;
 
 export default function PageCachets() {
-  const MONTANT_CACHET_MINIMUM_LEGAL = 110;
-  const NOTE_NB_MAX_CARACS = 120;
-
   const [cachets, setCachets] = useState<Cachet[]>([]);
   const [membres, setMembres] = useState<
     Array<{ id: number; user: { nom: string | null; prenom: string | null } }>
@@ -60,11 +43,11 @@ export default function PageCachets() {
   const [montant, setMontant] = useState<number | null>(null);
   const [spectacleId, setSpectacleId] = useState<number | null>(null);
   const [note, setNote] = useState("");
-  const [statut, setStatut] = useState<number | null>(null);
+  const [statut, setStatut] = useState<StatutCachet>();
   const [editId, setEditId] = useState<number | null>(null);
   const [filtreMembre, setFiltreMembre] = useState<number | null>(null);
   const [filtreSpectacle, setFiltreSpectacle] = useState<number | null>(null);
-  const [filtreStatut, setFiltreStatut] = useState<number | null>(null);
+  const [filtreStatut, setFiltreStatut] = useState<StatutCachet | "tous">("tous");
   const [triPar, setTriPar] = useState<
     "none" | "dateCroissante" | "dateDecroissante" | "montantCroissant" | "montantDecroissant"
   >("none");
@@ -171,8 +154,8 @@ export default function PageCachets() {
         date,
         montant: montant!,
         spectacleId: spectacleId!,
+        statut,
         note,
-        statut: Number(statut),
       })
         .then((result) => {
           if (result.success && result.data) {
@@ -192,8 +175,8 @@ export default function PageCachets() {
         date,
         montant: montant!,
         spectacleId: spectacleId!,
+        statut,
         note,
-        statut: Number(statut),
       })
         .then((result) => {
           if (result.success && result.data) {
@@ -369,21 +352,21 @@ export default function PageCachets() {
 
           <div>
             <Heading as="h4" className="font-semibold">
-              statut
+              Statut
             </Heading>
             <br />
-            {errors.spectacle && <p className="text-red-600 text-sm">{errors.spectacle}</p>}
+            {errors.statut && <p className="text-red-600 text-sm">{errors.statut}</p>}
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
               id="statut"
               value={statut?.toString() || ""}
-              onChange={(e) => setStatut(e.target.value ? Number(e.target.value) : null)}
+              onChange={(e) => setStatut(e.target.value as string)}
               disabled={isLoading}
             >
-              <option value=""> Choisir un état </option>
-              <option value="en_attente"> En attente de paiement </option>
-              <option value="valide"> Payé </option>
-              <option value="refuse"> Non payé </option>
+              <option value=""> Choisir un statut </option>
+              <option value="Non payé"> Non payé </option>
+              <option value="En attente de paiement"> En attente de paiement </option>
+              <option value="Payé"> Payé </option>
             </select>
           </div>
 
@@ -471,14 +454,16 @@ export default function PageCachets() {
               className="p-2 border border-slate-300 rounded-md w-full"
               value={filtreStatut?.toString() || ""}
               onChange={(e) => {
-                setFiltreStatut(e.target.value ? Number(e.target.value) : null);
+                setFiltreStatut(e.target.value as "tous" | StatutCachet);
                 setPage(1);
               }}
             >
               <option value="">Tous</option>
-              {Object.entries(STATUT_DICT).map(([id, label]) => (
-                <option key={id} value={id}>
-                  {label}
+              {Object.entries(StatutCachet)
+              .filter(([key]) => isNaN(Number(key))) //filtre les clés numériques de l'enum
+              .map(([key, value]) => (
+                <option key={value} value={value}>
+                  {StatutCachet[value as StatutCachet]}
                 </option>
               ))}
             </select>
@@ -559,7 +544,7 @@ export default function PageCachets() {
           </Table>
         </Card.Body>
       </Card>
-      {<Pagination currentPage={safePage} totalPages={totalPages} onPageChange={setPage} />}
+      <Pagination currentPage={safePage} totalPages={totalPages} onPageChange={setPage} />
     </main>
   );
 }
