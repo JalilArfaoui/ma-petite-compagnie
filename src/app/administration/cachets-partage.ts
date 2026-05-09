@@ -1,6 +1,6 @@
 //stockage des fonctions, variables, constantes pour les cachets partagés entre les pages de gestion et de vision des cachets
 
-import { StatutCachet } from "@prisma/client";
+import { Prisma, StatutCachet } from "@prisma/client";
 
 export const MONTANT_CACHET_MINIMUM_LEGAL = 110;
 export const NOTE_NB_MAX_CARACS = 120;
@@ -25,3 +25,24 @@ export type Cachet = {
   statut: StatutCachet;
   note?: string | null;
 };
+
+//type pour représenter le Cachet retourné par Prisma avant transformation
+export type CachetAvecRelations = Prisma.CachetGetPayload<{
+  include: {
+    membre: {
+      include: {
+        user: true;
+      };
+    };
+    spectacle: true;
+  };
+}>;
+
+//fonction helper pour transformer les données de Prisma au format du state local
+export function formateCachet(data: CachetAvecRelations): Cachet {
+  return {
+    ...data,
+    montant: data.montant.toString(),
+    date: typeof data.date === "string" ? data.date : data.date.toISOString().split("T")[0],
+  };
+}

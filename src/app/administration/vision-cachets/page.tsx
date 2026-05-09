@@ -3,7 +3,7 @@
 import { Card, Table, Heading, Pagination } from "@/components/ui";
 import { useState, useEffect, useMemo } from "react";
 import { getCachetsAction } from "../cachets-actions";
-import { Cachet, PAGE_SIZE, STATUT_DICT } from "../cachets-partage";
+import { Cachet, PAGE_SIZE, STATUT_DICT, formateCachet } from "../cachets-partage";
 import { StatutCachet } from "@prisma/client";
 
 export default function VisionCachetsPage() {
@@ -19,14 +19,8 @@ export default function VisionCachetsPage() {
     getCachetsAction()
       .then((result) => {
         if (result.success && result.data) {
-          const cachetFormate = result.data.map((c) => ({
-            ...c,
-            montant: c.montant.toString(),
-            //convertit date de type Date en date de type string
-            //simplement parce que je prefère utiliser string plutôt que Date pour la clé date
-            date: typeof c.date === "string" ? c.date : c.date.toISOString().split("T")[0],
-          }));
-          setCachets(cachetFormate);
+          const cachetFormates = result.data.map((c) => formateCachet(c));
+          setCachets(cachetFormates);
         } else if (!result.success) {
           console.error(result.error);
         }

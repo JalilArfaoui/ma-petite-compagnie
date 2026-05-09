@@ -2,7 +2,6 @@
 
 import { Button, Card, Table, Heading, Pagination } from "@/components/ui";
 import { useState, useEffect } from "react";
-import { Prisma } from "@prisma/client";
 import {
   getCachetsAction,
   creerCachetAction,
@@ -17,20 +16,9 @@ import {
   NOTE_NB_MAX_CARACS,
   PAGE_SIZE,
   STATUT_DICT,
+  formateCachet,
 } from "../cachets-partage";
 import { StatutCachet } from "@prisma/client";
-
-//type pour représenter le Cachet retourné par Prisma avant transformation
-type CachetAvecRelations = Prisma.CachetGetPayload<{
-  include: {
-    membre: {
-      include: {
-        user: true;
-      };
-    };
-    spectacle: true;
-  };
-}>;
 
 export default function PageCachets() {
   const [cachets, setCachets] = useState<Cachet[]>([]);
@@ -55,21 +43,12 @@ export default function PageCachets() {
   const [isLoading, setIsLoading] = useState(false); //état pour désactiver le bouton pendant l'envoi (sécurité)
   const [page, setPage] = useState(1);
 
-  //fonction helper pour transformer les données de Prisma au format du state local
-  function formateCachet(data: CachetAvecRelations): Cachet {
-    return {
-      ...data,
-      montant: data.montant.toString(),
-      date: typeof data.date === "string" ? data.date : data.date.toISOString().split("T")[0],
-    };
-  }
-
   useEffect(() => {
     getCachetsAction()
       .then((result) => {
         if (result.success && result.data) {
-          const cachetFormattes = result.data.map((c) => formateCachet(c));
-          setCachets(cachetFormattes);
+          const cachetFormates = result.data.map((c) => formateCachet(c));
+          setCachets(cachetFormates);
         } else if (!result.success) {
           console.error(result.error);
           setErrors({ global: result.error || "Une erreur est survenue" });
