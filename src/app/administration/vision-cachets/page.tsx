@@ -21,6 +21,7 @@ export default function VisionCachetsPage() {
         if (result.success && result.data) {
           const cachetFormate = result.data.map((c) => ({
             ...c,
+            montant: c.montant.toString(),
             //convertit date de type Date en date de type string
             //simplement parce que je prefère utiliser string plutôt que Date pour la clé date
             date: typeof c.date === "string" ? c.date : c.date.toISOString().split("T")[0],
