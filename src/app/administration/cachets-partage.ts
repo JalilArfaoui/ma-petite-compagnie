@@ -23,7 +23,7 @@ export type Cachet = {
   spectacleId: number;
   spectacle: { titre: string };
   statut: StatutCachet;
-  note?: string | null;
+  note: string | null;
 };
 
 //type pour représenter le Cachet retourné par Prisma avant transformation
