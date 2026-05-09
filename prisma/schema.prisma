@@ -265,7 +265,7 @@ model Cachet {
   date         DateTime @default(now())
   spectacleId  Int
   spectacle    Spectacle @relation(fields: [spectacleId], references: [id], onDelete: Cascade)
-  montant      Float
+  montant      Decimal  @db.Decimal(10, 2)
   statut       StatutCachet  @default(NON_PAYE)
   note         String?
 }
