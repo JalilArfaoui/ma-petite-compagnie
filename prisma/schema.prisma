@@ -265,7 +265,7 @@ model Cachet {
   date         DateTime @default(now())
   spectacleId  Int
   spectacle    Spectacle @relation(fields: [spectacleId], references: [id], onDelete: Cascade)
-  montant      Int
+  montant      Float
   note         String?
   statut       Int            //0 = non payé, 1 = en attente de paiement, 2 = payé
 }

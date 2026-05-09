@@ -2,7 +2,7 @@
 
 import { Card, Table, Heading, Pagination } from "@/components/ui";
 import { useState, useEffect, useMemo } from "react";
-import { getCachetsAction } from "../cachets-actions";
+import { getCachetsAction } from "../administration/cachets-actions";
 
 const STATUT_DICT: { [key: number]: string } = {
   0: "Non payé",
