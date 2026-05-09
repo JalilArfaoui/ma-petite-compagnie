@@ -3,7 +3,8 @@
 import { Card, Table, Heading, Pagination } from "@/components/ui";
 import { useState, useEffect, useMemo } from "react";
 import { getCachetsAction } from "../cachets-actions";
-import { Cachet, PAGE_SIZE, StatutCachet, STATUT_DICT } from "../cachets-partage";
+import { Cachet, PAGE_SIZE, STATUT_DICT } from "../cachets-partage";
+import { StatutCachet } from "@prisma/client";
 
 export default function VisionCachetsPage() {
   const [cachets, setCachets] = useState<Cachet[]>([]);
@@ -116,12 +117,12 @@ export default function VisionCachetsPage() {
         >
           <option value="tous">Tous</option>
           {Object.entries(StatutCachet)
-          .filter(([key]) => isNaN(Number(key))) //filtre les clés numériques de l'enum
-          .map(([key, value]) => (
-            <option key={value} value={value}>
-              {StatutCachet[value as StatutCachet]}
-            </option>
-          ))}
+            .filter(([key]) => isNaN(Number(key))) //filtre les clés numériques de l'enum
+            .map(([, value]) => (
+              <option key={value} value={value}>
+                {STATUT_DICT[value as StatutCachet]}
+              </option>
+            ))}
         </select>
 
         <Heading as="h4" className="font-semibold">

@@ -1,8 +1,9 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { StatutCachet } from "@prisma/client";
 import { auth } from "@/auth";
-import { MONTANT_CACHET_MINIMUM_LEGAL, NOTE_NB_MAX_CARACS, StatutCachet } from "./cachets-partage";
+import { MONTANT_CACHET_MINIMUM_LEGAL, NOTE_NB_MAX_CARACS } from "./cachets-partage";
 
 //fonction helper pour valider les données d'un cachet
 async function validerCachetDataAction(data: {
@@ -34,6 +35,14 @@ async function validerCachetDataAction(data: {
       valid: false,
       error: `Le montant doit être un nombre >= ${MONTANT_CACHET_MINIMUM_LEGAL}`,
     };
+  }
+
+  if (
+    data.statut !== "NON_PAYE" &&
+    data.statut !== "EN_ATTENTE_DE_PAIEMENT" &&
+    data.statut !== "PAYE"
+  ) {
+    return { valid: false, error: "Le statut est invalide" };
   }
 
   if (data.note && data.note.length > NOTE_NB_MAX_CARACS) {

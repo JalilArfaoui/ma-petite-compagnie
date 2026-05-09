@@ -1,19 +1,15 @@
 //stockage des fonctions, variables, constantes pour les cachets partagés entre les pages de gestion et de vision des cachets
 
+import { StatutCachet } from "@prisma/client";
+
 export const MONTANT_CACHET_MINIMUM_LEGAL = 110;
 export const NOTE_NB_MAX_CARACS = 120;
 
 export const PAGE_SIZE = 20;
 
-export enum StatutCachet {
-  NON_PAYE,
-  EN_ATTENTE_DE_PAIMENT,
-  PAYE,
-}
-
 export const STATUT_DICT: Record<StatutCachet, string> = {
   [StatutCachet.NON_PAYE]: "Non payé",
-  [StatutCachet.EN_ATTENTE_DE_PAIMENT]: "En attente de paiement",
+  [StatutCachet.EN_ATTENTE_DE_PAIEMENT]: "En attente de paiement",
   [StatutCachet.PAYE]: "Payé",
 };
 

@@ -16,9 +16,9 @@ import {
   MONTANT_CACHET_MINIMUM_LEGAL,
   NOTE_NB_MAX_CARACS,
   PAGE_SIZE,
-  StatutCachet,
   STATUT_DICT,
 } from "../cachets-partage";
+import { StatutCachet } from "@prisma/client";
 
 //type pour représenter le Cachet retourné par Prisma avant transformation
 type CachetAvecRelations = Prisma.CachetGetPayload<{
@@ -47,7 +47,7 @@ export default function PageCachets() {
   const [editId, setEditId] = useState<number | null>(null);
   const [filtreMembre, setFiltreMembre] = useState<number | null>(null);
   const [filtreSpectacle, setFiltreSpectacle] = useState<number | null>(null);
-  const [filtreStatut, setFiltreStatut] = useState<StatutCachet | "tous">("tous");
+  const [filtreStatut, setFiltreStatut] = useState<StatutCachet>();
   const [triPar, setTriPar] = useState<
     "none" | "dateCroissante" | "dateDecroissante" | "montantCroissant" | "montantDecroissant"
   >("none");
@@ -154,7 +154,7 @@ export default function PageCachets() {
         date,
         montant: montant!,
         spectacleId: spectacleId!,
-        statut,
+        statut: statut!,
         note,
       })
         .then((result) => {
@@ -175,7 +175,7 @@ export default function PageCachets() {
         date,
         montant: montant!,
         spectacleId: spectacleId!,
-        statut,
+        statut: statut!,
         note,
       })
         .then((result) => {
@@ -197,7 +197,7 @@ export default function PageCachets() {
     setDate("");
     setMontant(null);
     setSpectacleId(null);
-    setStatut(null);
+    setStatut(undefined);
     setNote("");
     setErrors({});
   }
@@ -239,10 +239,9 @@ export default function PageCachets() {
     : cachetsFiltresParMembre;
 
   //filtrage par statut (agit uniquement sur cachets de membre x et spectacle y)
-  const cachetsFiltresParStatut =
-    filtreStatut !== null
-      ? cachetsFiltresParSpectacle.filter((c) => c.statut === filtreStatut)
-      : cachetsFiltresParSpectacle;
+  const cachetsFiltresParStatut = filtreStatut
+    ? cachetsFiltresParSpectacle.filter((c) => c.statut === filtreStatut)
+    : cachetsFiltresParSpectacle;
 
   //filtrage par date ou montant avec direction croissante/décroissante
   const cachetsTries = [...cachetsFiltresParStatut].sort((a, b) => {
@@ -360,13 +359,17 @@ export default function PageCachets() {
               className="p-2 border border-slate-300 rounded-md w-full"
               id="statut"
               value={statut?.toString() || ""}
-              onChange={(e) => setStatut(e.target.value as string)}
+              onChange={(e) => setStatut(e.target.value as StatutCachet)}
               disabled={isLoading}
             >
               <option value=""> Choisir un statut </option>
-              <option value="Non payé"> Non payé </option>
-              <option value="En attente de paiement"> En attente de paiement </option>
-              <option value="Payé"> Payé </option>
+              {Object.entries(StatutCachet)
+                .filter(([key]) => isNaN(Number(key))) //filtre les clés numériques de l'enum
+                .map(([, value]) => (
+                  <option key={value} value={value}>
+                    {STATUT_DICT[value as StatutCachet]}
+                  </option>
+                ))}
             </select>
           </div>
 
@@ -454,18 +457,18 @@ export default function PageCachets() {
               className="p-2 border border-slate-300 rounded-md w-full"
               value={filtreStatut?.toString() || ""}
               onChange={(e) => {
-                setFiltreStatut(e.target.value as "tous" | StatutCachet);
+                setFiltreStatut(e.target.value as StatutCachet);
                 setPage(1);
               }}
             >
               <option value="">Tous</option>
               {Object.entries(StatutCachet)
-              .filter(([key]) => isNaN(Number(key))) //filtre les clés numériques de l'enum
-              .map(([key, value]) => (
-                <option key={value} value={value}>
-                  {StatutCachet[value as StatutCachet]}
-                </option>
-              ))}
+                .filter(([key]) => isNaN(Number(key))) //filtre les clés numériques de l'enum
+                .map(([, value]) => (
+                  <option key={value} value={value}>
+                    {STATUT_DICT[value as StatutCachet]}
+                  </option>
+                ))}
             </select>
           </div>
 
