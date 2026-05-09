@@ -56,12 +56,12 @@ export default function VisionCachetsPage() {
         break;
       case "montantCroissant":
         resultat.sort((a, b) => {
-          return a.montant - b.montant;
+          return Number(a.montant) - Number(b.montant);
         });
         break;
       case "montantDecroissant":
         resultat.sort((a, b) => {
-          return b.montant - a.montant;
+          return Number(b.montant) - Number(a.montant);
         });
         break;
     }
@@ -162,7 +162,7 @@ export default function VisionCachetsPage() {
                 {cachetsPagines.map((cachet) => (
                   <Table.Row key={cachet.id}>
                     <Table.Cell>{new Date(cachet.date).toLocaleDateString("fr-FR")}</Table.Cell>
-                    <Table.Cell>{cachet.montant} €</Table.Cell>
+                    <Table.Cell>{Number(cachet.montant).toFixed(2)} €</Table.Cell>
                     <Table.Cell>{cachet.spectacle.titre}</Table.Cell>
                     <Table.Cell>{STATUT_DICT[cachet.statut]}</Table.Cell>
                     <Table.Cell>{cachet.note || "-"}</Table.Cell>

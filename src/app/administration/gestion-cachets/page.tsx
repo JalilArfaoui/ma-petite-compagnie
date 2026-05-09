@@ -40,7 +40,7 @@ export default function PageCachets() {
   const [spectacles, setSpectacles] = useState<Array<{ id: number; titre: string }>>([]);
   const [membreId, setMembreId] = useState<number | null>(null);
   const [date, setDate] = useState("");
-  const [montant, setMontant] = useState<number | null>(null);
+  const [montant, setMontant] = useState("");
   const [spectacleId, setSpectacleId] = useState<number | null>(null);
   const [note, setNote] = useState("");
   const [statut, setStatut] = useState<StatutCachet>();
@@ -195,7 +195,7 @@ export default function PageCachets() {
   function resetFormulaire(): void {
     setMembreId(null);
     setDate("");
-    setMontant(null);
+    setMontant("");
     setSpectacleId(null);
     setStatut(undefined);
     setNote("");
@@ -251,9 +251,9 @@ export default function PageCachets() {
       case "dateDecroissante":
         return b.date.localeCompare(a.date);
       case "montantCroissant":
-        return a.montant - b.montant;
+        return Number(a.montant) - Number(b.montant);
       case "montantDecroissant":
-        return b.montant - a.montant;
+        return Number(b.montant) - Number(a.montant);
       default:
         return 0;
     }
@@ -322,7 +322,7 @@ export default function PageCachets() {
               min={MONTANT_CACHET_MINIMUM_LEGAL}
               value={montant?.toString() || ""}
               placeholder={`${MONTANT_CACHET_MINIMUM_LEGAL}`}
-              onChange={(e) => setMontant(Number(e.target.value))}
+              onChange={(e) => setMontant(e.target.value)}
               disabled={isLoading}
             />
           </div>
@@ -513,7 +513,7 @@ export default function PageCachets() {
                     {c.membre.user.prenom} {c.membre.user.nom}
                   </Table.Cell>
                   <Table.Cell>{new Date(c.date).toLocaleDateString("fr-FR")}</Table.Cell>
-                  <Table.Cell>{c.montant} €</Table.Cell>
+                  <Table.Cell>{Number(c.montant).toFixed(2)} €</Table.Cell>
                   <Table.Cell>{c.spectacle.titre}</Table.Cell>
                   <Table.Cell>{c.note || "-"}</Table.Cell>
                   <Table.Cell>{STATUT_DICT[c.statut]}</Table.Cell>

@@ -9,7 +9,7 @@ import { MONTANT_CACHET_MINIMUM_LEGAL, NOTE_NB_MAX_CARACS } from "./cachets-part
 async function validerCachetDataAction(data: {
   membreId: number;
   date: string;
-  montant: number;
+  montant: string;
   spectacleId: number;
   statut: StatutCachet;
   note?: string;
@@ -27,7 +27,7 @@ async function validerCachetDataAction(data: {
     return { valid: false, error: "La date est invalide" };
   }
 
-  if (data.montant < MONTANT_CACHET_MINIMUM_LEGAL) {
+  if (Number(data.montant) < MONTANT_CACHET_MINIMUM_LEGAL) {
     return {
       valid: false,
       error: `Le montant doit être un nombre >= ${MONTANT_CACHET_MINIMUM_LEGAL}`,
@@ -70,7 +70,7 @@ export async function getCachetsAction() {
 export async function creerCachetAction(data: {
   membreId: number;
   date: string;
-  montant: number;
+  montant: string;
   spectacleId: number;
   statut: StatutCachet;
   note?: string;
@@ -117,7 +117,7 @@ export async function mettreAJourCachetAction(
   data: {
     membreId: number;
     date: string;
-    montant: number;
+    montant: string;
     spectacleId: number;
     statut: StatutCachet;
     note?: string;

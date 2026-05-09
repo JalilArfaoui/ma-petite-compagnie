@@ -19,7 +19,7 @@ export type Cachet = {
   membreId: number;
   membre: { user: { nom: string | null; prenom: string | null } };
   date: string;
-  montant: number;
+  montant: string;
   spectacleId: number;
   spectacle: { titre: string };
   statut: StatutCachet;
