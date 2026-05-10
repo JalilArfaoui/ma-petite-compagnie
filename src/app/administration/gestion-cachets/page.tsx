@@ -2,7 +2,6 @@
 
 import { Button, Card, Table, Heading, Pagination } from "@/components/ui";
 import { useState, useEffect } from "react";
-import { Prisma } from "@prisma/client";
 import {
   getCachetsAction,
   creerCachetAction,
@@ -11,37 +10,17 @@ import {
   getAllMembresAction,
   getAllSpectaclesAction,
 } from "../cachets-actions";
-
-const PAGE_SIZE = 20;
-
-//seule la note est optionnelle, toutes les autres clés sont obligatoires donc pas de null permis
-type Cachet = {
-  id: number;
-  membreId: number;
-  membre: { user: { nom: string | null; prenom: string | null } };
-  date: string;
-  montant: number;
-  spectacleId: number;
-  spectacle: { titre: string };
-  note?: string | null;
-};
-
-//type pour représenter le Cachet retourné par Prisma avant transformation
-type CachetAvecRelations = Prisma.CachetGetPayload<{
-  include: {
-    spectacle: true;
-    membre: {
-      include: {
-        user: true;
-      };
-    };
-  };
-}>;
+import {
+  Cachet,
+  MONTANT_CACHET_MINIMUM_LEGAL,
+  NOTE_NB_MAX_CARACS,
+  PAGE_SIZE,
+  STATUT_DICT,
+  formateCachet,
+} from "../cachets-partage";
+import { StatutCachet } from "@prisma/client";
 
 export default function PageCachets() {
-  const MONTANT_CACHET_MINIMUM_LEGAL = 110;
-  const NOTE_NB_MAX_CARACS = 120;
-
   const [cachets, setCachets] = useState<Cachet[]>([]);
   const [membres, setMembres] = useState<
     Array<{ id: number; user: { nom: string | null; prenom: string | null } }>
@@ -49,12 +28,14 @@ export default function PageCachets() {
   const [spectacles, setSpectacles] = useState<Array<{ id: number; titre: string }>>([]);
   const [membreId, setMembreId] = useState<number | null>(null);
   const [date, setDate] = useState("");
-  const [montant, setMontant] = useState<number | null>(null);
+  const [montant, setMontant] = useState("");
   const [spectacleId, setSpectacleId] = useState<number | null>(null);
   const [note, setNote] = useState("");
+  const [statut, setStatut] = useState<StatutCachet>();
   const [editId, setEditId] = useState<number | null>(null);
   const [filtreMembre, setFiltreMembre] = useState<number | null>(null);
   const [filtreSpectacle, setFiltreSpectacle] = useState<number | null>(null);
+  const [filtreStatut, setFiltreStatut] = useState<StatutCachet>();
   const [triPar, setTriPar] = useState<
     "none" | "dateCroissante" | "dateDecroissante" | "montantCroissant" | "montantDecroissant"
   >("none");
@@ -62,20 +43,12 @@ export default function PageCachets() {
   const [isLoading, setIsLoading] = useState(false); //état pour désactiver le bouton pendant l'envoi (sécurité)
   const [page, setPage] = useState(1);
 
-  //fonction helper pour transformer les données de Prisma au format du state local
-  function formateCachet(data: CachetAvecRelations): Cachet {
-    return {
-      ...data,
-      date: typeof data.date === "string" ? data.date : data.date.toISOString().split("T")[0],
-    };
-  }
-
   useEffect(() => {
     getCachetsAction()
       .then((result) => {
         if (result.success && result.data) {
-          const cachetFormattes = result.data.map((c) => formateCachet(c));
-          setCachets(cachetFormattes);
+          const cachetFormates = result.data.map((c) => formateCachet(c));
+          setCachets(cachetFormates);
         } else if (!result.success) {
           console.error(result.error);
           setErrors({ global: result.error || "Une erreur est survenue" });
@@ -134,6 +107,11 @@ export default function PageCachets() {
       foundErrors.spectacle = "Un spectacle doit être choisi";
     }
 
+    //validation obligatoire du statut
+    if (!statut) {
+      foundErrors.statut = "Un statut doit être choisi";
+    }
+
     //pas forcement nécéssaire puisque déjà géré dans le code de l'input, mais mieux vaut être prévoyant
     if (note.length > NOTE_NB_MAX_CARACS) {
       foundErrors.note = `La note ne peut pas dépasser ${NOTE_NB_MAX_CARACS} caractères`;
@@ -156,6 +134,7 @@ export default function PageCachets() {
         date,
         montant: montant!,
         spectacleId: spectacleId!,
+        statut: statut!,
         note,
       })
         .then((result) => {
@@ -176,6 +155,7 @@ export default function PageCachets() {
         date,
         montant: montant!,
         spectacleId: spectacleId!,
+        statut: statut!,
         note,
       })
         .then((result) => {
@@ -195,8 +175,9 @@ export default function PageCachets() {
   function resetFormulaire(): void {
     setMembreId(null);
     setDate("");
-    setMontant(null);
+    setMontant("");
     setSpectacleId(null);
+    setStatut(undefined);
     setNote("");
     setErrors({});
   }
@@ -223,6 +204,7 @@ export default function PageCachets() {
     setDate(c.date);
     setMontant(c.montant);
     setSpectacleId(c.spectacleId);
+    setStatut(c.statut);
     setNote(c.note || "");
   }
 
@@ -232,21 +214,26 @@ export default function PageCachets() {
     : cachets;
 
   //filtrage par spectacle (agit uniquement sur cachets de membre x)
-  const cachetsFiltres = filtreSpectacle
+  const cachetsFiltresParSpectacle = filtreSpectacle
     ? cachetsFiltresParMembre.filter((c) => c.spectacleId === filtreSpectacle)
     : cachetsFiltresParMembre;
 
+  //filtrage par statut (agit uniquement sur cachets de membre x et spectacle y)
+  const cachetsFiltresParStatut = filtreStatut
+    ? cachetsFiltresParSpectacle.filter((c) => c.statut === filtreStatut)
+    : cachetsFiltresParSpectacle;
+
   //filtrage par date ou montant avec direction croissante/décroissante
-  const cachetsTries = [...cachetsFiltres].sort((a, b) => {
+  const cachetsTries = [...cachetsFiltresParStatut].sort((a, b) => {
     switch (triPar) {
       case "dateCroissante":
         return a.date.localeCompare(b.date);
       case "dateDecroissante":
         return b.date.localeCompare(a.date);
       case "montantCroissant":
-        return a.montant - b.montant;
+        return Number(a.montant) - Number(b.montant);
       case "montantDecroissant":
-        return b.montant - a.montant;
+        return Number(b.montant) - Number(a.montant);
       default:
         return 0;
     }
@@ -301,6 +288,7 @@ export default function PageCachets() {
               disabled={isLoading}
             />
           </div>
+
           <div>
             <Heading as="h4" className="font-semibold">
               Montant du cachet
@@ -310,13 +298,15 @@ export default function PageCachets() {
             <input
               className="flex w-full rounded-[12px] border border-border bg-white px-4 py-3 text-[1rem] text-text-primary font-serif placeholder:text-text-muted transition-all hover:border-border-hover hover:bg-bg-hover focus-visible:outline-none focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-60 disabled:bg-bg-disabled focus:border-primary focus:ring-1 focus:ring-primary"
               type="number"
+              step="0.01"
               min={MONTANT_CACHET_MINIMUM_LEGAL}
               value={montant?.toString() || ""}
               placeholder={`${MONTANT_CACHET_MINIMUM_LEGAL}`}
-              onChange={(e) => setMontant(Number(e.target.value))}
+              onChange={(e) => setMontant(e.target.value)}
               disabled={isLoading}
             />
           </div>
+
           <div>
             <Heading as="h4" className="font-semibold">
               Spectacle
@@ -338,6 +328,31 @@ export default function PageCachets() {
               ))}
             </select>
           </div>
+
+          <div>
+            <Heading as="h4" className="font-semibold">
+              Statut
+            </Heading>
+            <br />
+            {errors.statut && <p className="text-red-600 text-sm">{errors.statut}</p>}
+            <select
+              className="p-2 border border-slate-300 rounded-md w-full"
+              id="statut"
+              value={statut?.toString() || ""}
+              onChange={(e) =>
+                setStatut(e.target.value ? (e.target.value as StatutCachet) : undefined)
+              }
+              disabled={isLoading}
+            >
+              <option value=""> Choisir un statut </option>
+              {Object.values(StatutCachet).map((value) => (
+                <option key={value} value={value}>
+                  {STATUT_DICT[value]}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <div>
             <Heading as="h4" className="font-semibold">
               Note
@@ -417,6 +432,25 @@ export default function PageCachets() {
           </div>
 
           <div className="flex flex-col gap-1 flex-1 max-w-xs items-center">
+            <label>Filtrer par statut</label>
+            <select
+              className="p-2 border border-slate-300 rounded-md w-full"
+              value={filtreStatut?.toString() || ""}
+              onChange={(e) => {
+                setFiltreStatut(e.target.value ? (e.target.value as StatutCachet) : undefined);
+                setPage(1);
+              }}
+            >
+              <option value="">Tous</option>
+              {Object.values(StatutCachet).map((value) => (
+                <option key={value} value={value}>
+                  {STATUT_DICT[value]}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex flex-col gap-1 flex-1 max-w-xs items-center">
             <label>Options de tri</label>
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
@@ -446,6 +480,7 @@ export default function PageCachets() {
                 <Table.Header>Montant</Table.Header>
                 <Table.Header>Spectacle</Table.Header>
                 <Table.Header>Note</Table.Header>
+                <Table.Header>Statut</Table.Header>
                 <Table.Header>Modifier cachet</Table.Header>
                 <Table.Header>Supprimer cachet</Table.Header>
               </Table.Row>
@@ -458,9 +493,10 @@ export default function PageCachets() {
                     {c.membre.user.prenom} {c.membre.user.nom}
                   </Table.Cell>
                   <Table.Cell>{new Date(c.date).toLocaleDateString("fr-FR")}</Table.Cell>
-                  <Table.Cell>{c.montant} €</Table.Cell>
+                  <Table.Cell>{Number(c.montant).toFixed(2)} €</Table.Cell>
                   <Table.Cell>{c.spectacle.titre}</Table.Cell>
                   <Table.Cell>{c.note || "-"}</Table.Cell>
+                  <Table.Cell>{STATUT_DICT[c.statut]}</Table.Cell>
                   <Table.Cell>
                     <Button
                       variant="outline"

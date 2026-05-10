@@ -1,3 +1,6 @@
+-- CreateEnum
+CREATE TYPE "StatutCachet" AS ENUM ('NON_PAYE', 'EN_ATTENTE_DE_PAIEMENT', 'PAYE');
+
 -- AlterTable
 ALTER TABLE "Compagnie" ADD COLUMN     "capitalSocial" DOUBLE PRECISION,
 ADD COLUMN     "formeJuridique" TEXT,
@@ -13,7 +16,8 @@ CREATE TABLE "Cachet" (
     "membreId" INTEGER NOT NULL,
     "date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "spectacleId" INTEGER NOT NULL,
-    "montant" INTEGER NOT NULL,
+    "montant" DECIMAL(10,2) NOT NULL,
+    "statut" "StatutCachet" NOT NULL DEFAULT 'NON_PAYE',
     "note" TEXT,
 
     CONSTRAINT "Cachet_pkey" PRIMARY KEY ("id")

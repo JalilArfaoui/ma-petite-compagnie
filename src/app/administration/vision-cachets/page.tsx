@@ -3,24 +3,13 @@
 import { Card, Table, Heading, Pagination } from "@/components/ui";
 import { useState, useEffect, useMemo } from "react";
 import { getCachetsAction } from "../cachets-actions";
-
-const PAGE_SIZE = 20;
-
-//seule la note est optionnelle, toutes les autres clés sont obligatoires donc pas de null permis
-type Cachet = {
-  id: number;
-  membreId: number;
-  membre: { user: { nom: string | null; prenom: string | null } };
-  date: string;
-  montant: number;
-  spectacleId: number;
-  spectacle: { titre: string };
-  note?: string | null;
-};
+import { Cachet, PAGE_SIZE, STATUT_DICT, formateCachet } from "../cachets-partage";
+import { StatutCachet } from "@prisma/client";
 
 export default function VisionCachetsPage() {
   const [cachets, setCachets] = useState<Cachet[]>([]);
   const [filtreSpectacle, setFiltreSpectacle] = useState<string>("tous");
+  const [filtreStatut, setFiltreStatut] = useState<StatutCachet | "tous">("tous");
   const [triPar, setTriPar] = useState<
     "none" | "dateCroissante" | "dateDecroissante" | "montantCroissant" | "montantDecroissant"
   >("none"); //pour avoir un seul tri actif à la fois
@@ -30,13 +19,8 @@ export default function VisionCachetsPage() {
     getCachetsAction()
       .then((result) => {
         if (result.success && result.data) {
-          const cachetFormate = result.data.map((c) => ({
-            ...c,
-            //convertit date de type Date en date de type string
-            //simplement parce que je prefère utiliser string plutôt que Date pour la clé date
-            date: typeof c.date === "string" ? c.date : c.date.toISOString().split("T")[0],
-          }));
-          setCachets(cachetFormate);
+          const cachetFormates = result.data.map((c) => formateCachet(c));
+          setCachets(cachetFormates);
         } else if (!result.success) {
           console.error(result.error);
         }
@@ -54,6 +38,10 @@ export default function VisionCachetsPage() {
       resultat = resultat.filter((cachet) => cachet.spectacle.titre === filtreSpectacle);
     }
 
+    if (filtreStatut !== "tous") {
+      resultat = resultat.filter((cachet) => cachet.statut === filtreStatut);
+    }
+
     switch (triPar) {
       case "dateCroissante":
         resultat.sort((a, b) => a.date.localeCompare(b.date));
@@ -63,18 +51,18 @@ export default function VisionCachetsPage() {
         break;
       case "montantCroissant":
         resultat.sort((a, b) => {
-          return a.montant - b.montant;
+          return Number(a.montant) - Number(b.montant);
         });
         break;
       case "montantDecroissant":
         resultat.sort((a, b) => {
-          return b.montant - a.montant;
+          return Number(b.montant) - Number(a.montant);
         });
         break;
     }
 
     return resultat;
-  }, [filtreSpectacle, triPar, cachets]);
+  }, [filtreSpectacle, filtreStatut, triPar, cachets]);
 
   const totalPages = Math.max(1, Math.ceil(cachetsFiltresEtTries.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
@@ -111,6 +99,26 @@ export default function VisionCachetsPage() {
         </select>
 
         <Heading as="h4" className="font-semibold">
+          Filtrer par statut
+        </Heading>
+
+        <select
+          value={filtreStatut}
+          onChange={(e) => {
+            setFiltreStatut(e.target.value as "tous" | StatutCachet);
+            setPage(1);
+          }}
+          className="p-2 border border-slate-300 rounded-md w-full"
+        >
+          <option value="tous">Tous</option>
+          {Object.values(StatutCachet).map((value) => (
+            <option key={value} value={value}>
+              {STATUT_DICT[value]}
+            </option>
+          ))}
+        </select>
+
+        <Heading as="h4" className="font-semibold">
           Options de tri
         </Heading>
         <select
@@ -141,6 +149,7 @@ export default function VisionCachetsPage() {
                   <Table.Header>Date</Table.Header>
                   <Table.Header>Montant</Table.Header>
                   <Table.Header>Spectacle</Table.Header>
+                  <Table.Header>Statut</Table.Header>
                   <Table.Header>Note</Table.Header>
                 </Table.Row>
               </Table.Head>
@@ -148,8 +157,9 @@ export default function VisionCachetsPage() {
                 {cachetsPagines.map((cachet) => (
                   <Table.Row key={cachet.id}>
                     <Table.Cell>{new Date(cachet.date).toLocaleDateString("fr-FR")}</Table.Cell>
-                    <Table.Cell>{cachet.montant} €</Table.Cell>
+                    <Table.Cell>{Number(cachet.montant).toFixed(2)} €</Table.Cell>
                     <Table.Cell>{cachet.spectacle.titre}</Table.Cell>
+                    <Table.Cell>{STATUT_DICT[cachet.statut]}</Table.Cell>
                     <Table.Cell>{cachet.note || "-"}</Table.Cell>
                   </Table.Row>
                 ))}

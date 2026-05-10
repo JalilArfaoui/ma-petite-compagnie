@@ -1,17 +1,17 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { StatutCachet } from "@prisma/client";
 import { auth } from "@/auth";
-
-const MONTANT_CACHET_MINIMUM_LEGAL = 110;
-const NOTE_NB_MAX_CARACS = 120;
+import { MONTANT_CACHET_MINIMUM_LEGAL, NOTE_NB_MAX_CARACS } from "./cachets-partage";
 
 //fonction helper pour valider les données d'un cachet
 async function validerCachetDataAction(data: {
   membreId: number;
   date: string;
-  montant: number;
+  montant: string;
   spectacleId: number;
+  statut: StatutCachet;
   note?: string;
 }): Promise<{ valid: boolean; error?: string }> {
   if (!Number.isInteger(data.membreId) || data.membreId <= 0) {
@@ -27,11 +27,15 @@ async function validerCachetDataAction(data: {
     return { valid: false, error: "La date est invalide" };
   }
 
-  if (data.montant < MONTANT_CACHET_MINIMUM_LEGAL) {
+  if (Number(data.montant) < MONTANT_CACHET_MINIMUM_LEGAL) {
     return {
       valid: false,
       error: `Le montant doit être un nombre >= ${MONTANT_CACHET_MINIMUM_LEGAL}`,
     };
+  }
+
+  if (!Object.values(StatutCachet).includes(data.statut)) {
+    return { valid: false, error: "Le statut est invalide" };
   }
 
   if (data.note && data.note.length > NOTE_NB_MAX_CARACS) {
@@ -66,8 +70,9 @@ export async function getCachetsAction() {
 export async function creerCachetAction(data: {
   membreId: number;
   date: string;
-  montant: number;
+  montant: string;
   spectacleId: number;
+  statut: StatutCachet;
   note?: string;
 }) {
   //authentification
@@ -87,6 +92,7 @@ export async function creerCachetAction(data: {
         date: new Date(data.date),
         montant: data.montant,
         spectacleId: data.spectacleId,
+        statut: data.statut,
         note: data.note || null,
       },
       include: {
@@ -111,8 +117,9 @@ export async function mettreAJourCachetAction(
   data: {
     membreId: number;
     date: string;
-    montant: number;
+    montant: string;
     spectacleId: number;
+    statut: StatutCachet;
     note?: string;
   }
 ) {
@@ -143,6 +150,7 @@ export async function mettreAJourCachetAction(
         date: new Date(data.date),
         montant: data.montant,
         spectacleId: data.spectacleId,
+        statut: data.statut,
         note: data.note || null,
       },
       include: {
