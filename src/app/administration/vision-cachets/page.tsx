@@ -1,8 +1,10 @@
 "use client";
 
-import { Card, Table, Heading } from "@/components/ui";
+import { Card, Table, Heading, Pagination } from "@/components/ui";
 import { useState, useEffect, useMemo } from "react";
 import { getCachetsAction } from "../cachets-actions";
+
+const PAGE_SIZE = 20;
 
 //seule la note est optionnelle, toutes les autres clés sont obligatoires donc pas de null permis
 type Cachet = {
@@ -18,11 +20,11 @@ type Cachet = {
 
 export default function VisionCachetsPage() {
   const [cachets, setCachets] = useState<Cachet[]>([]);
-  const [spectacleFilter, setSpectacleFilter] = useState<string>("tous");
-  const [sortBy, setSortBy] = useState<
+  const [filtreSpectacle, setFiltreSpectacle] = useState<string>("tous");
+  const [triPar, setTriPar] = useState<
     "none" | "dateCroissante" | "dateDecroissante" | "montantCroissant" | "montantDecroissant"
   >("none"); //pour avoir un seul tri actif à la fois
-  //const [page, setPage] = useState(1);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     getCachetsAction()
@@ -45,40 +47,41 @@ export default function VisionCachetsPage() {
   }, []);
 
   //filtrage + tri
-  const filteredAndSorted = useMemo(() => {
-    let result = [...cachets];
+  const cachetsFiltresEtTries = useMemo(() => {
+    let resultat = [...cachets];
 
-    if (spectacleFilter !== "tous") {
-      result = result.filter((cachet) => cachet.spectacle.titre === spectacleFilter);
+    if (filtreSpectacle !== "tous") {
+      resultat = resultat.filter((cachet) => cachet.spectacle.titre === filtreSpectacle);
     }
 
-    switch (sortBy) {
+    switch (triPar) {
       case "dateCroissante":
-        result.sort((a, b) => a.date.localeCompare(b.date));
+        resultat.sort((a, b) => a.date.localeCompare(b.date));
         break;
       case "dateDecroissante":
-        result.sort((a, b) => b.date.localeCompare(a.date));
+        resultat.sort((a, b) => b.date.localeCompare(a.date));
         break;
       case "montantCroissant":
-        result.sort((a, b) => {
+        resultat.sort((a, b) => {
           return a.montant - b.montant;
         });
         break;
       case "montantDecroissant":
-        result.sort((a, b) => {
+        resultat.sort((a, b) => {
           return b.montant - a.montant;
         });
         break;
     }
 
-    return result;
-  }, [spectacleFilter, sortBy, cachets]);
+    return resultat;
+  }, [filtreSpectacle, triPar, cachets]);
 
-  /*
-  const totalPages = Math.max(1, Math.ceil(filteredAndSorted.length / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(cachetsFiltresEtTries.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
-  const paginated = filteredAndSorted.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
-  */
+  const cachetsPagines = cachetsFiltresEtTries.slice(
+    (safePage - 1) * PAGE_SIZE,
+    safePage * PAGE_SIZE
+  );
 
   return (
     <div>
@@ -92,10 +95,10 @@ export default function VisionCachetsPage() {
         </Heading>
 
         <select
-          value={spectacleFilter}
+          value={filtreSpectacle}
           onChange={(e) => {
-            setSpectacleFilter(e.target.value as "tous" | string);
-            //setPage(1);
+            setFiltreSpectacle(e.target.value as "tous" | string);
+            setPage(1);
           }}
           className="p-2 border border-slate-300 rounded-md w-full"
         >
@@ -111,10 +114,10 @@ export default function VisionCachetsPage() {
           Options de tri
         </Heading>
         <select
-          value={sortBy}
+          value={triPar}
           onChange={(e) => {
-            setSortBy(e.target.value as typeof sortBy);
-            //setPage(1);
+            setTriPar(e.target.value as typeof triPar);
+            setPage(1);
           }}
           className="p-2 border border-slate-300 rounded-md w-full"
         >
@@ -135,7 +138,6 @@ export default function VisionCachetsPage() {
             <Table>
               <Table.Head>
                 <Table.Row>
-                  <Table.Header>Numero</Table.Header>
                   <Table.Header>Date</Table.Header>
                   <Table.Header>Montant</Table.Header>
                   <Table.Header>Spectacle</Table.Header>
@@ -143,9 +145,8 @@ export default function VisionCachetsPage() {
                 </Table.Row>
               </Table.Head>
               <Table.Body>
-                {filteredAndSorted.map((cachet) => (
+                {cachetsPagines.map((cachet) => (
                   <Table.Row key={cachet.id}>
-                    <Table.Cell>{cachet.id}</Table.Cell>
                     <Table.Cell>{new Date(cachet.date).toLocaleDateString("fr-FR")}</Table.Cell>
                     <Table.Cell>{cachet.montant} €</Table.Cell>
                     <Table.Cell>{cachet.spectacle.titre}</Table.Cell>
@@ -157,6 +158,7 @@ export default function VisionCachetsPage() {
           </Card.Body>
         </Card>
       </div>
+      <Pagination currentPage={safePage} totalPages={totalPages} onPageChange={setPage} />
     </div>
   );
 }

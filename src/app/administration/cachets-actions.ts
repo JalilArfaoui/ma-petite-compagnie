@@ -188,12 +188,12 @@ export async function getAllMembresAction() {
   if (!session) return { success: false, error: "Non autorisé" };
 
   try {
-    const membres = await prisma.companyMember.findMany({
+    const membresCompagnie = await prisma.companyMember.findMany({
       include: {
         user: true,
       },
     });
-    return { success: true, data: membres };
+    return { success: true, data: membresCompagnie };
   } catch (error) {
     console.error("Erreur lors de la récupération des membres:", error);
     return { success: false, error: "Impossible de récupérer les membres" };

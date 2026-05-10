@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Card, Table, Heading } from "@/components/ui";
+import { Button, Card, Table, Heading, Pagination } from "@/components/ui";
 import { useState, useEffect } from "react";
 import { Prisma } from "@prisma/client";
 import {
@@ -11,6 +11,8 @@ import {
   getAllMembresAction,
   getAllSpectaclesAction,
 } from "../cachets-actions";
+
+const PAGE_SIZE = 20;
 
 //seule la note est optionnelle, toutes les autres clés sont obligatoires donc pas de null permis
 type Cachet = {
@@ -25,7 +27,6 @@ type Cachet = {
 };
 
 //type pour représenter le Cachet retourné par Prisma avant transformation
-//cela permet d'éviter l'erreur pointé par lint à la ligne: (function formatCachetFromDB(data: CachetWithRelations): Cachet {)
 type CachetAvecRelations = Prisma.CachetGetPayload<{
   include: {
     spectacle: true;
@@ -59,7 +60,7 @@ export default function PageCachets() {
   >("none");
   const [errors, setErrors] = useState<{ [key: string]: string }>({}); //stocker une erreur par champ
   const [isLoading, setIsLoading] = useState(false); //état pour désactiver le bouton pendant l'envoi (sécurité)
-  //const [page, setPage] = useState(1);
+  const [page, setPage] = useState(1);
 
   //fonction helper pour transformer les données de Prisma au format du state local
   function formateCachet(data: CachetAvecRelations): Cachet {
@@ -103,7 +104,7 @@ export default function PageCachets() {
       .catch(() => setIsLoading(false));
   }, []);
 
-  function ajouterCachet(e: React.FormEvent<HTMLFormElement>) {
+  function ajouterCachet(e: React.FormEvent<HTMLFormElement>): void {
     e.preventDefault();
 
     const foundErrors: { [key: string]: string } = {};
@@ -191,7 +192,7 @@ export default function PageCachets() {
     }
   }
 
-  function resetFormulaire() {
+  function resetFormulaire(): void {
     setMembreId(null);
     setDate("");
     setMontant(null);
@@ -200,7 +201,7 @@ export default function PageCachets() {
     setErrors({});
   }
 
-  function supprimerCachet(id: number) {
+  function supprimerCachet(id: number): void {
     setIsLoading(true);
     supprimerCachetAction(id)
       .then((result) => {
@@ -216,7 +217,7 @@ export default function PageCachets() {
       .catch(() => setIsLoading(false));
   }
 
-  function editerCachet(c: Cachet) {
+  function editerCachet(c: Cachet): void {
     setEditId(c.id);
     setMembreId(c.membreId);
     setDate(c.date);
@@ -251,11 +252,9 @@ export default function PageCachets() {
     }
   });
 
-  /*
   const totalPages = Math.max(1, Math.ceil(cachetsTries.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
   const cachetsPagines = cachetsTries.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
-  */
 
   return (
     <main>
@@ -378,15 +377,15 @@ export default function PageCachets() {
       </Heading>
 
       <div className="mx-auto max-w-4xl rounded-[20px] bg-hover p-[20px] border-none shadow-sm transition-shadow flex flex-col gap-[20px]">
-        <div className="flex flex-wrap gap-6 items-end">
-          <div className="flex flex-col gap-1">
+        <div className="flex flex-wrap justify-between items-end gap-6 w-full">
+          <div className="flex flex-col gap-1 flex-1 max-w-xs items-center">
             <label>Filtrer par membre</label>
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
               value={filtreMembre?.toString() || ""}
               onChange={(e) => {
                 setFiltreMembre(e.target.value ? Number(e.target.value) : null);
-                //setPage(1);
+                setPage(1);
               }}
             >
               <option value="">Tous les membres</option>
@@ -398,14 +397,14 @@ export default function PageCachets() {
             </select>
           </div>
 
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 flex-1 max-w-xs items-center">
             <label>Filtrer par spectacle</label>
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
               value={filtreSpectacle?.toString() || ""}
               onChange={(e) => {
                 setFiltreSpectacle(e.target.value ? Number(e.target.value) : null);
-                //setPage(1);
+                setPage(1);
               }}
             >
               <option value="">Tous</option>
@@ -417,14 +416,14 @@ export default function PageCachets() {
             </select>
           </div>
 
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 flex-1 max-w-xs items-center">
             <label>Options de tri</label>
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
               value={triPar}
               onChange={(e) => {
                 setTriPar(e.target.value as typeof triPar);
-                //setPage(1);
+                setPage(1);
               }}
             >
               <option value="none">Aucun tri</option>
@@ -453,7 +452,7 @@ export default function PageCachets() {
             </Table.Head>
 
             <Table.Body>
-              {cachetsTries.map((c) => (
+              {cachetsPagines.map((c) => (
                 <Table.Row key={c.id}>
                   <Table.Cell>
                     {c.membre.user.prenom} {c.membre.user.nom}
@@ -490,6 +489,7 @@ export default function PageCachets() {
           </Table>
         </Card.Body>
       </Card>
+      <Pagination currentPage={safePage} totalPages={totalPages} onPageChange={setPage} />
     </main>
   );
 }
