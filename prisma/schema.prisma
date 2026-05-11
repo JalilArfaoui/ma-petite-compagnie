@@ -198,6 +198,7 @@ model Spectacle {
   budget_initial         Float            @default(0)
   image                  Bytes?
   imageMimeType          String?
+  imageUpdatedAt         DateTime?
   dossierArtistique      Bytes?
   dossierArtistiqueName  String?
   compagnieId            Int

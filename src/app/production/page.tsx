@@ -16,6 +16,7 @@ export default async function ProductionPage() {
       type: true,
       statut: true,
       imageMimeType: true,
+      imageUpdatedAt: true,
     },
     where: {
       compagnieId: compagnieId,
@@ -28,6 +29,7 @@ export default async function ProductionPage() {
     type: s.type,
     statut: s.statut,
     hasImage: !!s.imageMimeType,
+    imageVersion: s.imageUpdatedAt ? s.imageUpdatedAt.getTime() : null,
   }));
 
   return <SpectaclesClient spectacles={serialized} />;
