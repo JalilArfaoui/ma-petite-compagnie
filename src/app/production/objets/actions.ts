@@ -8,12 +8,25 @@ import { EtatObjet } from "@prisma/client";
 // ========== TypeObjet CRUD ==========
 
 export async function createTypeObjet(formData: FormData) {
+  const session = await auth();
+  if (!session?.activeCompanyId) throw new Error("Aucune compagnie active.");
+  const compagnieId = Number(session.activeCompanyId);
+
   const nom = formData.get("nom") as string;
   const categorieId = Number(formData.get("categorieId"));
   const image = (formData.get("image") as string) || null;
 
-  await prisma.typeObjet.create({
+  const typeObjet = await prisma.typeObjet.create({
     data: { nom, categorieId, image },
+  });
+
+  await prisma.objet.create({
+    data: {
+      typeObjetId: typeObjet.id,
+      etat: "NEUF",
+      estDisponible: true,
+      compagnieId,
+    },
   });
 
   revalidatePath("/production/objets");
