@@ -17,25 +17,36 @@ async function reserver(formData: FormData) {
   const debutResa = new Date(date.getTime() + deca_debut * 60000);
   const finResa = new Date(date.getTime() + deca_fin * 60000);
 
-  const rep = await prisma.representation.create({
-    data: { debutResa, finResa, spectacleId, lieuId },
-  });
+  const session = await auth();
+  const compagnieId = Number(session!.activeCompanyId);
 
-  if (rep != null) {
-    const promises: Promise<unknown>[] = [];
-    formData.forEach((data, key) => {
-      if (!isNaN(Number(key))) {
-        promises.push(
-          prisma.reservationObjet.create({
-            data: {
-              representationId: rep.id,
-              objetId: Number(data),
-            },
-          })
-        );
-      }
+  const spectacle = await prisma.spectacle.findFirst({
+    where: {
+      id: spectacleId,
+      compagnieId: compagnieId,
+    },
+  });
+  if (spectacle != null) {
+    const rep = await prisma.representation.create({
+      data: { debutResa, finResa, spectacleId, lieuId },
     });
-    await Promise.all(promises);
+
+    if (rep != null) {
+      const promises: Promise<unknown>[] = [];
+      formData.forEach((data, key) => {
+        if (!isNaN(Number(key))) {
+          promises.push(
+            prisma.reservationObjet.create({
+              data: {
+                representationId: rep.id,
+                objetId: Number(data),
+              },
+            })
+          );
+        }
+      });
+      await Promise.all(promises);
+    }
   }
 
   revalidatePath(`/production/spectacles/${spectacleId}/reserver`);
@@ -46,23 +57,34 @@ async function deleteRepresentation(formData: FormData) {
   "use server";
 
   const spectacleId = formData.get("spectacleId") as string;
-
   const representationId = Number(formData.get("representationId"));
-  await prisma.representation.delete({
+
+  const session = await auth();
+  const compagnieId = Number(session!.activeCompanyId);
+  const spectacleIdNum = Number(spectacleId);
+  const spectacle = await prisma.spectacle.findFirst({
     where: {
-      id: representationId,
+      id: spectacleIdNum,
+      compagnieId: compagnieId,
     },
   });
+  if (spectacle != null) {
+    await prisma.representation.delete({
+      where: {
+        id: representationId,
+      },
+    });
 
-  if (formData.has("date") && formData.has("lieuId")) {
-    const date = formData.get("date") as string;
-    const lieu = formData.get("lieuId") as string;
+    if (formData.has("date") && formData.has("lieuId")) {
+      const date = formData.get("date") as string;
+      const lieu = formData.get("lieuId") as string;
 
-    redirect(
-      `/production/spectacles/${spectacleId}/reserver?date=${encodeURIComponent(date)}&lieu=${encodeURIComponent(lieu)}`
-    );
-  } else {
-    redirect(`/production/spectacles/${spectacleId}/reserver`);
+      redirect(
+        `/production/spectacles/${spectacleId}/reserver?date=${encodeURIComponent(date)}&lieu=${encodeURIComponent(lieu)}`
+      );
+    } else {
+      redirect(`/production/spectacles/${spectacleId}/reserver`);
+    }
   }
 }
 
@@ -222,7 +244,7 @@ export default async function ProductionPage({
             <div>
               {representations.length == 0 ? (
                 <Heading as="h4" className="text-primary mb-2">
-                  {spectacle.titre} n&apos;a aucune representations
+                  {spectacle.titre} &nbsp;n&apos;a aucune representations
                 </Heading>
               ) : (
                 <Heading as="h4" className="text-primary mb-2">
@@ -571,7 +593,7 @@ export default async function ProductionPage({
             <div>
               {representations.length == 0 ? (
                 <Heading as="h4" className="text-primary mb-2">
-                  {spectacle.titre} n&apos;a aucune representations
+                  {spectacle.titre} &nbsp;n&apos;a aucune representations
                 </Heading>
               ) : (
                 <Heading as="h4" className="text-primary mb-2">
