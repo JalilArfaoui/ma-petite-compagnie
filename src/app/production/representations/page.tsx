@@ -12,26 +12,59 @@ export default async function RepresentationsPage() {
     prisma.representation.findMany({
       orderBy: { debutResa: "desc" },
       where: { spectacle: { compagnieId } },
-      include: {
-        spectacle: true,
-        lieu: true,
+      select: {
+        id: true,
+        debutResa: true,
+        finResa: true,
+        spectacleId: true,
+        lieuId: true,
+        spectacle: { select: { id: true, titre: true } },
+        lieu: {
+          select: {
+            id: true,
+            libelle: true,
+            adresse: true,
+            ville: true,
+            numero_salle: true,
+          },
+        },
         _count: { select: { reservations: true } },
         reservations: {
-          include: {
+          select: {
+            id: true,
             objet: {
-              include: {
-                typeObjet: true,
+              select: {
+                id: true,
+                etat: true,
+                commentaire: true,
+                typeObjet: {
+                  select: {
+                    id: true,
+                    nom: true,
+                  },
+                },
               },
             },
           },
         },
       },
     }),
-    prisma.spectacle.findMany({ orderBy: { titre: "asc" }, where: { compagnieId } }),
-    prisma.lieu.findMany({ orderBy: { libelle: "asc" } }),
+    prisma.spectacle.findMany({
+      orderBy: { titre: "asc" },
+      where: { compagnieId },
+      select: { id: true, titre: true },
+    }),
+    prisma.lieu.findMany({
+      orderBy: { libelle: "asc" },
+      select: { id: true, libelle: true, ville: true },
+    }),
   ]);
 
-  const serialized = JSON.parse(JSON.stringify(representations));
+  const serialized = representations.map((r) => ({
+    ...r,
+    debutResa: r.debutResa.toISOString(),
+    finResa: r.finResa.toISOString(),
+  }));
 
   return (
     <RepresentationsClient representations={serialized} spectacles={spectacles} lieux={lieux} />
