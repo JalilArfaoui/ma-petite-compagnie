@@ -231,7 +231,7 @@ export default async function ProductionPage({
             <div>
               {representations.length == 0 ? (
                 <Heading as="h4" className="text-primary mb-2">
-                  {spectacle.titre} n&apos;a aucune representations
+                  {spectacle.titre} &nbsp;n&apos;a aucune representations
                 </Heading>
               ) : (
                 <Heading as="h4" className="text-primary mb-2">
@@ -588,7 +588,7 @@ export default async function ProductionPage({
             <div>
               {representations.length == 0 ? (
                 <Heading as="h4" className="text-primary mb-2">
-                  {spectacle.titre} n&apos;a aucune representations
+                  {spectacle.titre} &nbsp;n&apos;a aucune representations
                 </Heading>
               ) : (
                 <Heading as="h4" className="text-primary mb-2">
