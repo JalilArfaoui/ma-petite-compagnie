@@ -44,6 +44,7 @@ export default async function SpectacleDetailPage({ params }: { params: Promise<
 
   const typeObjets = await prisma.typeObjet.findMany({
     orderBy: { nom: "asc" },
+    where: { objets: { some: { compagnieId } } },
     include: { categorie: true },
   });
 
