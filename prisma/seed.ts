@@ -1,7 +1,19 @@
 import "dotenv/config";
-import { PrismaClient } from "@prisma/client";
+import {
+  PrismaClient,
+  Compagnie,
+  CategorieObjet,
+  TypeObjet,
+  Objet,
+  Lieu,
+  Spectacle,
+  Representation,
+  Cachet,
+  OperationFinanciere,
+} from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
+import bcryptjs from "bcryptjs";
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const adapter = new PrismaPg(pool);
@@ -17,7 +29,7 @@ async function main() {
     { nom: "Compagnie des Arts Vivants" },
   ];
 
-  const compagnies = [];
+  const compagnies: Compagnie[] = [];
   for (const c of compagniesData) {
     const existing = await prisma.compagnie.findFirst({ where: { nom: c.nom } });
     if (existing) {
@@ -42,7 +54,7 @@ async function main() {
     "Textile",
   ];
 
-  const categories = [];
+  const categories: CategorieObjet[] = [];
   for (const nom of categoriesData) {
     const existing = await prisma.categorieObjet.findFirst({ where: { nom } });
     if (existing) {
@@ -77,7 +89,7 @@ async function main() {
     { nom: "Câble XLR 10m", categorieId: categories[3].id },
   ];
 
-  const typesObjets = [];
+  const typesObjets: TypeObjet[] = [];
   for (const t of typesObjetsData) {
     const existing = await prisma.typeObjet.findFirst({ where: { nom: t.nom } });
     if (existing) {
@@ -89,7 +101,6 @@ async function main() {
   console.log(`✅ ${typesObjets.length} types d'objets`);
 
   // --- Objets  ---
-  const etatValues = ["NEUF", "ABIME", "CASSE"] as const;
 
   const objetsData = [
     // Chaises en bois - 4 exemplaires
@@ -280,13 +291,174 @@ async function main() {
       compagnieId: compagnies[2].id,
       commentaire: "Connecteur cassé",
     },
+    // --- Extra objects for compagnie 1 ---
+    // Rideau rouge (compagnie 1)
+    {
+      typeObjetId: typesObjets[5].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: null,
+    },
+    {
+      typeObjetId: typesObjets[5].id,
+      etat: "ABIME" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: "Légèrement décoloré",
+    },
+    // Panneau de fond (compagnie 1)
+    {
+      typeObjetId: typesObjets[6].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: null,
+    },
+    {
+      typeObjetId: typesObjets[6].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: "Fond forêt enchantée",
+    },
+    // Projecteur LED (compagnie 1)
+    {
+      typeObjetId: typesObjets[7].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: null,
+    },
+    {
+      typeObjetId: typesObjets[7].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: null,
+    },
+    {
+      typeObjetId: typesObjets[7].id,
+      etat: "ABIME" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: "Ventilateur bruyant",
+    },
+    // Micro sans fil (compagnie 1)
+    {
+      typeObjetId: typesObjets[8].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: null,
+    },
+    {
+      typeObjetId: typesObjets[8].id,
+      etat: "ABIME" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: "Batterie faible",
+    },
+    // Enceinte portable (compagnie 1)
+    {
+      typeObjetId: typesObjets[9].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: null,
+    },
+    // Perruque blonde (compagnie 1)
+    {
+      typeObjetId: typesObjets[10].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: null,
+    },
+    // Masque vénitien (compagnie 1)
+    {
+      typeObjetId: typesObjets[11].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: null,
+    },
+    // Marionnette à fil (compagnie 1)
+    {
+      typeObjetId: typesObjets[12].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: null,
+    },
+    {
+      typeObjetId: typesObjets[12].id,
+      etat: "ABIME" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: "Fil emmêlé",
+    },
+    // Banc de jardin (compagnie 1)
+    {
+      typeObjetId: typesObjets[14].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: null,
+    },
+    // Drap de scène (compagnie 1)
+    {
+      typeObjetId: typesObjets[15].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: null,
+    },
+    {
+      typeObjetId: typesObjets[15].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: "Blanc 6x4m",
+    },
+    // Couronne dorée (compagnie 1)
+    {
+      typeObjetId: typesObjets[16].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: null,
+    },
+    // Machine à fumée (compagnie 1)
+    {
+      typeObjetId: typesObjets[18].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: null,
+    },
+    // Câble XLR (compagnie 1)
+    {
+      typeObjetId: typesObjets[19].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: null,
+    },
+    {
+      typeObjetId: typesObjets[19].id,
+      etat: "NEUF" as const,
+      estDisponible: true,
+      compagnieId: compagnies[0].id,
+      commentaire: null,
+    },
   ];
 
   // Delete existing objects to avoid duplicates on re-seed
   await prisma.reservationObjet.deleteMany({});
   await prisma.objet.deleteMany({});
 
-  const objets = [];
+  const objets: Objet[] = [];
   for (const o of objetsData) {
     objets.push(await prisma.objet.create({ data: o }));
   }
@@ -312,9 +484,22 @@ async function main() {
       ville: "Lyon",
       idCompagnie: compagnies[2].id,
     },
+    {
+      libelle: "Espace Culturel Molière",
+      adresse: "3 place du Théâtre",
+      ville: "Marseille",
+      idCompagnie: compagnies[0].id,
+      numero_salle: "Salle A",
+    },
+    {
+      libelle: "La Fabrique",
+      adresse: "22 avenue Jean Jaurès",
+      ville: "Toulouse",
+      idCompagnie: compagnies[0].id,
+    },
   ];
 
-  const lieux = [];
+  const lieux: Lieu[] = [];
   for (const l of lieuxData) {
     const existing = await prisma.lieu.findFirst({ where: { libelle: l.libelle } });
     if (existing) {
@@ -330,6 +515,7 @@ async function main() {
     {
       titre: "Le Songe d'une nuit d'été",
       type: "THEATRE" as const,
+      dure: 60,
       statut: "EN_TOURNEE" as const,
       compagnieId: compagnies[0].id,
       budget_initial: 15000,
@@ -337,6 +523,7 @@ async function main() {
     {
       titre: "Carmen revisitée",
       type: "DANSE" as const,
+      dure: 90,
       statut: "EN_REPETITION" as const,
       compagnieId: compagnies[0].id,
       budget_initial: 20000,
@@ -344,6 +531,7 @@ async function main() {
     {
       titre: "Pestacle",
       type: "MUSIQUE" as const,
+      dure: 120,
       statut: "EN_CREATION" as const,
       compagnieId: compagnies[0].id,
       budget_initial: 10000,
@@ -351,13 +539,38 @@ async function main() {
     {
       titre: "Lumière noire",
       type: "CIRQUE" as const,
+      dure: 60,
       statut: "EN_CREATION" as const,
       compagnieId: compagnies[2].id,
       budget_initial: 12000,
     },
+    {
+      titre: "Les Misérables — Acte I",
+      type: "THEATRE" as const,
+      dure: 120,
+      statut: "EN_CREATION" as const,
+      compagnieId: compagnies[0].id,
+      budget_initial: 25000,
+    },
+    {
+      titre: "Valse des ombres",
+      type: "DANSE" as const,
+      dure: 120,
+      statut: "EN_TOURNEE" as const,
+      compagnieId: compagnies[0].id,
+      budget_initial: 18000,
+    },
+    {
+      titre: "Circus Absurdum",
+      type: "CIRQUE" as const,
+      dure: 120,
+      statut: "EN_REPETITION" as const,
+      compagnieId: compagnies[0].id,
+      budget_initial: 22000,
+    },
   ];
 
-  const spectacles = [];
+  const spectacles: Spectacle[] = [];
   for (const s of spectaclesData) {
     const existing = await prisma.spectacle.findFirst({ where: { titre: s.titre } });
     if (existing) {
@@ -370,16 +583,66 @@ async function main() {
 
   // --- Représentations ---
   const repsData = [
-    { date: new Date("2026-04-15T20:00:00"), spectacleId: spectacles[0].id, lieuId: lieux[0].id },
-    { date: new Date("2026-04-22T20:00:00"), spectacleId: spectacles[0].id, lieuId: lieux[2].id },
-    { date: new Date("2026-05-10T19:30:00"), spectacleId: spectacles[1].id, lieuId: lieux[1].id },
-    { date: new Date("2026-06-01T21:00:00"), spectacleId: spectacles[2].id, lieuId: lieux[2].id },
+    {
+      debutResa: new Date("2026-04-15T20:00:00"),
+      finResa: new Date("2026-04-15T21:00:00"),
+      spectacleId: spectacles[0].id,
+      lieuId: lieux[0].id,
+    },
+    {
+      debutResa: new Date("2026-04-22T20:00:00"),
+      finResa: new Date("2026-04-22T21:00:00"),
+      spectacleId: spectacles[0].id,
+      lieuId: lieux[2].id,
+    },
+    {
+      debutResa: new Date("2026-05-10T19:30:00"),
+      finResa: new Date("2026-05-10T21:00:00"),
+      spectacleId: spectacles[1].id,
+      lieuId: lieux[1].id,
+    },
+    {
+      debutResa: new Date("2026-06-01T21:00:00"),
+      finResa: new Date("2026-06-01T23:00:00"),
+      spectacleId: spectacles[2].id,
+      lieuId: lieux[2].id,
+    },
+    {
+      debutResa: new Date("2026-05-03T20:30:00"),
+      finResa: new Date("2026-05-03T21:30:00"),
+      spectacleId: spectacles[0].id,
+      lieuId: lieux[3].id,
+    },
+    {
+      debutResa: new Date("2026-05-18T19:00:00"),
+      finResa: new Date("2026-05-18T21:00:00"),
+      spectacleId: spectacles[4].id,
+      lieuId: lieux[0].id,
+    },
+    {
+      debutResa: new Date("2026-06-12T20:00:00"),
+      finResa: new Date("2026-06-12T22:00:00"),
+      spectacleId: spectacles[5].id,
+      lieuId: lieux[4].id,
+    },
+    {
+      debutResa: new Date("2026-06-20T21:00:00"),
+      finResa: new Date("2026-06-20T23:00:00"),
+      spectacleId: spectacles[6].id,
+      lieuId: lieux[3].id,
+    },
+    {
+      debutResa: new Date("2026-07-05T20:30:00"),
+      finResa: new Date("2026-07-05T22:00:00"),
+      spectacleId: spectacles[1].id,
+      lieuId: lieux[4].id,
+    },
   ];
 
-  const representations = [];
+  const representations: Representation[] = [];
   for (const r of repsData) {
     const existing = await prisma.representation.findFirst({
-      where: { date: r.date, spectacleId: r.spectacleId },
+      where: { debutResa: r.debutResa, finResa: r.finResa, spectacleId: r.spectacleId },
     });
     if (existing) {
       representations.push(existing);
@@ -391,18 +654,346 @@ async function main() {
 
   // --- Réservations d'objets ---
   const reservationsData = [
+    // Représentation 0: Le Songe — Théâtre Municipal
     { objetId: objets[0].id, representationId: representations[0].id },
     { objetId: objets[1].id, representationId: representations[0].id },
     { objetId: objets[4].id, representationId: representations[0].id },
+    // Représentation 1: Le Songe — Le Hangar
     { objetId: objets[10].id, representationId: representations[1].id },
+    // Représentation 2: Carmen — Salle Gaveau
     { objetId: objets[13].id, representationId: representations[2].id },
+    // Représentation 3: Pestacle — Le Hangar
     { objetId: objets[14].id, representationId: representations[3].id },
+    // Représentation 4: Le Songe — Espace Culturel Molière
+    { objetId: objets[25].id, representationId: representations[4].id },
+    { objetId: objets[27].id, representationId: representations[4].id },
+    // Représentation 5: Les Misérables — Théâtre Municipal
+    { objetId: objets[29].id, representationId: representations[5].id },
+    { objetId: objets[30].id, representationId: representations[5].id },
+    { objetId: objets[35].id, representationId: representations[5].id },
+    // Représentation 6: Valse des ombres — La Fabrique
+    { objetId: objets[32].id, representationId: representations[6].id },
+    { objetId: objets[36].id, representationId: representations[6].id },
+    // Représentation 7: Circus Absurdum — Espace Culturel Molière
+    { objetId: objets[40].id, representationId: representations[7].id },
+    { objetId: objets[42].id, representationId: representations[7].id },
   ];
 
   for (const r of reservationsData) {
     await prisma.reservationObjet.create({ data: r });
   }
   console.log(`✅ ${reservationsData.length} réservations d'objets`);
+
+  // --- Opérations financières ---
+  // Nettoyage pour éviter les doublons
+  await prisma.operationFinanciere.deleteMany({});
+
+  // -- Utilisateurs (Membres) --
+  const usersData = [
+    {
+      email: "jean.dupont@theatre.fr",
+      password: await bcryptjs.hash("password", 10),
+      nom: "Dupont",
+      prenom: "Jean",
+    },
+    {
+      email: "marie.martin@theatre.fr",
+      password: await bcryptjs.hash("password", 10),
+      nom: "Martin",
+      prenom: "Marie",
+    },
+    {
+      email: "pierre.bernard@theatre.fr",
+      password: await bcryptjs.hash("password", 10),
+      nom: "Bernard",
+      prenom: "Pierre",
+    },
+    {
+      email: "sophie.leclerc@theatre.fr",
+      password: await bcryptjs.hash("password", 10),
+      nom: "Leclerc",
+      prenom: "Sophie",
+    },
+    {
+      email: "thomas.gaston@theatre.fr",
+      password: await bcryptjs.hash("password", 10),
+      nom: "Gaston",
+      prenom: "Thomas",
+    },
+    {
+      email: "claire.laurent@theatre.fr",
+      password: await bcryptjs.hash("password", 10),
+      nom: "Laurent",
+      prenom: "Claire",
+    },
+  ];
+
+  const users = [];
+  for (const u of usersData) {
+    const existing = await prisma.user.findFirst({
+      where: { email: u.email },
+    });
+    if (existing) {
+      users.push(existing);
+    } else {
+      users.push(await prisma.user.create({ data: u }));
+    }
+  }
+  console.log(`✅ ${users.length} utilisateurs créés`);
+
+  // -- CompanyMembers --
+  const companyMembersData = [
+    { userId: users[0].id, compagnieId: compagnies[0].id },
+    { userId: users[1].id, compagnieId: compagnies[0].id },
+    { userId: users[2].id, compagnieId: compagnies[0].id },
+    { userId: users[3].id, compagnieId: compagnies[1].id },
+    { userId: users[4].id, compagnieId: compagnies[2].id },
+    { userId: users[5].id, compagnieId: compagnies[0].id },
+  ];
+
+  //helper pour trouver un spectacle par titre (parmi ceux du seed)
+  const findSpectacle = (titre: string) => spectacles.find((s) => s.titre === titre);
+
+  const companyMembers = [];
+  for (const m of companyMembersData) {
+    const existing = await prisma.companyMember.findFirst({
+      where: { userId: m.userId, compagnieId: m.compagnieId },
+    });
+    if (existing) {
+      companyMembers.push(existing);
+    } else {
+      companyMembers.push(await prisma.companyMember.create({ data: m }));
+    }
+  }
+  console.log(`✅ ${companyMembers.length} membres de compagnie`);
+
+  // -- Cachets --
+  const cachetData = [
+    // 11 nouveaux cachets avec dates <= 30 avril 2026 et montants >= 110€
+    {
+      membreId: companyMembers[0].id,
+      spectacleId: spectacles[0].id,
+      date: new Date("2026-01-15T18:00:00"),
+      montant: "130.00",
+      statut: "PAYE" as const,
+      note: "Répétition - rôle principal",
+    },
+    {
+      membreId: companyMembers[1].id,
+      spectacleId: spectacles[0].id,
+      date: new Date("2026-01-20T19:00:00"),
+      montant: "275.90",
+      statut: "EN_ATTENTE_DE_PAIEMENT" as const,
+      note: "Répétition - rôle secondaire",
+    },
+    {
+      membreId: companyMembers[2].id,
+      spectacleId: spectacles[1].id,
+      date: new Date("2026-02-05T17:30:00"),
+      montant: "240.10",
+      statut: "NON_PAYE" as const,
+      note: "Entraînement danse",
+    },
+    {
+      membreId: companyMembers[3].id,
+      spectacleId: spectacles[1].id,
+      date: new Date("2026-02-10T18:30:00"),
+      montant: "125.00",
+      statut: "NON_PAYE" as const,
+      note: "Coaching spécifique",
+    },
+    {
+      membreId: companyMembers[4].id,
+      spectacleId: spectacles[2].id,
+      date: new Date("2026-02-15T16:00:00"),
+      montant: "310.00",
+      statut: "NON_PAYE" as const,
+      note: "Préparation musicale",
+    },
+    {
+      membreId: companyMembers[5].id,
+      spectacleId: spectacles[2].id,
+      date: new Date("2026-02-20T17:00:00"),
+      montant: "430.50",
+      statut: "EN_ATTENTE_DE_PAIEMENT" as const,
+      note: "Composition musicale",
+    },
+    {
+      membreId: companyMembers[0].id,
+      spectacleId: spectacles[3].id,
+      date: new Date("2026-03-01T15:30:00"),
+      montant: "250.80",
+      statut: "NON_PAYE" as const,
+      note: "Atelier circassien",
+    },
+    {
+      membreId: companyMembers[1].id,
+      spectacleId: spectacles[3].id,
+      date: new Date("2026-03-05T14:00:00"),
+      montant: "500.30",
+      statut: "PAYE" as const,
+      note: "Stage acrobatie",
+    },
+    {
+      membreId: companyMembers[2].id,
+      spectacleId: spectacles[0].id,
+      date: new Date("2026-03-15T19:30:00"),
+      montant: "290.00",
+      statut: "EN_ATTENTE_DE_PAIEMENT" as const,
+      note: "Représentation générale",
+    },
+    {
+      membreId: companyMembers[3].id,
+      spectacleId: spectacles[1].id,
+      date: new Date("2026-04-01T20:00:00"),
+      montant: "160.50",
+      statut: "PAYE" as const,
+      note: "Générale costumes",
+    },
+    {
+      membreId: companyMembers[4].id,
+      spectacleId: spectacles[2].id,
+      date: new Date("2026-04-25T18:00:00"),
+      montant: "420.00",
+      statut: "PAYE" as const,
+      note: "Dernière préparation avant tournée",
+    },
+  ];
+
+  const cachets: Cachet[] = [];
+  for (const c of cachetData) {
+    const existing = await prisma.cachet.findFirst({
+      where: {
+        membreId: c.membreId,
+        spectacleId: c.spectacleId,
+        date: c.date,
+      },
+    });
+    if (existing) {
+      cachets.push(existing);
+    } else {
+      cachets.push(await prisma.cachet.create({ data: c }));
+    }
+  }
+  console.log(`✅ ${cachetData.length} cachets`);
+
+  // -- Recettes et dépenses --
+  const operationsData = [
+    // -- Recettes --
+    {
+      nom: "Fonds de roulement initial",
+      montant: 10600.83,
+      date: new Date("2025-12-01"),
+      type: "RECETTE" as const,
+      categorie: "financement",
+      statut: "paye",
+      compagnieId: compagnies[0].id,
+      spectacles: [],
+    },
+    {
+      nom: "Théâtre municipal des Lices",
+      montant: 750.5,
+      date: new Date("2026-01-27"),
+      type: "RECETTE" as const,
+      categorie: "facture",
+      statut: "paye",
+      compagnieId: compagnies[0].id,
+      spectacles: ["Le Songe d'une nuit d'été"],
+    },
+    {
+      nom: "Mairie Gaillac",
+      montant: 300.25,
+      date: new Date("2026-01-17"),
+      type: "RECETTE" as const,
+      categorie: "facture",
+      statut: "paye",
+      compagnieId: compagnies[0].id,
+      spectacles: [],
+    },
+    {
+      nom: "Théâtre de Cordes",
+      montant: 450,
+      date: new Date("2026-02-10"),
+      type: "RECETTE" as const,
+      categorie: "facture",
+      statut: "en_attente",
+      compagnieId: compagnies[0].id,
+      spectacles: ["Carmen revisitée", "Pestacle"],
+    },
+    {
+      nom: "DRAC Occitanie",
+      montant: 5000,
+      date: new Date("2026-01-10"),
+      type: "RECETTE" as const,
+      categorie: "financement",
+      statut: "en_attente",
+      compagnieId: compagnies[0].id,
+      spectacles: ["Le Songe d'une nuit d'été"],
+    },
+    {
+      nom: "Ville d'Albi",
+      montant: 1150,
+      date: new Date("2026-01-15"),
+      type: "RECETTE" as const,
+      categorie: "financement",
+      statut: "paye",
+      compagnieId: compagnies[0].id,
+      spectacles: ["Carmen revisitée"],
+    },
+    {
+      nom: "Conseil départemental",
+      montant: 750,
+      date: new Date("2026-01-20"),
+      type: "RECETTE" as const,
+      categorie: "financement",
+      statut: "en_attente",
+      compagnieId: compagnies[0].id,
+      spectacles: ["Pestacle"],
+    },
+
+    // -- Dépenses --
+    {
+      nom: "Décorations scène",
+      montant: 400,
+      date: new Date("2026-01-22"),
+      type: "DEPENSE" as const,
+      categorie: null,
+      statut: "paye",
+      compagnieId: compagnies[0].id,
+      spectacles: ["Pestacle"],
+    },
+    {
+      nom: "Loyer local de répét",
+      montant: 128,
+      date: new Date("2026-01-22"),
+      type: "DEPENSE" as const,
+      categorie: null,
+      statut: "paye",
+      compagnieId: compagnies[0].id,
+      spectacles: [],
+    },
+  ];
+
+  const operations: OperationFinanciere[] = [];
+  for (const op of operationsData) {
+    const { spectacles: spectacleTitres, ...opData } = op;
+    const spectacleConnections = spectacleTitres
+      .map((titre) => findSpectacle(titre))
+      .filter(Boolean)
+      .map((s) => ({ id: s!.id }));
+
+    operations.push(
+      await prisma.operationFinanciere.create({
+        data: {
+          ...opData,
+          spectacles: {
+            connect: spectacleConnections,
+          },
+        },
+      })
+    );
+  }
+  console.log(`✅ ${operations.length} opérations financières`);
 
   console.log("Seed terminé !");
 }

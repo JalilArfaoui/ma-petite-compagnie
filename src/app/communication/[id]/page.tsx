@@ -7,7 +7,7 @@ import { modifierContactAction } from "../action/contactFormAction";
 import ContactDetails from "../components/contactDetails";
 import { trouverParIdContact } from "../api/contact/contact";
 import { useRouter } from "next/navigation";
-import { Box, Heading, Link } from "@/components/ui";
+import { Box, Button, Heading } from "@/components/ui";
 
 export function ContactModification({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -19,7 +19,7 @@ export function ContactModification({ params }: { params: Promise<{ id: string }
 
     if (resultat.succes && resultat.donnee) {
       toaster.create({ description: "Contact modifié avec succès !", type: "success" });
-      router.push("/communication");
+      router.back();
     } else {
       toaster.create({ description: resultat.message, type: "error" });
     }
@@ -35,7 +35,7 @@ export function ContactModification({ params }: { params: Promise<{ id: string }
           description: resultat.message,
           type: "error",
         });
-        router.push("/communication");
+        router.back();
       }
     }
 
@@ -55,7 +55,9 @@ export function ContactModification({ params }: { params: Promise<{ id: string }
         <Heading as={"h3"}>Modification d&rsquo;un contact</Heading>
       </Box>
       <Box>
-        <Link href={"/communication"}>Retour</Link>
+        <Button size={"sm"} onClick={() => router.back()}>
+          Retour
+        </Button>
       </Box>
       <ContactDetails onSubmitted={onSubmit} contactDonnee={contact ?? null}></ContactDetails>
     </Box>

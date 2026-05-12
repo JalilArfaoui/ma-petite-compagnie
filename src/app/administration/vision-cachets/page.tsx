@@ -1,77 +1,97 @@
 "use client";
 
-import { Card, Table, Heading } from "@/components/ui";
-import { useState, useMemo } from "react";
-
-type Spectacle = "Hamlet" | "Le Roi Lion" | "Romeo et Juliette";
-
-type Cachet = {
-  id: number;
-  date: string;
-  montant: number;
-  spectacle: Spectacle;
-};
-
-//dictionnaire temporaire le temps que la bdd soit opérationnelle
-const CACHETS_DATA: Cachet[] = [
-  { id: 1, date: "2024-01-18", montant: 150, spectacle: "Le Roi Lion" },
-  { id: 2, date: "2024-03-21", montant: 300, spectacle: "Hamlet" },
-  { id: 3, date: "2024-06-04", montant: 200, spectacle: "Romeo et Juliette" },
-  { id: 4, date: "2024-07-15", montant: 180, spectacle: "Le Roi Lion" },
-  { id: 5, date: "2024-08-07", montant: 250, spectacle: "Hamlet" },
-  { id: 6, date: "2024-09-24", montant: 120, spectacle: "Le Roi Lion" },
-];
+import { Card, Table, Heading, Pagination } from "@/components/ui";
+import { useState, useEffect, useMemo } from "react";
+import { getCachetsAction } from "../cachets-actions";
+import { Cachet, PAGE_SIZE, STATUT_DICT, formateCachet } from "../cachets-partage";
+import { StatutCachet } from "@prisma/client";
 
 export default function VisionCachetsPage() {
-  const [spectacleFilter, setSpectacleFilter] = useState<"tous" | Spectacle>("tous");
-  const [sortBy, setSortBy] = useState<
+  const [cachets, setCachets] = useState<Cachet[]>([]);
+  const [filtreSpectacle, setFiltreSpectacle] = useState<string>("tous");
+  const [filtreStatut, setFiltreStatut] = useState<StatutCachet | "tous">("tous");
+  const [triPar, setTriPar] = useState<
     "none" | "dateCroissante" | "dateDecroissante" | "montantCroissant" | "montantDecroissant"
   >("none"); //pour avoir un seul tri actif à la fois
+  const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    getCachetsAction()
+      .then((result) => {
+        if (result.success && result.data) {
+          const cachetFormates = result.data.map((c) => formateCachet(c));
+          setCachets(cachetFormates);
+        } else if (!result.success) {
+          console.error(result.error);
+        }
+      })
+      .catch((error) => {
+        console.error("Erreur non gérée:", error);
+      });
+  }, []);
 
   //filtrage + tri
-  const filteredAndSorted = useMemo(() => {
-    let result = [...CACHETS_DATA];
+  const cachetsFiltresEtTries = useMemo(() => {
+    let resultat = [...cachets];
 
-    if (spectacleFilter !== "tous") {
-      result = result.filter((cachet) => cachet.spectacle === spectacleFilter);
+    if (filtreSpectacle !== "tous") {
+      resultat = resultat.filter((cachet) => cachet.spectacle.titre === filtreSpectacle);
     }
 
-    switch (sortBy) {
+    if (filtreStatut !== "tous") {
+      resultat = resultat.filter((cachet) => cachet.statut === filtreStatut);
+    }
+
+    switch (triPar) {
       case "dateCroissante":
-        result.sort((a, b) => a.date.localeCompare(b.date));
+        resultat.sort((a, b) => a.date.localeCompare(b.date));
         break;
       case "dateDecroissante":
-        result.sort((a, b) => b.date.localeCompare(a.date));
+        resultat.sort((a, b) => b.date.localeCompare(a.date));
         break;
       case "montantCroissant":
-        result.sort((a, b) => a.montant - b.montant);
+        resultat.sort((a, b) => {
+          return Number(a.montant) - Number(b.montant);
+        });
         break;
       case "montantDecroissant":
-        result.sort((a, b) => b.montant - a.montant);
+        resultat.sort((a, b) => {
+          return Number(b.montant) - Number(a.montant);
+        });
         break;
     }
 
-    return result;
-  }, [spectacleFilter, sortBy]);
+    return resultat;
+  }, [filtreSpectacle, filtreStatut, triPar, cachets]);
+
+  const totalPages = Math.max(1, Math.ceil(cachetsFiltresEtTries.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages);
+  const cachetsPagines = cachetsFiltresEtTries.slice(
+    (safePage - 1) * PAGE_SIZE,
+    safePage * PAGE_SIZE
+  );
 
   return (
     <div>
-      <Heading as="h3" className="font-extrabold mb-4 pt-6 text-center">
+      <Heading as="h2" className="font-extrabold mb-4 pt-6 text-center">
         Liste des cachets
       </Heading>
 
-      <div className="mx-auto max-w-4xl bg-hover p-5 border-none shadow-sm transition-shadow flex flex-col gap-5">
+      <div className="mx-auto max-w-4xl rounded-[20px] bg-hover p-[20px] border-none shadow-sm transition-shadow flex flex-col gap-[20px]">
         <Heading as="h4" className="font-semibold">
           Filtrer par spectacle
         </Heading>
 
         <select
-          value={spectacleFilter}
-          onChange={(e) => setSpectacleFilter(e.target.value as "tous" | Spectacle)}
+          value={filtreSpectacle}
+          onChange={(e) => {
+            setFiltreSpectacle(e.target.value as "tous" | string);
+            setPage(1);
+          }}
           className="p-2 border border-slate-300 rounded-md w-full"
         >
           <option value="tous">Tous les spectacles</option>
-          {[...new Set(CACHETS_DATA.map((c) => c.spectacle))].map((s) => (
+          {[...new Set(cachets.map((c) => c.spectacle.titre))].map((s) => (
             <option key={s} value={s}>
               {s}
             </option>
@@ -79,11 +99,34 @@ export default function VisionCachetsPage() {
         </select>
 
         <Heading as="h4" className="font-semibold">
-          Options de triage
+          Filtrer par statut
+        </Heading>
+
+        <select
+          value={filtreStatut}
+          onChange={(e) => {
+            setFiltreStatut(e.target.value as "tous" | StatutCachet);
+            setPage(1);
+          }}
+          className="p-2 border border-slate-300 rounded-md w-full"
+        >
+          <option value="tous">Tous</option>
+          {Object.values(StatutCachet).map((value) => (
+            <option key={value} value={value}>
+              {STATUT_DICT[value]}
+            </option>
+          ))}
+        </select>
+
+        <Heading as="h4" className="font-semibold">
+          Options de tri
         </Heading>
         <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+          value={triPar}
+          onChange={(e) => {
+            setTriPar(e.target.value as typeof triPar);
+            setPage(1);
+          }}
           className="p-2 border border-slate-300 rounded-md w-full"
         >
           <option value="none">Aucun tri</option>
@@ -103,19 +146,21 @@ export default function VisionCachetsPage() {
             <Table>
               <Table.Head>
                 <Table.Row>
-                  <Table.Header>Numero</Table.Header>
                   <Table.Header>Date</Table.Header>
                   <Table.Header>Montant</Table.Header>
                   <Table.Header>Spectacle</Table.Header>
+                  <Table.Header>Statut</Table.Header>
+                  <Table.Header>Note</Table.Header>
                 </Table.Row>
               </Table.Head>
               <Table.Body>
-                {filteredAndSorted.map((cachet) => (
+                {cachetsPagines.map((cachet) => (
                   <Table.Row key={cachet.id}>
-                    <Table.Cell>{cachet.id}</Table.Cell>
                     <Table.Cell>{new Date(cachet.date).toLocaleDateString("fr-FR")}</Table.Cell>
-                    <Table.Cell>{cachet.montant} €</Table.Cell>
-                    <Table.Cell>{cachet.spectacle}</Table.Cell>
+                    <Table.Cell>{Number(cachet.montant).toFixed(2)} €</Table.Cell>
+                    <Table.Cell>{cachet.spectacle.titre}</Table.Cell>
+                    <Table.Cell>{STATUT_DICT[cachet.statut]}</Table.Cell>
+                    <Table.Cell>{cachet.note || "-"}</Table.Cell>
                   </Table.Row>
                 ))}
               </Table.Body>
@@ -123,6 +168,7 @@ export default function VisionCachetsPage() {
           </Card.Body>
         </Card>
       </div>
+      <Pagination currentPage={safePage} totalPages={totalPages} onPageChange={setPage} />
     </div>
   );
 }

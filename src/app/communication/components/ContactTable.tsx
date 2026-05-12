@@ -1,39 +1,89 @@
 import { useEffect, useState } from "react";
-import {
-  ContactWithListes,
-  listerContactsAvecListes,
-  supprimerContact,
-} from "../api/contact/contact";
+import { ContactWithListes, supprimerContact } from "../api/contact/contact";
 import { Box, Button, Stack, Table, Text, Toaster, toaster } from "@/components/ui";
 import { Contact, ListeContact } from "@prisma/client";
 import { ContactGrid } from "./ContactGrid";
 import { CreateListe } from "./CreateListe";
 import { GetListe } from "./GetListe";
-import { creerListe } from "../api/contact/liste";
+import { creerListe, supprimerContactDeListe, trouverListes } from "../api/contact/liste";
 
-export function ContactTable() {
+export function ContactTable({
+  getContacts,
+  keyReload,
+}: {
+  getContacts: (paginationTaille: number, page: number) => Promise<ContactWithListes[] | null>;
+  keyReload: number;
+}) {
+  const [listes, setListes] = useState<ListeContact[]>([]);
+  const [page, setPage] = useState(1);
+  const paginationTaille = 30;
   const [contacts, setContacts] = useState<ContactWithListes[]>([]);
   const [contactsSelectionne, setContactsSelectionne] = useState<ContactWithListes[]>([]);
-  async function loadContacts() {
-    const resultat = await listerContactsAvecListes(30, 1);
+
+  async function deleteListeFromContact(contact: ContactWithListes, listeId: number) {
+    const listeAsupprimer = contact.listeContacts.find((liste) => liste.id == listeId);
+    if (!listeAsupprimer) {
+      return;
+    }
+    const result = await supprimerContactDeListe(contact, listeAsupprimer);
+    if (result?.succes) {
+      setContacts((prev) =>
+        prev.map((c) => {
+          if (c === contact) {
+            return {
+              ...c,
+              listeContacts: c.listeContacts.filter((liste) => liste.id !== listeId),
+            };
+          }
+          return c;
+        })
+      );
+      toaster.create({
+        type: "success",
+        title: "Suppression liste",
+        description: "La liste a bien été enlevée",
+      });
+    } else {
+      toaster.create({ type: "error", title: "Suppression liste", description: result?.message });
+    }
+  }
+
+  async function loadListes() {
+    const resultat = await trouverListes();
     if (resultat.succes) {
-      setContacts(resultat.donnee ?? []);
+      setListes(resultat.donnee ?? []);
     } else {
       toaster.create({ description: resultat.message, type: "error" });
     }
   }
+
   useEffect(() => {
-    async function loadContacts() {
-      const resultat = await listerContactsAvecListes(30, 1);
+    async function loadListes() {
+      const resultat = await trouverListes();
       if (resultat.succes) {
-        setContacts(resultat.donnee ?? []);
+        setListes(resultat.donnee ?? []);
       } else {
         toaster.create({ description: resultat.message, type: "error" });
       }
     }
-    loadContacts();
+    loadListes();
   }, []);
-  loadContacts();
+  async function loadContacts() {
+    const resultat = await getContacts(paginationTaille, page);
+    setContacts(resultat ?? []);
+    loadListes();
+  }
+  useEffect(() => {
+    async function loadContacts() {
+      const resultat = await getContacts(paginationTaille, page);
+      setContacts(resultat ?? []);
+    }
+    loadContacts();
+  }, [keyReload, page, getContacts]);
+
+  function changerPage(page: number) {
+    setPage(page);
+  }
   async function associerListe(listes: ListeContact[]) {
     const resultats = await Promise.all(
       listes.map((liste) => creerListe(liste.nom, contactsSelectionne))
@@ -41,7 +91,6 @@ export function ContactTable() {
     const toutesReussies = resultats.every((r) => r.succes);
     if (toutesReussies) {
       toaster.create({ type: "success", title: "Les contacts ont bien été associés à la liste" });
-      // mise à jour de l'état ici
     } else {
       const erreur = resultats.find((r) => !r.succes);
       toaster.create({ type: "error", title: erreur?.message });
@@ -119,6 +168,7 @@ export function ContactTable() {
             Supprimer
           </Button>
           <GetListe
+            listes={listes}
             disabled={contactsSelectionne.length <= 0}
             onGetListe={(a) => associerListe(a)}
           ></GetListe>
@@ -162,12 +212,27 @@ export function ContactTable() {
                   onDelete={supprimerUnContact}
                   contact={contact}
                   onSelect={updateSelected}
+                  onListeElementDeleted={deleteListeFromContact}
                   className={contactsSelectionne.includes(contact) ? "bg-gray-100" : ""}
                 />
               );
             })}
           </Table.Body>
         </Table>
+        <Stack className="p-4" direction="row" justify="center">
+          {page > 1 && (
+            <Button onClick={() => changerPage(page - 1)} className="p-1" size={"sm"}>
+              Page précedente
+            </Button>
+          )}
+
+          <Text className="p-1 font-bold">{page}</Text>
+          {contacts.length == paginationTaille && (
+            <Button onClick={() => changerPage(page + 1)} className="p-1" size={"sm"}>
+              Page suivante
+            </Button>
+          )}
+        </Stack>
       </div>
     </Box>
   );

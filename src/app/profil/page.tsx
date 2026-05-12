@@ -12,17 +12,22 @@ import {
   Flex,
   Box,
   SimpleGrid,
+  Modal,
 } from "@/components/ui";
-import { LuUser, LuMail, LuPlus, LuCheck, LuSettings } from "react-icons/lu";
+import { LuUser, LuMail, LuPlus, LuCheck, LuPencil } from "react-icons/lu";
 import { FaTheaterMasks } from "react-icons/fa";
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { CompanyFacturationForm } from "./CompanyFacturationForm";
 
 export default function ProfilePage() {
-  const { data: session, update } = useSession();
+  const { data: session, status, update } = useSession();
+  const router = useRouter();
   const [isUpdating, setIsUpdating] = useState<number | null>(null);
+  const [editingCompanyId, setEditingCompanyId] = useState<number | null>(null);
 
-  if (!session) {
+  if (status === "loading") {
     return (
       <Container className="py-20 text-center">
         <Text>Chargement...</Text>
@@ -30,10 +35,16 @@ export default function ProfilePage() {
     );
   }
 
+  if (status === "unauthenticated" || !session) {
+    if (typeof window !== "undefined") {
+      router.push("/login");
+    }
+    return null;
+  }
+
   const user = session.user;
   const companies = session.companies || [];
   const activeCompanyId = session.activeCompanyId;
-  const rights = session.rights;
 
   const handleSwitchCompany = async (companyId: number) => {
     setIsUpdating(companyId);
@@ -126,25 +137,8 @@ export default function ProfilePage() {
                             )}
                           </Stack>
 
-                          <Flex align="center" gap={1}>
-                            {isActive && rights && Object.values(rights).some(Boolean) && (
-                              <Link href={`/compagnie/${company.id}`}>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="hover:bg-primary/10 hover:text-primary transition-colors"
-                                  icon={<LuSettings size={14} />}
-                                />
-                              </Link>
-                            )}
-
-                            {isActive && !(rights && Object.values(rights).some(Boolean)) && (
-                              <div className="bg-primary text-white p-1 rounded-full">
-                                <LuCheck size={14} />
-                              </div>
-                            )}
-
-                            {!isActive && (
+                          <Flex gap={2} align="center">
+                            {activeCompanyId !== company.id && (
                               <Button
                                 size="sm"
                                 variant="ghost"
@@ -154,6 +148,22 @@ export default function ProfilePage() {
                               >
                                 {isUpdating === company.id ? "..." : "Basculer"}
                               </Button>
+                            )}
+
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => setEditingCompanyId(company.id)}
+                              className="hover:bg-slate-100 text-slate-500 transition-colors"
+                              title="Modifier les informations"
+                            >
+                              <LuPencil size={16} />
+                            </Button>
+
+                            {activeCompanyId === company.id && (
+                              <div className="bg-primary text-white p-1 rounded-full ml-2">
+                                <LuCheck size={14} />
+                              </div>
                             )}
                           </Flex>
                         </Flex>
@@ -176,6 +186,25 @@ export default function ProfilePage() {
             </Stack>
           </Card>
         </SimpleGrid>
+
+        <Modal
+          open={editingCompanyId !== null}
+          onOpenChange={(open) => !open && setEditingCompanyId(null)}
+        >
+          <Modal.Content size="lg">
+            <Modal.Header>
+              <Modal.Title>Paramètres de la compagnie</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              {editingCompanyId && (
+                <CompanyFacturationForm
+                  companyId={editingCompanyId}
+                  onSuccess={() => setEditingCompanyId(null)}
+                />
+              )}
+            </Modal.Body>
+          </Modal.Content>
+        </Modal>
       </Stack>
     </Container>
   );

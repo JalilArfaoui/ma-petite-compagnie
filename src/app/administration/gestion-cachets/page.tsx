@@ -1,52 +1,89 @@
 "use client";
 
-import { Button, Card, Table, Heading } from "@/components/ui";
-
-import { useState } from "react";
-
-const NOM_SPECTACLE = [
-  { value: "romeoetjuliette", label: "Roméo et Juliette" },
-  { value: "hamlet", label: "Hamlet" },
-  { value: "leroilion", label: "Le Roi Lion" },
-] as const;
-
-const MEMBRES_TROUPE = [
-  { value: "alicedupont", label: "Alice Dupont" },
-  { value: "bernardmartin", label: "Bernard Martin" },
-  { value: "clairedurand", label: "Claire Durand" },
-  { value: "davidlefevre", label: "David Lefevre" },
-  { value: "emmamoreau", label: "Emma Moreau" },
-] as const;
-
-type Cachet = {
-  id: number;
-  membre: string;
-  date: string;
-  montant: number;
-  spectacle: string;
-  note?: string;
-};
+import { Button, Card, Table, Heading, Pagination } from "@/components/ui";
+import { useState, useEffect } from "react";
+import {
+  getCachetsAction,
+  creerCachetAction,
+  mettreAJourCachetAction,
+  supprimerCachetAction,
+  getAllMembresAction,
+  getAllSpectaclesAction,
+} from "../cachets-actions";
+import {
+  Cachet,
+  MONTANT_CACHET_MINIMUM_LEGAL,
+  NOTE_NB_MAX_CARACS,
+  PAGE_SIZE,
+  STATUT_DICT,
+  formateCachet,
+} from "../cachets-partage";
+import { StatutCachet } from "@prisma/client";
 
 export default function PageCachets() {
   const [cachets, setCachets] = useState<Cachet[]>([]);
-  const [membre, setMembre] = useState("");
+  const [membres, setMembres] = useState<
+    Array<{ id: number; user: { nom: string | null; prenom: string | null } }>
+  >([]);
+  const [spectacles, setSpectacles] = useState<Array<{ id: number; titre: string }>>([]);
+  const [membreId, setMembreId] = useState<number | null>(null);
   const [date, setDate] = useState("");
-  const [montant, setMontant] = useState(110);
-  const [spectacle, setSpectacle] = useState("");
+  const [montant, setMontant] = useState("");
+  const [spectacleId, setSpectacleId] = useState<number | null>(null);
   const [note, setNote] = useState("");
+  const [statut, setStatut] = useState<StatutCachet>();
   const [editId, setEditId] = useState<number | null>(null);
-  const [filtreMembre, setFiltreMembre] = useState("");
-  const [filtreSpectacle, setFiltreSpectacle] = useState("");
-  const [tri, setTri] = useState<"date" | "montant">("date");
+  const [filtreMembre, setFiltreMembre] = useState<number | null>(null);
+  const [filtreSpectacle, setFiltreSpectacle] = useState<number | null>(null);
+  const [filtreStatut, setFiltreStatut] = useState<StatutCachet>();
+  const [triPar, setTriPar] = useState<
+    "none" | "dateCroissante" | "dateDecroissante" | "montantCroissant" | "montantDecroissant"
+  >("none");
   const [errors, setErrors] = useState<{ [key: string]: string }>({}); //stocker une erreur par champ
+  const [isLoading, setIsLoading] = useState(false); //état pour désactiver le bouton pendant l'envoi (sécurité)
+  const [page, setPage] = useState(1);
 
-  function ajouterCachet(e: React.FormEvent<HTMLFormElement>) {
+  useEffect(() => {
+    getCachetsAction()
+      .then((result) => {
+        if (result.success && result.data) {
+          const cachetFormates = result.data.map((c) => formateCachet(c));
+          setCachets(cachetFormates);
+        } else if (!result.success) {
+          console.error(result.error);
+          setErrors({ global: result.error || "Une erreur est survenue" });
+        }
+      })
+      .catch((error) => {
+        console.error("Erreur non gérée:", error);
+        setErrors({ global: "Une erreur inattendue s'est produite" });
+        setIsLoading(false);
+      });
+
+    getAllMembresAction()
+      .then((result) => {
+        if (result.success && result.data) {
+          setMembres(result.data);
+        }
+      })
+      .catch(() => setIsLoading(false));
+
+    getAllSpectaclesAction()
+      .then((result) => {
+        if (result.success && result.data) {
+          setSpectacles(result.data);
+        }
+      })
+      .catch(() => setIsLoading(false));
+  }, []);
+
+  function ajouterCachet(e: React.FormEvent<HTMLFormElement>): void {
     e.preventDefault();
 
     const foundErrors: { [key: string]: string } = {};
 
     //validation obligatoire du membre
-    if (!membre) {
+    if (!membreId) {
       foundErrors.membre = "Un membre doit être sélectionné";
     }
 
@@ -61,19 +98,23 @@ export default function PageCachets() {
     }
 
     //pas forcement nécéssaire puisque déjà géré dans le code de l'input, mais mieux vaut être prévoyant
-    if (montant < 110) {
-      foundErrors.montant =
-        "Le montant ne peux pas être inférieur au minimum légal (smic horaire * 12, soit 110 euros)";
+    if (Number(montant) < MONTANT_CACHET_MINIMUM_LEGAL) {
+      foundErrors.montant = `Le montant ne peux pas être inférieur au minimum légal (smic horaire * 12, soit ${MONTANT_CACHET_MINIMUM_LEGAL} euros)`;
     }
 
     //validation obligatoire du spectacle
-    if (!spectacle.trim()) {
+    if (!spectacleId) {
       foundErrors.spectacle = "Un spectacle doit être choisi";
     }
 
+    //validation obligatoire du statut
+    if (!statut) {
+      foundErrors.statut = "Un statut doit être choisi";
+    }
+
     //pas forcement nécéssaire puisque déjà géré dans le code de l'input, mais mieux vaut être prévoyant
-    if (note.length > 120) {
-      foundErrors.note = "La note ne peut pas dépasser 120 caractères";
+    if (note.length > NOTE_NB_MAX_CARACS) {
+      foundErrors.note = `La note ne peut pas dépasser ${NOTE_NB_MAX_CARACS} caractères`;
     }
 
     setErrors(foundErrors);
@@ -83,71 +124,134 @@ export default function PageCachets() {
       return;
     }
 
+    //lance l'opération asynchrone avec la BDD
+    setIsLoading(true);
+
     if (editId !== null) {
-      //edition cachet
-      setCachets(
-        cachets.map((c) => (c.id === editId ? { ...c, membre, date, montant, spectacle, note } : c))
-      );
-      setEditId(null);
-    } else {
-      //ajout cachet
-      const nouveauCachet: Cachet = {
-        id: Date.now(),
-        membre,
+      mettreAJourCachetAction(editId, {
+        //on est sur que membreId et spectacleId ne sont pas null grâce à la validation au-dessus
+        membreId: membreId!,
         date,
-        montant,
-        spectacle,
+        montant: montant!,
+        spectacleId: spectacleId!,
+        statut: statut!,
         note,
-      };
-      setCachets([...cachets, nouveauCachet]);
+      })
+        .then((result) => {
+          if (result.success && result.data) {
+            //mets à jour le cachet dans la liste locale
+            setCachets(cachets.map((c) => (c.id === editId ? formateCachet(result.data) : c)));
+            setEditId(null);
+            resetFormulaire();
+          } else {
+            setErrors({ submit: result.error || "Erreur lors de la mise à jour" });
+          }
+          setIsLoading(false);
+        })
+        .catch(() => setIsLoading(false));
+    } else {
+      creerCachetAction({
+        membreId: membreId!,
+        date,
+        montant: montant!,
+        spectacleId: spectacleId!,
+        statut: statut!,
+        note,
+      })
+        .then((result) => {
+          if (result.success && result.data) {
+            //ajoute le nouveau cachet à la liste locale
+            setCachets([...cachets, formateCachet(result.data)]);
+            resetFormulaire();
+          } else {
+            setErrors({ submit: result.error || "Erreur lors de la création" });
+          }
+          setIsLoading(false);
+        })
+        .catch(() => setIsLoading(false));
     }
+  }
 
-    setMembre("");
+  function resetFormulaire(): void {
+    setMembreId(null);
     setDate("");
-    setMontant(110);
-    setSpectacle("");
+    setMontant("");
+    setSpectacleId(null);
+    setStatut(undefined);
     setNote("");
+    setErrors({});
   }
 
-  function supprimerCachet(id: number) {
-    setCachets(cachets.filter((c) => c.id !== id));
-    if (editId === id) setEditId(null);
+  function supprimerCachet(id: number): void {
+    setIsLoading(true);
+    supprimerCachetAction(id)
+      .then((result) => {
+        if (result.success) {
+          //supprime le cachet de la liste locale
+          setCachets(cachets.filter((c) => c.id !== id));
+          if (editId === id) setEditId(null);
+        } else {
+          setErrors({ submit: result.error || "Erreur lors de la suppression" });
+        }
+        setIsLoading(false);
+      })
+      .catch(() => setIsLoading(false));
   }
 
-  function editerCachet(c: Cachet) {
+  function editerCachet(c: Cachet): void {
     setEditId(c.id);
-    setMembre(c.membre);
+    setMembreId(c.membreId);
     setDate(c.date);
     setMontant(c.montant);
-    setSpectacle(c.spectacle);
+    setSpectacleId(c.spectacleId);
+    setStatut(c.statut);
     setNote(c.note || "");
   }
 
   //filtrage par membre (prioritaire)
   const cachetsFiltresParMembre = filtreMembre
-    ? cachets.filter((c) => c.membre === filtreMembre)
+    ? cachets.filter((c) => c.membreId === filtreMembre)
     : cachets;
 
   //filtrage par spectacle (agit uniquement sur cachets de membre x)
-  const cachetsFiltres = filtreSpectacle
-    ? cachetsFiltresParMembre.filter((c) => c.spectacle === filtreSpectacle)
+  const cachetsFiltresParSpectacle = filtreSpectacle
+    ? cachetsFiltresParMembre.filter((c) => c.spectacleId === filtreSpectacle)
     : cachetsFiltresParMembre;
 
-  //filtrage par date (décroissant) ou montant (décroissant), (agit uniquement sur cachets de membre x)
-  const cachetsTries = [...cachetsFiltres].sort((a, b) => {
-    if (tri === "date") return b.date.localeCompare(a.date);
-    if (tri === "montant") return b.montant - a.montant;
-    return 0;
+  //filtrage par statut (agit uniquement sur cachets de membre x et spectacle y)
+  const cachetsFiltresParStatut = filtreStatut
+    ? cachetsFiltresParSpectacle.filter((c) => c.statut === filtreStatut)
+    : cachetsFiltresParSpectacle;
+
+  //filtrage par date ou montant avec direction croissante/décroissante
+  const cachetsTries = [...cachetsFiltresParStatut].sort((a, b) => {
+    switch (triPar) {
+      case "dateCroissante":
+        return a.date.localeCompare(b.date);
+      case "dateDecroissante":
+        return b.date.localeCompare(a.date);
+      case "montantCroissant":
+        return Number(a.montant) - Number(b.montant);
+      case "montantDecroissant":
+        return Number(b.montant) - Number(a.montant);
+      default:
+        return 0;
+    }
   });
+
+  const totalPages = Math.max(1, Math.ceil(cachetsTries.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages);
+  const cachetsPagines = cachetsTries.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
   return (
     <main>
-      <Heading as="h3" className="font-extrabold mb-4 pt-6 text-center">
+      <Heading as="h2" className="font-extrabold mb-4 pt-6 text-center">
         Gestion des cachets
       </Heading>
 
       <form onSubmit={ajouterCachet}>
         <div className="mx-auto max-w-4xl rounded-[20px] bg-hover p-[20px] border-none shadow-sm transition-shadow flex flex-col gap-[20px]">
+          {errors.submit && <p className="text-red-600 text-sm font-semibold">{errors.submit}</p>}
           <div>
             <Heading as="h4" className="font-semibold">
               Membre équipe
@@ -157,14 +261,14 @@ export default function PageCachets() {
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
               id="membre"
-              value={membre}
-              onChange={(e) => setMembre(e.target.value)}
+              value={membreId?.toString() || ""}
+              onChange={(e) => setMembreId(e.target.value ? Number(e.target.value) : null)}
+              disabled={isLoading}
             >
               <option value=""> Choisir un membre équipe </option>
-              {MEMBRES_TROUPE.map((membre) => (
-                <option key={membre.value} value={membre.value}>
-                  {" "}
-                  {membre.label}{" "}
+              {membres.map((membre) => (
+                <option key={membre.id} value={membre.id}>
+                  {membre.user.prenom} {membre.user.nom}
                 </option>
               ))}
             </select>
@@ -181,8 +285,10 @@ export default function PageCachets() {
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
+              disabled={isLoading}
             />
           </div>
+
           <div>
             <Heading as="h4" className="font-semibold">
               Montant du cachet
@@ -192,11 +298,15 @@ export default function PageCachets() {
             <input
               className="flex w-full rounded-[12px] border border-border bg-white px-4 py-3 text-[1rem] text-text-primary font-serif placeholder:text-text-muted transition-all hover:border-border-hover hover:bg-bg-hover focus-visible:outline-none focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-60 disabled:bg-bg-disabled focus:border-primary focus:ring-1 focus:ring-primary"
               type="number"
-              min={110}
-              value={montant}
-              onChange={(e) => setMontant(Number(e.target.value))}
+              step="0.01"
+              min={MONTANT_CACHET_MINIMUM_LEGAL}
+              value={montant?.toString() || ""}
+              placeholder={`${MONTANT_CACHET_MINIMUM_LEGAL}`}
+              onChange={(e) => setMontant(e.target.value)}
+              disabled={isLoading}
             />
           </div>
+
           <div>
             <Heading as="h4" className="font-semibold">
               Spectacle
@@ -206,18 +316,43 @@ export default function PageCachets() {
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
               id="spectacle"
-              value={spectacle}
-              onChange={(e) => setSpectacle(e.target.value)}
+              value={spectacleId?.toString() || ""}
+              onChange={(e) => setSpectacleId(e.target.value ? Number(e.target.value) : null)}
+              disabled={isLoading}
             >
               <option value=""> Choisir un spectacle </option>
-              {NOM_SPECTACLE.map((spectacle) => (
-                <option key={spectacle.value} value={spectacle.value}>
-                  {" "}
-                  {spectacle.label}{" "}
+              {spectacles.map((spectacle) => (
+                <option key={spectacle.id} value={spectacle.id}>
+                  {spectacle.titre}
                 </option>
               ))}
             </select>
           </div>
+
+          <div>
+            <Heading as="h4" className="font-semibold">
+              Statut
+            </Heading>
+            <br />
+            {errors.statut && <p className="text-red-600 text-sm">{errors.statut}</p>}
+            <select
+              className="p-2 border border-slate-300 rounded-md w-full"
+              id="statut"
+              value={statut?.toString() || ""}
+              onChange={(e) =>
+                setStatut(e.target.value ? (e.target.value as StatutCachet) : undefined)
+              }
+              disabled={isLoading}
+            >
+              <option value=""> Choisir un statut </option>
+              {Object.values(StatutCachet).map((value) => (
+                <option key={value} value={value}>
+                  {STATUT_DICT[value]}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <div>
             <Heading as="h4" className="font-semibold">
               Note
@@ -227,12 +362,13 @@ export default function PageCachets() {
             <input
               className="flex w-full rounded-[12px] border border-border bg-white px-4 py-3 text-[1rem] text-text-primary font-serif placeholder:text-text-muted transition-all hover:border-border-hover hover:bg-bg-hover focus-visible:outline-none focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-60 disabled:bg-bg-disabled focus:border-primary focus:ring-1 focus:ring-primary"
               value={note}
-              maxLength={120}
+              maxLength={NOTE_NB_MAX_CARACS}
               onChange={(e) => setNote(e.target.value)}
+              disabled={isLoading}
             />
           </div>
-          <Button variant="solid" size="default" type="submit">
-            {editId !== null ? "Mettre à jour" : "Ajouter"}
+          <Button variant="solid" size="default" type="submit" disabled={isLoading}>
+            {isLoading ? "Envoi en cours..." : editId !== null ? "Mettre à jour" : "Ajouter"}
           </Button>
           {editId !== null && (
             <Button
@@ -240,13 +376,10 @@ export default function PageCachets() {
               size="default"
               type="button"
               onClick={() => {
+                resetFormulaire();
                 setEditId(null);
-                setMembre("");
-                setMontant(110);
-                setSpectacle("");
-                setNote("");
-                setErrors({});
               }}
+              disabled={isLoading}
             >
               Annuler
             </Button>
@@ -259,48 +392,79 @@ export default function PageCachets() {
       </Heading>
 
       <div className="mx-auto max-w-4xl rounded-[20px] bg-hover p-[20px] border-none shadow-sm transition-shadow flex flex-col gap-[20px]">
-        <div className="flex flex-wrap gap-6 items-end">
-          <div className="flex flex-col gap-1">
+        <div className="flex flex-wrap justify-between items-end gap-6 w-full">
+          <div className="flex flex-col gap-1 flex-1 max-w-xs items-center">
             <label>Filtrer par membre</label>
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
-              value={filtreMembre}
-              onChange={(e) => setFiltreMembre(e.target.value)}
+              value={filtreMembre?.toString() || ""}
+              onChange={(e) => {
+                setFiltreMembre(e.target.value ? Number(e.target.value) : null);
+                setPage(1);
+              }}
             >
               <option value="">Tous les membres</option>
-              {MEMBRES_TROUPE.map((nom) => (
-                <option key={nom.value} value={nom.value}>
-                  {nom.label}
+              {membres.map((membre) => (
+                <option key={membre.id} value={membre.id}>
+                  {membre.user.prenom} {membre.user.nom}
                 </option>
               ))}
             </select>
           </div>
 
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 flex-1 max-w-xs items-center">
             <label>Filtrer par spectacle</label>
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
-              value={filtreSpectacle}
-              onChange={(e) => setFiltreSpectacle(e.target.value)}
+              value={filtreSpectacle?.toString() || ""}
+              onChange={(e) => {
+                setFiltreSpectacle(e.target.value ? Number(e.target.value) : null);
+                setPage(1);
+              }}
             >
               <option value="">Tous</option>
-              {NOM_SPECTACLE.map((spectacle) => (
-                <option key={spectacle.value} value={spectacle.value}>
-                  {spectacle.label}
+              {spectacles.map((spectacle) => (
+                <option key={spectacle.id} value={spectacle.id}>
+                  {spectacle.titre}
                 </option>
               ))}
             </select>
           </div>
 
-          <div className="flex flex-col gap-1">
-            <label>Trier par</label>
+          <div className="flex flex-col gap-1 flex-1 max-w-xs items-center">
+            <label>Filtrer par statut</label>
             <select
               className="p-2 border border-slate-300 rounded-md w-full"
-              value={tri}
-              onChange={(e) => setTri(e.target.value as "date" | "montant")}
+              value={filtreStatut?.toString() || ""}
+              onChange={(e) => {
+                setFiltreStatut(e.target.value ? (e.target.value as StatutCachet) : undefined);
+                setPage(1);
+              }}
             >
-              <option value="date">Date</option>
-              <option value="montant">Montant de cachets</option>
+              <option value="">Tous</option>
+              {Object.values(StatutCachet).map((value) => (
+                <option key={value} value={value}>
+                  {STATUT_DICT[value]}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex flex-col gap-1 flex-1 max-w-xs items-center">
+            <label>Options de tri</label>
+            <select
+              className="p-2 border border-slate-300 rounded-md w-full"
+              value={triPar}
+              onChange={(e) => {
+                setTriPar(e.target.value as typeof triPar);
+                setPage(1);
+              }}
+            >
+              <option value="none">Aucun tri</option>
+              <option value="dateCroissante">Date croissante</option>
+              <option value="dateDecroissante">Date décroissante</option>
+              <option value="montantCroissant">Montant croissant</option>
+              <option value="montantDecroissant">Montant décroissant</option>
             </select>
           </div>
         </div>
@@ -316,39 +480,43 @@ export default function PageCachets() {
                 <Table.Header>Montant</Table.Header>
                 <Table.Header>Spectacle</Table.Header>
                 <Table.Header>Note</Table.Header>
-                <Table.Header></Table.Header>
+                <Table.Header>Statut</Table.Header>
+                <Table.Header>Modifier cachet</Table.Header>
+                <Table.Header>Supprimer cachet</Table.Header>
               </Table.Row>
             </Table.Head>
 
             <Table.Body>
-              {cachetsTries.map((c) => (
+              {cachetsPagines.map((c) => (
                 <Table.Row key={c.id}>
                   <Table.Cell>
-                    {MEMBRES_TROUPE.find((m) => m.value === c.membre)?.label ?? c.membre}
+                    {c.membre.user.prenom} {c.membre.user.nom}
                   </Table.Cell>
                   <Table.Cell>{new Date(c.date).toLocaleDateString("fr-FR")}</Table.Cell>
-                  <Table.Cell>{c.montant} €</Table.Cell>
-                  <Table.Cell>
-                    {NOM_SPECTACLE.find((s) => s.value === c.spectacle)?.label ?? c.spectacle}
-                  </Table.Cell>
+                  <Table.Cell>{Number(c.montant).toFixed(2)} €</Table.Cell>
+                  <Table.Cell>{c.spectacle.titre}</Table.Cell>
                   <Table.Cell>{c.note || "-"}</Table.Cell>
+                  <Table.Cell>{STATUT_DICT[c.statut]}</Table.Cell>
                   <Table.Cell>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => editerCachet(c)}
                       aria-label="Modifier cachet"
+                      disabled={isLoading}
                     >
-                      Modifier
+                      ✏️ Modifier
                     </Button>
-
+                  </Table.Cell>
+                  <Table.Cell>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => supprimerCachet(c.id)}
                       aria-label="Supprimer cachet"
+                      disabled={isLoading}
                     >
-                      Supprimer
+                      🗑️ Supprimer
                     </Button>
                   </Table.Cell>
                 </Table.Row>
@@ -357,6 +525,7 @@ export default function PageCachets() {
           </Table>
         </Card.Body>
       </Card>
+      <Pagination currentPage={safePage} totalPages={totalPages} onPageChange={setPage} />
     </main>
   );
 }

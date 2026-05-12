@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { Card, Checkbox, toaster } from "@/components/ui";
+import { useMemo, useTransition } from "react";
+import { Card, toaster } from "@/components/ui";
 import { formatMontant } from "../utils";
 import { ModalAjoutRapide, DonneesAjoutFinancier } from "../modals";
 import { Recette } from "./types";
-import { NoteInfo, FadeContainer, ItemFinancierCard, VoirToutLink } from "./shared";
+import { FadeContainer, ItemFinancierCard, VoirToutLink } from "./shared";
+import { toggleStatutOperation, creerOperation } from "../finance-actions";
+import { buildRecettePayload, getNouveauStatut } from "../finance-helpers";
 
 export function RecettesSection({
   recettes,
@@ -16,41 +18,59 @@ export function RecettesSection({
   setRecettes: React.Dispatch<React.SetStateAction<Recette[]>>;
   spectacles: string[];
 }) {
-  const [showFactures, setShowFactures] = useState(true);
-  const [showSubventions, setShowSubventions] = useState(true);
+  const [, startTransition] = useTransition();
 
   const validerRecette = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    setRecettes((prev) => prev.map((r) => (r.id === id ? { ...r, statut: "paye" as const } : r)));
+
+    const recetteCible = recettes.find((r) => r.id === id);
+    if (!recetteCible) return;
+
+    const nouveauStatut = getNouveauStatut(recetteCible.statut);
+
+    setRecettes((prev) => prev.map((r) => (r.id === id ? { ...r, statut: nouveauStatut } : r)));
+
     toaster.success({
-      title: "Recette validée",
+      title: nouveauStatut === "paye" ? "Recette validée" : "Recette dévalidée",
       description: "Le statut a été mis à jour avec succès.",
+    });
+
+    startTransition(async () => {
+      await toggleStatutOperation(Number(id), recetteCible.statut);
     });
   };
 
   const totalRecettes = recettes.reduce((acc, r) => acc + r.montant, 0);
 
-  // Filtrer et trier par date décroissante
-  const recettesFiltrees = recettes
-    .filter((r) => (r.type === "facture" ? showFactures : showSubventions))
-    .sort((a, b) => new Date(b.date || "").getTime() - new Date(a.date || "").getTime());
+  const recettesFiltrees = useMemo(() => {
+    return [...recettes].sort(
+      (a, b) => new Date(b.date || "").getTime() - new Date(a.date || "").getTime()
+    );
+  }, [recettes]);
 
-  // Limiter l'affichage
   const recettesAffichees = recettesFiltrees.slice(0, 5);
 
   const handleAddRecette = (data: DonneesAjoutFinancier) => {
-    const nouvelle: Recette = {
-      id: `r-temp-${Date.now()}`,
-      nom: data.nom,
-      montant: data.montant,
-      date: data.date,
-      type: data.type ?? "facture",
-      statut: data.statut ?? "en_attente",
-      spectacles: data.spectacles || [],
-      fichier: data.fichier,
-    };
-    setRecettes([nouvelle, ...recettes]);
-    toaster.success({ title: "Recette ajoutée" });
+    startTransition(async () => {
+      try {
+        const result = await creerOperation(buildRecettePayload(data));
+        if ("error" in result) {
+          toaster.error({
+            title: "Erreur lors de l'ajout",
+            description: result.error,
+          });
+          return;
+        }
+
+        setRecettes((prev) => [result.operation, ...prev]);
+        toaster.success({ title: "Recette ajoutée" });
+      } catch {
+        toaster.error({
+          title: "Erreur lors de l'ajout",
+          description: "Impossible d'ajouter la recette.",
+        });
+      }
+    });
   };
 
   return (
@@ -65,24 +85,10 @@ export function RecettesSection({
         <div className="flex-shrink-0">
           <ModalAjoutRapide
             typeSection="Recette"
-            onAdd={handleAddRecette}
+            onSubmit={handleAddRecette}
             spectacles={spectacles}
           />
         </div>
-      </div>
-
-      <NoteInfo className="mb-6">
-        Note : ces montants incluent les recettes en attente (vision prévisionnelle).
-      </NoteInfo>
-
-      {/* Filtres par Checkbox */}
-      <div className="flex items-center gap-6 mb-6 px-1">
-        <Checkbox checked={showFactures} onChange={(e) => setShowFactures(e.target.checked)}>
-          Factures
-        </Checkbox>
-        <Checkbox checked={showSubventions} onChange={(e) => setShowSubventions(e.target.checked)}>
-          Subventions
-        </Checkbox>
       </div>
 
       <FadeContainer>
@@ -96,7 +102,7 @@ export function RecettesSection({
         )}
       </FadeContainer>
 
-      <VoirToutLink />
+      <VoirToutLink href="/administration/recettes" />
     </Card>
   );
 }

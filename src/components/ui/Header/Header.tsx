@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Badge, Button, Container, Logo, Text, Select } from "@/components/ui";
-import { LuLogIn, LuLogOut, LuRepeat, LuUser, LuMenu, LuX } from "react-icons/lu";
+import { Badge, Button, Container, Logo, Select } from "@/components/ui";
+import { LuLogIn, LuLogOut, LuUser, LuMenu, LuX } from "react-icons/lu";
 import { FaTheaterMasks } from "react-icons/fa";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
@@ -14,7 +14,17 @@ export const Header = () => {
   const isLoading = status === "loading";
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const navigationItems = ["Production", "Planning", "Communication", "Administration"];
+  const canAccessAdministration = Boolean(session?.rights?.droitAccesAdministration);
+  const navigationItems = [
+    { label: "Production", href: "/production" },
+    { label: "Planning", href: "/planning" },
+    { label: "Communication", href: "/communication" },
+    ...(canAccessAdministration
+      ? [{ label: "Administration", href: "/administration" }]
+      : session
+        ? [{ label: "Cachets", href: "/administration/vision-cachets" }]
+        : []),
+  ];
 
   // Cache le header sur les pages d'auth
   if (pathname === "/login" || pathname === "/register") {
@@ -29,6 +39,9 @@ export const Header = () => {
 
   const handleCompanyChange = async (value: string) => {
     await update({ activeCompanyId: parseInt(value) });
+    if (pathname.startsWith("/administration")) {
+      window.location.reload();
+    }
   };
 
   return (
@@ -52,11 +65,11 @@ export const Header = () => {
           <nav className="hidden md:flex items-center md:gap-6 lg:gap-8 xl:gap-10">
             {navigationItems.map((item) => (
               <Link
-                key={item}
-                href={`/${item.toLowerCase()}`}
+                key={item.href}
+                href={item.href}
                 className="text-slate-600 hover:text-primary transition-colors font-serif md:text-[13px] lg:text-[15px] xl:text-[18px]"
               >
-                {item}
+                {item.label}
               </Link>
             ))}
           </nav>
@@ -220,12 +233,12 @@ export const Header = () => {
               {/* Navigation */}
               {navigationItems.map((item) => (
                 <Link
-                  key={item}
-                  href={`/${item.toLowerCase()}`}
+                  key={item.href}
+                  href={item.href}
                   className="text-slate-600 hover:text-primary hover:bg-black/5 transition-colors font-serif text-base px-4 py-3 rounded"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  {item}
+                  {item.label}
                 </Link>
               ))}
 

@@ -85,7 +85,7 @@ export default async function ReservationsObjetsPage() {
       include: { typeObjet: true },
     }),
     prisma.representation.findMany({
-      orderBy: { date: "desc" },
+      orderBy: { debutResa: "desc" },
       include: { spectacle: true, lieu: true },
     }),
   ]);
@@ -130,7 +130,7 @@ export default async function ReservationsObjetsPage() {
                   <option value="">Sélectionner une représentation</option>
                   {representations.map((r) => (
                     <option key={r.id} value={r.id}>
-                      {r.spectacle.titre} - {formatDate(r.date)} @ {r.lieu.libelle}
+                      {r.spectacle.titre} - {formatDate(r.debutResa)} @ {r.lieu.libelle}
                     </option>
                   ))}
                 </select>
@@ -187,7 +187,7 @@ export default async function ReservationsObjetsPage() {
                       <strong>🏢 Compagnie:</strong> {r.objet.compagnie.nom}
                     </p>
                     <p>
-                      <strong>📅 Date:</strong> {formatDate(r.representation.date)}
+                      <strong>📅 Date:</strong> {formatDate(r.representation.debutResa)}
                     </p>
                     <p>
                       <strong>📍 Lieu:</strong> {r.representation.lieu.libelle},{" "}
@@ -226,7 +226,7 @@ export default async function ReservationsObjetsPage() {
                         >
                           {representations.map((rep) => (
                             <option key={rep.id} value={rep.id}>
-                              {rep.spectacle.titre} - {formatDate(rep.date)}
+                              {rep.spectacle.titre} - {formatDate(rep.debutResa)}
                             </option>
                           ))}
                         </select>

@@ -32,6 +32,7 @@ Les droits sont ceux de l'utilisateur sur sa **compagnie active**.
 | `droitGestionDroitsMembres`  | Modifier les droits des membres                             |
 | `droitAccesPlanning`         | Accéder au planning                                         |
 | `droitGestionPlanning`       | Modifier le planning                                        |
+| `droitAccesAdministration`   | Accéder au dashboard Administration et aux pages associées  |
 
 > **Note :** `droitAccesDetailsCompagnie` est automatiquement accordé à quiconque possède au moins un autre droit.
 

@@ -79,6 +79,9 @@ export async function addMemberByEmail(formData: FormData) {
             memberOrError.droitAccesPlanning && formData.get("droitAccesPlanning") === "true",
           droitGestionPlanning:
             memberOrError.droitGestionPlanning && formData.get("droitGestionPlanning") === "true",
+          droitAccesAdministration:
+            memberOrError.droitAccesAdministration &&
+            formData.get("droitAccesAdministration") === "true",
         }),
       },
     });
@@ -210,6 +213,9 @@ export async function updateMemberRights(formData: FormData) {
           memberOrError.droitAccesPlanning && formData.get("droitAccesPlanning") === "true",
         droitGestionPlanning:
           memberOrError.droitGestionPlanning && formData.get("droitGestionPlanning") === "true",
+        droitAccesAdministration:
+          memberOrError.droitAccesAdministration &&
+          formData.get("droitAccesAdministration") === "true",
       },
     });
     revalidatePath(`/compagnie/${compagnieId}`);
@@ -241,6 +247,7 @@ export async function createCompany(formData: FormData) {
             droitGestionDroitsMembres: true,
             droitAccesPlanning: true,
             droitGestionPlanning: true,
+            droitAccesAdministration: true,
           },
         },
       },
@@ -249,5 +256,72 @@ export async function createCompany(formData: FormData) {
     return { success: true, company };
   } catch {
     return { error: "Une erreur est survenue lors de la création" };
+  }
+}
+
+export async function getCompanyDetails(companyId: number) {
+  const session = await auth();
+  if (!session?.user?.id) return null;
+
+  try {
+    return await prisma.compagnie.findUnique({
+      where: { id: companyId },
+      select: {
+        id: true,
+        nom: true,
+        adresse: true,
+        ville: true,
+        codePostal: true,
+        siteWeb: true,
+        rib: true,
+        siren: true,
+        rcs: true,
+        formeJuridique: true,
+        capitalSocial: true,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+}
+
+export async function updateCompanyFacturationDetails(companyId: number, formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Non autorisé" };
+
+  // Ideally, verify if user has rights
+  const adresse = formData.get("adresse") as string;
+  const ville = formData.get("ville") as string;
+  const codePostal = formData.get("codePostal") as string;
+  const siteWeb = formData.get("siteWeb") as string;
+  const rib = formData.get("rib") as string;
+  const siren = formData.get("siren") as string;
+  const rcs = formData.get("rcs") as string;
+  const formeJuridique = formData.get("formeJuridique") as string;
+  const capitalSocialRaw = formData.get("capitalSocial") as string;
+  const capitalSocial = capitalSocialRaw ? parseFloat(capitalSocialRaw) : null;
+
+  try {
+    await prisma.compagnie.update({
+      where: { id: companyId },
+      data: {
+        adresse: adresse || null,
+        ville: ville || null,
+        codePostal: codePostal || null,
+        siteWeb: siteWeb || null,
+        rib: rib || null,
+        siren: siren || null,
+        rcs: rcs || null,
+        formeJuridique: formeJuridique || null,
+        capitalSocial: isNaN(capitalSocial as number) ? null : capitalSocial,
+      },
+    });
+    revalidatePath("/profil");
+    revalidatePath("/administration");
+    return { success: true };
+  } catch (err) {
+    console.error(err);
+    return { error: "Erreur lors de la mise à jour" };
   }
 }

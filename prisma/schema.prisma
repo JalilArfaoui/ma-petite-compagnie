@@ -21,6 +21,7 @@ model Lieu {
 model Categorie {
   id         Int         @id @default(autoincrement())
   nom        String
+  couleur    String     @default("#000000")
   evenements Evenement[]
   idCompagnie Int
   compagnie Compagnie @relation(fields: [idCompagnie], references: [id])
@@ -29,12 +30,24 @@ model Categorie {
 model Compagnie {
   id    Int      @id @default(autoincrement())
   nom   String
+  adresse String?
+  ville   String?
+  codePostal String?
+  siteWeb String?
+  rib     String?
+  siren   String?
+  rcs     String?
+  formeJuridique String?
+  capitalSocial  Float?
+  
   membres CompanyMember[]
   evenements Evenement[]
   categoriesEvenement Categorie[]
   lieuxEvenement Lieu[]
   spectacles Spectacle[] @relation("SpectaclesCompagnie")
   objets Objet[] @relation("ObjetsCompagnie")
+  operations OperationFinanciere[]
+  factures Facture[]
 }
 
 model Evenement {
@@ -89,6 +102,9 @@ model CompanyMember {
   droitGestionDroitsMembres  Boolean @default(false)
   droitAccesPlanning         Boolean @default(false)
   droitGestionPlanning       Boolean @default(false)
+  droitAccesAdministration   Boolean @default(false)
+
+  cachets Cachet[]
 
   @@unique([userId, compagnieId])
 }
@@ -119,6 +135,7 @@ model Contact {
   date_creation DateTime @default(now())
   listeContacts ListeContact[]
 }
+
 // partie groupe production
 
 enum StatutSpectacle {
@@ -142,6 +159,19 @@ enum EtatObjet {
   CASSE
 }
 
+//partie groupe administration
+
+enum TypeOperation {
+  RECETTE
+  DEPENSE
+}
+
+enum SourceOperation {
+  MANUEL
+  FACTURE
+  CACHET
+}
+
 model CategorieObjet {
   id         Int         @id @default(autoincrement())
   nom        String      @unique
@@ -161,7 +191,7 @@ model TypeObjet {
 model Spectacle {
   id                     Int              @id @default(autoincrement())
   titre                  String
-  dure                   Int?
+  dure                   Int
   description            String?
   type                   TypeSpectacle?
   statut                 StatutSpectacle  @default(EN_CREATION)
@@ -175,6 +205,8 @@ model Spectacle {
   ficheTechnique         FicheTechnique?
   representations        Representation[]
   besoins                BesoinSpectacle[]
+  cachets                Cachet[]
+  operations             OperationFinanciere[]
 }
 
 model BesoinSpectacle {
@@ -197,7 +229,8 @@ model FicheTechnique {
 
 model Representation {
   id          Int               @id @default(autoincrement())
-  date        DateTime
+  debutResa   DateTime
+  finResa     DateTime
   spectacleId Int
   spectacle   Spectacle         @relation(fields: [spectacleId], references: [id], onDelete: Cascade)
   lieuId      Int
@@ -225,3 +258,92 @@ model ReservationObjet {
   representation   Representation @relation(fields: [representationId], references: [id], onDelete: Cascade)
 }
 
+model Cachet {
+  id           Int      @id @default(autoincrement())
+  membreId     Int
+  membre       CompanyMember  @relation(fields: [membreId], references: [id], onDelete: Cascade)
+  date         DateTime @default(now())
+  spectacleId  Int
+  spectacle    Spectacle @relation(fields: [spectacleId], references: [id], onDelete: Cascade)
+  montant      Decimal  @db.Decimal(10, 2)
+  statut       StatutCachet  @default(NON_PAYE)
+  note         String?
+}
+
+enum StatutCachet {
+  NON_PAYE
+  EN_ATTENTE_DE_PAIEMENT
+  PAYE
+}
+
+model OperationFinanciere {
+  id          Int             @id @default(autoincrement())
+  nom         String
+  montant     Float
+  date        DateTime
+  type        TypeOperation
+  statut      String          @default("en_attente") // paye, en_attente
+  source      SourceOperation @default(MANUEL)
+  categorie   String?         // Ex: "Subvention", "Matériel", etc.
+  fichier     String?
+
+  // Lien implicite many-to-many avec les spectacles
+  spectacles  Spectacle[]
+
+  // Préparé pour les futures FK (branches collègues)
+  factureId   Int?            // ID de la facture source (si applicable)
+  cachetId    Int?            // ID du cachet source (si applicable)
+
+  compagnieId Int
+  compagnie   Compagnie       @relation(fields: [compagnieId], references: [id])
+
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+model Facture {
+  id              Int      @id @default(autoincrement())
+  numero          String   @unique
+  dateEmission    DateTime @default(now())
+  dateEcheance    DateTime
+  lieuFacturation String?
+
+  clientNom       String
+  clientAdresse   String?
+  clientSiren     String?
+
+  status          FactureStatus @default(BROUILLON)
+
+  lignes          LigneFacture[]
+
+  compagnieId     Int
+  compagnie       Compagnie @relation(fields: [compagnieId], references: [id])
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model LigneFacture {
+  id              Int      @id @default(autoincrement())
+  factureId       Int
+  facture         Facture  @relation(fields: [factureId], references: [id], onDelete: Cascade)
+  
+  designation     String
+  quantite        Float    @default(1)
+  prixUnitaireHT  Float
+  tva             Float    @default(20.0)
+  type            LigneType @default(PRESTATION)
+}
+
+enum FactureStatus {
+  BROUILLON
+  EMISE
+  PAYEE
+  ANNULEE
+}
+
+enum LigneType {
+  PRESTATION
+  FRAIS
+  REDUCTION
+}
