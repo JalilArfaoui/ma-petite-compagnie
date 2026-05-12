@@ -144,18 +144,29 @@ export async function fetchObjetsPageData(compagnieId: number) {
   const [typesObjets, categories, representations] = await Promise.all([
     prisma.typeObjet.findMany({
       orderBy: { nom: "asc" },
-      include: {
-        categorie: true,
+      select: {
+        id: true,
+        nom: true,
+        image: true,
+        categorieId: true,
+        categorie: { select: { id: true, nom: true } },
         objets: {
           where: { compagnieId },
-          include: {
-            compagnie: true,
+          select: {
+            id: true,
+            etat: true,
+            estDisponible: true,
+            commentaire: true,
+            compagnie: { select: { id: true, nom: true } },
             reservations: {
-              include: {
+              select: {
+                id: true,
                 representation: {
-                  include: {
-                    spectacle: true,
-                    lieu: true,
+                  select: {
+                    id: true,
+                    debutResa: true,
+                    spectacle: { select: { titre: true } },
+                    lieu: { select: { libelle: true } },
                   },
                 },
               },
@@ -168,9 +179,11 @@ export async function fetchObjetsPageData(compagnieId: number) {
     prisma.representation.findMany({
       orderBy: { debutResa: "asc" },
       where: { spectacle: { compagnieId } },
-      include: {
-        spectacle: true,
-        lieu: true,
+      select: {
+        id: true,
+        debutResa: true,
+        spectacle: { select: { titre: true } },
+        lieu: { select: { libelle: true } },
       },
     }),
   ]);

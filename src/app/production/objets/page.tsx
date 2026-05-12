@@ -11,8 +11,23 @@ export default async function ObjetsPage() {
   const { typesObjets, categories, representations } = await fetchObjetsPageData(compagnieId);
 
   // Serialize dates for client component
-  const serializedTypes = JSON.parse(JSON.stringify(typesObjets));
-  const serializedRepresentations = JSON.parse(JSON.stringify(representations));
+  const serializedTypes = typesObjets.map((t) => ({
+    ...t,
+    objets: t.objets.map((o) => ({
+      ...o,
+      reservations: o.reservations.map((r) => ({
+        ...r,
+        representation: {
+          ...r.representation,
+          debutResa: r.representation.debutResa.toISOString(),
+        },
+      })),
+    })),
+  }));
+  const serializedRepresentations = representations.map((r) => ({
+    ...r,
+    debutResa: r.debutResa.toISOString(),
+  }));
 
   return (
     <ObjetsClient
