@@ -1,5 +1,6 @@
 "use server";
 
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { EtatObjet } from "@prisma/client";
@@ -7,12 +8,25 @@ import { EtatObjet } from "@prisma/client";
 // ========== TypeObjet CRUD ==========
 
 export async function createTypeObjet(formData: FormData) {
+  const session = await auth();
+  if (!session?.activeCompanyId) throw new Error("Aucune compagnie active.");
+  const compagnieId = Number(session.activeCompanyId);
+
   const nom = formData.get("nom") as string;
   const categorieId = Number(formData.get("categorieId"));
   const image = (formData.get("image") as string) || null;
 
-  await prisma.typeObjet.create({
+  const typeObjet = await prisma.typeObjet.create({
     data: { nom, categorieId, image },
+  });
+
+  await prisma.objet.create({
+    data: {
+      typeObjetId: typeObjet.id,
+      etat: "NEUF",
+      estDisponible: true,
+      compagnieId,
+    },
   });
 
   revalidatePath("/production/objets");
@@ -45,10 +59,13 @@ export async function deleteTypeObjet(formData: FormData) {
 // ========== Objet CRUD ==========
 
 export async function createObjet(formData: FormData) {
+  const session = await auth();
+  if (!session?.activeCompanyId) throw new Error("Aucune compagnie active.");
+  const compagnieId = Number(session.activeCompanyId);
+
   const typeObjetId = Number(formData.get("typeObjetId"));
   const etat = (formData.get("etat") as EtatObjet) || "NEUF";
   const estDisponible = formData.get("estDisponible") === "true";
-  const compagnieId = 1;
   const commentaire = (formData.get("commentaire") as string) || null;
 
   await prisma.objet.create({
@@ -123,22 +140,33 @@ export async function deleteReservation(formData: FormData) {
 
 // ========== Fetch data ==========
 
-export async function fetchObjetsPageData() {
+export async function fetchObjetsPageData(compagnieId: number) {
   const [typesObjets, categories, representations] = await Promise.all([
     prisma.typeObjet.findMany({
       orderBy: { nom: "asc" },
-      include: {
-        categorie: true,
+      select: {
+        id: true,
+        nom: true,
+        image: true,
+        categorieId: true,
+        categorie: { select: { id: true, nom: true } },
         objets: {
-          where: { compagnieId: 1 },
-          include: {
-            compagnie: true,
+          where: { compagnieId },
+          select: {
+            id: true,
+            etat: true,
+            estDisponible: true,
+            commentaire: true,
+            compagnie: { select: { id: true, nom: true } },
             reservations: {
-              include: {
+              select: {
+                id: true,
                 representation: {
-                  include: {
-                    spectacle: true,
-                    lieu: true,
+                  select: {
+                    id: true,
+                    debutResa: true,
+                    spectacle: { select: { titre: true } },
+                    lieu: { select: { libelle: true } },
                   },
                 },
               },
@@ -150,9 +178,12 @@ export async function fetchObjetsPageData() {
     prisma.categorieObjet.findMany({ orderBy: { nom: "asc" } }),
     prisma.representation.findMany({
       orderBy: { debutResa: "asc" },
-      include: {
-        spectacle: true,
-        lieu: true,
+      where: { spectacle: { compagnieId } },
+      select: {
+        id: true,
+        debutResa: true,
+        spectacle: { select: { titre: true } },
+        lieu: { select: { libelle: true } },
       },
     }),
   ]);

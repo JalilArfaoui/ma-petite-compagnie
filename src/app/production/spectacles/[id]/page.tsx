@@ -1,13 +1,16 @@
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import SpectacleDetailClient from "./SpectacleDetailClient";
 
 export const dynamic = "force-dynamic";
 
 export default async function SpectacleDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const session = await auth();
+  const compagnieId = Number(session!.activeCompanyId);
   const { id } = await params;
 
-  const spectacle = await prisma.spectacle.findUnique({
-    where: { id: Number(id) },
+  const spectacle = await prisma.spectacle.findFirst({
+    where: { id: Number(id), compagnieId },
     select: {
       id: true,
       titre: true,
@@ -41,6 +44,7 @@ export default async function SpectacleDetailPage({ params }: { params: Promise<
 
   const typeObjets = await prisma.typeObjet.findMany({
     orderBy: { nom: "asc" },
+    where: { objets: { some: { compagnieId } } },
     include: { categorie: true },
   });
 
