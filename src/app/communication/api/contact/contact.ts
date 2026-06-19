@@ -78,16 +78,23 @@ export async function modifierContact(contactId: number, nouveauContact: Contact
 
 export async function supprimerContact(id: number) {
   try {
-    return await resultOf(true, "", prisma.contact.delete({ where: { id: id } }));
+    const contact_Sup = await prisma.contact.delete({
+      where: { id },
+    });
+
+    return resultOf(true, "", contact_Sup);
   } catch (error) {
     console.error(error);
     return resultOf(false, "Le contact n'a pas pu être supprimé", null);
   }
 }
-
 export async function supprimerContactAvecNom(nom: string) {
   try {
-    return await resultOf(true, "", prisma.contact.deleteMany({ where: { nom: nom } }));
+    const contact_Sup = await prisma.contact.deleteMany({
+      where: { nom },
+    });
+
+    return resultOf(true, "", contact_Sup);
   } catch (error) {
     console.error(error);
     return resultOf(false, "Le contact n'a pas pu être supprimé", null);
@@ -95,12 +102,16 @@ export async function supprimerContactAvecNom(nom: string) {
 }
 export async function supprimerContactsAvecEmail(email: string) {
   try {
-    return await resultOf(true, "", prisma.contact.deleteMany({ where: { email: email } }));
+    const contact_Sup = await prisma.contact.deleteMany({
+      where: { email: email },
+    });
+    return resultOf(true, "", contact_Sup);
   } catch (error) {
     console.error(error);
     return resultOf(false, "Le contact n'a pas pu être supprimé", null);
   }
 }
+
 export type ContactWithListes = Contact & {
   listeContacts: {
     id: number;
