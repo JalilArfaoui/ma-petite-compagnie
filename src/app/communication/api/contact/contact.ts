@@ -120,12 +120,24 @@ export type ContactWithListes = Contact & {
 };
 export async function listerContactsAvecListes(
   paginationTaille: number = 10,
-  page: number = 1
+  page: number = 1,
+  recherche?: string
 ): Promise<Result<null> | Result<ContactWithListes[]>> {
   try {
     let skip;
     ({ skip, paginationTaille } = resolvePagination(paginationTaille, page));
+    const filtreRecherche = recherche?{OR:[
+      { nom: { contains: recherche, mode: "insensitive"  as const}},
+      { prenom: { contains: recherche, mode: "insensitive"  as const}},
+      { email: { contains: recherche, mode: "insensitive" as const }},
+      { tel: { contains: recherche, mode: "insensitive" as const  }},
+      { ville: { contains: recherche, mode: "insensitive" as const }},
+      { lieu: { contains: recherche, mode: "insensitive" as const }},
+      { notes: { contains: recherche, mode: "insensitive" as const}},
+      ],
+    }:{};
     const contacts = await prisma.contact.findMany({
+      where: filtreRecherche,
       take: paginationTaille,
       skip: skip,
       include: { listeContacts: true },
@@ -140,13 +152,26 @@ export async function listerContactsAvecListes(
 export async function listerContactsDansListe(
   liste: ListeContact,
   paginationTaille: number = 10,
-  page: number = 1
+  page: number = 1,
+  recherche?: string
 ): Promise<Result<null> | Result<ContactWithListes[]>> {
   try {
     let skip;
     ({ skip, paginationTaille } = resolvePagination(paginationTaille, page));
+    const filtreRecherche = recherche?{AND:[{ listeContacts:{ some:{ id:liste.id } }},{OR: [
+            { nom: { contains: recherche, mode: "insensitive" as const } },
+            { prenom: { contains: recherche, mode: "insensitive"  as const} },
+            { email: { contains: recherche, mode: "insensitive" as const } },
+            { tel: { contains: recherche, mode: "insensitive"  as const} },
+            { ville: { contains: recherche, mode: "insensitive"  as const} },
+            { lieu: { contains: recherche, mode: "insensitive" as const } },
+            { notes: { contains: recherche, mode: "insensitive" as const } },
+          ],
+        },
+      ],
+    }:{listeContacts: { some: { id: liste.id } },};
     const contacts = await prisma.contact.findMany({
-      where: { listeContacts: { some: { id: liste.id } } },
+      where: filtreRecherche,
       take: paginationTaille,
       skip: skip,
       include: { listeContacts: true },
