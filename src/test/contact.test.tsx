@@ -95,7 +95,7 @@ describe("Contact", () => {
     );
     expect(modifier.succes).toBe(true);
     expect(modifier.donnee).toBeDefined();
-    expect((modifier.donnee as any).count).toBeGreaterThan(0);
+    expect((modifier.donnee as { count: number }).count).toBeGreaterThan(0);
   });
   it.skip("Supprimer un contact", async () => {
     const created = await creerUnContactAvecNom("TestSuppressionContact", "email4@gmail.com");
