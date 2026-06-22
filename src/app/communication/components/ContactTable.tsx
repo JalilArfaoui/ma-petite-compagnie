@@ -11,7 +11,11 @@ export function ContactTable({
   getContacts,
   keyReload,
 }: {
-  getContacts: (paginationTaille: number, page: number, recherche?: string) => Promise<ContactWithListes[] | null>;
+  getContacts: (
+    paginationTaille: number,
+    page: number,
+    recherche?: string
+  ) => Promise<ContactWithListes[] | null>;
   keyReload: number;
 }) {
   const [listes, setListes] = useState<ListeContact[]>([]);
@@ -151,11 +155,14 @@ export function ContactTable({
       <Stack direction="row" gap={2} className="justify-between">
         <Stack direction="row" gap={2} className="items-end" justify="start">
           <Text className="h-fit font-bold text-2xl">Liste de contacts</Text>
-          <input 
+          <input
             className="border rounded px-2 py-1"
             placeholder="recherche contactez "
             value={recherche}
-            onChange={(e) => {setRecherche(e.target.value); setPage(1);}}
+            onChange={(e) => {
+              setRecherche(e.target.value);
+              setPage(1);
+            }}
           />
           <Text>Recherche : {recherche}</Text>
         </Stack>

@@ -2,7 +2,11 @@
 import { Box, Button, Link, Select, Text, Toaster, toaster } from "@/components/ui";
 import { ListeContact } from "@prisma/client";
 import { useEffect, useState } from "react";
-import { ContactWithListes, listerContactsAvecListes, listerContactsDansListe } from "../api/contact/contact";
+import {
+  ContactWithListes,
+  listerContactsAvecListes,
+  listerContactsDansListe,
+} from "../api/contact/contact";
 import { ContactTable } from "../components/ContactTable";
 import { trouverListes } from "../api/contact/liste";
 
@@ -29,7 +33,7 @@ export default function AffichageListeContacts() {
     if (listesSelectionnees.length == 0) {
       const contacts = await listerContactsAvecListes(pagination, page, recherche);
 
-    return contacts.donnee;
+      return contacts.donnee;
     } else {
       const liste = listesSelectionnees[0];
       const contacts = await listerContactsDansListe(liste, pagination, page, recherche);
@@ -72,13 +76,13 @@ export default function AffichageListeContacts() {
         </Select.Content>
       </Select>
       {listesSelectionnees.length === 0 && (
-        <Text className="text-sm text-gray-500"> 
-          Aucune liste sélectionne
-        </Text>
+        <Text className="text-sm text-gray-500">Aucune liste sélectionne</Text>
       )}
       <ContactTable
         keyReload={listesSelectionnees[0]?.id ?? -1}
-        getContacts={(pagination, page, recherche) => loadContactFromListe(pagination, page, recherche)}
+        getContacts={(pagination, page, recherche) =>
+          loadContactFromListe(pagination, page, recherche)
+        }
       ></ContactTable>
     </Box>
   );

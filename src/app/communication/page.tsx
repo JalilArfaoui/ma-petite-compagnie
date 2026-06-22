@@ -15,7 +15,7 @@ export default function ContactPage() {
       toaster.create({ description: resultat.message, type: "error" });
       return [];
     }
-  } 
+  }
   async function onCSVRead(donnees: Record<string, string>[]) {
     const resultats = await csvToContacts(donnees);
     console.log("On csv Read");

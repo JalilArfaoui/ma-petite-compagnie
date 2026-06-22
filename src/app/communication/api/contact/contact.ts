@@ -152,11 +152,7 @@ export async function listerContactsAvecListes(
     return resultOf(true, "", contacts);
   } catch (error) {
     console.error(error);
-    return resultOf(
-      false,
-      "Impossible de récuperer les contacts de la liste",
-      null
-    );
+    return resultOf(false, "Impossible de récuperer les contacts de la liste", null);
   }
 }
 
@@ -189,11 +185,7 @@ export async function listerContactsDansListe(
     return resultOf(true, "", contacts);
   } catch (error) {
     console.error(error);
-    return resultOf(
-      false,
-      "Impossible de récuperer les contacts de la liste",
-      null
-    );
+    return resultOf(false, "Impossible de récuperer les contacts de la liste", null);
   }
 }
 
