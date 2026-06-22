@@ -14,12 +14,18 @@ export default defineConfig({
       reporter: ["text", "html"],
       exclude: ["node_modules/", "src/**/*.d.ts"],
     },
+
+    server: {
+      deps: {
+        inline: ["next-auth"],
+      },
+    },
   },
+
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-
-      "next/dist/server"
-    }
+      "next/server": "next/dist/server",
+    },
   },
 });
