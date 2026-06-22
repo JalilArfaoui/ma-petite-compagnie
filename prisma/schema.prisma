@@ -48,6 +48,7 @@ model Compagnie {
   objets Objet[] @relation("ObjetsCompagnie")
   operations OperationFinanciere[]
   factures Facture[]
+  contacts Contact[]
 }
 
 model Evenement {
@@ -134,6 +135,9 @@ model Contact {
   lieu String?
   date_creation DateTime @default(now())
   listeContacts ListeContact[]
+
+  compagnieId Int
+  compagnie   Compagnie @relation(fields: [compagnieId], references: [id])
 }
 
 // partie groupe production
