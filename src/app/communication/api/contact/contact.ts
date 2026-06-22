@@ -33,16 +33,13 @@ export async function creerContact(contact: ContactInformation) {
   }
 }
 
-export async function listerContacts(
-  paginationTaille = 10,
-  page = 1
-) {
+export async function listerContacts(paginationTaille = 10, page = 1) {
   try {
     const compagnieId = await getCompagnieId();
     let skip;
     ({ skip, paginationTaille } = resolvePagination(paginationTaille, page));
     const contacts = await prisma.contact.findMany({
-      where: {compagnieId},
+      where: { compagnieId },
       skip,
       take: paginationTaille,
     });
@@ -52,7 +49,6 @@ export async function listerContacts(
     return resultOf(false, "Erreur lors de la récupération des contacts", null);
   }
 }
-
 
 export async function modifierContact(contactId: number, nouveauContact: ContactInformation) {
   try {
@@ -167,10 +163,7 @@ export type ContactWithListes = Contact & {
   }[];
 };
 
-export async function listerContactsAvecListes(
-  paginationTaille = 10,
-  page = 1
-) {
+export async function listerContactsAvecListes(paginationTaille = 10, page = 1) {
   try {
     const compagnieId = await getCompagnieId();
 
@@ -194,7 +187,6 @@ export async function listerContactsAvecListes(
     return resultOf(false, "Erreur récupération contacts", null);
   }
 }
-
 
 export async function listerContactsDansListe(
   liste: ListeContact,
@@ -229,7 +221,6 @@ export async function listerContactsDansListe(
     return resultOf(false, "Erreur récupération liste contacts", null);
   }
 }
-
 
 export async function trouverParIdContact(id: number) {
   try {
