@@ -48,6 +48,7 @@ model Compagnie {
   objets Objet[] @relation("ObjetsCompagnie")
   operations OperationFinanciere[]
   factures Facture[]
+  contacts Contact[]
 }
 
 model Evenement {
@@ -123,17 +124,23 @@ model ListeContact {
 
 model Contact {
   id    Int     @id @default(autoincrement())
-  nom String 
+  nom String
   prenom String
   role    Role?
-  email String? @unique
+  email String?
   tel String?
 
   notes String?
   ville String?
   lieu String?
   date_creation DateTime @default(now())
+
+  compagnieId Int
+  compagnie   Compagnie @relation(fields: [compagnieId], references: [id])
+
   listeContacts ListeContact[]
+
+  @@unique([compagnieId, email])
 }
 
 // partie groupe production

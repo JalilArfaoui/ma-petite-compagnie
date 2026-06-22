@@ -1,42 +1,48 @@
 "use server";
 import { Contact, ListeContact } from "@prisma/client";
-export type ContactInformation = Omit<Contact, "id" | "date_creation">;
+import { getActiveAdministrationContext } from "@/app/administration/auth-helpers";
+export type ContactInformation = Omit<Contact, "id" | "date_creation" | "compagnieId">;
 import { prisma } from "@/lib/prisma";
 import { Result, resultOf, validerContact, resolvePagination } from "../../utils/helper";
-export async function contactAvecMemeEmail(email: string) {
-  const contact = await prisma.contact.findFirst({ where: { email: email } });
-  return contact ?? false;
+
+async function getCompagnieId() {
+  const context = await getActiveAdministrationContext();
+  if (!context.ok) {
+    throw new Error(context.error);
+  }
+  return context.compagnieId;
 }
+
 export async function creerContact(contact: ContactInformation) {
-  const verificationResultat = await validerContact(contact);
-  if (!verificationResultat.succes) {
-    return verificationResultat;
-  }
-  if (contact.email && (await contactAvecMemeEmail(contact.email))) {
-    return resultOf(
-      false,
-      "Cette email est déjà utilisé. Veuillez utiliser un email différent.",
-      null
-    );
-  }
   try {
+    const compagnieId = await getCompagnieId();
+    const verificationResultat = await validerContact(contact);
+    if (!verificationResultat.succes) {
+      return verificationResultat;
+    }
     const nouveauContact = await prisma.contact.create({
       data: {
         ...contact,
+        compagnieId,
       },
     });
     return resultOf(true, "", nouveauContact);
-  } catch (error: unknown) {
+  } catch (error) {
     console.error(error);
-    return resultOf(false, "Une erreur est survenue lors de la création du contact", null);
+    return resultOf(false, "Erreur lors de la création du contact", null);
   }
 }
 
-export async function listerContacts(paginationTaille: number = 10, page: number = 1) {
-  let skip;
-  ({ skip, paginationTaille } = resolvePagination(paginationTaille, page));
+export async function listerContacts(paginationTaille = 10, page = 1) {
   try {
-    const contacts = await prisma.contact.findMany({ skip, take: paginationTaille });
+    const compagnieId = await getCompagnieId();
+    let skip;
+    ({ skip, paginationTaille } = resolvePagination(paginationTaille, page));
+    const contacts = await prisma.contact.findMany({
+      where: { compagnieId },
+      skip,
+      take: paginationTaille,
+    });
     return resultOf(true, "", contacts);
   } catch (error) {
     console.error(error);
@@ -45,40 +51,69 @@ export async function listerContacts(paginationTaille: number = 10, page: number
 }
 
 export async function modifierContact(contactId: number, nouveauContact: ContactInformation) {
-  const verificationResultat = validerContact(nouveauContact);
-  if (!verificationResultat.succes) {
-    return verificationResultat;
-  }
-  if (nouveauContact.email) {
-    const contactExistant = await prisma.contact.findFirst({
+  try {
+    const compagnieId = await getCompagnieId();
+    const verificationResultat = validerContact(nouveauContact);
+    if (!verificationResultat.succes) {
+      return verificationResultat;
+    }
+    if (nouveauContact.email) {
+      const contactExistant = await prisma.contact.findFirst({
+        where: {
+          email: nouveauContact.email,
+          compagnieId,
+          NOT: { id: contactId },
+        },
+      });
+
+      if (contactExistant) {
+        return resultOf(false, "Email déjà utilisé", null);
+      }
+    }
+
+    const contactModifie = await prisma.contact.updateMany({
       where: {
-        email: nouveauContact.email,
-        NOT: { id: contactId },
+        id: contactId,
+        compagnieId,
+      },
+      data: {
+        ...nouveauContact,
       },
     });
-    if (contactExistant) {
-      return resultOf(
-        false,
-        "Cet email est déjà utilisé. Veuillez utiliser un email différent.",
-        null
-      );
+
+    if (contactModifie.count === 0) {
+      return resultOf(false, "Contact introuvable", null);
     }
-  }
-  try {
-    const contactModifie = await prisma.contact.update({
-      where: { id: contactId },
-      data: { ...nouveauContact },
-    });
+
     return resultOf(true, "", contactModifie);
   } catch (error) {
     console.error(error);
-    return resultOf(false, "Le contact n'existe pas ou n'a pas pu être modifié.", null);
+    return resultOf(false, "Erreur modification contact", null);
   }
 }
 
 export async function supprimerContact(id: number) {
   try {
-    return await resultOf(true, "", prisma.contact.delete({ where: { id: id } }));
+    const compagnieId = await getCompagnieId();
+
+    const contact = await prisma.contact.findFirst({
+      where: {
+        id,
+        compagnieId,
+      },
+    });
+
+    if (!contact) {
+      return resultOf(false, "Contact introuvable", null);
+    }
+
+    await prisma.contact.delete({
+      where: {
+        id,
+      },
+    });
+
+    return resultOf(true, "", null);
   } catch (error) {
     console.error(error);
     return resultOf(false, "Le contact n'a pas pu être supprimé", null);
@@ -87,71 +122,124 @@ export async function supprimerContact(id: number) {
 
 export async function supprimerContactAvecNom(nom: string) {
   try {
-    return await resultOf(true, "", prisma.contact.deleteMany({ where: { nom: nom } }));
+    const compagnieId = await getCompagnieId();
+
+    const result = await prisma.contact.deleteMany({
+      where: {
+        nom,
+        compagnieId,
+      },
+    });
+
+    return resultOf(true, "", result);
   } catch (error) {
     console.error(error);
-    return resultOf(false, "Le contact n'a pas pu être supprimé", null);
+    return resultOf(false, "Erreur suppression contact", null);
   }
 }
+
 export async function supprimerContactsAvecEmail(email: string) {
   try {
-    return await resultOf(true, "", prisma.contact.deleteMany({ where: { email: email } }));
+    const compagnieId = await getCompagnieId();
+
+    const result = await prisma.contact.deleteMany({
+      where: {
+        email,
+        compagnieId,
+      },
+    });
+
+    return resultOf(true, "", result);
   } catch (error) {
     console.error(error);
-    return resultOf(false, "Le contact n'a pas pu être supprimé", null);
+    return resultOf(false, "Erreur suppression contact", null);
   }
 }
+
 export type ContactWithListes = Contact & {
   listeContacts: {
     id: number;
     nom: string;
   }[];
 };
-export async function listerContactsAvecListes(
-  paginationTaille: number = 10,
-  page: number = 1
-): Promise<Result<null> | Result<ContactWithListes[]>> {
+
+export async function listerContactsAvecListes(paginationTaille = 10, page = 1) {
   try {
+    const compagnieId = await getCompagnieId();
+
     let skip;
     ({ skip, paginationTaille } = resolvePagination(paginationTaille, page));
+
     const contacts = await prisma.contact.findMany({
+      where: {
+        compagnieId,
+      },
+      include: {
+        listeContacts: true,
+      },
+      skip,
       take: paginationTaille,
-      skip: skip,
-      include: { listeContacts: true },
     });
+
     return resultOf(true, "", contacts);
   } catch (error) {
     console.error(error);
-    return resultOf(false, "Impossible de récuperer les contacts de la liste", null);
+    return resultOf(false, "Erreur récupération contacts", null);
   }
 }
 
 export async function listerContactsDansListe(
   liste: ListeContact,
-  paginationTaille: number = 10,
-  page: number = 1
-): Promise<Result<null> | Result<ContactWithListes[]>> {
+  paginationTaille = 10,
+  page = 1
+) {
   try {
+    const compagnieId = await getCompagnieId();
+
     let skip;
     ({ skip, paginationTaille } = resolvePagination(paginationTaille, page));
+
     const contacts = await prisma.contact.findMany({
-      where: { listeContacts: { some: { id: liste.id } } },
+      where: {
+        compagnieId,
+        listeContacts: {
+          some: {
+            id: liste.id,
+          },
+        },
+      },
+      include: {
+        listeContacts: true,
+      },
+      skip,
       take: paginationTaille,
-      skip: skip,
-      include: { listeContacts: true },
     });
 
     return resultOf(true, "", contacts);
   } catch (error) {
     console.error(error);
-    return resultOf(false, "Impossible de récuperer les contacts de la liste", null);
+    return resultOf(false, "Erreur récupération liste contacts", null);
   }
 }
 
 export async function trouverParIdContact(id: number) {
-  const contact = await prisma.contact.findUnique({ where: { id: id } });
-  if (!contact) {
-    return resultOf(false, "Le contact n'existe pas.", null);
+  try {
+    const compagnieId = await getCompagnieId();
+
+    const contact = await prisma.contact.findFirst({
+      where: {
+        id,
+        compagnieId,
+      },
+    });
+
+    if (!contact) {
+      return resultOf(false, "Le contact n'existe pas.", null);
+    }
+
+    return resultOf(true, "", contact);
+  } catch (error) {
+    console.error(error);
+    return resultOf(false, "Erreur lors de la récupération du contact", null);
   }
-  return resultOf(true, "", contact);
 }
