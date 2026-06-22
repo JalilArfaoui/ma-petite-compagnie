@@ -16,6 +16,7 @@ describe("Test des pages pour le contact", () => {
       ville: "Paris",
       lieu: "Rue quelque chose",
       notes: "Client très important",
+      compagnieId: 1,
     };
     render(
       <ContactDetails
