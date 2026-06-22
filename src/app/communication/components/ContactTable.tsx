@@ -82,12 +82,6 @@ export function ContactTable({
     loadContacts();
   }, [keyReload, page, getContacts, recherche]);
 
-/*
-useEffect(() => {
-  console.log("Recherche :", recherche);
-}, [recherche]);
-*/
-
   function changerPage(page: number) {
     setPage(page);
   }

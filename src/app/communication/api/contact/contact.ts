@@ -118,6 +118,19 @@ export type ContactWithListes = Contact & {
     nom: string;
   }[];
 };
+
+function filtreRecherche(recherche?: string) {
+  if (!recherche) return undefined;
+
+  const label = ["nom", "prenom", "email", "tel", "ville", "lieu", "notes"];
+
+  return {
+    OR: label.map((champ) => ({
+      [champ]: { contains: recherche, mode: "insensitive" as const },
+    })),
+  };
+}
+
 export async function listerContactsAvecListes(
   paginationTaille: number = 10,
   page: number = 1,
@@ -126,26 +139,24 @@ export async function listerContactsAvecListes(
   try {
     let skip;
     ({ skip, paginationTaille } = resolvePagination(paginationTaille, page));
-    const filtreRecherche = recherche?{OR:[
-      { nom: { contains: recherche, mode: "insensitive"  as const}},
-      { prenom: { contains: recherche, mode: "insensitive"  as const}},
-      { email: { contains: recherche, mode: "insensitive" as const }},
-      { tel: { contains: recherche, mode: "insensitive" as const  }},
-      { ville: { contains: recherche, mode: "insensitive" as const }},
-      { lieu: { contains: recherche, mode: "insensitive" as const }},
-      { notes: { contains: recherche, mode: "insensitive" as const}},
-      ],
-    }:{};
+
     const contacts = await prisma.contact.findMany({
-      where: filtreRecherche,
+      where: filtreRecherche(recherche),
       take: paginationTaille,
-      skip: skip,
-      include: { listeContacts: true },
+      skip,
+      include: {
+        listeContacts: true,
+      },
     });
+
     return resultOf(true, "", contacts);
   } catch (error) {
     console.error(error);
-    return resultOf(false, "Impossible de récuperer les contacts de la liste", null);
+    return resultOf(
+      false,
+      "Impossible de récuperer les contacts de la liste",
+      null
+    );
   }
 }
 
@@ -158,29 +169,31 @@ export async function listerContactsDansListe(
   try {
     let skip;
     ({ skip, paginationTaille } = resolvePagination(paginationTaille, page));
-    const filtreRecherche = recherche?{AND:[{ listeContacts:{ some:{ id:liste.id } }},{OR: [
-            { nom: { contains: recherche, mode: "insensitive" as const } },
-            { prenom: { contains: recherche, mode: "insensitive"  as const} },
-            { email: { contains: recherche, mode: "insensitive" as const } },
-            { tel: { contains: recherche, mode: "insensitive"  as const} },
-            { ville: { contains: recherche, mode: "insensitive"  as const} },
-            { lieu: { contains: recherche, mode: "insensitive" as const } },
-            { notes: { contains: recherche, mode: "insensitive" as const } },
-          ],
-        },
-      ],
-    }:{listeContacts: { some: { id: liste.id } },};
+
     const contacts = await prisma.contact.findMany({
-      where: filtreRecherche,
+      where: {
+        listeContacts: {
+          some: {
+            id: liste.id,
+          },
+        },
+        ...filtreRecherche(recherche),
+      },
       take: paginationTaille,
-      skip: skip,
-      include: { listeContacts: true },
+      skip,
+      include: {
+        listeContacts: true,
+      },
     });
 
     return resultOf(true, "", contacts);
   } catch (error) {
     console.error(error);
-    return resultOf(false, "Impossible de récuperer les contacts de la liste", null);
+    return resultOf(
+      false,
+      "Impossible de récuperer les contacts de la liste",
+      null
+    );
   }
 }
 
