@@ -23,10 +23,7 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "./src"),
 
-      "next/server": path.resolve(
-        __dirname,
-        "./node_modules/next/dist/server/web/globals.js"
-      ),
+      "next/server": path.resolve(__dirname, "./node_modules/next/dist/server/web/globals.js"),
     },
   },
 });
