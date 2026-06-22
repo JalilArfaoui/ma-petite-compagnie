@@ -45,7 +45,7 @@ export default function AffichageListeContacts() {
       <Toaster />
       <Box className="p-3">
         <Link href={"./"}>
-          <Button size={"sm"} variant={"link"}>
+          <Button size={"sm"}>
             Retour
           </Button>
         </Link>
