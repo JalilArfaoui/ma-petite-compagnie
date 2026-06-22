@@ -11,7 +11,7 @@ export function ContactTable({
   getContacts,
   keyReload,
 }: {
-  getContacts: (paginationTaille: number, page: number) => Promise<ContactWithListes[] | null>;
+  getContacts: (paginationTaille: number, page: number, recherche?: string) => Promise<ContactWithListes[] | null>;
   keyReload: number;
 }) {
   const [listes, setListes] = useState<ListeContact[]>([]);
@@ -19,6 +19,7 @@ export function ContactTable({
   const paginationTaille = 30;
   const [contacts, setContacts] = useState<ContactWithListes[]>([]);
   const [contactsSelectionne, setContactsSelectionne] = useState<ContactWithListes[]>([]);
+  const [recherche, setRecherche] = useState("");
 
   async function deleteListeFromContact(contact: ContactWithListes, listeId: number) {
     const listeAsupprimer = contact.listeContacts.find((liste) => liste.id == listeId);
@@ -69,17 +70,23 @@ export function ContactTable({
     loadListes();
   }, []);
   async function loadContacts() {
-    const resultat = await getContacts(paginationTaille, page);
+    const resultat = await getContacts(paginationTaille, page, recherche);
     setContacts(resultat ?? []);
     loadListes();
   }
   useEffect(() => {
     async function loadContacts() {
-      const resultat = await getContacts(paginationTaille, page);
+      const resultat = await getContacts(paginationTaille, page, recherche);
       setContacts(resultat ?? []);
     }
     loadContacts();
-  }, [keyReload, page, getContacts]);
+  }, [keyReload, page, getContacts, recherche]);
+
+/*
+useEffect(() => {
+  console.log("Recherche :", recherche);
+}, [recherche]);
+*/
 
   function changerPage(page: number) {
     setPage(page);
@@ -150,6 +157,13 @@ export function ContactTable({
       <Stack direction="row" gap={2} className="justify-between">
         <Stack direction="row" gap={2} className="items-end" justify="start">
           <Text className="h-fit font-bold text-2xl">Liste de contacts</Text>
+          <input 
+            className="border rounded px-2 py-1"
+            placeholder="recherche contactez "
+            value={recherche}
+            onChange={(e) => {setRecherche(e.target.value); setPage(1);}}
+          />
+          <Text>Recherche : {recherche}</Text>
         </Stack>
 
         <Stack

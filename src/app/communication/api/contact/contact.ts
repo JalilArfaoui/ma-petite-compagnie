@@ -168,18 +168,36 @@ export type ContactWithListes = Contact & {
 };
 
 export async function listerContactsAvecListes(
-  paginationTaille = 10,
-  page = 1
-) {
+  paginationTaille: number = 10,
+  page: number = 1,
+  recherche?: string
+): Promise<Result<null> | Result<ContactWithListes[]>> {
   try {
     const compagnieId = await getCompagnieId();
 
     let skip;
     ({ skip, paginationTaille } = resolvePagination(paginationTaille, page));
 
+    const filtreRecherche = recherche
+      ? {
+          compagnieId,
+          OR: [
+            { nom: { contains: recherche, mode: "insensitive" as const } },
+            { prenom: { contains: recherche, mode: "insensitive" as const } },
+            { email: { contains: recherche, mode: "insensitive" as const } },
+            { tel: { contains: recherche, mode: "insensitive" as const } },
+            { ville: { contains: recherche, mode: "insensitive" as const } },
+            { lieu: { contains: recherche, mode: "insensitive" as const } },
+            { notes: { contains: recherche, mode: "insensitive" as const } },
+          ],
+        }
+      : {
+          compagnieId,
+        };
+
     const contacts = await prisma.contact.findMany({
       where: {
-        compagnieId,
+        ...filtreRecherche,
       },
       include: {
         listeContacts: true,
@@ -195,32 +213,52 @@ export async function listerContactsAvecListes(
   }
 }
 
-
 export async function listerContactsDansListe(
   liste: ListeContact,
-  paginationTaille = 10,
-  page = 1
-) {
+  paginationTaille: number = 10,
+  page: number = 1,
+  recherche?: string
+): Promise<Result<null> | Result<ContactWithListes[]>> {
   try {
     const compagnieId = await getCompagnieId();
 
     let skip;
     ({ skip, paginationTaille } = resolvePagination(paginationTaille, page));
 
-    const contacts = await prisma.contact.findMany({
-      where: {
-        compagnieId,
-        listeContacts: {
-          some: {
-            id: liste.id,
+    const filtreRecherche = recherche
+      ? {
+          compagnieId,
+          listeContacts: {
+            some: {
+              id: liste.id,
+            },
           },
-        },
-      },
+          OR: [
+            { nom: { contains: recherche, mode: "insensitive" as const } },
+            { prenom: { contains: recherche, mode: "insensitive" as const } },
+            { email: { contains: recherche, mode: "insensitive" as const } },
+            { tel: { contains: recherche, mode: "insensitive" as const } },
+            { ville: { contains: recherche, mode: "insensitive" as const } },
+            { lieu: { contains: recherche, mode: "insensitive" as const } },
+            { notes: { contains: recherche, mode: "insensitive" as const } },
+          ],
+        }
+      : {
+          compagnieId,
+          listeContacts: {
+            some: {
+              id: liste.id,
+            },
+          },
+        };
+
+    const contacts = await prisma.contact.findMany({
+      where: filtreRecherche,
       include: {
         listeContacts: true,
       },
-      skip,
       take: paginationTaille,
+      skip,
     });
 
     return resultOf(true, "", contacts);
