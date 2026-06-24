@@ -118,18 +118,37 @@ export type ContactWithListes = Contact & {
     nom: string;
   }[];
 };
+
+function filtreRecherche(recherche?: string) {
+  if (!recherche) return undefined;
+
+  const label = ["nom", "prenom", "email", "tel", "ville", "lieu", "notes"];
+
+  return {
+    OR: label.map((champ) => ({
+      [champ]: { contains: recherche, mode: "insensitive" as const },
+    })),
+  };
+}
+
 export async function listerContactsAvecListes(
   paginationTaille: number = 10,
-  page: number = 1
+  page: number = 1,
+  recherche?: string
 ): Promise<Result<null> | Result<ContactWithListes[]>> {
   try {
     let skip;
     ({ skip, paginationTaille } = resolvePagination(paginationTaille, page));
+
     const contacts = await prisma.contact.findMany({
+      where: filtreRecherche(recherche),
       take: paginationTaille,
-      skip: skip,
-      include: { listeContacts: true },
+      skip,
+      include: {
+        listeContacts: true,
+      },
     });
+
     return resultOf(true, "", contacts);
   } catch (error) {
     console.error(error);
@@ -140,16 +159,27 @@ export async function listerContactsAvecListes(
 export async function listerContactsDansListe(
   liste: ListeContact,
   paginationTaille: number = 10,
-  page: number = 1
+  page: number = 1,
+  recherche?: string
 ): Promise<Result<null> | Result<ContactWithListes[]>> {
   try {
     let skip;
     ({ skip, paginationTaille } = resolvePagination(paginationTaille, page));
+
     const contacts = await prisma.contact.findMany({
-      where: { listeContacts: { some: { id: liste.id } } },
+      where: {
+        listeContacts: {
+          some: {
+            id: liste.id,
+          },
+        },
+        ...filtreRecherche(recherche),
+      },
       take: paginationTaille,
-      skip: skip,
-      include: { listeContacts: true },
+      skip,
+      include: {
+        listeContacts: true,
+      },
     });
 
     return resultOf(true, "", contacts);

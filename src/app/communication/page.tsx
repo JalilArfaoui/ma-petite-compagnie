@@ -7,8 +7,8 @@ import { CSVContactImport } from "./components/CSVContactImport";
 import { csvToContacts } from "./action/CSVToContacts";
 import { listerContactsAvecListes } from "./api/contact/contact";
 export default function ContactPage() {
-  async function loadContacts(pagination = 30, page = 1) {
-    const resultat = await listerContactsAvecListes(pagination, page);
+  async function loadContacts(pagination = 30, page = 1, recherche?: string) {
+    const resultat = await listerContactsAvecListes(pagination, page, recherche);
     if (resultat.succes) {
       return resultat.donnee;
     } else {
@@ -71,7 +71,7 @@ export default function ContactPage() {
       <Box className="md:w-full lg:w-[90%] mx-auto   ">
         <ContactTable
           keyReload={0}
-          getContacts={(pagination, page) => loadContacts(pagination, page)}
+          getContacts={(pagination, page, recherche) => loadContacts(pagination, page, recherche)}
         />
       </Box>
     </Box>
