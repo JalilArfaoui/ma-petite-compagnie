@@ -11,6 +11,7 @@ interface SpectacleData {
   type: string | null;
   statut: string;
   hasImage: boolean;
+  imageVersion: number | null;
 }
 
 function SpectacleCard({ spectacle }: { spectacle: SpectacleData }) {
@@ -25,7 +26,7 @@ function SpectacleCard({ spectacle }: { spectacle: SpectacleData }) {
       {spectacle.hasImage && !imgError ? (
         <Image
           fill
-          src={`/production/api/spectacles/${spectacle.id}/image`}
+          src={`/production/api/spectacles/${spectacle.id}/image${spectacle.imageVersion ? `?v=${spectacle.imageVersion}` : ""}`}
           alt={spectacle.titre}
           onError={() => setImgError(true)}
           className="absolute inset-0 object-cover"

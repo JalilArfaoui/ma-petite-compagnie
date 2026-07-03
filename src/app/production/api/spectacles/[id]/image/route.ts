@@ -37,7 +37,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
   await prisma.spectacle.update({
     where: { id: Number(id) },
-    data: { image: buffer, imageMimeType: file.type },
+    data: { image: buffer, imageMimeType: file.type, imageUpdatedAt: new Date() },
   });
 
   return NextResponse.json({ success: true });

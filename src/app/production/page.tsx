@@ -1,10 +1,12 @@
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import SpectaclesClient from "./SpectaclesClient";
 
 export const dynamic = "force-dynamic";
 
 export default async function ProductionPage() {
-  const compagnieId = 1;
+  const session = await auth();
+  const compagnieId = Number(session!.activeCompanyId);
 
   const spectacles = await prisma.spectacle.findMany({
     orderBy: { id: "desc" },
@@ -14,6 +16,7 @@ export default async function ProductionPage() {
       type: true,
       statut: true,
       imageMimeType: true,
+      imageUpdatedAt: true,
     },
     where: {
       compagnieId: compagnieId,
@@ -26,6 +29,7 @@ export default async function ProductionPage() {
     type: s.type,
     statut: s.statut,
     hasImage: !!s.imageMimeType,
+    imageVersion: s.imageUpdatedAt ? s.imageUpdatedAt.getTime() : null,
   }));
 
   return <SpectaclesClient spectacles={serialized} />;

@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -116,8 +117,6 @@ const memeJour = (a: Date, b: Date) => {
   );
 };
 
-const compagnieId = 1; // TODO: remplacer par l'id de la compagnie connectée
-
 export default async function ProductionPage({
   params,
   searchParams,
@@ -125,35 +124,46 @@ export default async function ProductionPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ date?: string; lieu?: number }>;
 }) {
+  const session = await auth();
+  const compagnieId = Number(session!.activeCompanyId);
   const { id } = await params;
   const { date: dateParam, lieu: lieuParam } = await searchParams;
   const laDate = dateParam ? (dateParam as string) : null;
   const leLieu = lieuParam ? (lieuParam as number) : null;
-  const spectacle = await prisma.spectacle.findFirst({
-    where: {
-      id: Number(id),
-      compagnieId: compagnieId,
-    },
-  });
-  if (spectacle == null) {
-    return <p>vous n&apos;avez pas acces a ce spectacle</p>;
-  } else {
-    const representations = await prisma.representation.findMany({
-      include: {
-        lieu: true,
-      },
+  const [spectacle, representations, lieux] = await Promise.all([
+    prisma.spectacle.findFirst({
       where: {
-        spectacleId: Number(id),
+        id: Number(id),
+        compagnieId: compagnieId,
       },
-    });
-
-    const lieux = await prisma.lieu.findMany({
+    }),
+    prisma.representation.findMany({
+      where: { spectacleId: Number(id) },
+      select: {
+        id: true,
+        debutResa: true,
+        finResa: true,
+        lieu: {
+          select: {
+            libelle: true,
+            adresse: true,
+            ville: true,
+            numero_salle: true,
+          },
+        },
+      },
+    }),
+    prisma.lieu.findMany({
       select: {
         id: true,
         ville: true,
         libelle: true,
       },
-    });
+    }),
+  ]);
+  if (spectacle == null) {
+    return <p>vous n&apos;avez pas acces a ce spectacle</p>;
+  } else {
     if (laDate == null || leLieu == null) {
       return (
         <div className="max-w-7xl mx-auto px-4">
@@ -221,7 +231,7 @@ export default async function ProductionPage({
             <div>
               {representations.length == 0 ? (
                 <Heading as="h4" className="text-primary mb-2">
-                  {spectacle.titre} n&apos;a aucune representations
+                  {spectacle.titre} &nbsp;n&apos;a aucune representations
                 </Heading>
               ) : (
                 <Heading as="h4" className="text-primary mb-2">
@@ -304,9 +314,13 @@ export default async function ProductionPage({
       const debut = new Date(Date.parse(laDate));
       const fin = new Date(debut.getTime() + spectacle.dure * 60000);
       const req = await prisma.besoinSpectacle.findMany({
-        include: {
+        select: {
+          id: true,
+          nb: true,
+          typeObjetId: true,
           typeObjet: {
-            include: {
+            select: {
+              nom: true,
               categorie: {
                 select: {
                   nom: true,
@@ -368,6 +382,10 @@ export default async function ProductionPage({
                     },
                   },
                   compagnieId: spectacle.compagnieId,
+                },
+                select: {
+                  id: true,
+                  etat: true,
                 },
               },
             },
@@ -570,7 +588,7 @@ export default async function ProductionPage({
             <div>
               {representations.length == 0 ? (
                 <Heading as="h4" className="text-primary mb-2">
-                  {spectacle.titre} n&apos;a aucune representations
+                  {spectacle.titre} &nbsp;n&apos;a aucune representations
                 </Heading>
               ) : (
                 <Heading as="h4" className="text-primary mb-2">

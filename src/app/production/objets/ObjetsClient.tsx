@@ -33,7 +33,7 @@ interface ObjetData {
     id: number;
     representation: {
       id: number;
-      date: string;
+      debutResa: string;
       spectacle: { titre: string };
       lieu: { libelle: string };
     };
@@ -56,7 +56,7 @@ interface CategorieData {
 
 interface RepresentationData {
   id: number;
-  date: string;
+  debutResa: string;
   spectacle: { titre: string };
   lieu: { libelle: string };
 }
@@ -284,7 +284,7 @@ function StockRow({ obj }: { obj: ObjetData }) {
                   >
                     <p className="font-medium">{r.representation.spectacle.titre}</p>
                     <p className="text-slate-400">
-                      {formatDate(r.representation.date)} @ {r.representation.lieu.libelle}
+                      {formatDate(r.representation.debutResa)} @ {r.representation.lieu.libelle}
                     </p>
                   </div>
                 ))}
@@ -584,7 +584,7 @@ function TypeObjetCard({
                 <option value="">Sélectionner une représentation</option>
                 {representations.map((r) => (
                   <option key={r.id} value={r.id}>
-                    {formatDate(r.date)} — {r.spectacle.titre} @ {r.lieu.libelle}
+                    {formatDate(r.debutResa)} — {r.spectacle.titre} @ {r.lieu.libelle}
                   </option>
                 ))}
               </select>

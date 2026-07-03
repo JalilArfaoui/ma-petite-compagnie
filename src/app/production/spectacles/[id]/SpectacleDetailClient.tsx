@@ -566,6 +566,53 @@ export default function SpectacleDetailClient({ spectacle, typeObjets, categorie
                     </Link>
                   </div>
                 </>
+              ) : spectacle.ficheTechnique ? (
+                // Fiche texte existante mais sans PDF uploadé — génération à la volée
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center gap-2 text-sm text-slate-600">
+                    <svg
+                      className="w-5 h-5 text-green-500"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span className="font-serif">
+                      {`fiche-technique-${spectacle.titre.replace(/[^a-z0-9]/gi, "-").toLowerCase()}.pdf`}
+                    </span>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() =>
+                        window.open(
+                          `/production/api/spectacles/ficheTechnique/${spectacle.ficheTechnique!.id}/pdf`
+                        )
+                      }
+                      className="flex-1 bg-[#D00039] text-white font-serif font-bold italic rounded-[12px] py-2 text-sm hover:bg-[#B00030] transition-colors cursor-pointer"
+                    >
+                      Ouvrir le PDF
+                    </button>
+                    <button
+                      onClick={() => ftInputRef.current?.click()}
+                      disabled={ftUploading}
+                      className="border border-slate-300 rounded-[12px] px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
+                    >
+                      {ftUploading ? "..." : "Remplacer"}
+                    </button>
+                  </div>
+                  <Link
+                    href={`/production/spectacles/${spectacle.id}/fiche`}
+                    className="w-full bg-white border border-[#D00039] text-[#D00039] hover:bg-[#FFF5F7] font-serif font-bold italic rounded-[12px] py-2 text-sm transition-colors cursor-pointer inline-block text-center"
+                  >
+                    Modifier la fiche technique
+                  </Link>
+                </div>
               ) : (
                 <div className="flex flex-col gap-2">
                   <button
